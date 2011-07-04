@@ -1,5 +1,13 @@
 <?
 
+function __autoload($class) 
+{
+    include_once "$class.php";
+
+	if (!class_exists($class))
+		throw new Exception("Class '$class' not found");
+}
+
 class model
 {
 	protected $mongoObj;

@@ -5,21 +5,15 @@
 */
 
 
-function __autoload($class) 
-{
-    include_once "models/$class.php";
-
-	if (!class_exists($class))
-		throw new Exception("Class '$class' not found");
-}
+require_once "models/model.php";
 
 $result=array();
 
 try
 {
-	$class=$_GET['class'];
-	$method=$_GET['method'];
-	$params=json_decode($_GET['params']);
+	$class=$_REQUEST['class'];
+	$method=$_REQUEST['method'];
+	$params=json_decode($_REQUEST['params']);
 
 	if ($class=="")
 		throw new Exception("class not specified");
