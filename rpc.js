@@ -1,17 +1,34 @@
 
 rpc_debug=false;
 
-function rpc(class, method, params)
+function rpc(classMethod, params, callback)
 {
 	if (rpc_debug)
-		console.debug("rpc: "+class+"."+method+"( "+JSON.stringify(params)+" )");
+		console.debug("rpc: "+classMethod+"( "+JSON.stringify(params)+" )");
+
+	class=classMethod.substr(0,classMethod.indexOf("."));
+	method=classMethod.substr(classMethod.indexOf(".")+1);
 	
 	$.ajax({
 		"dataType":		"json",
 		"url":			'rpc.php',
 		"error": 		rpc_handleReceiveError,
-		"success":		rpc_handleResult,
-		"type":			"post",
+		"success":	
+			function (result, status, XMLHttpRequest)
+			{
+
+				if (result==null)
+				{
+					console.error("Connection error.");
+					return;
+				}
+				
+				if (rpc_debug)
+					console.info("rpc: result="+JSON.stringify(result));
+				
+				callback(result);
+			},
+		"type": "post",
 		"data": {
 				"class":class,
 				"method":method,
@@ -30,19 +47,6 @@ function rpc_handleReceiveError(request, status, e)
 	console.error(errorTxt);
 }
 
-function rpc_handleResult(result, status, XMLHttpRequest)
-{
-
-	if (result==null)
-	{
-		console.error("Connection error.");
-		return;
-	}
-	
-	if (rpc_debug)
-		console.info("rpc: result="+JSON.stringify(result));
-	
-}
 
 
 function rpc_handleSendError(request, status, e)

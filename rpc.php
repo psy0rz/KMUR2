@@ -13,7 +13,7 @@ try
 {
 	$class=$_REQUEST['class'];
 	$method=$_REQUEST['method'];
-	$params=json_decode($_REQUEST['params']);
+	$params=json_decode($_REQUEST['params'], true);
 
 	if ($class=="")
 		throw new Exception("class not specified");

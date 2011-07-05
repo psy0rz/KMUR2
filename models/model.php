@@ -33,6 +33,13 @@ class model
 		}
 		return ($ret);
 	}
+	
+	protected function getById($collection,$id)
+	{
+		return(
+			$this->db->$collection->findOne(array('_id'=>new MongoId($id)))
+		);
+	}
 
 }
 

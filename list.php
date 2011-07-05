@@ -6,15 +6,30 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
 	<title>bwap</title> 
 	
-	<script type="text/javascript" src="form.js"></script> 
+	<script type="text/javascript" src="form.js"></script>
 
 	<script>
 	$(document).ready(function()
 	{
-		rpc("users","getAll", {
-			"bla":1,
-			"kutje":"sdf"
-		});
+		rpc(
+			"users.getAll",
+			{
+			},
+			function(result)
+			{
+				console.info("eerste result");
+			}
+		);
+		rpc(
+			"users.get",
+			{
+				"_id":$.url().param("_id"),
+			},
+			function(result)
+			{
+				console.info("tweede result");
+			}
+		);
 	});
 	
 	</script>
@@ -29,6 +44,9 @@
 <body style=' 
 	'> 
 
+<table _get='users.getAll'>	
+
+</table>
 
 </body> 
 </html> 
