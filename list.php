@@ -11,15 +11,7 @@
 	<script>
 	$(document).ready(function()
 	{
-		rpc(
-			"users.getAll",
-			{
-			},
-			function(result)
-			{
-				console.info("eerste result");
-			}
-		);
+		//get data
 		rpc(
 			"users.get",
 			{
@@ -27,9 +19,49 @@
 			},
 			function(result)
 			{
-				console.info("tweede result");
+				//fill it in
+				$("[_key]").filter(":input").each(function () {
+					$(this).val(result['data'][$(this).attr("_key")]);
+				});
+
+				$("[_key]").not(":input").each(function () {
+					$(this).text(result['data'][$(this).attr("_key")]);
+				});
+
 			}
 		);
+		
+		//save 
+		$("#save").click(function()
+		{
+			$("#save").prop("disabled", true);
+
+			//collect all the data
+			var params=new Array();
+			params["_id"]=$.url().param("_id");
+			
+			$("[_key]").filter(":input").each(function () {
+				params[$(this).attr("_key")]=$(this).val();
+			});
+
+			$("[_key]").not(":input").each(function () {
+				params[$(this).attr("_key")]=$(this).text();
+			});
+			
+			//put data
+			rpc(
+				"users.put",
+				params,
+				function(result)
+				{
+					$("#save").prop("disabled", false);
+					//show errors
+					$("#error").text(result["error"]);
+					
+				}
+			);
+		});
+
 	});
 	
 	</script>
@@ -44,10 +76,18 @@
 <body style=' 
 	'> 
 
-<table _get='users.getAll'>	
+<div style='color:#ff0000;' id='error'></div>
 
-</table>
+<div _key='title'></div>
+<input type='text' _key='author'></input>
+
+<select _key='gender'>
+	<option value="M">Man</option>
+	<option value="F">Vrouw</option>
+	<option value="A">Alien</option>
+</select>
+
+<button id='save'>Opslaan</button>
 
 </body> 
 </html> 
-

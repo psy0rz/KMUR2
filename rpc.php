@@ -30,7 +30,7 @@ try
 		throw new Exception("Illegal method name");//dont echo $method
 
 	if (!method_exists($object,$method))
-		throw new Exception("Method '$method' not found");
+		throw new Exception("Method '$method' not found in class '$class'");
 	
 	//call it
 	$result=array("data"=>$object->$method($params));
