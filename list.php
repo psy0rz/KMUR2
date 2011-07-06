@@ -19,6 +19,8 @@
 			},
 			function(result)
 			{
+				$("#error").text(result["error"]);
+
 				//fill it in
 				$("[_key]").filter(":input").each(function () {
 					$(this).val(result['data'][$(this).attr("_key")]);
@@ -37,9 +39,9 @@
 			$("#save").prop("disabled", true);
 
 			//collect all the data
-			var params=new Array();
+			var params={};
 			params["_id"]=$.url().param("_id");
-			
+
 			$("[_key]").filter(":input").each(function () {
 				params[$(this).attr("_key")]=$(this).val();
 			});
@@ -47,7 +49,7 @@
 			$("[_key]").not(":input").each(function () {
 				params[$(this).attr("_key")]=$(this).text();
 			});
-			
+
 			//put data
 			rpc(
 				"users.put",
@@ -78,10 +80,12 @@
 
 <div style='color:#ff0000;' id='error'></div>
 
-<div _key='title'></div>
-<input type='text' _key='author'></input>
+<div key='title'></div>
+<input type='text' _key='username'></input>
 
-<select _key='gender'>
+<input type='text' _key='name'></input>
+
+<select key='gender'>
 	<option value="M">Man</option>
 	<option value="F">Vrouw</option>
 	<option value="A">Alien</option>

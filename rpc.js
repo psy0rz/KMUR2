@@ -9,19 +9,20 @@ function rpc(classMethod, params, callback)
 	class=classMethod.substr(0,classMethod.indexOf("."));
 	method=classMethod.substr(classMethod.indexOf(".")+1);
 	
+	//(add extra info to the url for easier debugging in webserver logs)
 	$.ajax({
 		"dataType":		"json",
-		"url":			'rpc.php',
-		"error": 		rpc_handleReceiveError,
+		"url":			"rpc.php/"+class+"."+method,
+		"error":
+			function (request, status, e)
+			{
+				console.error(request,status,e);
+				error["error"]="Error while contacting server: "+request.responseText;
+				callback(error);
+			},
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
-
-				if (result==null)
-				{
-					console.error("Connection error.");
-					return;
-				}
 				
 				if (rpc_debug)
 					console.info("rpc: result="+JSON.stringify(result));
@@ -41,12 +42,6 @@ function rpc(classMethod, params, callback)
 
 
 
-function rpc_handleReceiveError(request, status, e)
-{
-	errorTxt="RPC error: " + request.responseText;
-	console.error(errorTxt);
-}
-
 
 
 function rpc_handleSendError(request, status, e)
@@ -55,9 +50,6 @@ function rpc_handleSendError(request, status, e)
 	console.error(errorTxt);
 }
 
-function rpc_handleSend(request, status, e)
-{
-}
 
 
 $(document).ready(function(){
