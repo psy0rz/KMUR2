@@ -35,9 +35,23 @@ try
 	//call it
 	$result=$object->$method($params);
 }
+catch (FieldException $e)
+{
+	$result=array(
+		"error"=>array(
+			"message"=>$e->getMessage(),
+			"field"=>$e->field,
+			"id"=>$e->id
+		)
+	);
+}
 catch (Exception $e)
 {
-	$result=array("error"=>$e->getMessage());
+	$result=array(
+		"error"=>array(
+			"message"=>$e->getMessage()
+		)
+	);
 }
 
 echo json_encode($result);
