@@ -11,6 +11,9 @@
 	<script>
 	$(document).ready(function()
 	{
+		rpc("users.getAll",{"sadf":"df"},function(){});
+	
+
 		//get data
 		rpc(
 			"users.get",
@@ -19,17 +22,20 @@
 			},
 			function(result)
 			{
+			
 				$("#error").text(result["error"]);
 
-				//fill it in
-				$("[_key]").filter(":input").each(function () {
-					$(this).val(result['data'][$(this).attr("_key")]);
-				});
+				if (result['data']!=null)
+				{
+					//fill it in
+					$("[_key]").filter(":input").each(function () {
+						$(this).val(result['data'][$(this).attr("_key")]);
+					});
 
-				$("[_key]").not(":input").each(function () {
-					$(this).text(result['data'][$(this).attr("_key")]);
-				});
-
+					$("[_key]").not(":input").each(function () {
+						$(this).text(result['data'][$(this).attr("_key")]);
+					});
+				}
 			}
 		);
 		
@@ -58,7 +64,10 @@
 				{
 					$("#save").prop("disabled", false);
 					//show errors
-					$("#error").text(result["error"]);
+					if (result != null)
+						$("#error").text(result["error"]);
+					else
+						$("#error").text("");
 					
 				}
 			);
@@ -85,7 +94,7 @@
 
 <input type='text' _key='name'></input>
 
-<select key='gender'>
+<select _key='gender'>
 	<option value="M">Man</option>
 	<option value="F">Vrouw</option>
 	<option value="A">Alien</option>

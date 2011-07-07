@@ -16,7 +16,7 @@ function rpc(classMethod, params, callback)
 		"error":
 			function (request, status, e)
 			{
-				console.error(request,status,e);
+				console.error("Error while doing ajax call: ",request.responseText,status,e);
 				error["error"]="Error while contacting server: "+request.responseText;
 				callback(error);
 			},

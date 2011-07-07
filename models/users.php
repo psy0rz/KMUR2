@@ -20,6 +20,14 @@ class users extends model
 				"customer"=>"Klant",
 			)
 		),
+		"gender"=>array(
+			"desc"=>"Geslacht",
+			"type"=>"select",
+			"choices"=>array(
+				"M"=>"Man",
+				"F"=>"Vrouw",
+			)
+		),
 		"password"=>array(
 			"desc"=>"Passwoord",
 			"type"=>"password",
@@ -40,7 +48,7 @@ class users extends model
 		$cursor=$collection->find();
 
 		return (array(
-			"meta"=>$this->$meta_user,
+			"meta"=>$this->meta_user,
 			"data"=>$this->run($cursor)
 		));
 	}
