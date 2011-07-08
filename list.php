@@ -6,7 +6,7 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
 	<title>bwap</title> 
 	
-	<script type="text/javascript" src="form.js"></script>
+	<script type="text/javascript" src="includes.js"></script>
 
 	<script>
 
@@ -45,74 +45,7 @@
 				//transform autoCreate divs to real inputs
 				if (result['meta']!=null)
 				{
-					$(".autoCreate").each(function () 
-					{
-						var key=$(this).attr("_key");
-						var meta=result['meta'][key];
-						
-						if (meta!=null)
-						{
-							if (meta['type']=='string')
-							{
-								if (meta['max']==null || meta['max']>100)
-								{
-									$(this).append(
-										$("<textarea>")
-											.addClass("autoInput")
-											.attr("_key",key)
-									);
-								}
-								else
-								{
-									$(this).append(
-										$("<input>")
-											.addClass("autoInput")
-											.attr("_key",key)
-											.attr("type","text")
-									);
-								}
-							}
-							else if (meta['type']=='password')
-							{
-								$(this).append(
-									$("<input>")
-										.addClass("autoInput")
-										.attr("_key",key)
-										.attr("type","password")
-								);
-							}
-							else if (meta['type']=='float' || meta['type']=='integer')
-							{
-								$(this).append(
-									$("<input>")
-										.addClass("autoInput")
-										.attr("_key",key)
-										.attr("type","text")
-								);
-							}
-							else if (meta['type']=='select')
-							{
-								//create select element
-								var s=$("<select>")
-									.addClass("autoInput")
-									.attr("_key",key)
-									.attr("type","text");
-
-								//add choices
-								$.each(meta['choices'], function(choice, desc){
-									s.append(
-										$("<option>")
-											.attr("value",choice)
-											.text(desc)
-									);
-								});
-
-								//add results to div
-								$(this).append(s);
-							}
-
-						}
-					});
+					$(".autoCreate").autoCreate(result['meta']);
 				}
 
 				if (result['data']!=null)
@@ -183,9 +116,14 @@
 
 Naam: <span class='autoText' _key='name'></span> dus.
 
-<div class='autoCreate' _key='name'></div>
-<div class='autoCreate' _key='gender'></div>
+<div id='groepje'>
+	<div class='autoCreate' _key='gender'></div>
+	<div class='autoCreate' _key='name'></div>
+</div>
+
 <div class='autoCreate' _key='password'></div>
+
+<div class='autoCreate' _key='active'></div>
 
 
 <button id='save'>Opslaan</button>

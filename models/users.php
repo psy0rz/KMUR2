@@ -34,6 +34,10 @@ class users extends model
 			"type"=>"password",
 			"min"=>5
 		),
+		"active"=>array(
+			"desc"=>"User mag inloggen",
+			"type"=>"bool",
+		),
 		"name"=>array(
 			"desc"=>"Voornaam en achternaam",
 			"type"=>"string",
