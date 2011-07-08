@@ -42,7 +42,7 @@
 			{
 				showError(result);
 
-				//transform autoCreate divs to real inputs
+				//add real input to autoCreate divs. 
 				if (result['meta']!=null)
 				{
 					$(".autoCreate").autoCreate(result['meta']);
@@ -50,14 +50,7 @@
 
 				if (result['data']!=null)
 				{
-					//fill it in
-					$(".autoInput").each(function () {
-						$(this).val(result['data'][$(this).attr("_key")]);
-					});
-
-					$(".autoText").each(function () {
-						$(this).text(result['data'][$(this).attr("_key")]);
-					});
+					$(".autoFill").autoFill(result['data']);
 				}
 			}
 		);
@@ -71,10 +64,7 @@
 			var params={};
 			params["_id"]=$.url().param("_id");
 
-			$(".autoInput").each(function () {
-				params[$(this).attr("_key")]=$(this).val();
-			});
-
+			$(".autoFill").autoGet(params);
 
 			//put data
 			rpc(
@@ -114,7 +104,7 @@
 
 <div style='color:#ff0000;' id='error'></div>
 
-Naam: <span class='autoText' _key='name'></span> dus.
+Naam: <span class='autoFill' _key='name'></span> dus.
 
 <div id='groepje'>
 	<div class='autoCreate' _key='gender'></div>
