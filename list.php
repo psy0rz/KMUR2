@@ -104,23 +104,47 @@
 <body style=' 
 	'> 
 
-<div style='color:#ff0000;' id='error'></div>
+<h1>Wijzigen gebruiker <span class='autoFill' _key='username'></span></h1>
 
-Naam: <span class='autoFill' _key='name'></span> dus.
 
-<div id='groepje'>
-	<div class='autoCreate' _key='gender'></div>
-	<div class='autoCreate' _key='name'></div>
-</div>
+<table>
+<tr>
+	<td><span class='autoCreate' _key='active' _meta='desc'></span>
+	<td><span class='autoCreate' _key='active'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='username' _meta='desc'></span>
+	<td><span class='autoCreate' _key='username'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='password' _meta='desc'></span>
+	<td><span class='autoCreate' _key='password'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='rights' _meta='desc'></span>
+	<td><span class='autoCreate' _key='rights'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='name' _meta='desc'></span>
+	<td><span class='autoCreate' _key='name'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='gender' _meta='desc'></span>
+	<td><span class='autoCreate' _key='gender'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='address' _meta='desc'></span>
+	<td><span class='autoCreate' _key='address'></span>
+</tr>
+</table>
 
-<div class='autoCreate' _key='password'></div>
 
-<div class='autoCreate' _key='active'></div>
 
-<div style='border-style:solid' class='autoCreate' _key='rights'></div>
+
 
 
 <button id='save'>Opslaan</button>
+<span style='color:#ff0000;' id='error'></span>
 
 </body> 
 </html> 

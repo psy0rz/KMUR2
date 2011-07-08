@@ -41,9 +41,15 @@ class users extends model
 		"name"=>array(
 			"desc"=>"Voornaam en achternaam",
 			"type"=>"string",
-			"min"=>3
+			"min"=>3,
+			"max"=>50
 		),
-	);
+		"address"=>array(
+			"desc"=>"Adres gegevens",
+			"type"=>"string",
+		),
+
+);
 
 
 	function getAll()

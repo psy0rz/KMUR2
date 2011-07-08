@@ -1,7 +1,8 @@
 (function( $ ){
 
 	/*** auto create input elements from metadata
-	*  Uses _key attribute to determine which meta-data to use.
+	*  Use _key attribute to specify meta-field.
+	*  If _meta is specified, that meta-field will be litterly filled in as text.
 	*/
 	$.fn.autoCreate = function( meta , options ) {  
 
@@ -19,7 +20,11 @@
 			
 			if (thismeta!=null)
 			{
-				if (thismeta['type']=='string')
+				if ($(this).attr("_meta"))
+				{
+					$(this).text(thismeta[$(this).attr("_meta")]);
+				}
+				else if (thismeta['type']=='string')
 				{
 					if (thismeta['max']==null || thismeta['max']>100)
 					{
