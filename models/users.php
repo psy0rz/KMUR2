@@ -9,7 +9,8 @@ class users extends model
 		"username"=>array(
 			"desc"=>"Username",
 			"type"=>"string",
-			"max"=>50
+			"max"=>20,
+			"min"=>3
 		),
 		"rights"=>array(
 			"desc"=>"Gebruikers rechten",
@@ -31,11 +32,12 @@ class users extends model
 		"password"=>array(
 			"desc"=>"Passwoord",
 			"type"=>"password",
+			"min"=>5
 		),
 		"name"=>array(
 			"desc"=>"Voornaam en achternaam",
 			"type"=>"string",
-			"max"=>50
+			"min"=>3
 		),
 	);
 

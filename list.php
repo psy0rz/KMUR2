@@ -42,19 +42,75 @@
 			{
 				showError(result);
 
-				//transform input divs to real inputs
+				//transform autoCreate divs to real inputs
 				if (result['meta']!=null)
 				{
-					$(".input[_key]").each(function () 
+					$(".autoCreate").each(function () 
 					{
 						var key=$(this).attr("_key");
-						if (result['meta'][key]!=null)
+						var meta=result['meta'][key];
+						
+						if (meta!=null)
 						{
-							if (result['meta'][key]['type']=='string')
+							if (meta['type']=='string')
 							{
-								$(this).removeAttr('_key');
-								$(this).html("<input type='text' _key='"+key+"'></input>");
+								if (meta['max']==null || meta['max']>100)
+								{
+									$(this).append(
+										$("<textarea>")
+											.addClass("autoInput")
+											.attr("_key",key)
+									);
+								}
+								else
+								{
+									$(this).append(
+										$("<input>")
+											.addClass("autoInput")
+											.attr("_key",key)
+											.attr("type","text")
+									);
+								}
 							}
+							else if (meta['type']=='password')
+							{
+								$(this).append(
+									$("<input>")
+										.addClass("autoInput")
+										.attr("_key",key)
+										.attr("type","password")
+								);
+							}
+							else if (meta['type']=='float' || meta['type']=='integer')
+							{
+								$(this).append(
+									$("<input>")
+										.addClass("autoInput")
+										.attr("_key",key)
+										.attr("type","text")
+								);
+							}
+							else if (meta['type']=='select')
+							{
+								//create select element
+								var s=$("<select>")
+									.addClass("autoInput")
+									.attr("_key",key)
+									.attr("type","text");
+
+								//add choices
+								$.each(meta['choices'], function(choice, desc){
+									s.append(
+										$("<option>")
+											.attr("value",choice)
+											.text(desc)
+									);
+								});
+
+								//add results to div
+								$(this).append(s);
+							}
+
 						}
 					});
 				}
@@ -62,11 +118,11 @@
 				if (result['data']!=null)
 				{
 					//fill it in
-					$("[_key]").filter(":input").each(function () {
+					$(".autoInput").each(function () {
 						$(this).val(result['data'][$(this).attr("_key")]);
 					});
 
-					$("[_key]").not(":input").each(function () {
+					$(".autoText").each(function () {
 						$(this).text(result['data'][$(this).attr("_key")]);
 					});
 				}
@@ -78,11 +134,11 @@
 		{
 			$("#save").prop("disabled", true);
 
-			//collect all the data
+			//collect all the autoInput data
 			var params={};
 			params["_id"]=$.url().param("_id");
 
-			$("[_key]").filter(":input").each(function () {
+			$(".autoInput").each(function () {
 				params[$(this).attr("_key")]=$(this).val();
 			});
 
@@ -125,18 +181,12 @@
 
 <div style='color:#ff0000;' id='error'></div>
 
+Naam: <span class='autoText' _key='name'></span> dus.
 
-<div class='input' _key='name'></div>
+<div class='autoCreate' _key='name'></div>
+<div class='autoCreate' _key='gender'></div>
+<div class='autoCreate' _key='password'></div>
 
-<input type='text' _key='username'></input>
-
-<input  type='text' _key='name'></input>
-
-<select _key='gender'>
-	<option value="M">Man</option>
-	<option value="F">Vrouw</option>
-	<option value="A">Alien</option>
-</select>
 
 <button id='save'>Opslaan</button>
 

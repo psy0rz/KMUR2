@@ -71,11 +71,6 @@ class model
 			if (!isset($meta[$key]["type"]))
 				throw new FieldException("het veld '$key' word niet geaccepteerd", $key);
 
-//			if ($meta[$key]["type"]=="id")
-//			{
-//				if (!is_scalar($value))
-//					throw new FieldException("dit veld is geen geldige id", $key);
-//			}
 			if ($meta[$key]["type"]=="string" || $meta[$key]["type"]=="password")
 			{
 				if (!is_string($value))
