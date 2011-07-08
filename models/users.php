@@ -71,6 +71,9 @@ class users extends model
 	//update/add user
 	function put($params)
 	{
+		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
+			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
+		
 		$this->setById("users", $params["_id"], $this->meta_user, $params);
 	}
 

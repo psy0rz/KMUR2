@@ -117,7 +117,7 @@ Naam: <span class='autoFill' _key='name'></span> dus.
 
 <div class='autoCreate' _key='active'></div>
 
-<div class='autoCreate' _key='rights'></div>
+<div style='border-style:solid' class='autoCreate' _key='rights'></div>
 
 
 <button id='save'>Opslaan</button>
