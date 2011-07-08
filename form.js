@@ -82,6 +82,35 @@
 					//add results to div
 					$(this).append(s);
 				}
+				else if (thismeta['type']=='multiselect')
+				{
+					var parent=$(this);
+					//add choices
+					$.each(thismeta['choices'], function(choice, desc){
+						//add checkbox
+						parent.append(
+							$("<input>")
+								.addClass(settings.class)
+								.attr("value",choice)
+								.attr("type","checkbox")
+								.attr("_key",key)
+								.attr("id",key+"."+choice)
+								.attr("title",thismeta['desc'])
+						);
+						
+						//add description
+						parent.append(
+							$("<label>")
+								.attr("for",key+"."+choice)
+								.attr("_errorHighlight",key)
+								.text(desc)
+						);
+						
+						//add break
+						parent.append($("<br>"));
+
+					});
+				}
 				else if (thismeta['type']=='bool')
 				{
 					$(this).append(
@@ -89,6 +118,7 @@
 							.addClass(settings.class)
 							.attr("_key",key)
 							.attr("type","checkbox")
+							.attr("value","")
 							.attr("title",thismeta['desc'])
 					);
 				}
@@ -121,10 +151,22 @@
 			{
 				if ($(this).attr("type")=="checkbox")
 				{
-					if (value)
-						this.checked=true;
+					//value checkbox. check if the array contains this checkbox's value
+					if ($(this).attr("value"))
+					{
+						if (value.indexOf($(this).attr("value")) != -1)
+							this.checked=true;
+						else
+							this.checked=false;
+					}
+					//simple boolean 0/1 checkbox:
 					else
-						this.checked=false;
+					{
+						if (value)
+							this.checked=true;
+						else
+							this.checked=false;
+					}
 				}
 				else
 				{
@@ -164,10 +206,23 @@
 			{
 				if ($(this).attr("type")=="checkbox")
 				{
-					if (this.checked)
-						data[key]=1;
+					//value checkbox. add all the selected values to an array
+					if ($(this).attr("value"))
+					{
+						if (data[key]==null)
+							data[key]=new Array();
+						
+						if (this.checked)
+							data[key].push($(this).attr("value"));
+					}
+					//simple boolean 0/1 checkbox:
 					else
-						data[key]=0
+					{
+						if (this.checked)
+							data[key]=1;
+						else
+							data[key]=0;
+					}
 				}
 				else
 				{

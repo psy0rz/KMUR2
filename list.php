@@ -23,6 +23,7 @@
 				if (result["error"]["field"]!=null)
 				{
 					$(':input[_key|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
+					$('[_errorHighlight|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
 				}
 			}
 		}
@@ -89,9 +90,10 @@
 	.errorHighlight
 	{
 		border-style: solid;
-		border-width: 1px;
+		border-width: 2px;
 		border-color: red;
 		background: yellow;
+		color: red;
 	}
 	
 	</style> 
@@ -114,6 +116,8 @@ Naam: <span class='autoFill' _key='name'></span> dus.
 <div class='autoCreate' _key='password'></div>
 
 <div class='autoCreate' _key='active'></div>
+
+<div class='autoCreate' _key='rights'></div>
 
 
 <button id='save'>Opslaan</button>
