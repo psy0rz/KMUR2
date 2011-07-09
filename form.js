@@ -1,5 +1,27 @@
-(function( $ ){
+/*** Shows error and highlights field
+	*/
+function showError(result)
+{
+	$("#error").text("");
+	$(".errorHighlight").removeClass("errorHighlight");
 
+	if (result!=null)
+	{
+		if (result["error"]!=null)
+		{
+			$("#error").text(result["error"]["message"]);
+			if (result["error"]["field"]!=null)
+			{
+				$(':input[_key|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
+				$('[_errorHighlight|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
+			}
+		}
+	}
+}
+
+
+(function( $ ){
+	
 	/*** auto create input elements from metadata
 	*  Use _key attribute to specify meta-field.
 	*  If _meta is specified, that meta-field will be litterly filled in as text.
@@ -18,6 +40,7 @@
 			var key=$(this).attr("_key");
 			var thismeta=meta[key];
 			
+			$(this).empty();
 			if (thismeta!=null)
 			{
 				if ($(this).attr("_meta"))
@@ -242,6 +265,33 @@
 			
 		});
 
+	}
+
+	/*** Replicates the specified element for every item in the data-array
+	 * Calls autoFill everytime, for elements of class autoFill
+	 */
+	$.fn.autoList = function( data , options ) {  
+
+		var settings = {
+			'class': 'autoFill',
+		};
+		
+		if ( options ) { 
+			$.extend( settings, options );
+		}
+
+		return this.each(function() {
+			var sourceElement=this;
+			var parentElement=$(this).parent();
+			$.each(data, function(key, value) {
+				$(sourceElement)
+					.clone()
+					.appendTo(parentElement)
+					.find("."+settings.class)
+					.autoFill(value);
+				
+			});
+		});
 	}
 
 })( jQuery );

@@ -10,24 +10,6 @@
 
 	<script>
 
-	function showError(result)
-	{
-		$("#error").text("");
-		$(".errorHighlight").removeClass("errorHighlight");
-	
-		if (result!=null)
-		{
-			if (result["error"]!=null)
-			{
-				$("#error").text(result["error"]["message"]);
-				if (result["error"]["field"]!=null)
-				{
-					$(':input[_key|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
-					$('[_errorHighlight|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
-				}
-			}
-		}
-	}
 
 	$(document).ready(function()
 	{
@@ -43,7 +25,6 @@
 			{
 				showError(result);
 
-				//add real input to autoCreate divs. 
 				if (result['meta']!=null)
 				{
 					$(".autoCreate").autoCreate(result['meta']);

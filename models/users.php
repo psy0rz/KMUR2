@@ -79,6 +79,13 @@ class users extends model
 	{
 		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
 			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
+
+		//user exists?
+		$existing=$this->db->users->findOne(array('username'=>$params['username']));
+		
+		if ($existing && $existing["_id"]!=$params["_id"])
+			throw new FieldException("Gebruiker bestaat al!", "username");
+		
 		
 		$this->setById("users", $params["_id"], $this->meta_user, $params);
 	}
