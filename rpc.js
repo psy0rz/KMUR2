@@ -12,7 +12,7 @@ function rpc(classMethod, params, callback)
 	//(add extra info to the url for easier debugging in webserver logs)
 	$.ajax({
 		"dataType":		"json",
-		"url":			"rpc.php/"+class+"."+method,
+		"url":			"../../rpc.php/"+class+"."+method,
 		"error":
 			function (request, status, e)
 			{

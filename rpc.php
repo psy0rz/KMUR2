@@ -4,8 +4,7 @@
 
 */
 
-
-require_once "models/model.php";
+require_once("core.php");
 
 $result=array();
 
