@@ -68,5 +68,19 @@ function escapeClass(myclass) {
 		return '.undefined';
 }
 
+//links to a specifed view with specified parameters
+//specify view as module.page
 
+function viewOpen(view, params)
+{
+	location.href="../"+view.replace(".","/")+"?"+encodeURI(JSON.stringify(params));
+}
 
+//returns url paramaters for this view
+function viewParams()
+{
+	return(JSON.parse(
+			$.url().attr('query').replace(/&.*/,"")
+	));
+	
+}

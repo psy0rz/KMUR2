@@ -22,7 +22,10 @@ class model
 		//iterate through the results
 		foreach ($cursor as $obj) 
 		{
-			$ret[$cursor->key()]=$obj;
+			//convert id to normal string rightaway
+			$id="";
+			$obj['_id']=(string)$obj['_id'];
+			$ret[]=$obj;
 		}
 		return ($ret);
 	}
@@ -42,7 +45,6 @@ class model
 	
 		foreach ($data as $key=>$value)
 		{
-			//FIXME: numeric arrays?
 			
 			if (!isset($meta[$key]["type"]))
 				throw new FieldException("het veld '$key' word niet geaccepteerd", $key);

@@ -25,24 +25,61 @@
 			background: yellow;
 			color: red;
 		}
+		
+		.autoList:hover
+		{
+			background: yellow;
+		}
+		
+		.autoList
+		{
+			background: #00eeee;
+			cursor: pointer;
+		}
+		
+		.autoList:nth-child(2n-1)
+		{
+			background: #00ffff;
+		}
+		
+		.autoList:nth-child(2n-1):hover
+		{
+			background: yellow;
+		}
+
 	</style> 
 
 </head> 
 <body> 
 
 <?
+	if (isset($_SERVER["PATH_INFO"]))
+		$viewPath=$_SERVER["PATH_INFO"];
+	else
+		$viewPath="";
+
+	//render menu
+	require_once("menu.php");
+	$menu=new menu();
+	$menu->render($viewPath);
+
 	//determine what view to include
-	$segments=explode("/",$_SERVER["PATH_INFO"]);
-	$module=$segments[1];
-	$view=$segments[2];
+	if ($viewPath)
+	{
+		$segments=explode("/",$viewPath);
+		$module=$segments[1];
+		$view=$segments[2];
 
-	if (preg_match("/[^a-zA-Z0-9]/",$module.$view))
-		die("Illegal module or view name!");
-		
-	if (!$module || !$view)
-		die("Specify module and view!");
-
-	require_once("views/$module/$view.php");
+		if ($module && $view)
+		{
+			if (preg_match("/[^a-zA-Z0-9]/",$module.$view))
+				die("Illegal module or view name!");
+			
+			echo "<div class='view'>";
+			require_once("views/$module/$view.php");
+			echo "</div>";
+		}
+	}
 
 ?>
 	

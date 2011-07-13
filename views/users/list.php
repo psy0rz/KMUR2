@@ -24,37 +24,16 @@ $(document).ready(function()
 				$(".autoList").autoList(result['data']);
 			}
 			
-			$(".autoFill").click(function()
+			$(".buttonEdit").click(function()
 			{
-				$(this).autoCreate(result["meta"]);
-				$(this).focus();
+				viewOpen("users.edit", 
+				{
+					"_id":$(this).attr("_value")
+				});
 			});
 		}
 	);
 	
-	//save 
-	$("#save").click(function()
-	{
-		$("#save").prop("disabled", true);
-
-		//collect all the autoInput data
-		var params={};
-		params["_id"]=$.url().param("_id");
-
-		$(".autoFill").autoGet(params);
-
-		//put data
-		rpc(
-			"users.put",
-			params,
-			function(result)
-			{
-				$("#save").prop("disabled", false);
-				showError(result);
-				
-			}
-		);
-	});
 
 });
 
@@ -69,12 +48,15 @@ $(document).ready(function()
 	<th><span class='autoCreate' _key='active' _meta='desc'></span>
 	<th><span class='autoCreate' _key='username' _meta='desc'></span>
 	<th><span class='autoCreate' _key='name' _meta='desc'></span>
+	<th>
 </tr>
 
 <tr class='autoList'>
 	<td class='autoFill' _key='active' >
 	<td class='autoFill' _key='username' >
 	<td class='autoFill' _key='name'>
+	<td class='autoFill buttonDel' _key='_id' _value>
+	<td class='autoFill buttonEdit' _key='_id' _value>EDIT
 </tr>
 </table>
 

@@ -3,12 +3,12 @@ $(document).ready(function()
 {
 	//rpc("users.getAll",{"sadf":"df"},function(){});
 	
+	
+	
 	//get data
 	rpc(
-		"users.get",
-		{
-			"_id":$.url().param("_id"),
-		},
+		"users.get", 
+		viewParams(),
 		function(result)
 		{
 			showError(result);
@@ -32,7 +32,7 @@ $(document).ready(function()
 
 		//collect all the autoInput data
 		var params={};
-		params["_id"]=$.url().param("_id");
+		params=viewParams();
 
 		$(".autoFill").autoGet(params);
 

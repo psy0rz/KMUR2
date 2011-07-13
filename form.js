@@ -159,6 +159,7 @@ function showError(result)
 
 	/*** Auto fills elements with specified data array
 	*  Uses _key attribute to determine which data to fill.
+	*  Specify _value to store the value in this attribute instead of the element itself.
 	*  Automaticly recognises element-types and uses the correct way to 'fill in the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*/
@@ -174,15 +175,19 @@ function showError(result)
 		return this.each(function() {
 			var value=data[$(this).attr("_key")];
 			var elementType=this.nodeName.toLowerCase();
-			
-			if (elementType=="input")
+
+			if ($(this).attr("_value")=="")
+			{
+				$(this).attr("_value", value);
+			}
+			else if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")
 				{
 					//value checkbox. check if the array contains this checkbox's value
 					if ($(this).attr("value"))
 					{
-						if (value.indexOf($(this).attr("value")) != -1)
+						if (typeof(value)=='object' && value.indexOf($(this).attr("value")) != -1)
 							this.checked=true;
 						else
 							this.checked=false;
