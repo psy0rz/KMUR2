@@ -24,7 +24,7 @@ function printHtmlIncludes()
 	<script type="text/javascript" src="../../common.js"></script>
 	<script type="text/javascript" src="../../rpc.js"></script>
 	<script type="text/javascript" src="../../form.js"></script>
-	<link href="../../main.css" rel="stylesheet" type="text/css"/>
+	<link href="../../default.css" rel="stylesheet" type="text/css"/>
 	';
 }
 

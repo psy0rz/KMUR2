@@ -43,7 +43,7 @@ $(document).ready(function()
 <h1>Gebruikers</h1>
 
 
-<table>
+<table class='ui-widget ui-widget-content'>
 <tr>
 	<th><span class='autoCreate' _key='active' _meta='desc'></span>
 	<th><span class='autoCreate' _key='username' _meta='desc'></span>
@@ -51,7 +51,7 @@ $(document).ready(function()
 	<th>
 </tr>
 
-<tr class='autoList'>
+<tr class='autoList ui-widget-header'>
 	<td class='autoFill' _key='active' >
 	<td class='autoFill' _key='username' >
 	<td class='autoFill' _key='name'>

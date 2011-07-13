@@ -56,6 +56,8 @@ function showError(result)
 								.addClass(settings.class)
 								.attr("_key",key)
 								.attr("title",thismeta['desc'])
+								.addClass("ui-widget-content")
+								.addClass("ui-corner-all")
 						);
 					}
 					else
@@ -66,6 +68,8 @@ function showError(result)
 								.attr("_key",key)
 								.attr("type","text")
 								.attr("title",thismeta['desc'])
+								.addClass("ui-widget-content")
+								.addClass("ui-corner-all")
 						);
 					}
 				}
@@ -77,6 +81,8 @@ function showError(result)
 							.attr("_key",key)
 							.attr("type","password")
 							.attr("title",thismeta['desc'])
+							.addClass("ui-widget-content")
+							.addClass("ui-corner-all")
 					);
 				}
 				else if (thismeta['type']=='float' || thismeta['type']=='integer')
@@ -87,6 +93,8 @@ function showError(result)
 							.attr("_key",key)
 							.attr("type","text")
 							.attr("title",thismeta['desc'])
+							.addClass("ui-widget-content")
+							.addClass("ui-corner-all")
 					);
 				}
 				else if (thismeta['type']=='select')
@@ -96,6 +104,8 @@ function showError(result)
 						.addClass(settings.class)
 						.attr("_key",key)
 						.attr("type","text")
+						.addClass("ui-widget-content")
+						.addClass("ui-corner-all")
 						.attr("title",thismeta['desc']);
 
 					//add choices
@@ -124,6 +134,8 @@ function showError(result)
 								.attr("_key",key)
 								.attr("id",key+"."+choice)
 								.attr("title",thismeta['desc'])
+								.addClass("ui-widget-content")
+								.addClass("ui-corner-all")
 						);
 						
 						//add description
@@ -147,6 +159,8 @@ function showError(result)
 							.attr("_key",key)
 							.attr("type","checkbox")
 							.attr("value","")
+							.addClass("ui-widget-content")
+							.addClass("ui-corner-all")
 							.attr("title",thismeta['desc'])
 					);
 				}
