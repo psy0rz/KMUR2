@@ -4,7 +4,6 @@
 	
 <head> 
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
-	<title>w0000t</title> 
 
 	<?
 		require_once("core.php");
@@ -15,15 +14,7 @@
 <body> 
 
 <?
-
-	//render menu
-	require_once("menu.php");
-	$menu=new menu();
-	$menu->render(getViewPath());
-
-	
 	loadView(getViewPath());
-
 ?>
 	
 </body> 

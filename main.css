@@ -1,0 +1,31 @@
+.errorHighlight
+{
+	border-style: solid;
+	border-width: 2px;
+	border-color: red;
+	background: yellow;
+	color: red;
+}
+
+.autoList:hover
+{
+	background: yellow;
+}
+
+.autoList
+{
+	background: #00eeee;
+	cursor: pointer;
+}
+
+.autoList:nth-child(2n-1)
+{
+	background: #00ffff;
+}
+
+.autoList:nth-child(2n-1):hover
+{
+	background: yellow;
+}
+
+ 
