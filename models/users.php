@@ -6,6 +6,9 @@ class users extends model
 {
 	//meta data for users
 	private $meta_user=array(
+		"_id"=>array(
+			"type"=>"id"
+		),
 		"username"=>array(
 			"desc"=>"Username",
 			"type"=>"string",
@@ -77,6 +80,8 @@ class users extends model
 	//update/add user
 	function put($params)
 	{
+		$this->verifyMeta($this->meta_user, $params);
+	
 		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
 			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
 

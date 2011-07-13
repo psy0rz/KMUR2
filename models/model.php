@@ -100,6 +100,11 @@ class model
 						throw new FieldException("'$value' is geen geldige optie", $key);
 				}
 			}
+			else if ($meta[$key]["type"]=="id")
+			{
+				if ($value!="" && $value!=new MongoId($value))
+					throw new FieldException("'$value' is geen geldig id", $key);
+			}
 			else
 				throw new FieldException("veldtype '".$meta[$key]["type"]."' word niet ondersteund.", $key);
 			

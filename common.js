@@ -79,8 +79,11 @@ function viewOpen(view, params)
 //returns url paramaters for this view
 function viewParams()
 {
-	return(JSON.parse(
-			$.url().attr('query').replace(/&.*/,"")
-	));
+	jsonStr=$.url().attr('query').replace(/&.*/,"");
+	
+	if (jsonStr!="")
+		return(JSON.parse(jsonStr));
+	else
+		return({});
 	
 }
