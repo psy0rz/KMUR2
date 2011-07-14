@@ -8,8 +8,21 @@
 
 	<?
 		require_once("core.php");
-		printHtmlIncludes();
+		viewPrintHtmlIncludes();
 	?>
+
+	<script>
+		$(document).ready(function()
+		{
+			viewLoad($("#viewMain"), "users.list");
+			$("#test").click(function()
+			{
+				console.log("klik");
+				$("#viewMain").html("WEG");
+			
+			});
+		});
+	</script>
 
 </head> 
 <body> 
@@ -19,13 +32,16 @@
 	//render menu
 	require_once("menu.php");
 	$menu=new menu();
-	$menu->render(getViewPath());
+	$menu->render(viewGetPath());
 
 	
-	loadView(getViewPath());
+//	viewLoad(viewGetPath());
 
 ?>
-	
+<div id='viewMain'>
+</div>
+
+<input id='test' type='submit'>
 </body> 
 </html> 
  

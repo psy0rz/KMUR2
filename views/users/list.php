@@ -1,9 +1,16 @@
+<div id='houder'>
 <script>
 
+  
 $(document).ready(function()
 {
+//	console.log("WOEI",$(this));
 	//rpc("users.getAll",{"sadf":"df"},function(){});
-	
+	$("#edit").dialog({ autoOpen: false });
+	//$("#edit").attr("src","viewPopup.php");
+
+	//console.debug(this);
+
 	//get data
 	rpc(
 		"users.getAll",
@@ -26,10 +33,17 @@ $(document).ready(function()
 			
 			$(".buttonEdit").click(function()
 			{
-				viewOpen("users.edit", 
-				{
-					"_id":$(this).attr("_value")
-				});
+				$("#edit").dialog('open');
+				var $f = $("#edit");
+				$f[0].contentWindow.viewLoad(
+					"#viewMain",
+					"users.edit", 
+					{
+						"_id":$(this).attr("_value")
+					}
+				);
+
+
 			});
 		}
 	);
@@ -60,6 +74,9 @@ $(document).ready(function()
 </tr>
 </table>
 
+<iframe id='edit' src='viewPopup.php'>
+</iframe>
 
 <span style='color:#ff0000;' id='error'></span>
 
+</div>

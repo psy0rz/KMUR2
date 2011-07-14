@@ -1,14 +1,15 @@
+<? require_once("../view.php"); ?>
+
 <script>
-$(document).ready(function()
+$(this).ready(function()
 {
 	//rpc("users.getAll",{"sadf":"df"},function(){});
-	
-	
-	
+
+
 	//get data
 	rpc(
 		"users.get", 
-		viewParams(),
+		<?=viewGetParams()?>,
 		function(result)
 		{
 			showError(result);
@@ -31,8 +32,7 @@ $(document).ready(function()
 		$("#save").prop("disabled", true);
 
 		//collect all the autoInput data
-		var params={};
-		params=viewParams();
+		var params=<?=viewGetParams()?>;
 
 		$(".autoFill").autoGet(params);
 

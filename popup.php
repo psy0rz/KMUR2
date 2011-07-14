@@ -7,15 +7,16 @@
 
 	<?
 		require_once("core.php");
-		viewPrintHtmlIncludes();
+		printHtmlIncludes();
 	?>
+
 </head> 
 <body> 
-popup body
 
-<div id='viewMain'>
-</div>
-
+<?
+	loadView(getViewPath());
+?>
+	
 </body> 
 </html> 
  

@@ -12,23 +12,26 @@ function __autoload($class)
 }
 
  
-function printHtmlIncludes()
+function viewPrintHtmlIncludes()
 {
 	echo '
-	<link href="../../css/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/>
-	<script type="text/javascript" src="../../lib/jquery.js"></script>
-	<script type="text/javascript" src="../../lib/jquery-ui.js"></script>
-	<script type="text/javascript" src="../../lib/json2.js"></script>
-	<script type="text/javascript" src="../../lib/jquery.cooquery.js"></script>
-	<script type="text/javascript" src="../../lib/jquery.url.js"></script>
-	<script type="text/javascript" src="../../common.js"></script>
-	<script type="text/javascript" src="../../rpc.js"></script>
-	<script type="text/javascript" src="../../form.js"></script>
-	<link href="../../default.css" rel="stylesheet" type="text/css"/>
+	<link href="css/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript" src="lib/jquery-ui.js"></script>
+	<script type="text/javascript" src="lib/json2.js"></script>
+	<script type="text/javascript" src="lib/jquery.cooquery.js"></script>
+	<script type="text/javascript" src="lib/jquery.url.js"></script>
+	<script type="text/javascript" src="common.js"></script>
+	<script type="text/javascript" src="rpc.js"></script>
+	<script type="text/javascript" src="form.js"></script>
+	<script type="text/javascript" src="view.js"></script>
+	<link href="default.css" rel="stylesheet" type="text/css"/>
 	';
+	
+
 }
 
-function getViewPath()
+function viewGetPath()
 {
 	if (isset($_SERVER["PATH_INFO"]))
 		$viewPath=$_SERVER["PATH_INFO"];
@@ -39,7 +42,7 @@ function getViewPath()
 }
 
 
-function loadView($viewPath)
+function viewLoad($viewPath)
 {
 	//determine what view to include
 	if ($viewPath)
@@ -54,6 +57,7 @@ function loadView($viewPath)
 				die("Illegal module or view name!");
 			
 			echo "<div class='view'>";
+			chdir("views/$module");
 			require_once("views/$module/$view.php");
 			echo "</div>";
 		}
