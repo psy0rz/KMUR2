@@ -71,6 +71,10 @@ $(this).ready(function()
 	<td><span class='autoCreate' _key='password'></span>
 </tr>
 <tr>
+	<td><span class='autoCreate' _key='keutel' _meta='desc'></span>
+	<td><span class='autoCreate' _key='keutel'></span>
+</tr>
+<tr>
 	<td><span class='autoCreate' _key='rights' _meta='desc'></span>
 	<td><span class='autoCreate' _key='rights'></span>
 </tr>

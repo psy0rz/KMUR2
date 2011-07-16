@@ -15,6 +15,12 @@ class users extends model
 			"max"=>20,
 			"min"=>3
 		),
+		"keutel"=>array(
+			"desc"=>"Hoe bruin issie?",
+			"type"=>"string",
+			"max"=>20,
+			"min"=>3
+		),
 		"rights"=>array(
 			"desc"=>"Gebruikers rechten",
 			"type"=>"multiselect",

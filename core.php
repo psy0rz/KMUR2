@@ -15,7 +15,7 @@ function __autoload($class)
 function viewPrintHtmlIncludes()
 {
 	echo '
-	<link href="css/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<link href="css/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript" src="lib/jquery-ui.js"></script>
 	<script type="text/javascript" src="lib/json2.js"></script>

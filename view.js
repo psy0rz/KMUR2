@@ -34,10 +34,15 @@ function viewPopup(view, params, readyCallback)
 	$("body").append(frame);
 
 	var dialog=frame.dialog({
+		height: 'auto',
+		width: 'auto',
 		close: function(ev, ui) {
 			$(this).remove(); 
 		}
 	});
+	
+	frame.height('500');
+	frame.width('500');
 	
 	frame.attr("src","viewPopup.php");
 
