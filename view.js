@@ -1,6 +1,6 @@
  
 //loads a view in the specified element
-function viewLoad(element, view, params)
+function viewLoad(element, view, params, readyCallback)
 {
 	console.debug("view loading "+view, params);
 	$.ajax({
@@ -11,7 +11,8 @@ function viewLoad(element, view, params)
 			{
 				console.debug("view result "+view, result);
 				$(element).html(result);
-			
+				if (typeof readyCallback!='undefined')
+					readyCallback();
 //				$(element).execute();
 			},
 		"error":
@@ -41,8 +42,6 @@ function viewPopup(view, params, readyCallback)
 		}
 	});
 	
-	frame.height('500');
-	frame.width('500');
 	
 	frame.attr("src","viewPopup.php");
 
@@ -50,8 +49,14 @@ function viewPopup(view, params, readyCallback)
 		frame[0].contentWindow.viewLoad(
 				"#viewMain",
 				view, 
-				params
+				params,
+				function()
+				{
+					frame.contentWindow.height("100%");
+					frame.contentWindow.width("100%");
+				}
 		);
+
 	});
 }
 
