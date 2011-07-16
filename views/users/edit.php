@@ -23,6 +23,10 @@ $(this).ready(function()
 			{
 				$(".autoFill").autoFill(result['data']);
 			}
+
+			viewReady({
+				'title':"Wijzigen gebruiker "+result['data']['username']
+			});
 		}
 	);
 	
@@ -53,8 +57,6 @@ $(this).ready(function()
 
 </script>
 
-
-<h1>Wijzigen gebruiker <span class='autoFill' _key='username'></span></h1>
 
 
 <table>

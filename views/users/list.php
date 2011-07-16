@@ -31,14 +31,22 @@ $(document).ready(function()
 				$(".autoList").autoList(result['data']);
 			}
 			
-			var click=function()
+			var click=function(event)
 			{
-				viewPopup("users.edit", 
+				viewPopup(
+					event,
+					"users.edit", 
 					{
 						"_id":$(this).attr("_value")
-					});
+					}
+				);
 			};
 			$(".buttonEdit").click(click);
+			
+			viewReady({
+				'title':"Gebruikers overzicht"
+			});
+
 		}
 	);
 	
@@ -47,8 +55,6 @@ $(document).ready(function()
 
 </script>
 
-
-<h1>Gebruikers</h1>
 
 
 <table class='ui-widget ui-widget-content'>
