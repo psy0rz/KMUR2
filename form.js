@@ -303,12 +303,14 @@ function showError(result)
 			var sourceElement=this;
 			var parentElement=$(this).parent();
 			$.each(data, function(key, value) {
-				$(sourceElement)
-					.clone()
-					.appendTo(parentElement)
+				var newElement=$(sourceElement).clone();
+				newElement.appendTo(parentElement)
 					.find("."+settings.class)
 					.autoFill(value);
-				
+				//also fill the newelement itself
+				newElement
+					.filter("."+settings.class)
+					.autoFill(value);
 			});
 		});
 	}

@@ -3,13 +3,12 @@
 <script>
 $(this).ready(function()
 {
-	//rpc("users.getAll",{"sadf":"df"},function(){});
-
+	var viewParams=<?=viewGetParams()?>;
 
 	//get data
 	rpc(
 		"users.get", 
-		<?=viewGetParams()?>,
+		viewParams,
 		function(result)
 		{
 			showError(result);
@@ -27,6 +26,8 @@ $(this).ready(function()
 			viewReady({
 				'title':"Wijzigen gebruiker "+result['data']['username']
 			});
+			
+			$('[_key|="'+viewParams["highlight"]+'"]').focus();
 		}
 	);
 	
@@ -35,11 +36,11 @@ $(this).ready(function()
 	{
 		$("#save").prop("disabled", true);
 
-		//collect all the autoInput data
-		var params=<?=viewGetParams()?>;
-
+		var params={
+			"_id":viewParams["_id"]
+		};
 		$(".autoFill").autoGet(params);
-
+		
 		//put data
 		rpc(
 			"users.put",
@@ -47,8 +48,16 @@ $(this).ready(function()
 			function(result)
 			{
 				$("#save").prop("disabled", false);
-				showError(result);
-				
+				if (result)
+				{
+					if ('error' in result)
+					{
+						showError(result);
+						return;
+					}
+				}
+				//all ok, close window
+				viewClose();
 			}
 		);
 	});
@@ -87,6 +96,10 @@ $(this).ready(function()
 <tr>
 	<td><span class='autoCreate' _key='gender' _meta='desc'></span>
 	<td><span class='autoCreate' _key='gender'></span>
+</tr>
+<tr>
+	<td><span class='autoCreate' _key='country' _meta='desc'></span>
+	<td><span class='autoCreate' _key='country'></span>
 </tr>
 <tr>
 	<td><span class='autoCreate' _key='address' _meta='desc'></span>

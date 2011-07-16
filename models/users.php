@@ -36,6 +36,16 @@ class users extends model
 			"choices"=>array(
 				"M"=>"Man",
 				"F"=>"Vrouw",
+				"A"=>"Alien",
+			)
+		),
+		"country"=>array(
+			"desc"=>"Land",
+			"type"=>"select",
+			"choices"=>array(
+				"nl"=>"Nederland",
+				"de"=>"Das reich",
+				"ov"=>"Overig",
 			)
 		),
 		"password"=>array(

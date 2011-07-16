@@ -76,8 +76,8 @@ function viewReady(options)
 	}
 	
 	//get correct dimentions
-	var cw=$("#viewMain").width();
-	var ch=$("#viewMain").height();
+	var cw=$("#viewMain").width()+100;
+	var ch=$("#viewMain").height()+100;
 	console.debug("dialog content dimentions" ,cw,ch);
 	
 	var bw=$(parent.window).width();
@@ -89,9 +89,16 @@ function viewReady(options)
 	if (ch>bh)
 		ch=bh;
 	
+	//calculate border overhead
+	console.debug(parent.$(self.frameElement).parent().width(), parent.$(self.frameElement).width());
+	console.debug(parent.$(self.frameElement).parent());
+	
+	var ow=parent.$(self.frameElement).dialog('option','width')-parent.$(self.frameElement).width();
+	console.debug("border overhead width and height", ow);
+	
 	//resize iframe so the contents fit
-//	parent.$(self.frameElement).dialog('option','width',cw);
-	//parent.$(self.frameElement).dialog('option','height',ch);
+	parent.$(self.frameElement).dialog('option','width',cw);
+	parent.$(self.frameElement).dialog('option','height',ch);
 	//parent.$(self.frameElement).height(ch);
 	
 	//reset position, this makes sure the dialog stays inside the browserwindow
@@ -100,3 +107,10 @@ function viewReady(options)
 	
 	
 }
+
+//closes the view
+function viewClose()
+{
+	parent.$(self.frameElement).dialog('close');
+}
+

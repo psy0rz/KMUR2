@@ -37,7 +37,8 @@ $(document).ready(function()
 					event,
 					"users.edit", 
 					{
-						"_id":$(this).attr("_value")
+						"_id":$(this).parent().attr("_value"),
+						"highlight":$(this).attr("_key")
 					}
 				);
 			};
@@ -65,12 +66,12 @@ $(document).ready(function()
 	<th>
 </tr>
 
-<tr class='autoList ui-widget-header'>
-	<td class='autoFill' _key='active' >
-	<td class='autoFill' _key='username' >
-	<td class='autoFill' _key='name'>
-	<td class='autoFill buttonDel' _key='_id' _value>
-	<td class='autoFill buttonEdit' _key='_id' _value>EDIT
+<tr class='autoList autoFill ui-widget-header' _key='_id' _value>
+	<td class='autoFill buttonEdit' _key='active' >
+	<td class='autoFill buttonEdit' _key='username' >
+	<td class='autoFill buttonEdit' _key='name'>
+	<td class='autoFill buttonDel'>
+	<td class='autoFill buttonEdit'>EDIT
 </tr>
 </table>
 
