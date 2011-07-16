@@ -11,7 +11,6 @@
 	?>
 </head> 
 <body> 
-popup body
 
 <div id='viewMain'>
 </div>

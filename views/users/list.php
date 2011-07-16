@@ -31,20 +31,14 @@ $(document).ready(function()
 				$(".autoList").autoList(result['data']);
 			}
 			
-			$(".buttonEdit").click(function()
+			var click=function()
 			{
-				$("#edit").dialog('open');
-				var $f = $("#edit");
-				$f[0].contentWindow.viewLoad(
-					"#viewMain",
-					"users.edit", 
+				viewPopup("users.edit", 
 					{
 						"_id":$(this).attr("_value")
-					}
-				);
-
-
-			});
+					});
+			};
+			$(".buttonEdit").click(click);
 		}
 	);
 	
@@ -74,8 +68,6 @@ $(document).ready(function()
 </tr>
 </table>
 
-<iframe id='edit' src='viewPopup.php'>
-</iframe>
 
 <span style='color:#ff0000;' id='error'></span>
 

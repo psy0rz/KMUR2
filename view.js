@@ -1,13 +1,5 @@
  
-//links to a specifed view with specified parameters
-//specify view as module.page
-
-//function viewOpen(view, params)
-//{
-	
-//	location.href="../"+view.replace(".","/")+"?"+encodeURI(JSON.stringify(params));
-//}
-
+//loads a view in the specified element
 function viewLoad(element, view, params)
 {
 	console.debug("view loading "+view, params);
@@ -33,5 +25,28 @@ function viewLoad(element, view, params)
 			
 }
 
+//create a popup (iframe) and loads the view in it.
+//calls readyCallback when its closed.
+function viewPopup(view, params, readyCallback)
+{
+	var frame=$("<iframe>");
 
+	$("body").append(frame);
+
+	var dialog=frame.dialog({
+		close: function(ev, ui) {
+			$(this).remove(); 
+		}
+	});
+	
+	frame.attr("src","viewPopup.php");
+
+	frame.load(function(){
+		frame[0].contentWindow.viewLoad(
+				"#viewMain",
+				view, 
+				params
+		);
+	});
+}
 

@@ -15,12 +15,12 @@
 		$(document).ready(function()
 		{
 			viewLoad($("#viewMain"), "users.list");
-			$("#test").click(function()
-			{
-				console.log("klik");
-				$("#viewMain").html("WEG");
+//			$("#test").click(function()
+	//		{
+		//		console.log("klik");
+			//	$("#viewMain").html("WEG");
 			
-			});
+			//});
 		});
 	</script>
 
