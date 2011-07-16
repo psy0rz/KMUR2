@@ -15,7 +15,7 @@ $(document).ready(function()
 	rpc(
 		"users.getAll",
 		{
-		},
+		},						
 		function(result)
 		{
 			showError(result);
@@ -39,6 +39,10 @@ $(document).ready(function()
 					{
 						"_id":$(this).parent().attr("_value"),
 						"highlight":$(this).attr("_key")
+					},
+					function()
+					{
+						
 					}
 				);
 			};

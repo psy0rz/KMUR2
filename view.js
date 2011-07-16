@@ -27,13 +27,15 @@ function viewLoad(element, view, params, readyCallback)
 }
 
 //create a popup (iframe) and loads the view in it.
-//calls readyCallback when its closed.
-function viewPopup(event, view, params, readyCallback)
+//calls viewChangedCallback gets called when data is changed on the server.
+function viewPopup(event, view, params, viewChangedCallback)
 {
-	var frame=$("<iframe>")
+	var frame=$("<iframe>");
 
 	$("body").append(frame);
-	
+
+	if (typeof viewChangedCallback!='undefined')
+		frame.bind("viewChanged",viewChangedCallback);
 	
 	var dialog=frame.dialog({
 		height: 'auto',
@@ -51,7 +53,6 @@ function viewPopup(event, view, params, readyCallback)
 	frame.attr("src","viewPopup.php");
 
 	frame.load(function(){
-		
 		frame[0].contentWindow.viewLoad(
 				"#viewMain",
 				view, 
@@ -61,11 +62,12 @@ function viewPopup(event, view, params, readyCallback)
 					
 				}
 		);
-
 	});
+	
+	
 }
 
-/** Called by view to indicate its ready and set some final options like title.
+/** Called by view to indicate the popup created by viewPopup is ready and set some final options like title.
  */
 function viewReady(options)
 {
@@ -92,15 +94,15 @@ function viewReady(options)
 	//calculate border overhead
 	console.debug(parent.$(self.frameElement).parent().width(), parent.$(self.frameElement).width());
 	console.debug(parent.$(self.frameElement).parent());
-	
+
 	var ow=parent.$(self.frameElement).dialog('option','width')-parent.$(self.frameElement).width();
 	console.debug("border overhead width and height", ow);
-	
+
 	//resize iframe so the contents fit
 	parent.$(self.frameElement).dialog('option','width',cw);
 	parent.$(self.frameElement).dialog('option','height',ch);
 	//parent.$(self.frameElement).height(ch);
-	
+
 	//reset position, this makes sure the dialog stays inside the browserwindow
 	var pos=parent.$(self.frameElement).dialog('option', 'position');
 	parent.$(self.frameElement).dialog('option', 'position', pos);
@@ -108,9 +110,15 @@ function viewReady(options)
 	
 }
 
-//closes the view
+//closes the view created with viewPopup
 function viewClose()
 {
 	parent.$(self.frameElement).dialog('close');
 }
 
+
+//informs the original caller of viewPopup that the data has changed on the server
+function viewChanged(params)
+{
+	parent.$(self.frameElement).trigger("viewChanged",params);
+}
