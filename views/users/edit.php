@@ -26,8 +26,12 @@ $(this).ready(function()
 			viewReady({
 				'title':"Wijzigen gebruiker "+result['data']['username']
 			});
-			
-			$('[_key|="'+viewParams["highlight"]+'"]').focus();
+
+			if (viewParams["highlight"])
+				$('[_key|="'+viewParams["highlight"]+'"]').focus();
+			else
+				$('[_key|=username]').focus();
+
 		}
 	);
 	
