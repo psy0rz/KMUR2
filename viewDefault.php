@@ -41,7 +41,6 @@
 <div id='viewMain'>
 </div>
 
-<input id='test' type='submit'>
 </body> 
 </html> 
  

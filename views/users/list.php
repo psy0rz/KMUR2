@@ -31,7 +31,7 @@ $(document).ready(function()
 				$(".autoList").autoList(result['data']);
 			}
 			
-			var click=function(event)
+			var edit=function(event)
 			{
 				viewPopup(
 					event,
@@ -40,14 +40,24 @@ $(document).ready(function()
 						"_id":$(this).parent().attr("_value"),
 						"highlight":$(this).attr("_key")
 					},
-					function()
-					{
-
-					}
+					function(){}
 				);
 			};
-			$(".buttonEdit").click(click);
-			
+			$(".buttonEdit").click(edit);
+
+			$("#add").click(function()
+			{
+				viewPopup(
+					event,
+					"users.edit", 
+					{
+						'_id':""
+					},
+					function(){}
+				);
+			});
+
+
 			viewReady({
 				'title':"Gebruikers overzicht"
 			});
@@ -79,6 +89,7 @@ $(document).ready(function()
 </tr>
 </table>
 
+<input type='submit' id='add' value='add'/>
 
 <span style='color:#ff0000;' id='error'></span>
 

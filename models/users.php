@@ -87,10 +87,15 @@ class users extends model
 	function get($params)
 	{
 	
+		if (isset($params['_id']) && $params['_id'])
+			$id=$this->getById("users",$params['_id']);
+		else
+			$id="";
+	
 		return (array(
 			"meta"=>$this->meta_user,
-			"data"=>$this->getById("users",$params['_id']))
-		);
+			"data"=>$id
+		));
 	}
 
 	//update/add user
@@ -106,8 +111,7 @@ class users extends model
 		
 		if ($existing && $existing["_id"]!=$params["_id"])
 			throw new FieldException("Gebruiker bestaat al!", "username");
-		
-		
+
 		$this->setById("users", $params["_id"], $this->meta_user, $params);
 	}
 
