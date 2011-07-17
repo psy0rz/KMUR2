@@ -60,7 +60,7 @@ $(this).ready(function()
 				viewChanged(viewParams);
 				
 				//all ok, close window
-				//viewClose();
+				viewClose();
 			}
 		);
 	});
