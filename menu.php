@@ -29,10 +29,11 @@ class menu
 	
 	function render($path)
 	{
+		return ; //OBSOLETE
 		echo "<div class='menu'>";
 		foreach ($this->tree as $main=>$mainData)
 		{
-			echo "<div class='menuMain menuMain_$main'>";
+			echo "<div class='menuMain'>";
 			
 				//build list of <a> elements to actual pages for this main menu:
 				$selectedClass="";

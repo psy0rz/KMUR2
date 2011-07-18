@@ -12,7 +12,7 @@
 </head> 
 <body> 
 
-<div id='viewMain'>
+<div id='viewMain' class='ui-widget'>
 </div>
 
 </body> 

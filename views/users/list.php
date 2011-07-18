@@ -1,4 +1,3 @@
-<div id='houder'>
 <script>
 
   
@@ -30,7 +29,17 @@ $(document).ready(function()
 			{
 				$(".autoList").autoList(result['data']);
 			}
-			
+
+			$("td").hover(
+				function(){ 
+					$(this).addClass("ui-state-hover"); 
+				},
+				function(){ 
+					$(this).removeClass("ui-state-hover"); 
+				}
+			);
+
+
 			var edit=function(event)
 			{
 				viewPopup(
@@ -40,7 +49,7 @@ $(document).ready(function()
 						"_id":$(this).parent().attr("_value"),
 						"highlight":$(this).attr("_key")
 					},
-					function(){}
+					function(){  }
 				);
 			};
 			$(".buttonEdit").click(edit);
@@ -71,21 +80,21 @@ $(document).ready(function()
 </script>
 
 
-
-<table class='ui-widget ui-widget-content'>
-<tr>
+<table >
+<tr class='ui-widget-header'>
 	<th><span class='autoCreate' _key='active' _meta='desc'></span>
 	<th><span class='autoCreate' _key='username' _meta='desc'></span>
 	<th><span class='autoCreate' _key='name' _meta='desc'></span>
+	<th><span class='autoCreate' _key='rights' _meta='desc'></span>
 	<th>
 </tr>
 
-<tr class='autoList autoFill ui-widget-header' _key='_id' _value>
+<tr class='autoList autoFill ui-widget-content' _key='_id' _value>
 	<td class='autoFill buttonEdit' _key='active' >
 	<td class='autoFill buttonEdit' _key='username' >
 	<td class='autoFill buttonEdit' _key='name'>
+	<td class='autoFill buttonEdit' _key='rights'>
 	<td class='autoFill buttonDel'>
-	<td class='autoFill buttonEdit'>EDIT
 </tr>
 </table>
 
@@ -93,4 +102,3 @@ $(document).ready(function()
 
 <span style='color:#ff0000;' id='error'></span>
 
-</div>

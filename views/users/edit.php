@@ -60,8 +60,6 @@ $(this).ready(function()
 						return;
 					}
 				}
-				//tell our parent something is changed so it can refresh
-				viewChanged(viewParams);
 				
 				//all ok, close window
 				viewClose();

@@ -14,7 +14,7 @@
 	<script>
 		$(document).ready(function()
 		{
-			viewLoad($("#viewMain"), "users.list");
+			viewLoad($("#viewMain"), "users.list" );
 //			$("#test").click(function()
 	//		{
 		//		console.log("klik");
@@ -38,7 +38,7 @@
 //	viewLoad(viewGetPath());
 
 ?>
-<div id='viewMain'>
+<div id='viewMain' class='ui-widget'>
 </div>
 
 </body> 

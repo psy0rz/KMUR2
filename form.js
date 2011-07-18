@@ -190,10 +190,12 @@ function showError(result)
 			var value=data[$(this).attr("_key")];
 			var elementType=this.nodeName.toLowerCase();
 
+			//put value in attribute (doesnt work if the value is an array)
 			if ($(this).attr("_value")=="")
 			{
 				$(this).attr("_value", value);
 			}
+			//set value of a input-element the correct way
 			else if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")
@@ -220,13 +222,17 @@ function showError(result)
 					$(this).val(value);
 				}
 			}
+			//textareas and select boxes are easy:
 			else if (elementType=="select" || elementType=="textarea")
 			{
 				$(this).val(value);
 			}
-			//regular html element, just set text
+			//it regular html element, convert the value to a string and/or html
+			//depending on the datatype
 			else
+			{
 				$(this).text(value);
+			}
 		});
 
 	};

@@ -26,16 +26,15 @@ function viewLoad(element, view, params, readyCallback)
 			
 }
 
+
+
 //create a popup (iframe) and loads the view in it.
-//calls viewChangedCallback gets called when data is changed on the server.
-function viewPopup(event, view, params, viewChangedCallback)
+function viewPopup(event, view, params, viewClosedCallback)
 {
 	var frame=$("<iframe>");
 
 	$("body").append(frame);
 
-	if (typeof viewChangedCallback!='undefined')
-		frame.bind("viewChanged",viewChangedCallback);
 	
 	var dialog=frame.dialog({
 		height: 'auto',
@@ -46,7 +45,10 @@ function viewPopup(event, view, params, viewChangedCallback)
 			event.clientY 
 		],
 		close: function(ev, ui) {
-			$(this).remove(); 
+			$(this).remove();
+			if (typeof viewClosedCallback!='undefined')
+				viewClosedCallback();
+
 		}
 	});
 	
@@ -110,15 +112,17 @@ function viewReady(options)
 	
 }
 
-//closes the view created with viewPopup
+//closes the current view
 function viewClose()
 {
 	parent.$(self.frameElement).dialog('close');
+	//$("#viewMain").html();
 }
 
 
 //informs the original caller of viewPopup that the data has changed on the server
-function viewChanged(params)
-{
-	parent.$(self.frameElement).trigger("viewChanged",params);
-}
+//function viewChanged(params)
+//{
+//	parent.$(self.frameElement).trigger("viewChanged",params);
+//}
+
