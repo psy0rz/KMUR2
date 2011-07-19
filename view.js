@@ -9,7 +9,7 @@ function viewLoad(element, view, params, readyCallback)
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
-				console.debug("view result "+view, result);
+				console.debug("view result "+view);
 				$(element).html(result);
 				if (typeof readyCallback!='undefined')
 					readyCallback();

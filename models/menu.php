@@ -6,25 +6,34 @@ class menu
 	
 	function __construct()
 	{
+		$viewDir="views";
 		//load the menu
-		$dirs=scandir("views");
+		$dirs=scandir($viewDir);
 		foreach ($dirs as $dir)
 		{
-			if ($dir!="." && $dir!=".." && is_dir("views/$dir"))
+			if ($dir!="." && $dir!=".." && is_dir("$viewDir/$dir"))
 			{
-				require_once("views/$dir/menu.php");
+				require_once("$viewDir/$dir/menu.php");
 			}
 		}
 	}
 
 	function addMain($main,$params)
 	{
-		$this->tree["$main"]["params"]=$params;
+		if (isset($this->tree["$main"]))
+			$this->tree["$main"]=$params;
+		else
+			$this->tree["$main"]=$params;
 	}
 	
 	function addSub($main, $sub, $params)
 	{
 		$this->tree["$main"]["subs"][$sub]=$params;
+	}
+	
+	function get()
+	{
+		return($this->tree);
 	}
 	
 	function render($path)

@@ -14,7 +14,64 @@
 	<script>
 		$(document).ready(function()
 		{
-			viewLoad($("#viewMain"), "users.list" );
+			rpc(
+				"menu.get",
+				{},
+				function (result)
+				{
+					var menuDiv=$("#viewMenu");
+					$.each(result, function(mainName,mainMenu)
+					{
+						var mainMenuDiv=$("<div>")
+							.attr("id", "menuMain_"+mainName)
+							.addClass("menuMain");
+	
+						mainMenuDiv.append(
+							$("<div>")
+								.addClass("menuMainTitle")
+								.text(mainMenu["desc"])
+						);
+						
+						var subMenuDiv=$("<div>")
+								.addClass("menuMainSubs");
+
+						mainMenuDiv.append(subMenuDiv);
+
+						$.each(mainMenu["subs"], function(subName,subMenu)
+						{
+							subMenuDiv.append(
+								$("<div>")
+									.addClass("menuSub")
+									.attr("id", "menuSub_"+subName)
+									.text(subMenu["desc"])
+									.click(function(event) 
+									{
+										if (subMenu["mode"] == "popup")
+										{
+											viewPopup(
+												event,
+												subMenu["view"],
+												subMenu["params"]
+											);
+										}
+										else
+										{
+											viewLoad(
+												"#viewMain", 
+												subMenu["view"],
+												subMenu["params"]
+											);
+										}
+									})
+							);
+						});
+					
+						menuDiv.append(mainMenuDiv);
+					});
+				}
+			);
+
+//			viewLoad($("#viewMain"), "users.list" );
 //			$("#test").click(function()
 	//		{
 		//		console.log("klik");
@@ -30,14 +87,19 @@
 <?
 
 	//render menu
-	require_once("menu.php");
-	$menu=new menu();
-	$menu->render(viewGetPath());
+//	require_once("menu.php");
+//	$menu=new menu();
+//	$menu->render(viewGetPath());
 
 	
 //	viewLoad(viewGetPath());
 
 ?>
+
+<div id='viewMenu' >
+
+</div>
+
 <div id='viewMain' class='ui-widget'>
 </div>
 

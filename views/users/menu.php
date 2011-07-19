@@ -6,11 +6,41 @@ $this->addMain("users",array(
 
 $this->addSub("users","list",array(
 	"desc"=>"Overzicht",
-	"path"=>"/users/list",
+	"view"=>"users.list",
 ));
 
 $this->addSub("users","new",array(
 	"desc"=>"Nieuw",
-	"path"=>"/users/new",
+	"view"=>"users.edit",
+	"params"=>array(
+		"_id"=>""
+	),
+	"mode"=>"popup",
+));
+
+
+
+$this->addMain("hours",array(
+	"desc"=>"Uren registratie",
+));
+
+
+$this->addSub("hours","new",array(
+	"desc"=>"Uren invoeren...",
+	"view"=>"users.edit",
+	"params"=>array(
+		"_id"=>""
+	),
+	"mode"=>"popup",
+));
+
+$this->addSub("hours","list",array(
+	"desc"=>"Overzicht",
+	"view"=>"users.list",
+));
+
+$this->addSub("hours","listba",array(
+	"desc"=>"Overzicht huidige klant",
+	"view"=>"users.list",
 ));
 

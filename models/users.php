@@ -68,7 +68,7 @@ class users extends model
 			"type"=>"string",
 		),
 
-);
+	);
 
 
 	function getAll()
