@@ -25,7 +25,7 @@
 						var mainMenuDiv=$("<div>")
 							.attr("id", "menuMain_"+mainName)
 							.addClass("menuMain");
-	
+							
 						mainMenuDiv.append(
 							$("<div>")
 								.addClass("menuMainTitle")
@@ -34,6 +34,24 @@
 						
 						var subMenuDiv=$("<div>")
 								.addClass("menuMainSubs");
+								
+						mainMenuDiv.hover(
+							function()
+							{
+								subMenuDiv.show();
+							},
+							function()
+							{
+								subMenuDiv.hide();
+							}
+						);
+						
+						mainMenuDiv.click(
+						function() 
+						{
+							subMenuDiv.hide();
+						});
+
 
 						mainMenuDiv.append(subMenuDiv);
 
@@ -96,11 +114,13 @@
 
 ?>
 
-<div id='viewMenu' >
+<div id='viewMenu' class='ui-widget'>
 
 </div>
 
-<div id='viewMain' class='ui-widget'>
+
+
+<div id='viewMain' class='ui-widget menuOffset'>
 </div>
 
 </body> 

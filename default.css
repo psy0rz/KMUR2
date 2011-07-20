@@ -31,3 +31,56 @@
 
  
 */
+
+
+#viewMenu
+{
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	top:0px;
+	background: #eeeeee;
+	cursor: pointer;
+	border-bottom-style: solid;
+}
+
+.menuOffset
+{
+	margin-top: 2em;
+}
+
+.menuMain
+{
+	float: left;
+	
+}
+
+.menuMainTitle
+{
+	padding-left: 1em;
+	padding-right: 1em;
+	
+}
+
+.menuMainTitle:hover
+{
+	background: #dddddd;
+}
+
+.menuMainSubs
+{
+	border-width: 1px;
+	border-style: solid;
+	padding-left: .5em;
+	padding-right: .5em;
+	margin-left: 1em;
+	background: #eeeeee;
+	cursor: pointer;
+	position: fixed;
+}
+
+.menuSub:hover
+{
+	background: #dddddd;
+}
+
