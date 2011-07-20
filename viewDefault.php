@@ -33,7 +33,8 @@
 						);
 						
 						var subMenuDiv=$("<div>")
-								.addClass("menuMainSubs");
+								.addClass("menuMainSubs")
+								.hide();
 								
 						mainMenuDiv.hover(
 							function()
@@ -46,13 +47,6 @@
 							}
 						);
 						
-						mainMenuDiv.click(
-						function() 
-						{
-							subMenuDiv.hide();
-						});
-
-
 						mainMenuDiv.append(subMenuDiv);
 
 						$.each(mainMenu["subs"], function(subName,subMenu)
@@ -64,6 +58,7 @@
 									.text(subMenu["desc"])
 									.click(function(event) 
 									{
+										subMenuDiv.hide();
 										if (subMenu["mode"] == "popup")
 										{
 											viewPopup(

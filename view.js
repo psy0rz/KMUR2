@@ -119,7 +119,19 @@ function viewClose()
 	//$("#viewMain").html();
 }
 
-
+//add a 'favorite' to the specified menu.
+//automaticly keeps count of most used items
+function viewAddFavorite(params)
+{
+	rpc(
+		"menu.addFavorite",
+		params,
+		function(result)
+		{
+			//uppate menu?
+		}
+	);
+}
 //informs the original caller of viewPopup that the data has changed on the server
 //function viewChanged(params)
 //{

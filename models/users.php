@@ -5,7 +5,7 @@ require_once "model.php";
 class users extends model
 {
 	//meta data for users
-	private $meta_user=array(
+	private $meta=array(
 		"_id"=>array(
 			"type"=>"id"
 		),
@@ -79,7 +79,7 @@ class users extends model
 		$cursor=$collection->find();
 
 		return (array(
-			"meta"=>$this->meta_user,
+			"meta"=>$this->meta,
 			"data"=>$this->run($cursor)
 		));
 	}
@@ -93,7 +93,7 @@ class users extends model
 			$id="";
 	
 		return (array(
-			"meta"=>$this->meta_user,
+			"meta"=>$this->meta,
 			"data"=>$id
 		));
 	}
@@ -101,7 +101,7 @@ class users extends model
 	//update/add user
 	function put($params)
 	{
-		$this->verifyMeta($this->meta_user, $params);
+		$this->verifyMeta($this->meta, $params);
 	
 		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
 			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
@@ -112,7 +112,7 @@ class users extends model
 		if ($existing && $existing["_id"]!=$params["_id"])
 			throw new FieldException("Gebruiker bestaat al!", "username");
 
-		$this->setById("users", $params["_id"], $this->meta_user, $params);
+		$this->setById("users", $params["_id"], $this->meta, $params);
 	}
 
 }

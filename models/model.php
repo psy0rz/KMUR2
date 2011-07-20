@@ -105,6 +105,10 @@ class model
 				if ($value!="" && $value!=new MongoId($value))
 					throw new FieldException("'$value' is geen geldig id", $key);
 			}
+			else if ($meta[$key]["type"]=="*")
+			{
+				//any data allowed, dont check it!
+			}
 			else
 				throw new FieldException("veldtype '".$meta[$key]["type"]."' word niet ondersteund.", $key);
 			

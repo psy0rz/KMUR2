@@ -59,6 +59,9 @@
 {
 	padding-left: 1em;
 	padding-right: 1em;
+	border-width:1px;
+	border-style:solid;
+	border-color:#eeeeee;
 	
 }
 
@@ -69,8 +72,9 @@
 
 .menuMainSubs
 {
-	border-width: 1px;
+	border-width: 2px;
 	border-style: solid;
+	border-color: #bbbbbb;
 	padding-left: .5em;
 	padding-right: .5em;
 	margin-left: 1em;

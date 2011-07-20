@@ -1,8 +1,44 @@
 <?
 
-class menu
+require_once "model.php";
+
+class menu extends model
 {
 	private $tree;
+	
+	private $meta=array(
+		"_id"=>array(
+			"type"=>"id"
+		),
+		"menu"=>array(
+			"desc"=>"Menu naam",
+			"type"=>"string",
+			"max"=>20,
+			"min"=>1
+		),
+		"view"=>array(
+			"desc"=>"View naam",
+			"type"=>"string",
+			"max"=>20,
+			"min"=>1
+		),
+		"mode"=>array(
+			"desc"=>"Modus",
+			"type"=>"string",
+			"max"=>20,
+			"min"=>1
+		),
+		"params"=>array(
+			"desc"=>"View parameters",
+			"type"=>"*",
+		),
+		"desc"=>array(
+			"desc"=>"Menu titel",
+			"type"=>"string",
+			"max"=>40,
+			"min"=>1
+		),
+	);
 	
 	function __construct()
 	{

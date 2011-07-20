@@ -26,6 +26,15 @@ $(this).ready(function()
 			viewReady({
 				'title':"Wijzigen gebruiker "+result['data']['username']
 			});
+			
+			viewAddFavorite({
+				'menu':		"users",
+				'desc':		"Wijzigen "+result['data']['username'],
+				'view':		"users.edit",
+				'params':	viewParams,
+				'mode':		"popup"
+			});
+
 
 			if (viewParams["highlight"])
 				$('[_key|="'+viewParams["highlight"]+'"]').focus();
