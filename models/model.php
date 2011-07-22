@@ -161,6 +161,12 @@ class model
 			"default"=>array("admin")
 		));
 	}
+	
+	//get meta data of this model
+	function getMeta()
+	{
+		return (array());
+	}
 }
 
 
