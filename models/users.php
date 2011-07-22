@@ -15,12 +15,6 @@ class users extends model
 			"max"=>20,
 			"min"=>3
 		),
-		"keutel"=>array(
-			"desc"=>"Hoe bruin issie?",
-			"type"=>"string",
-			"max"=>20,
-			"min"=>3
-		),
 		"rights"=>array(
 			"desc"=>"Gebruikers rechten",
 			"type"=>"multiselect",
@@ -32,9 +26,12 @@ class users extends model
 		),
 		"gender"=>array(
 			"desc"=>"Geslacht",
-			"type"=>"select",
+			"type"=>"multiselect",
 			"choices"=>array(
 				"M"=>"Man",
+				"R"=>"sdfsdaf",
+
+
 				"F"=>"Vrouw",
 				"A"=>"Alien",
 			)
@@ -69,6 +66,14 @@ class users extends model
 		),
 
 	);
+
+	function getAcl()
+	{
+		return(array(
+			"default"=>array("admin"),
+			"authenticate"=>array("anonymous")
+		));
+	}
 
 
 	function getAll()
@@ -113,6 +118,21 @@ class users extends model
 			throw new FieldException("Gebruiker bestaat al!", "username");
 
 		$this->setById("users", $params["_id"], $this->meta, $params);
+	}
+	
+	function authenticate($params)
+	{
+		//verify if input is ok
+		$this->verifyMeta($this->meta, $params);
+		
+		//get user
+		$user=$this->db->users->findOne(array('username'=>$params['username']));
+		
+		if (!$user || $user["password"]!=$params["password"] )
+			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "username");
+		
+		//still here? authenticate current contect
+		$this->context->authenticate($user["username"], $user["rights"]);
 	}
 
 }

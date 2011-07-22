@@ -1,13 +1,25 @@
 <?
 
+require_once("userContext.php");
 
 class model
 {
 	protected $mongoObj;
 	protected $db;
 
-	function __construct()
+	protected $context;
+
+	function __construct($userContext="")
 	{
+		//use specified context or session based context?
+		if ($userContext)
+			$this->context=$userContext;
+		else
+		{
+			$this->context=new userContext();
+			$this->context->linkToSession();
+		}
+		
 		// connect
 		$this->mongoObj = new Mongo();
 
@@ -132,6 +144,23 @@ class model
 			
 	}
 
+	function canCall($function)
+	{
+		$acl=getAcl();
+		
+		if (isset($acl[$function]))
+			return($this->context.hasRights($acl[$function]));
+		else
+			return($this->context.hasRights($acl["default"]));
+		
+	}
+
+	function getAcl()
+	{
+		return(array(
+			"default"=>array("admin")
+		));
+	}
 }
 
 
