@@ -32,7 +32,9 @@ try
 		throw new Exception("Method '$method' not found in class '$class'");
 	
 	//call it
-	$result=$object->$method($params);
+	$result=array(
+		"data"=>$object->$method($params)
+	);
 }
 catch (FieldException $e)
 {

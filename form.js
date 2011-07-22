@@ -1,23 +1,3 @@
-/*** Shows error and highlights field
-	*/
-function showError(result)
-{
-	$("#error").text("");
-	$(".errorHighlight").removeClass("errorHighlight");
-
-	if (result!=null)
-	{
-		if (result["error"]!=null)
-		{
-			$("#error").text(result["error"]["message"]);
-			if (result["error"]["field"]!=null)
-			{
-				$(':input[_key|="'+result["error"]["field"]+'"]').addClass("errorHighlight").focus();
-				$('[_errorHighlight|="'+result["error"]["field"]+'"]').addClass("errorHighlight");
-			}
-		}
-	}
-}
 
 
 (function( $ ){

@@ -20,7 +20,7 @@
 				function (result)
 				{
 					var menuDiv=$("#viewMenu");
-					$.each(result, function(mainName,mainMenu)
+					$.each(result['data'], function(mainName,mainMenu)
 					{
 						var mainMenuDiv=$("<div>")
 							.attr("id", "menuMain_"+mainName)

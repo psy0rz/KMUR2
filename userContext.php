@@ -47,7 +47,7 @@ class userContext
 	{
 		session_start();
 		
-		if (!$_SESSION['userContext'])
+		if (!isset($_SESSION['userContext']))
 		{
 			//no global context, so initalize it with this one
 			$_SESSION['userContext']=$this->context;

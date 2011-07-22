@@ -1,3 +1,23 @@
+/*** Shows error and highlights field
+	*/
+function viewShowError(result, parent)
+{
+	$("#error", parent).text("");
+	$(".errorHighlight", parent).removeClass("errorHighlight");
+
+	if (result!=null)
+	{
+		if (result["error"]!=null)
+		{
+			$("#error", parent).text(result["error"]["message"]);
+			if (result["error"]["field"]!=null)
+			{
+				$(':input[_key|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();
+				$('[_errorHighlight|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight");
+			}
+		}
+	}
+}
  
 //loads a view in the specified element
 function viewLoad(element, view, params, readyCallback)

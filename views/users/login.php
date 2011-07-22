@@ -10,7 +10,7 @@ $(this).ready(function()
 		viewParams,
 		function(result)
 		{
-			$(".autoCreate").autoCreate(result);
+			$(".autoCreate").autoCreate(result['data']);
 			$('[_key|=username]').focus();
 		}
 	);

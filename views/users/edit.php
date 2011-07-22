@@ -3,26 +3,17 @@
 <script>
 $(this).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
-
-	//get data
-	rpc(
-		"users.get", 
-		viewParams,
-		function(result)
-		{
-			showError(result);
-
-			if (result['meta']!=null)
-			{
-				$(".autoCreate").autoCreate(result['meta']);
-			}
-
-			if (result['data']!=null)
-			{
-				$(".autoFill").autoFill(result['data']);
-			}
-
+	viewParams=<?=viewGetParams()?>;
+	
+	templateForm({
+		'parent'		: $("#viewMain"),
+		'getMeta'		: 'users.getMeta',
+		'getData'		: 'users.get',
+		'viewParams' 	: viewParams,
+		'putData'		: 'users.put',
+		'putParams'		: { "_id": viewParams["_id"] },
+		'defaultFocus'	: 'username',
+		'loadCallback'	: function(result) { 
 			viewReady({
 				'title':"Wijzigen gebruiker "+result['data']['username']
 			});
@@ -34,46 +25,9 @@ $(this).ready(function()
 				'params':	viewParams,
 				'mode':		"popup"
 			});
-
-
-			if (viewParams["highlight"])
-				$('[_key|="'+viewParams["highlight"]+'"]').focus();
-			else
-				$('[_key|=username]').focus();
-
-		}
-	);
-	
-	//save 
-	$("#save").click(function()
-	{
-		$("#save").prop("disabled", true);
-
-		var params={
-			"_id":viewParams["_id"]
-		};
-		$(".autoFill").autoGet(params);
-		
-		//put data
-		rpc(
-			"users.put",
-			params,
-			function(result)
-			{
-				$("#save").prop("disabled", false);
-				if (result)
-				{
-					if ('error' in result)
-					{
-						showError(result);
-						return;
-					}
-				}
-				
-				//all ok, close window
-				viewClose();
-			}
-		);
+		},
+		'errorCallback'	: function(result) { },
+		'saveCallback'	: function(result) { }
 	});
 
 });
@@ -122,7 +76,6 @@ $(this).ready(function()
 </table>
 
 
-
-<button id='save'>Opslaan</button>
+<button id='submit'>Opslaan</button>
 <span style='color:#ff0000;' id='error'></span>
 

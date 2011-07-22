@@ -86,24 +86,18 @@ class users extends model
 		// find everything in the collection
 		$cursor=$collection->find();
 
-		return (array(
-			"meta"=>$this->getMeta(),
-			"data"=>$this->run($cursor)
-		));
+		return ($this->run($cursor));
 	}
 
 	function get($params)
 	{
 	
 		if (isset($params['_id']) && $params['_id'])
-			$id=$this->getById("users",$params['_id']);
+			$user=$this->getById("users",$params['_id']);
 		else
-			$id="";
+			$user="";
 	
-		return (array(
-			"meta"=>$this->getMeta(),
-			"data"=>$id
-		));
+		return ($user);
 	}
 
 	//update/add user
