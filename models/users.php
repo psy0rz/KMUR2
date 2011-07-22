@@ -134,8 +134,8 @@ class users extends model
 		if (!$user || $user["password"]!=$params["password"] )
 			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "username");
 		
-		//still here? authenticate current contect
-		$this->context->authenticate($user["username"], $user["rights"]);
+		//login validated? change current context
+		$this->context->change($user["username"], $user["rights"]);
 	}
 
 }

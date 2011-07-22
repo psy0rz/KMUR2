@@ -18,6 +18,11 @@ $this->addSub("users","new",array(
 	"mode"=>"popup",
 ));
 
+$this->addSub("users","login",array(
+	"desc"=>"Inloggen",
+	"view"=>"users.login",
+));
+
 
 
 $this->addMain("hours",array(
