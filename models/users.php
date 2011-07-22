@@ -109,7 +109,7 @@ class users extends model
 	//update/add user
 	function put($params)
 	{
-		$this->verifyMeta($this->getMeta(), $params);
+		$this->verifyMeta($params);
 	
 		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
 			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
@@ -120,13 +120,13 @@ class users extends model
 		if ($existing && $existing["_id"]!=$params["_id"])
 			throw new FieldException("Gebruiker bestaat al!", "username");
 
-		$this->setById("users", $params["_id"], $this->getMeta(), $params);
+		$this->setById("users", $params["_id"], $params);
 	}
 	
 	function authenticate($params)
 	{
 		//verify if input is ok
-		$this->verifyMeta($this->getMeta(), $params);
+		$this->verifyMeta($params);
 		
 		//get user
 		$user=$this->db->users->findOne(array('username'=>$params['username']));

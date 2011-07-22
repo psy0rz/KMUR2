@@ -52,8 +52,9 @@ class model
 	//compares all the fields in $data to the rules in $meta.
 	//data is examined recursively
 	//Throws exeception when errors are found
-	protected function verifyMeta($meta, $data)
+	protected function verifyMeta($data)
 	{
+		$meta=$this->getMeta();
 	
 		foreach ($data as $key=>$value)
 		{
@@ -127,15 +128,15 @@ class model
 		}
 	}
 
-	//verifys if data is compatible with meta-data rules
+	//verifys if data is compatible with getMeta() rules
 	//if id is set, updates data in collection
 	//if id is not set, add data to collection
-	protected function setById($collection, $id, $meta, $data)
+	protected function setById($collection, $id, $data)
 	{
 			//dont set the id (its not a MongoId object anyway)
 			unset($data["_id"]);
 
-			$this->verifyMeta($meta, $data);
+			$this->verifyMeta($data);
 			$this->db->$collection->update(
 				array('_id' => new MongoId($id)), 
 				array('$set'=>$data),
