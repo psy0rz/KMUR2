@@ -45,7 +45,7 @@ class users extends model
 				)
 			),
 			"password"=>array(
-				"desc"=>"Passwoord",
+				"desc"=>"Wachtwoord",
 				"type"=>"password",
 				"min"=>5
 			),
@@ -123,7 +123,7 @@ class users extends model
 		$user=$this->db->users->findOne(array('username'=>$params['username']));
 		
 		if (!$user || $user["password"]!=$params["password"] )
-			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "username");
+			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "password");
 		
 		//login validated? change current context
 		$this->context->change($user["username"], $user["rights"]);

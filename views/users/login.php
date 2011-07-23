@@ -1,4 +1,3 @@
-<? require_once("../view.php"); ?>
 
 <script>
 $(this).ready(function()

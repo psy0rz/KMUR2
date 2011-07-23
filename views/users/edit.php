@@ -13,9 +13,14 @@ $(this).ready(function()
 		'putData'		: 'users.put',
 		'putParams'		: { "_id": viewParams["_id"] },
 		'defaultFocus'	: 'username',
-		'loadCallback'	: function(result) { 
+		'loadCallback'	: function(result) {
+			if (result['data']['username'])
+				title="Wijzigen gebruiker "+result['data']['username'];
+			else
+				title="Nieuwe gebruiker";
+				
 			viewReady({
-				'title':"Wijzigen gebruiker "+result['data']['username']
+				'title':title
 			});
 			
 			viewAddFavorite({
