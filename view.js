@@ -18,11 +18,22 @@ function viewShowError(result, parent)
 		}
 	}
 }
- 
+
+
+
 //loads a view in the specified element
 function viewLoad(element, view, params, readyCallback)
 {
 	console.debug("view loading "+view, params);
+
+//	$(element).load(
+	//	"views/"+view.replace(".","/")+".php?"+encodeURI(JSON.stringify(params)),
+		//null,
+		//readyCallback
+//	);
+	//return;
+
+	//OBSOLETE
 	$.ajax({
 		"dataType":		"html",
 		"url":			"views/"+view.replace(".","/")+".php?"+encodeURI(JSON.stringify(params)),
@@ -30,7 +41,17 @@ function viewLoad(element, view, params, readyCallback)
 			function (result, status, XMLHttpRequest)
 			{
 				console.debug("view result "+view);
+
+				try
+				{
 				$(element).html(result);
+	}
+	catch(e)
+	{
+//			console.error(e);
+			console.error( e.lineNumber);
+	}
+
 				if (typeof readyCallback!='undefined')
 					readyCallback();
 			},
