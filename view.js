@@ -33,7 +33,6 @@ function viewLoad(element, view, params, readyCallback)
 				$(element).html(result);
 				if (typeof readyCallback!='undefined')
 					readyCallback();
-//				$(element).execute();
 			},
 		"error":
 			function (request, status, e)

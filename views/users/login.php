@@ -3,46 +3,18 @@
 <script>
 $(this).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
-
-	rpc(
-		"users.getMeta", 
-		viewParams,
-		function(result)
-		{
-			$(".autoCreate").autoCreate(result['data']);
-			$('[_key|=username]').focus();
-		}
-	);
 	
-	$("#save").click(function()
-	{
-		$("#save").prop("disabled", true);
-
-		var params={
-		};
-		$(".autoFill").autoGet(params);
-		
-		//put data
-		rpc(
-			"users.authenticate",
-			params,
-			function(result)
-			{
-				$("#save").prop("disabled", false);
-				if (result)
-				{
-					if ('error' in result)
-					{
-						showError(result);
-						return;
-					}
-				}
-				
-				//all ok, close window
-				viewClose();
-			}
-		);
+	templateForm({
+		'parent'		: $("#viewMain"),
+		'getMeta'		: 'users.getMeta',
+		'putData'		: 'users.authenticate',
+		'defaultFocus'	: 'username',
+		'loadCallback' : function(result)
+		{
+			viewReady({
+				'title': 'Inloggen'
+			});
+		}
 	});
 
 });
@@ -64,6 +36,6 @@ $(this).ready(function()
 
 
 
-<button id='save'>Login</button>
+<button id='submit'>Login</button>
 <span style='color:#ff0000;' id='error'></span>
 

@@ -12,31 +12,44 @@ function templateForm(params)
 		function(result)
 		{
 			$(".autoCreate", params['parent']).autoCreate(result['data']);
-			
-			//get data
-			rpc(
-				params['getData'], 
-				params['viewParams'],
-				function(result)
-				{
-					$("#submit", params['parent']).prop("disabled", false);
 
-					viewShowError(result, params['parent']);
+			//focus the correct input field
+			if (params['viewParams'] && params['viewParams']['highlight'])
+				$('[_key|="'+params['viewParams']['highlight']+'"]', params['parent']).focus();
+			else
+				$('[_key|='+params['defaultFocus']+']', params['parent']).focus();
 
-					if (result['data']!=null)
+			if (params['getData'])
+			{
+				//get data
+				rpc(
+					params['getData'], 
+					params['viewParams'],
+					function(result)
 					{
-						$(".autoFill", params['parent']).autoFill(result['data']);
+						$("#submit", params['parent']).prop("disabled", false);
+
+						viewShowError(result, params['parent']);
+
+						if (result['data']!=null)
+						{
+							$(".autoFill", params['parent']).autoFill(result['data']);
+						}
+
+						if (params['loadCallback'])
+							params['loadCallback'](result);
+
 					}
+				);
+			}
+			//when not loading data, dont forget to call the loadCallback:
+			else
+			{
+				$("#submit", params['parent']).prop("disabled", false);
 
-					if (params['loadCallback']!=null)
-						params['loadCallback'](result);
-
-					if (params['viewParams']['highlight'])
-						$('[_key|="'+params['viewParams']['highlight']+'"]', params['parent']).focus();
-					else
-						$('[_key|='+params['defaultFocus']+']', params['parent']).focus();
-				}
-			);
+				if (params['loadCallback'])
+					params['loadCallback'](result);
+			}
 		}
 	);
 	
@@ -46,7 +59,9 @@ function templateForm(params)
 		$("#submit", params['parent']).prop("disabled", true);
 
 		//determine parameters to pass to putData
-		var putParams=params['putParams'];
+		var putParams={};
+		if (params['putParams'])
+			putParams=params['putParams'];
 		$(".autoFill", params['parent']).autoGet(putParams);
 		
 		//put data

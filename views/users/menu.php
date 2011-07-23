@@ -21,6 +21,7 @@ $this->addSub("users","new",array(
 $this->addSub("users","login",array(
 	"desc"=>"Inloggen",
 	"view"=>"users.login",
+	"mode"=>"popup",
 ));
 
 

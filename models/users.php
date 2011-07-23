@@ -28,12 +28,9 @@ class users extends model
 			),
 			"gender"=>array(
 				"desc"=>"Geslacht",
-				"type"=>"multiselect",
+				"type"=>"select",
 				"choices"=>array(
 					"M"=>"Man",
-					"R"=>"sdfsdaf",
-
-
 					"F"=>"Vrouw",
 					"A"=>"Alien",
 				)

@@ -234,7 +234,6 @@
 		return this.each(function() {
 			var key=$(this).attr("_key");
 			var elementType=this.nodeName.toLowerCase();
-			
 			if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")
@@ -266,10 +265,7 @@
 			{
 				data[key]=$(this).val();
 			}
-			
-			
 		});
-
 	}
 
 	/*** Replicates the specified element for every item in the data-array
