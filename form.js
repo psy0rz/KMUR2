@@ -1,6 +1,59 @@
 
 
 (function( $ ){
+
+	/*** popup a confim dialog at cursor and execute code on each pressed button
+		will do nothing if theres already a confirm dialog active for this element.
+	*/
+	$.fn.confirm = function( options ) {  
+		
+		var settings = {
+			'title'		: 'Bevestiging',
+			'text' 		: 'Weet u het zeker?'
+		};
+		
+		if ( typeof options == 'function' ) 
+		{
+			settings['callback']=options;
+		}
+		else
+		{
+			$.extend( settings, options );
+		}
+		
+		var div=$("<div>");
+		div.text(settings.text);
+		div.append('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>');
+		
+		var parent=$(this);
+
+		parent.addClass("highlight");
+		parent.append(div);
+		
+		div.dialog({
+			
+			position: [ 
+				event.clientX,
+				event.clientY 
+			],
+			'modal':true,
+			'title':settings.title,
+			'buttons': {
+				"Ja": function() {
+					settings['callback']();
+					$( this ).dialog( "close" );
+				},
+				"Nee": function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			'close'	: function(){
+				parent.removeClass("highlight");
+				div.remove();
+			}
+		});
+		
+	};
 	
 	/*** auto create input elements from metadata
 	*  Use _key attribute to specify meta-field.
