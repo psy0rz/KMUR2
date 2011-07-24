@@ -113,7 +113,13 @@ class users extends model
 
 		$this->setById("users", $params["_id"], $params);
 	}
-	
+
+	function del($params)
+	{
+		$this->verifyMeta($params);
+		$this->delById("users", $params["_id"]);
+	}
+
 	function authenticate($params)
 	{
 		//verify if input is ok

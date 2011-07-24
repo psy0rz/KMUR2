@@ -32,6 +32,7 @@ class model
 	function run($cursor)
 	{
 		//iterate through the results
+		$ret=array();
 		foreach ($cursor as $obj) 
 		{
 			//convert id to normal string rightaway
@@ -46,6 +47,13 @@ class model
 	{
 		return(
 			$this->db->$collection->findOne(array('_id'=>new MongoId($id)))
+		);
+	}
+
+	protected function delById($collection,$id)
+	{
+		return (
+			$this->db->$collection->remove(array('_id' => new MongoId($id)))
 		);
 	}
 

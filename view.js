@@ -1,5 +1,6 @@
 /*** Shows error and highlights field
-	*/
+ * Returns false if there are no errors to report
+ */
 function viewShowError(result, parent)
 {
 	$("#error", parent).text("");
@@ -15,8 +16,10 @@ function viewShowError(result, parent)
 				$(':input[_key|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();
 				$('[_errorHighlight|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight");
 			}
+			return(true);
 		}
 	}
+	return(false);
 }
 
 
@@ -26,14 +29,6 @@ function viewLoad(element, view, params, readyCallback)
 {
 	console.debug("view loading "+view, params);
 
-//	$(element).load(
-	//	"views/"+view.replace(".","/")+".php?"+encodeURI(JSON.stringify(params)),
-		//null,
-		//readyCallback
-//	);
-	//return;
-
-	//OBSOLETE
 	$.ajax({
 		"dataType":		"html",
 		"url":			"views/"+view.replace(".","/")+".php?"+encodeURI(JSON.stringify(params)),
@@ -42,15 +37,8 @@ function viewLoad(element, view, params, readyCallback)
 			{
 				console.debug("view result "+view);
 
-				try
-				{
+				//FIXME: better debugging of javascript inside html
 				$(element).html(result);
-	}
-	catch(e)
-	{
-//			console.error(e);
-			console.error( e.lineNumber);
-	}
 
 				if (typeof readyCallback!='undefined')
 					readyCallback();

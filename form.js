@@ -334,7 +334,7 @@
 			$.extend( settings, options );
 		}
 
-		return this.each(function() {
+		var ret=this.each(function() {
 			var sourceElement=this;
 			var parentElement=$(this).parent();
 			$.each(data, function(key, value) {
@@ -348,6 +348,10 @@
 					.autoFill(value);
 			});
 		});
+		
+		//remove the list template
+		$(this).remove();
+		return(ret);
 	}
 
 })( jQuery );

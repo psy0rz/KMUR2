@@ -26,10 +26,13 @@ $(document).ready(function()
 
 
 					$(".autoList").autoList(result['data']);
-
+	
 					var edit=function(event)
 					{
-						var id=$(this).parent(".autoList").attr("_value");
+						var listParent=$(this).parent(".autoList");
+						var element=$(this);
+						var id=listParent.attr("_value");
+						element.addClass("highlight");
 						viewPopup(
 							event,
 							"users.edit", 
@@ -38,6 +41,7 @@ $(document).ready(function()
 								"highlight":$(this).attr("_key")
 							},
 							function(){
+								element.removeClass("highlight");
 								//refresh this row on close
 								rpc(
 									"users.get",
@@ -56,31 +60,32 @@ $(document).ready(function()
 						);
 					};
 					$(".clickPopup").click(edit);
+					
 					var del=function(event)
 					{
 						var id=$(this).parent(".autoList").attr("_value");
-						var oldValue=$(this).html();
-						var yes=$("<input>");
-						yes.val("Ja").click(function()
+						$(this).confirm(function()
 						{
-							console.log("WIE");
+							rpc(
+								"users.del",
+								{ 
+									"_id":id 
+								},
+								function(result)
+								{
+									if (!viewShowError(result))
+									{
+										var deleted=$(".autoList[_value="+id+"]");
+										deleted.hide(1000, function()
+										{
+											deleted.remove();
+										});
+									}
+								}
+							);
 						});
-						var no=$("<input>");
-						no.val("Nee").click(function()
-						{
-							console.log("WIE");
-							
-						};
-						
-						$(this).replaceWith(
-							$("<div>").text("Verwijderen?")
-						);
-						$(this).append(yes);
-						$(this).append(no);
-						$(this).effect('highlight',3000);
 					};
 					$(".clickDelete").click(del);
-					
 					
 					
 
