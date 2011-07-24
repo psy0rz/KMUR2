@@ -22,7 +22,7 @@ $(document).ready(function()
 			function(){
 				element.removeClass("highlight");
 				//refresh this row on close
-				$("body").trigger("refresh");
+//				$("body").trigger("refresh");
 	//			rpc(
 //					"users.get",
 				//	{ 
@@ -67,11 +67,9 @@ $(document).ready(function()
 
 	function getData(update)
 	{
-		$(".clickDelete").unbind('click');
-		$(".clickPopup").unbind('click');
 
 		//get data
-		rpc(
+			rpc(
 			"users.getAll",
 			{
 			},						
@@ -89,6 +87,11 @@ $(document).ready(function()
 				{
 					$(".autoList").autoList(meta, result['data']);
 				}
+					
+				$(".clickDelete").unbind('click');
+				$(".clickDelete").click( del);
+				$(".clickPopup").unbind( 'click');
+				$(".clickPopup").click( edit);
 
 				viewReady({
 					'title':"Gebruikers overzicht"
@@ -98,8 +101,6 @@ $(document).ready(function()
 		);
 	}
 
-	$(".clickDelete").live('click', del);
-	$(".clickPopup").live('click', edit);
 
 
 	$("body").bind('refresh',function()

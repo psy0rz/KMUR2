@@ -37,6 +37,10 @@ function viewLoad(element, view, params, readyCallback)
 			{
 				console.debug("view result "+view);
 
+				//clear/unbind old stuff
+				$(element).unbind();
+				$(element).empty();
+				
 				//FIXME: better debugging of javascript inside html
 				$(element).html(result);
 
@@ -160,6 +164,22 @@ function viewAddFavorite(params)
 		}
 	);
 }
+
+//send a refresh event to all .autoRefresh classes.
+//this starts at the top frame.
+//viewPopup-frames have a autoRefresh handler that forwards the event inside the frame.
+function viewTriggerRefresh(element)
+{
+	console.debug("Triggering refresh");
+	$(element).trigger('refresh');
+	if (parent!=self)
+	{
+		console.debug("Also triggering parent frame");
+		parent.viewTriggerRefresh(parent.$(self.frameElement));
+	}
+}
+
+
 //informs the original caller of viewPopup that the data has changed on the server
 //function viewChanged(params)
 //{

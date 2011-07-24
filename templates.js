@@ -90,15 +90,19 @@ function templateForm(params)
 				if (params['saveCallback']!=null)
 					params['saveCallback'](result);
 
+				viewTriggerRefresh(params['parent']);
+				
 				//all ok, close window
 				viewClose();
 			}
 		);
 	};
+
 	
 	$("#submit", params['parent']).click(save);
 	$(params['parent']).bind('keypress', function(e) {
-		if (e.keyCode==13 && $(this.nodeName.toLowerCase()!="textarea"))
+		
+		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
 				save();
 		}
