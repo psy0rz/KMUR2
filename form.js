@@ -210,9 +210,10 @@
 	*  Automaticly recognises element-types and uses the correct way to 'fill in the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*/
-	$.fn.autoFill = function( data , options ) {  
+	$.fn.autoFill = function( meta , data,  options ) {  
 
 		var settings = {
+			'showChanges':false
 		};
 		
 		if ( options ) { 
@@ -220,11 +221,14 @@
 		}
 
 		return this.each(function() {
-			var value=data[$(this).attr("_key")];
+			var key=$(this).attr("_key");
+			var value=data[key];
+			var metaValue=meta[key];
 			var elementType=this.nodeName.toLowerCase();
+			var changed=false;
 
 			//put value in attribute (doesnt work if the value is an array)
-			if ($(this).attr("_value")=="")
+			if (typeof $(this).attr("_value") !='undefined')
 			{
 				$(this).attr("_value", value);
 			}
@@ -233,39 +237,86 @@
 			{
 				if ($(this).attr("type")=="checkbox")
 				{
+					var newChecked;
+					
 					//value checkbox. check if the array contains this checkbox's value
 					if ($(this).attr("value"))
 					{
 						if (typeof(value)=='object' && value.indexOf($(this).attr("value")) != -1)
-							this.checked=true;
+							newChecked=true;
 						else
-							this.checked=false;
+							newChecked=false;
 					}
 					//simple boolean 0/1 checkbox:
 					else
 					{
 						if (value)
-							this.checked=true;
+							newChecked=true;
 						else
-							this.checked=false;
+							newChecked=false;
 					}
+					
+					changed=(this.checked!=newChecked);
+					this.checked=newChecked;
 				}
 				else
 				{
+					changed=($(this).val()!=value);
 					$(this).val(value);
 				}
 			}
 			//textareas and select boxes are easy:
 			else if (elementType=="select" || elementType=="textarea")
 			{
+				changed=($(this).val()!=value);
 				$(this).val(value);
 			}
 			//it regular html element, convert the value to a string and/or html
 			//depending on the datatype
 			else
 			{
-				$(this).text(value);
+				if (metaValue.type=="bool")
+				{
+					var newHtml;
+					if (value)
+						newHtml='<span class="boolTrue">Ja</span>';
+					else
+						newHtml='<span class="boolFalse">Nee</span>';
+					
+					changed=($(this).html()!=newHtml);
+					$(this).html(newHtml);
+				}
+				else if (metaValue.type=="select")
+				{
+					var newText=metaValue.choices[value];
+					changed=($(this).text()!=newText);
+					$(this).text(newText);
+				}
+				else if (metaValue.type=="multiselect")
+				{
+					var newText="";
+					for(valueI in value)
+					{
+						if (newText!="")
+							newText+=", ";
+						newText+=metaValue.choices[value[valueI]];
+					}
+					changed=($(this).text()!=newText);
+					$(this).text(newText);
+				}
+				else
+				{
+					changed=($(this).text()!=value);
+					$(this).text(value);
+				}
 			}
+
+			//something changed and we need to highlight it?
+			if (changed && settings.showChanges)
+			{
+				$(this).effect('highlight', 3000);
+			}
+
 		});
 
 	};
@@ -323,34 +374,61 @@
 
 	/*** Replicates the specified element for every item in the data-array
 	 * Calls autoFill everytime, for elements of class autoFill
+	 * Use updateOn to update an existing list (update, delete and add items)
+	 * Specify the data-key that should be stored in _value to be able to update
 	 */
-	$.fn.autoList = function( data , options ) {  
+	$.fn.autoList = function( meta, data , options ) {  
 
 		var settings = {
 			'class': 'autoFill',
+			'updateOn': false
 		};
 		
 		if ( options ) { 
 			$.extend( settings, options );
 		}
 
+
+		//traverse all the specified lists
 		var ret=this.each(function() {
+
 			var sourceElement=this;
 			var parentElement=$(this).parent();
+			
+			$(sourceElement).show();
+			
+			//traverse the input data
 			$.each(data, function(key, value) {
-				var newElement=$(sourceElement).clone();
-				newElement.appendTo(parentElement)
-					.find("."+settings.class)
-					.autoFill(value);
-				//also fill the newelement itself
-				newElement
-					.filter("."+settings.class)
-					.autoFill(value);
+				var updateElement;
+				
+				//update mode?
+				if (settings.updateOn)
+				{
+					//try to find existing element
+					updateElement=$(".autoListClone[_value="+value._id+"]", $(sourceElement).parent());
+				}
+
+				//add new element?
+				if (!updateElement)
+				{
+					updateElement=$(sourceElement).clone();
+					updateElement.removeClass("autoList");
+					updateElement.addClass("autoListClone");
+					updateElement.appendTo(parentElement);
+				}
+
+				//now autofill the element and its sibblings
+				var autoFillSettings={};
+				autoFillSettings.showChanges=(settings.updateOn!="");
+				$(updateElement).filter("."+settings.class).autoFill(meta, value, autoFillSettings);
+				$("."+settings.class, updateElement).autoFill(meta, value, autoFillSettings);
+
 			});
+			
+			$(sourceElement).hide();
+			
 		});
 		
-		//remove the list template
-		$(this).remove();
 		return(ret);
 	}
 

@@ -16,6 +16,15 @@
 	color: red;
 }
 
+.boolTrue
+{
+	background:#00ff00;
+}
+
+.boolFalse
+{
+	background:#eeeeee;
+}
 
 /**
 .autoList:hover

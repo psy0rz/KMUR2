@@ -11,7 +11,8 @@ function templateForm(params)
 		params['viewParams'],
 		function(result)
 		{
-			$(".autoCreate", params['parent']).autoCreate(result['data']);
+			var meta=result['data'];
+			$(".autoCreate", params['parent']).autoCreate(meta);
 
 			//focus the correct input field
 			if (params['viewParams'] && params['viewParams']['highlight'])
@@ -33,7 +34,7 @@ function templateForm(params)
 
 						if (result['data']!=null)
 						{
-							$(".autoFill", params['parent']).autoFill(result['data']);
+							$(".autoFill", params['parent']).autoFill(meta, result['data']);
 						}
 
 						if (params['loadCallback'])
@@ -54,7 +55,7 @@ function templateForm(params)
 	);
 	
 	//save 
-	$("#submit", params['parent']).click(function()
+	var save=function()
 	{
 		$("#submit", params['parent']).prop("disabled", true);
 
@@ -93,5 +94,13 @@ function templateForm(params)
 				viewClose();
 			}
 		);
+	};
+	
+	$("#submit", params['parent']).click(save);
+	$(params['parent']).bind('keypress', function(e) {
+		if (e.keyCode==13 && $(this.nodeName.toLowerCase()!="textarea"))
+		{
+				save();
+		}
 	});
 }
