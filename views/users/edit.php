@@ -4,14 +4,13 @@
 $(this).ready(function()
 {
 	viewParams=<?=viewGetParams()?>;
-	
 	templateForm({
-		'parent'		: $("#viewMain"),
+		'parent'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',
 		'getData'		: 'users.get',
 		'viewParams' 	: viewParams,
 		'putData'		: 'users.put',
-		'putParams'		: { "_id": viewParams["_id"] },
+		'putParams'		: { "_id": viewParams._id },
 		'defaultFocus'	: 'username',
 		'loadCallback'	: function(result) {
 			if (result['data']['username'])

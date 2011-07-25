@@ -25,24 +25,25 @@ function viewShowError(result, parent)
 
 
 //loads a view in the specified element
-function viewLoad(element, view, params, readyCallback)
+function viewLoad(view, params, readyCallback)
 {
 	console.debug("view loading "+view, params);
-
+	var uriParams=encodeURIComponent(JSON.stringify(params));
+	
 	$.ajax({
 		"dataType":		"html",
-		"url":			"views/"+view.replace(".","/")+".php?"+encodeURI(JSON.stringify(params)),
+		"url":			"views/"+view.replace(".","/")+".php?"+uriParams,
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
 				console.debug("view result "+view);
 
 				//clear/unbind old stuff
-				$(element).unbind();
-				$(element).empty();
+				$(params.element).unbind();
+				$(params.element).empty();
 				
 				//FIXME: better debugging of javascript inside html
-				$(element).html(result);
+				$(params.element).html(result);
 
 				if (typeof readyCallback!='undefined')
 					readyCallback();
@@ -51,7 +52,7 @@ function viewLoad(element, view, params, readyCallback)
 			function (request, status, e)
 			{
 				console.error("Error while loading view via ajax request: ",request.responseText,status,e);
-				$(element).text("Error while loading data: "+request.responseText);
+				$(params.element).text("Error while loading data: "+request.responseText);
 			},
 
 	});
@@ -60,10 +61,15 @@ function viewLoad(element, view, params, readyCallback)
 
 
 
-//create a popup (iframe) and loads the view in it.
+//create a popup and loads the view in it.
+var viewPopupCount=0;
 function viewPopup(event, view, params, viewClosedCallback)
 {
-	var frame=$("<iframe>");
+	var frame=$("<div>");
+	
+	viewPopupCount++;
+	var viewId="view"+viewPopupCount;
+	frame.attr("id",viewId);
 
 	$("body").append(frame);
 
@@ -84,19 +90,23 @@ function viewPopup(event, view, params, viewClosedCallback)
 		}
 	});
 	
-	frame.attr("src","viewPopup.php");
+//	frame.attr("src","viewPopup.php");
 
-	frame.load(function(){
-		frame[0].contentWindow.viewLoad(
-				"#viewMain",
-				view, 
-				params,
-				function()
-				{
-					
-				}
-		);
-	});
+//	frame.load(function(){
+//		frame[0].contentWindow.viewLoad(
+//		frame[0].contentWindow.viewLoad(
+	
+	//store viewId in params, so that the view knows what its element is
+	params.element="#"+viewId;
+
+	viewLoad(view, 
+			params,
+			function()
+			{
+				
+			}
+	);
+//	});
 	
 	
 }

@@ -48,9 +48,15 @@
 						);
 						
 						mainMenuDiv.append(subMenuDiv);
+						
 
 						$.each(mainMenu["subs"], function(subName,subMenu)
 						{
+							if (subMenu.params==null)
+							{
+								subMenu.params={};
+							}
+							
 							subMenuDiv.append(
 								$("<div>")
 									.addClass("menuSub")
@@ -69,8 +75,8 @@
 										}
 										else
 										{
+											subMenu.params.element="#viewMain";
 											viewLoad(
-												"#viewMain", 
 												subMenu["view"],
 												subMenu["params"]
 											);
