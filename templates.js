@@ -93,7 +93,7 @@ function templateForm(params)
 				viewTriggerRefresh(params['parent']);
 				
 				//all ok, close window
-				viewClose();
+				viewClose(params['parent']);
 			}
 		);
 	};

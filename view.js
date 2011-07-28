@@ -65,19 +65,23 @@ function viewLoad(view, params, readyCallback)
 var viewPopupCount=0;
 function viewPopup(event, view, params, viewClosedCallback)
 {
-	var frame=$("<div>");
+	var dialogDiv=$("<div>");
+	dialogDiv.addClass("dialogDiv");
 	
+	
+	var viewDiv=$("<div>");
 	viewPopupCount++;
 	var viewId="view"+viewPopupCount;
-	frame.attr("id",viewId);
-
-	$("body").append(frame);
-
+	viewDiv.attr("id",viewId);
 	
-	var dialog=frame.dialog({
+	$("body").append(dialogDiv);	
+	dialogDiv.append(viewDiv);
+	
+	var dialog=dialogDiv.dialog({
 		height: 'auto',
 		width: 'auto',
-		autoOpen: false,
+//		autoResize: true,
+//		autoOpen: false,
 		title: 'loading...',
 		position: [ 
 			event.clientX,
@@ -91,11 +95,6 @@ function viewPopup(event, view, params, viewClosedCallback)
 		}
 	});
 	
-//	frame.attr("src","viewPopup.php");
-
-//	frame.load(function(){
-//		frame[0].contentWindow.viewLoad(
-//		frame[0].contentWindow.viewLoad(
 	
 	//store viewId in params, so that the view knows what its element is
 	params.element="#"+viewId;
@@ -116,57 +115,44 @@ function viewPopup(event, view, params, viewClosedCallback)
  */
 function viewReady(options)
 {
-//	$(options.element).parent().parent().hide();
-//	$(options.element).parent().parent().show();
-	//$(options.element).show();
-//	$(options.element).dialog('close');
-	$(options.element).dialog('open');
 	
-	return;
-	if (options)
+	//view is inside a dialogdiv?
+	var dialogDiv=$(options.element).parent();
+	if (dialogDiv.hasClass("dialogDiv"))
 	{
-		if ('title' in options)
-			$(options.element).dialog('option', 'title', options['title']);
+		if (options)	
+		{
+			if ('title' in options)
+				dialogDiv.dialog('option', 'title', options['title']);
+		}
+		
+		//get correct dimentions
+		var cw=$(options.element).width()+50;
+		var ch=$(options.element).height()+100;
+		console.debug("dialog content dimentions" ,cw,ch);
+		
+
+		//resize iframe so the contents fit
+		dialogDiv.dialog('option','width',cw);
+		dialogDiv.dialog('option','height',ch);
+		//parent.$(self.frameElement).height(ch);
+
+		//reset position, this makes sure the dialog stays inside the browserwindow
+		var pos=dialogDiv.dialog('option', 'position');
+		dialogDiv.dialog('option', 'position', pos);
 	}
-	
-	//get correct dimentions
-	var cw=$(options.element).width();
-	var ch=$(options.element).height();
-	console.debug("dialog content dimentions" ,cw,ch);
-	
-//	var bw=$(parent.window).width();
-//	var bh=$(parent.window).height();
-//	console.debug("browser window size" ,bw,bh);
-
-//	if (cw>bw)
-//		cw=bw;
-//	if (ch>bh)
-//		ch=bh;
-	
-	//calculate border overhead
-//	console.debug(parent.$(self.frameElement).parent().width(), parent.$(self.frameElement).width());
-//	console.debug(parent.$(self.frameElement).parent());
-
-//	var ow=parent.$(self.frameElement).dialog('option','width')-parent.$(self.frameElement).width();
-//	console.debug("border overhead width and height", ow);
-
-	//resize iframe so the contents fit
-	$(options.element).dialog('option','width',cw);
-	$(options.element).dialog('option','height',ch);
-	//parent.$(self.frameElement).height(ch);
-
-	//reset position, this makes sure the dialog stays inside the browserwindow
-	var pos=$(options.element).dialog('option', 'position');
-	$(options.element).dialog('option', 'position', pos);
-	
 	
 }
 
 //closes the current view
-function viewClose()
+function viewClose(element)
 {
-	parent.$(self.frameElement).dialog('close');
-	//$("#viewMain").html();
+	//view is inside a dialogdiv?
+	var dialogDiv=$(element).parent();
+	if (dialogDiv.hasClass("dialogDiv"))
+	{
+			dialogDiv.dialog('close');
+	}
 }
 
 //add a 'favorite' to the specified menu.
