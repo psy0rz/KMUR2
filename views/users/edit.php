@@ -19,6 +19,7 @@ $(this).ready(function()
 				title="Nieuwe gebruiker";
 				
 			viewReady({
+				'element':viewParams.element,
 				'title':title
 			});
 			
