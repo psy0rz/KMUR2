@@ -1,128 +1,33 @@
+<? require_once("../view.php"); ?>
+
 <script>
 
   
 $(document).ready(function()
 {
-	var meta={};
-
-	var edit=function(event)
-	{
-		var listParent=$(this).parent(".autoListClone");
-		var element=$(this);
-		var id=listParent.attr("_value");
-		element.addClass("highlight");
-		viewPopup(
-			event,
-			"users.edit", 
-			{
-				"_id":id,
-				"highlight":$(this).attr("_key")
-			},
-			//closed
-			function(){
-				element.removeClass("highlight");
-				//refresh this row on close
-//				$("body").trigger("refresh");
-	//			rpc(
-//					"users.get",
-				//	{ 
-			//			"_id":id 
-		//			},
-	//				function(result)
-//					{
-					//	viewShowError(result);
-				//		var changed=$(".autoList[_value="+id+"]");
-			//			changed.find(".autoFill").autoFill(result['data']);
-		//				changed.effect('highlight',3000);
-	//				}
-//				);
-			}
-		);
-	};
-
-	var del=function(event)
-	{
-		var id=$(this).parent(".autoListClone").attr("_value");
-		$(this).confirm(function()
-		{
-			rpc(
-				"users.del",
-				{ 
-					"_id":id 
-				},
-				function(result)
-				{
-					if (!viewShowError(result))
-					{
-						var deleted=$(".autoList[_value="+id+"]");
-						deleted.hide(1000, function()
-						{
-							deleted.remove();
-						});
-					}
-				}
-			);
-		});
-	};
-
-	function getData(update)
-	{
-
-		//get data
-			rpc(
-			"users.getAll",
-			{
-			},						
-			function(result)
-			{
-				viewShowError(result);
-
-				if (update)
-				{
-					$(".autoList").autoList(meta, result['data'], {
-						'updateOn':'_id'
-					});
-				}
-				else
-				{
-					$(".autoList").autoList(meta, result['data']);
-				}
-					
-				$(".clickDelete").unbind('click');
-				$(".clickDelete").click( del);
-				$(".clickPopup").unbind( 'click');
-				$(".clickPopup").click( edit);
-
-				viewReady({
-					'title':"Gebruikers overzicht"
-				});
-
-			}
-		);
-	}
-
-
-
-	$("body").bind('refresh',function()
-	{
-		//console.log("reresh!!");
-		getData(true);
+	var viewParams=<?=viewGetParams()?>;
+	
+	templateList({
+		'parent'		: viewParams.element,
+		'getMeta'		: 'users.getMeta',		
+		'getData'		: 'users.getAll',
+		'delData'		: 'users.del',
+		'viewParams' 	: viewParams,
+		'editView'		: 'users.edit',
+		'id'			: '_id',
+		'loadCallback'	: function(result) {
+				
+			viewReady({
+				'element':viewParams.element,
+				'title': "Gebruikers overzicht"
+			});
+			
+		},
+		'errorCallback'	: function(result) { },
+		'saveCallback'	: function(result) { }
 	});
 
-	//get meta
-	rpc(
-		"users.getMeta",
-		{
-		},						
-		function(result)
-		{
-			meta=result['data'];
-			//add real input to autoCreate divs. 
-			$(".autoCreate").autoCreate(meta);
 
-			getData(false);
-		}
-	)
 });
 
 </script>

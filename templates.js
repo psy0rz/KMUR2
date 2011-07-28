@@ -1,4 +1,4 @@
-
+//////////////////////////////////////////////////////////////////////////////////////////
 function templateForm(params)
 {
 
@@ -108,3 +108,107 @@ function templateForm(params)
 		}
 	});
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+function templateList(params)
+{
+	var meta={};
+	var idKey=params.id;
+
+	var edit=function(event)
+	{
+		var listParent=$(this).parent(".autoListClone");
+		var element=$(this);
+		var id=listParent.attr("_value");
+		element.addClass("highlight");
+		viewPopup(
+			event,
+			params.editView, 
+			{
+				idKey:id,
+				"highlight":$(this).attr("_key")
+			},
+			//closed
+			function(){
+				element.removeClass("highlight");
+			}
+		);
+	};
+
+	var del=function(event)
+	{
+		var id=$(this).parent(".autoListClone").attr("_value");
+		$(this).confirm(function()
+		{
+			rpc(
+				params.delData,
+				{ 
+					idKey:id 
+				},
+				function(result)
+				{
+				}
+			);
+		});
+	};
+
+	function getData(update)
+	{
+
+		//get data
+		rpc(
+			params.getData,
+			{
+			},						
+			function(result)
+			{
+				viewShowError(result);
+
+				if (update)
+				{
+					$(".autoList", params.parent).autoList(meta, result['data'], {
+						'updateOn':params.id
+					});
+				}
+				else
+				{
+					$(".autoList", params.parent).autoList(meta, result['data']);
+				}
+					
+				$(".clickDelete", params.parent).unbind('click');
+				$(".clickDelete", params.parent).click( del);
+				$(".clickPopup", params.parent).unbind( 'click');
+				$(".clickPopup", params.parent).click( edit);
+
+				if (!update)
+				{
+					params.loadCallback(result);
+				}
+			}
+		);
+	}
+
+
+
+	$(params.parent).bind('refresh',function()
+	{
+		//console.log("reresh!!");
+		getData(true);
+	});
+
+	//get meta
+	rpc(
+		params.getMeta,
+		{
+		},						
+		function(result)
+		{
+			meta=result['data'];
+			//add real input to autoCreate divs. 
+			$(".autoCreate", params.parent).autoCreate(meta);
+
+			getData(false);
+		}
+	)
+}
+

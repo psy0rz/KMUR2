@@ -3,7 +3,7 @@
 <script>
 $(this).ready(function()
 {
-	viewParams=<?=viewGetParams()?>;
+	var viewParams=<?=viewGetParams()?>;
 	templateForm({
 		'parent'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',
