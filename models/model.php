@@ -45,9 +45,10 @@ class model
 	
 	protected function getById($collection,$id)
 	{
-		return(
-			$this->db->$collection->findOne(array('_id'=>new MongoId($id)))
-		);
+		$ret=$this->db->$collection->findOne(array('_id'=>new MongoId($id)));
+		if ($ret==null)
+			throw new Exception("Item niet gevonden in database");
+		return ($ret);
 	}
 
 	protected function delById($collection,$id)

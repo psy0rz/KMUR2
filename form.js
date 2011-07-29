@@ -426,14 +426,14 @@
 	 * Use updateOn to update an existing list (update, delete and add items)
 	 * Specify the data-key that should be stored in _value to be able to update
 	 */
-	$.fn.autoList = function( meta, data , options ) {  
+	$.fn.autoList = function( meta, data , options ) {
 
 		var settings = {
 			'class': 'autoFill',
 			'updateOn': false
 		};
 		
-		if ( options ) { 
+		if ( options ) {
 			$.extend( settings, options );
 		}
 
@@ -448,17 +448,17 @@
 			
 			//traverse the input data
 			$.each(data, function(key, value) {
-				var updateElement;
+				var updateElement={};
 				
 				//update mode?
 				if (settings.updateOn)
 				{
 					//try to find existing element
-					updateElement=$(".autoListClone[_value="+value._id+"]", $(sourceElement).parent());
+					updateElement=$(".autoListClone[_value="+value[settings.updateOn]+"]", $(sourceElement).parent());
 				}
 
-				//add new element?
-				if (!updateElement)
+				//not found, add new element?
+				if (!updateElement.length)
 				{
 					updateElement=$(sourceElement).clone();
 					updateElement.removeClass("autoList");
@@ -473,8 +473,32 @@
 				$("."+settings.class, updateElement).autoFill(meta, value, autoFillSettings);
 
 			});
-			
+
 			$(sourceElement).hide();
+			
+			//do we need to delete items?
+			if (settings.updateOn)
+			{
+				//build a map of currenly existing id's
+				var idMap={};
+				$.each(data, function(key, value) {
+					idMap[value[settings.updateOn]]=1;
+				});
+				
+				//traverse all the html list items
+				$(".autoListClone", parentElement).each(function() {
+					//does not exist anymore?
+					if (!idMap[$(this).attr("_value")])
+					{
+						$(this).hide(1000,function()
+						{
+							$(this).remove();
+						});
+					}
+				});
+				
+			}
+			
 			
 		});
 		

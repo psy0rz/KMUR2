@@ -30,16 +30,21 @@ function templateForm(params)
 					{
 						$("#submit", params['parent']).prop("disabled", false);
 
-						viewShowError(result, params['parent']);
-
 						if (result['data']!=null)
 						{
 							$(".autoFill", params['parent']).autoFill(meta, result['data']);
 						}
 
-						if (params['loadCallback'])
-							params['loadCallback'](result);
-
+						if (viewShowError(result, params['parent']))
+						{
+							if (params['errorCallback'])
+								params['errorCallback'](result);
+						}
+						else
+						{
+							if (params['loadCallback'])
+								params['loadCallback'](result);
+						}
 					}
 				);
 			}
