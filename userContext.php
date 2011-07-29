@@ -14,14 +14,14 @@ class userContext
 	
 //	}
 
-	function hasRights(array $rights)
+	function hasRights($rights)
 	{
-		return (array_intersect($rights, $this->$context["rights"]) != array());
+		return (array_intersect($rights, $this->context["rights"]) != array());
 	}
 	
 	function hasRight($right)
 	{
-		return (in_array($right, $this->$context["rights"]));
+		return (in_array($right, $this->context["rights"]));
 	}
 
 	function needRights(array $rights)

@@ -156,12 +156,12 @@ class model
 
 	function canCall($function)
 	{
-		$acl=getAcl();
+		$acl=$this->getAcl();
 		
 		if (isset($acl[$function]))
-			return($this->context.hasRights($acl[$function]));
+			return($this->context->hasRights($acl[$function]));
 		else
-			return($this->context.hasRights($acl["default"]));
+			return($this->context->hasRights($acl["default"]));
 		
 	}
 

@@ -8,7 +8,7 @@ $(document).ready(function()
 	var viewParams=<?=viewGetParams()?>;
 	
 	templateList({
-		'parent'		: viewParams.element,
+		'element'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',		
 		'getData'		: 'users.getAll',
 		'delData'		: 'users.del',

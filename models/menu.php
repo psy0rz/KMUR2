@@ -42,6 +42,8 @@ class menu extends model
 	
 	function __construct()
 	{
+		parent::__construct();
+		
 		$viewDir="views";
 		//load the menu
 		$dirs=scandir($viewDir);

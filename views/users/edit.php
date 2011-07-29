@@ -5,7 +5,7 @@ $(this).ready(function()
 {
 	var viewParams=<?=viewGetParams()?>;
 	templateForm({
-		'parent'		: viewParams.element,
+		'element'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',
 		'getData'		: 'users.get',
 		'viewParams' 	: viewParams,

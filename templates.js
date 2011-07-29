@@ -3,7 +3,7 @@ function templateForm(params)
 {
 
 	//disable submit button while loading
-	$("#submit", params['parent']).prop("disabled", true);
+	$("#submit", params.element).prop("disabled", true);
 	
 	//get meta data
 	rpc(
@@ -12,13 +12,13 @@ function templateForm(params)
 		function(result)
 		{
 			var meta=result['data'];
-			$(".autoCreate", params['parent']).autoCreate(meta);
+			$(".autoCreate", params.element).autoCreate(meta);
 
 			//focus the correct input field
 			if (params['viewParams'] && params['viewParams']['highlight'])
-				$('[_key|="'+params['viewParams']['highlight']+'"]', params['parent']).focus();
+				$('[_key|="'+params['viewParams']['highlight']+'"]', params.element).focus();
 			else
-				$('[_key|='+params['defaultFocus']+']', params['parent']).focus();
+				$('[_key|='+params['defaultFocus']+']', params.element).focus();
 
 			if (params['getData'])
 			{
@@ -28,14 +28,14 @@ function templateForm(params)
 					params['viewParams'],
 					function(result)
 					{
-						$("#submit", params['parent']).prop("disabled", false);
+						$("#submit", params.element).prop("disabled", false);
 
 						if (result['data']!=null)
 						{
-							$(".autoFill", params['parent']).autoFill(meta, result['data']);
+							$(".autoFill", params.element).autoFill(meta, result['data']);
 						}
 
-						if (viewShowError(result, params['parent']))
+						if (viewShowError(result, params.element))
 						{
 							if (params['errorCallback'])
 								params['errorCallback'](result);
@@ -51,7 +51,7 @@ function templateForm(params)
 			//when not loading data, dont forget to call the loadCallback:
 			else
 			{
-				$("#submit", params['parent']).prop("disabled", false);
+				$("#submit", params.element).prop("disabled", false);
 
 				if (params['loadCallback'])
 					params['loadCallback'](result);
@@ -62,13 +62,13 @@ function templateForm(params)
 	//save 
 	var save=function()
 	{
-		$("#submit", params['parent']).prop("disabled", true);
+		$("#submit", params.element).prop("disabled", true);
 
 		//determine parameters to pass to putData
 		var putParams={};
 		if (params['putParams'])
 			putParams=params['putParams'];
-		$(".autoFill", params['parent']).autoGet(putParams);
+		$(".autoFill", params.element).autoGet(putParams);
 		
 		//put data
 		rpc(
@@ -76,9 +76,9 @@ function templateForm(params)
 			putParams,
 			function(result)
 			{
-				$("#submit", params['parent']).prop("disabled", false);
+				$("#submit", params.element).prop("disabled", false);
 				
-				viewShowError(result, params['parent']);
+				viewShowError(result, params.element);
 
 				if (result)
 				{
@@ -98,14 +98,14 @@ function templateForm(params)
 				viewRefresh();
 				
 				//all ok, close window
-				viewClose(params['parent']);
+				viewClose(params.element);
 			}
 		);
 	};
 
 	
-	$("#submit", params['parent']).click(save);
-	$(params['parent']).bind('keypress', function(e) {
+	$("#submit", params.element).click(save);
+	$(params.element).bind('keypress', function(e) {
 		
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
@@ -174,23 +174,23 @@ function templateList(params)
 			},						
 			function(result)
 			{
-				viewShowError(result, params.parent);
+				viewShowError(result, params.element);
 
 				if (update)
 				{
-					$(".autoList", params.parent).autoList(meta, result['data'], {
+					$(".autoList", params.element).autoList(meta, result['data'], {
 						'updateOn':params.id
 					});
 				}
 				else
 				{
-					$(".autoList", params.parent).autoList(meta, result['data']);
+					$(".autoList", params.element).autoList(meta, result['data']);
 				}
 					
-				$(".clickDelete", params.parent).unbind('click');
-				$(".clickDelete", params.parent).click( del);
-				$(".clickPopup", params.parent).unbind( 'click');
-				$(".clickPopup", params.parent).click( edit);
+				$(".clickDelete", params.element).unbind('click');
+				$(".clickDelete", params.element).click( del);
+				$(".clickPopup", params.element).unbind( 'click');
+				$(".clickPopup", params.element).click( edit);
 
 				if (!update)
 				{
@@ -200,7 +200,7 @@ function templateList(params)
 		);
 	}
 
-	$(params.parent).bind('refresh',function()
+	$(params.element).bind('refresh',function()
 	{
 		//console.log("reresh!!");
 		getData(true);
@@ -215,7 +215,7 @@ function templateList(params)
 		{
 			meta=result['data'];
 			//add real input to autoCreate divs. 
-			$(".autoCreate", params.parent).autoCreate(meta);
+			$(".autoCreate", params.element).autoCreate(meta);
 			getData(false);
 		}
 	)
