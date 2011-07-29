@@ -113,7 +113,6 @@ function templateForm(params)
 function templateList(params)
 {
 	var meta={};
-	var idKey=params.id;
 
 	var edit=function(event)
 	{
@@ -121,13 +120,16 @@ function templateList(params)
 		var element=$(this);
 		var id=listParent.attr("_value");
 		element.addClass("highlight");
+		
+		var popupParams={
+			"highlight":$(this).attr("_key")
+		};
+		popupParams[params.id]=id;
+		
 		viewPopup(
 			event,
 			params.editView, 
-			{
-				idKey:id,
-				"highlight":$(this).attr("_key")
-			},
+			popupParams,
 			//closed
 			function(){
 				element.removeClass("highlight");
@@ -140,13 +142,17 @@ function templateList(params)
 		var id=$(this).parent(".autoListClone").attr("_value");
 		$(this).confirm(function()
 		{
+			var rpcParams={};
+			rpcParams[params.id]=id;
 			rpc(
 				params.delData,
-				{ 
-					idKey:id 
-				},
+				rpcParams,
 				function(result)
 				{
+					if (!viewShowError(result, params.parent))
+					{
+						viewTriggerRefresh(params.parent);
+					}
 				}
 			);
 		});
@@ -162,7 +168,7 @@ function templateList(params)
 			},						
 			function(result)
 			{
-				viewShowError(result);
+				viewShowError(result, params.parent);
 
 				if (update)
 				{
@@ -188,8 +194,6 @@ function templateList(params)
 		);
 	}
 
-
-
 	$(params.parent).bind('refresh',function()
 	{
 		//console.log("reresh!!");
@@ -206,7 +210,6 @@ function templateList(params)
 			meta=result['data'];
 			//add real input to autoCreate divs. 
 			$(".autoCreate", params.parent).autoCreate(meta);
-
 			getData(false);
 		}
 	)

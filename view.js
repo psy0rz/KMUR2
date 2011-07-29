@@ -3,14 +3,14 @@
  */
 function viewShowError(result, parent)
 {
-	$("#error", parent).text("");
+	$(".autoError", parent).text("");
 	$(".errorHighlight", parent).removeClass("errorHighlight");
 
 	if (result!=null)
 	{
 		if (result["error"]!=null)
 		{
-			$("#error", parent).text(result["error"]["message"]);
+			$(".autoError", parent).text(result["error"]["message"]);
 			if (result["error"]["field"]!=null)
 			{
 				$(':input[_key|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();

@@ -16,12 +16,10 @@ $(document).ready(function()
 		'editView'		: 'users.edit',
 		'id'			: '_id',
 		'loadCallback'	: function(result) {
-				
 			viewReady({
 				'element':viewParams.element,
 				'title': "Gebruikers overzicht"
 			});
-			
 		},
 		'errorCallback'	: function(result) { },
 		'saveCallback'	: function(result) { }
@@ -53,5 +51,4 @@ $(document).ready(function()
 </tr>
 </table>
 
-<span style='color:#ff0000;' id='error'></span>
-
+<span class='autoError'></span>

@@ -82,5 +82,5 @@ $(this).ready(function()
 
 
 <button id='submit'>Opslaan</button>
-<span style='color:#ff0000;' id='error'></span>
+<span class='autoError'></span>
 

@@ -22,6 +22,7 @@ class users extends model
 				"type"=>"multiselect",
 				"choices"=>array(
 					"admin"=>"Administrator",
+					"lbasdf"=>"Bla",
 					"employee"=>"Medewerker",
 					"customer"=>"Klant",
 				)
@@ -116,8 +117,10 @@ class users extends model
 
 	function del($params)
 	{
+		throw new FieldException("CHEA", "password");
 		$this->verifyMeta($params);
 		$this->delById("users", $params["_id"]);
+
 	}
 
 	function authenticate($params)
