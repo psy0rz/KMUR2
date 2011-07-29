@@ -1,16 +1,19 @@
+<? require_once("../view.php"); ?>
 
 <script>
 $(this).ready(function()
 {
-	
+	var viewParams=<?=viewGetParams()?>;
+
 	templateForm({
-		'parent'		: $("#viewMain"),
+		'parent'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',
 		'putData'		: 'users.authenticate',
 		'defaultFocus'	: 'username',
 		'loadCallback' : function(result)
 		{
 			viewReady({
+				'element': viewParams.element,
 				'title': 'Inloggen'
 			});
 		}
@@ -36,5 +39,5 @@ $(this).ready(function()
 
 
 <button id='submit'>Login</button>
-<span classs='autoError'></span>
+<span class='autoError'></span>
 
