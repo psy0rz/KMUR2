@@ -363,7 +363,7 @@
 			//something changed and we need to highlight it?
 			if (changed && settings.showChanges)
 			{
-				$(this).effect('highlight', 3000);
+				$(this).effect('highlight', 2000);
 			}
 
 		});

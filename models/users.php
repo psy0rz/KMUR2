@@ -22,7 +22,6 @@ class users extends model
 				"type"=>"multiselect",
 				"choices"=>array(
 					"admin"=>"Administrator",
-					"lbasdf"=>"Bla",
 					"employee"=>"Medewerker",
 					"customer"=>"Klant",
 				)

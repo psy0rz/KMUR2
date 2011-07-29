@@ -111,3 +111,25 @@
 {
 	color:#ff0000;
 }
+
+
+.clickPopup:hover
+{
+	background: #dddddd;	
+}
+
+.clickPopup
+{
+	cursor:pointer;
+}
+
+.clickDelete:hover
+{
+	background: #dddddd;	
+}
+
+
+.clickDelete
+{
+	cursor:pointer;
+}

@@ -43,7 +43,7 @@ $(document).ready(function()
 
 <tr class='autoList autoFill ui-widget-content' _key='_id' _value>
 	<td class='autoFill clickPopup' _key='active' >
-	<td class='autoFill clickEdit' _key='username' >
+	<td class='autoFill clickPopup' _key='username' >
 	<td class='autoFill clickPopup' _key='name'>
 	<td class='autoFill clickPopup' _key='gender'>
 	<td class='autoFill clickPopup' _key='rights'>
