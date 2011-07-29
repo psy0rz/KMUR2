@@ -3,7 +3,6 @@
 (function( $ ){
 
 	/*** popup a confim dialog at cursor and execute code on each pressed button
-		will do nothing if theres already a confirm dialog active for this element.
 	*/
 	$.fn.confirm = function( options ) {  
 		
@@ -54,7 +53,57 @@
 		});
 		
 	};
-	
+
+	/*** popup a error dialog at cursor 
+	*/
+	$.fn.error = function( options ) {  
+		
+		var settings = {
+			'title'		: 'Fout',
+			'text' 		: 'Onbekende fout opgetreden'
+		};
+		
+		if ( typeof options == 'function' ) 
+		{
+			settings['callback']=options;
+		}
+		else
+		{
+			$.extend( settings, options );
+		}
+		
+		var div=$("<div>");
+		div.text(settings.text);
+		div.append('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>');
+		
+		var parent=$(this);
+
+		parent.append(div);
+		
+		div.dialog({
+			
+			position: [ 
+				event.clientX,
+				event.clientY 
+			],
+			'modal':true,
+			'title':settings.title,
+			'buttons': {
+				"Ok": function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			'close'	: function(){
+				if (settings.callback)
+				{
+					settings.callback();
+				}
+				div.remove();
+			}
+		});
+		
+	};
+
 	/*** auto create input elements from metadata
 	*  Use _key attribute to specify meta-field.
 	*  If _meta is specified, that meta-field will be litterly filled in as text.

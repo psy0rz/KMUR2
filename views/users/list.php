@@ -51,4 +51,3 @@ $(document).ready(function()
 </tr>
 </table>
 
-<span class='autoError'></span>

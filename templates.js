@@ -90,7 +90,7 @@ function templateForm(params)
 				if (params['saveCallback']!=null)
 					params['saveCallback'](result);
 
-				viewTriggerRefresh(params['parent']);
+				viewRefresh();
 				
 				//all ok, close window
 				viewClose(params['parent']);
@@ -139,7 +139,8 @@ function templateList(params)
 
 	var del=function(event)
 	{
-		var id=$(this).parent(".autoListClone").attr("_value");
+		var rowElement=$(this).parent(".autoListClone");
+		var id=rowElement.attr("_value");
 		$(this).confirm(function()
 		{
 			var rpcParams={};
@@ -149,9 +150,9 @@ function templateList(params)
 				rpcParams,
 				function(result)
 				{
-					if (!viewShowError(result, params.parent))
+					if (!viewShowError(result, rowElement))
 					{
-						viewTriggerRefresh(params.parent);
+						viewRefresh();
 					}
 				}
 			);

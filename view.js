@@ -1,5 +1,6 @@
 /*** Shows error and highlights field
  * Returns false if there are no errors to report
+ * If there is 
  */
 function viewShowError(result, parent)
 {
@@ -10,11 +11,26 @@ function viewShowError(result, parent)
 	{
 		if (result["error"]!=null)
 		{
-			$(".autoError", parent).text(result["error"]["message"]);
+			//show in html element or make a popup?
+			if ($(".autoError", parent).size()!=0)
+			{
+				$(".autoError", parent).text(result["error"]["message"]);
+			}
+			//create popup box
+			else
+			{
+				$(parent).error({
+					text: result.error.message,
+					callback:function(){
+						$(".errorHighlight", parent).removeClass("errorHighlight")
+					}
+				});
+			}
+			
 			if (result["error"]["field"]!=null)
 			{
-				$(':input[_key|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();
-				$('[_errorHighlight|="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight");
+				$('[_key="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();
+				$('[_errorHighlight="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight");
 			}
 			return(true);
 		}
@@ -68,11 +84,11 @@ function viewPopup(event, view, params, viewClosedCallback)
 	var dialogDiv=$("<div>");
 	dialogDiv.addClass("dialogDiv");
 	
-	
 	var viewDiv=$("<div>");
 	viewPopupCount++;
 	var viewId="view"+viewPopupCount;
 	viewDiv.attr("id",viewId);
+	viewDiv.addClass("autoRefresh");
 	
 	$("body").append(dialogDiv);	
 	dialogDiv.append(viewDiv);
@@ -170,23 +186,16 @@ function viewAddFavorite(params)
 }
 
 //send a refresh event to all .autoRefresh classes.
-//this starts at the top frame.
-//viewPopup-frames have a autoRefresh handler that forwards the event inside the frame.
-function viewTriggerRefresh(element)
+function viewRefresh()
 {
 	console.debug("Triggering refresh");
-	$(element).trigger('refresh');
-	if (parent!=self)
-	{
-		console.debug("Also triggering parent frame");
-		parent.viewTriggerRefresh(parent.$(self.frameElement));
-	}
+	$(".autoRefresh").trigger('refresh');
+
+//	if (parent!=self)
+//	{
+//		console.debug("Also triggering parent frame");
+//		parent.viewTriggerRefresh(parent.$(self.frameElement));
+//	}
 }
 
-
-//informs the original caller of viewPopup that the data has changed on the server
-//function viewChanged(params)
-//{
-//	parent.$(self.frameElement).trigger("viewChanged",params);
-//}
 

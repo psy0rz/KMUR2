@@ -90,13 +90,6 @@
 				}
 			);
 
-//			viewLoad($("#viewMain"), "users.list" );
-//			$("#test").click(function()
-	//		{
-		//		console.log("klik");
-			//	$("#viewMain").html("WEG");
-			
-			//});
 		});
 	</script>
 
@@ -105,13 +98,6 @@
 
 <?
 
-	//render menu
-//	require_once("menu.php");
-//	$menu=new menu();
-//	$menu->render(viewGetPath());
-
-	
-//	viewLoad(viewGetPath());
 
 ?>
 
@@ -121,7 +107,7 @@
 
 
 
-<div id='viewMain' class='ui-widget menuOffset'>
+<div id='viewMain' class='ui-widget menuOffset autoRefresh'>
 </div>
 
 </body> 

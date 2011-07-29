@@ -36,5 +36,5 @@ $(this).ready(function()
 
 
 <button id='submit'>Login</button>
-<span style='color:#ff0000;' id='error'></span>
+<span classs='autoError'></span>
 
