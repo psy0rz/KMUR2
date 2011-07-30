@@ -20,6 +20,7 @@ class users extends model
 			"rights"=>array(
 				"desc"=>"Gebruikers rechten",
 				"type"=>"multiselect",
+				"default"=>array("customer"),
 				"choices"=>array(
 					"admin"=>"Administrator",
 					"employee"=>"Medewerker",
@@ -29,6 +30,7 @@ class users extends model
 			"gender"=>array(
 				"desc"=>"Geslacht",
 				"type"=>"select",
+				"default"=>"M",
 				"choices"=>array(
 					"M"=>"Man",
 					"F"=>"Vrouw",
@@ -38,6 +40,7 @@ class users extends model
 			"country"=>array(
 				"desc"=>"Land",
 				"type"=>"select",
+				"default"=>"nl",
 				"choices"=>array(
 					"nl"=>"Nederland",
 					"de"=>"Das reich",
@@ -51,6 +54,7 @@ class users extends model
 			),
 			"active"=>array(
 				"desc"=>"User mag inloggen",
+				"default"=>1,
 				"type"=>"bool",
 			),
 			"name"=>array(
