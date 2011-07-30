@@ -326,32 +326,52 @@
 			{
 				if (metaValue.type=="bool")
 				{
-					var newHtml;
-					if (value)
-						newHtml='<span class="boolTrue">Ja</span>';
-					else
-						newHtml='<span class="boolFalse">Nee</span>';
+					var newElement=$("<span>");
 					
-					changed=($(this).html()!=newHtml);
-					$(this).html(newHtml);
+					if (value)
+					{
+						newElement.addClass("autoHtml_"+metaValue.type+"_True");
+						newElement.addClass("autoHtml_"+key+"_True");
+						newElement.text("Ja");
+					}
+					else
+					{
+						newElement.addClass("autoHtml_"+metaValue.type+"_False");
+						newElement.addClass("autoHtml_"+key+"_False");
+						newElement.text("Nee");
+					}
+					changed=($(this).text()!=$(newElement).text());
+					$(this).empty();
+					$(this).append(newElement);
 				}
 				else if (metaValue.type=="select")
 				{
-					var newText=metaValue.choices[value];
-					changed=($(this).text()!=newText);
-					$(this).text(newText);
+					var newElement=$("<span>");
+					newElement.addClass("autoHtml_"+metaValue.type+"_"+value);
+					newElement.addClass("autoHtml_"+key+"_"+value);
+					newElement.text(metaValue.choices[value]);
+				
+					changed=($(this).text()!=newElement.text());
+					$(this).empty();
+					$(this).append(newElement);
 				}
 				else if (metaValue.type=="multiselect")
 				{
-					var newText="";
+					var oldText=$(this).text();
+					$(this).empty();
+					var first=true;
+					var element=$(this);
 					for(valueI in value)
 					{
-						if (newText!="")
-							newText+=", ";
-						newText+=metaValue.choices[value[valueI]];
+						element.append(
+							$("<span>")
+								.addClass("autoHtml_"+metaValue.type)
+								.addClass("autoHtml_"+metaValue.type+"_"+value[valueI])
+								.addClass("autoHtml_"+key+"_"+value[valueI])
+								.text(metaValue.choices[value[valueI]])
+						);
 					}
-					changed=($(this).text()!=newText);
-					$(this).text(newText);
+					changed=($(this).text()!=oldText);
 				}
 				else
 				{
@@ -387,6 +407,7 @@
 		return this.each(function() {
 			var key=$(this).attr("_key");
 			var elementType=this.nodeName.toLowerCase();
+			console.log ("autogetting", $(this));
 			if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")

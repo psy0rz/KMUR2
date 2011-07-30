@@ -71,7 +71,9 @@ class users extends model
 	{
 		return(array(
 			"default"=>array("admin"),
-			"authenticate"=>array("anonymous")
+			"authenticate"=>array("anonymous"),
+			"getMeta"=>array("anonymous")
+
 		));
 	}
 
@@ -131,8 +133,13 @@ class users extends model
 		
 		if (!$user || $user["password"]!=$params["password"] )
 			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "password");
+
+		if (!$user["active"])
+			throw new FieldException("Uw account is uitgeschakeld", "username");
 		
 		//login validated? change current context
+		//dont foget to always give users anonymous rights!
+		$user["rights"][]="anonymous";
 		$this->context->change($user["username"], $user["rights"]);
 	}
 

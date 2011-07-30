@@ -34,8 +34,8 @@ try
 	if (!method_exists($object,$method))
 		throw new Exception("Method '$method' not found in class '$class'");
 
-//	if (!$object->canCall($method))
-	//	throw new Exception("U heeft niet genoeg rechten voor deze functie");
+	if (!$object->canCall($method))
+		throw new Exception("U heeft niet genoeg rechten voor deze functie");
 
 	//call it
 	$result=array(

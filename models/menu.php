@@ -69,6 +69,15 @@ class menu extends model
 		$this->tree["$main"]["subs"][$sub]=$params;
 	}
 	
+	function getAcl()
+	{
+		return(array(
+			"default"=>array("admin"),
+			"get"=>array("anonymous")
+		));
+	}
+
+
 	function get()
 	{
 		return($this->tree);

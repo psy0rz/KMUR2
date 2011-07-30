@@ -9,13 +9,12 @@ class userContext
 	);
 	
 
-//	function __contructor()
-//	{
-	
-//	}
-
 	function hasRights($rights)
 	{
+//		echo "need:";
+//		print_r($rights);
+//		echo "has:";
+//		print_r($this->context["rights"]);
 		return (array_intersect($rights, $this->context["rights"]) != array());
 	}
 	
@@ -54,6 +53,7 @@ class userContext
 		}
 		
 		$this->context=&$_SESSION['userContext'];
+		
 	}
 } 
 
