@@ -13,8 +13,17 @@ $(this).ready(function()
 		'putParams'		: { "_id": viewParams._id },
 		'defaultFocus'	: 'username',
 		'loadCallback'	: function(result) {
-			if (result['data']['username'])
-				title="Wijzigen gebruiker "+result['data']['username'];
+			if (viewParams._id)
+			{
+				title="Wijzigen gebruiker "+result.data.username;
+				viewAddFavorite({
+					'menu':		"users",
+					'desc':		"Wijzig "+result.data.username,
+					'view':		"users.edit",
+					'params':	viewParams,
+					'mode':		"popup"
+				});
+			}
 			else
 				title="Nieuwe gebruiker";
 				
@@ -23,13 +32,6 @@ $(this).ready(function()
 				'title':title
 			});
 			
-			viewAddFavorite({
-				'menu':		"users",
-				'desc':		"Wijzigen "+result['data']['username'],
-				'view':		"users.edit",
-				'params':	viewParams,
-				'mode':		"popup"
-			});
 		},
 		'errorCallback'	: function(result) { },
 		'saveCallback'	: function(result) { }

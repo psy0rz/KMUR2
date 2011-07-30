@@ -30,9 +30,9 @@ function templateForm(params)
 					{
 						$("#submit", params.element).prop("disabled", false);
 
-						if (result['data']!=null)
+						if (result.data)
 						{
-							$(".autoFill", params.element).autoFill(meta, result['data']);
+							$(".autoFill", params.element).autoFill(meta, result.data);
 						}
 
 						if (viewShowError(result, params.element))

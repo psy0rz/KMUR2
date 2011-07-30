@@ -129,7 +129,7 @@
 				{
 					$(this).text(thismeta[$(this).attr("_meta")]);
 				}
-				else if (thismeta['type']=='string')
+				else if (thismeta.type=='string')
 				{
 					if (thismeta['max']==null || thismeta['max']>100)
 					{
@@ -137,7 +137,7 @@
 							$("<textarea>")
 								.addClass(settings.class)
 								.attr("_key",key)
-								.attr("title",thismeta['desc'])
+								.attr("title",thismeta.desc)
 								.addClass("ui-widget-content")
 								.addClass("ui-corner-all")
 						);
@@ -149,13 +149,14 @@
 								.addClass(settings.class)
 								.attr("_key",key)
 								.attr("type","text")
-								.attr("title",thismeta['desc'])
+								.attr("title",thismeta.desc)
 								.addClass("ui-widget-content")
 								.addClass("ui-corner-all")
 						);
 					}
+					$(this).val(thismeta.default);
 				}
-				else if (thismeta['type']=='password')
+				else if (thismeta.type=='password')
 				{
 					$(this).append(
 						$("<input>")
@@ -166,8 +167,9 @@
 							.addClass("ui-widget-content")
 							.addClass("ui-corner-all")
 					);
+					$(this).val(thismeta.default);
 				}
-				else if (thismeta['type']=='float' || thismeta['type']=='integer')
+				else if (thismeta.type=='float' || thismeta.type=='integer')
 				{
 					$(this).append(
 						$("<input>")
@@ -178,8 +180,9 @@
 							.addClass("ui-widget-content")
 							.addClass("ui-corner-all")
 					);
+					$(this).val(thismeta.default);
 				}
-				else if (thismeta['type']=='select')
+				else if (thismeta.type=='select')
 				{
 					//create select element
 					var s=$("<select>")
@@ -199,17 +202,18 @@
 						);
 					});
 
+					s.val(thismeta.default);
+
 					//add results to div
 					$(this).append(s);
 				}
-				else if (thismeta['type']=='multiselect')
+				else if (thismeta.type=='multiselect')
 				{
 					var parent=$(this);
 					//add choices
 					$.each(thismeta['choices'], function(choice, desc){
 						//add checkbox
-						parent.append(
-							$("<input>")
+						var checkbox=$("<input>")
 								.addClass(settings.class)
 								.attr("value",choice)
 								.attr("type","checkbox")
@@ -218,7 +222,9 @@
 								.attr("title",thismeta['desc'])
 								.addClass("ui-widget-content")
 								.addClass("ui-corner-all")
-						);
+
+						checkbox.checked=(thismeta.default.indexOf(choice) != -1);
+						parent.append(checkbox);
 						
 						//add description
 						parent.append(
@@ -233,18 +239,19 @@
 
 					});
 				}
-				else if (thismeta['type']=='bool')
+				else if (thismeta.type=='bool')
 				{
-					$(this).append(
-						$("<input>")
-							.addClass(settings.class)
-							.attr("_key",key)
-							.attr("type","checkbox")
-							.attr("value","")
-							.addClass("ui-widget-content")
-							.addClass("ui-corner-all")
-							.attr("title",thismeta['desc'])
-					);
+					var checkbox=$("<input>")
+						.addClass(settings.class)
+						.attr("_key",key)
+						.attr("type","checkbox")
+						.attr("value","")
+						.addClass("ui-widget-content")
+						.addClass("ui-corner-all")
+						.attr("title",thismeta['desc']);
+
+					checkbox.checked=thismeta.default;
+					$(this).append(checkbox);
 				}
 
 			}

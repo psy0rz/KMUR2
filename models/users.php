@@ -25,6 +25,7 @@ class users extends model
 					"admin"=>"Administrator",
 					"employee"=>"Medewerker",
 					"customer"=>"Klant",
+					"finance"=>"Financieel",
 				)
 			),
 			"gender"=>array(
@@ -60,6 +61,7 @@ class users extends model
 			"name"=>array(
 				"desc"=>"Voornaam en achternaam",
 				"type"=>"string",
+				"default"=>"sdf",
 				"min"=>3,
 				"max"=>50
 			),
@@ -98,7 +100,7 @@ class users extends model
 		if (isset($params['_id']) && $params['_id'])
 			$user=$this->getById("users",$params['_id']);
 		else
-			$user="";
+			$user=null;
 	
 		return ($user);
 	}
