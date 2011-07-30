@@ -83,6 +83,6 @@ $(this).ready(function()
 </table>
 
 
-<button id='submit'>Opslaan</button>
+<button class='autoClickSave'>Opslaan</button>
 <span class='autoError'></span>
 

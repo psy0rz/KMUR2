@@ -38,6 +38,6 @@ $(this).ready(function()
 
 
 
-<button id='submit'>Login</button>
+<button class='autoClickSave'>Login</button>
 <span class='autoError'></span>
 

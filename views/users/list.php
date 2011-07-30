@@ -42,12 +42,12 @@ $(document).ready(function()
 </tr>
 
 <tr class='autoList autoFill ui-widget-content' _key='_id' _value>
-	<td class='autoFill clickPopup' _key='active' >
-	<td class='autoFill clickPopup' _key='username' >
-	<td class='autoFill clickPopup' _key='name'>
-	<td class='autoFill clickPopup' _key='gender'>
-	<td class='autoFill clickPopup' _key='rights'>
-	<td class='clickDelete'>DEL
+	<td class='autoFill autoClickEdit' _key='active' >
+	<td class='autoFill autoClickEdit' _key='username' >
+	<td class='autoFill autoClickEdit' _key='name'>
+	<td class='autoFill autoClickEdit' _key='gender'>
+	<td class='autoFill autoClickEdit' _key='rights'>
+	<td class='autoClickDel'>DEL
 </tr>
 </table>
 

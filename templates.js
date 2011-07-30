@@ -3,7 +3,7 @@ function templateForm(params)
 {
 
 	//disable submit button while loading
-	$("#submit", params.element).prop("disabled", true);
+	$(".autoClickSave", params.element).prop("disabled", true);
 	
 	//get meta data
 	rpc(
@@ -28,7 +28,7 @@ function templateForm(params)
 					params['viewParams'],
 					function(result)
 					{
-						$("#submit", params.element).prop("disabled", false);
+						$(".autoClickSave", params.element).prop("disabled", false);
 
 						if (result.data)
 						{
@@ -51,7 +51,7 @@ function templateForm(params)
 			//when not loading data, dont forget to call the loadCallback:
 			else
 			{
-				$("#submit", params.element).prop("disabled", false);
+				$(".autoClickSave", params.element).prop("disabled", false);
 
 				if (params['loadCallback'])
 					params['loadCallback'](result);
@@ -62,7 +62,7 @@ function templateForm(params)
 	//save 
 	var save=function()
 	{
-		$("#submit", params.element).prop("disabled", true);
+		$(".autoClickSave", params.element).prop("disabled", true);
 
 		//determine parameters to pass to putData
 		var putParams={};
@@ -76,7 +76,7 @@ function templateForm(params)
 			putParams,
 			function(result)
 			{
-				$("#submit", params.element).prop("disabled", false);
+				$(".autoClickSave", params.element).prop("disabled", false);
 				
 				viewShowError(result, params.element);
 
@@ -104,12 +104,12 @@ function templateForm(params)
 	};
 
 	
-	$("#submit", params.element).click(save);
+	$(".autoClickSave", params.element).click(save);
 	$(params.element).bind('keypress', function(e) {
 		
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
-				save();
+			save();
 		}
 	});
 }
@@ -187,10 +187,10 @@ function templateList(params)
 					$(".autoList", params.element).autoList(meta, result['data']);
 				}
 					
-				$(".clickDelete", params.element).unbind('click');
-				$(".clickDelete", params.element).click( del);
-				$(".clickPopup", params.element).unbind( 'click');
-				$(".clickPopup", params.element).click( edit);
+				$(".autoClickDel", params.element).unbind('click');
+				$(".autoClickDel", params.element).click( del);
+				$(".autoClickEdit", params.element).unbind( 'click');
+				$(".autoClickEdit", params.element).click( edit);
 
 				if (!update)
 				{
