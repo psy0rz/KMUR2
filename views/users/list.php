@@ -41,7 +41,7 @@ $(document).ready(function()
 	<th>
 </tr>
 
-<tr class='autoList autoFill ' _key='_id' _value>
+<tr class='autoList autoFill ui-widget-content' _key='_id' _value>
 	<td class='autoFill autoClickEdit' _key='active' >
 	<td class='autoFill autoClickEdit' _key='username' >
 	<td class='autoFill autoClickEdit' _key='name'>
