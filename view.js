@@ -5,7 +5,7 @@
 function viewShowError(result, parent)
 {
 	$(".autoError", parent).text("");
-	$(".errorHighlight", parent).removeClass("errorHighlight");
+	$(".ui-state-error", parent).removeClass("ui-state-error");
 
 	if (result!=null)
 	{
@@ -15,6 +15,8 @@ function viewShowError(result, parent)
 			if ($(".autoError", parent).size()!=0)
 			{
 				$(".autoError", parent).text(result["error"]["message"]);
+				$(".autoError", parent).addClass("ui-state-error");
+
 			}
 			//create popup box
 			else
@@ -22,15 +24,15 @@ function viewShowError(result, parent)
 				$(parent).error({
 					text: result.error.message,
 					callback:function(){
-						$(".errorHighlight", parent).removeClass("errorHighlight")
+						$(".ui-state-error", parent).removeClass("ui-state-error")
 					}
 				});
 			}
 			
 			if (result["error"]["field"]!=null)
 			{
-				$('[_key="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight").focus();
-				$('[_errorHighlight="'+result["error"]["field"]+'"]', parent).addClass("errorHighlight");
+				$('[_key="'+result["error"]["field"]+'"]', parent).addClass("ui-state-error").focus();
+				$('[_errorHighlight="'+result["error"]["field"]+'"]', parent).addClass("ui-state-error");
 			}
 			return(true);
 		}

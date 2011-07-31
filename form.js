@@ -26,7 +26,7 @@
 		
 		var parent=$(this);
 
-		parent.addClass("highlight");
+		parent.addClass("ui-state-highlight");
 		parent.append(div);
 		
 		div.dialog({
@@ -47,7 +47,7 @@
 				}
 			},
 			'close'	: function(){
-				parent.removeClass("highlight");
+				parent.removeClass("ui-state-highlight");
 				div.remove();
 			}
 		});
@@ -138,8 +138,6 @@
 								.addClass(settings.class)
 								.attr("_key",key)
 								.attr("title",thismeta.desc)
-								.addClass("ui-widget-content")
-								.addClass("ui-corner-all")
 						);
 					}
 					else
@@ -150,8 +148,6 @@
 								.attr("_key",key)
 								.attr("type","text")
 								.attr("title",thismeta.desc)
-								.addClass("ui-widget-content")
-								.addClass("ui-corner-all")
 						);
 					}
 					$(this).val(thismeta.default);
@@ -164,8 +160,6 @@
 							.attr("_key",key)
 							.attr("type","password")
 							.attr("title",thismeta['desc'])
-							.addClass("ui-widget-content")
-							.addClass("ui-corner-all")
 					);
 					$(this).val(thismeta.default);
 				}
@@ -177,8 +171,6 @@
 							.attr("_key",key)
 							.attr("type","text")
 							.attr("title",thismeta['desc'])
-							.addClass("ui-widget-content")
-							.addClass("ui-corner-all")
 					);
 					$(this).val(thismeta.default);
 				}
@@ -189,8 +181,6 @@
 						.addClass(settings.class)
 						.attr("_key",key)
 						.attr("type","text")
-						.addClass("ui-widget-content")
-						.addClass("ui-corner-all")
 						.attr("title",thismeta['desc']);
 
 					//add choices
@@ -220,8 +210,6 @@
 								.attr("_key",key)
 								.attr("id",key+"."+choice)
 								.attr("title",thismeta['desc'])
-								.addClass("ui-widget-content")
-								.addClass("ui-corner-all")
 
 						checkbox.checked=(thismeta.default.indexOf(choice) != -1);
 						parent.append(checkbox);
@@ -246,8 +234,6 @@
 						.attr("_key",key)
 						.attr("type","checkbox")
 						.attr("value","")
-						.addClass("ui-widget-content")
-						.addClass("ui-corner-all")
 						.attr("title",thismeta['desc']);
 
 					checkbox.checked=thismeta.default;

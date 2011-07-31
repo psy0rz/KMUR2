@@ -124,7 +124,7 @@ function templateList(params)
 		var listParent=$(this).parent(".autoListClone");
 		var element=$(this);
 		var id=listParent.attr("_value");
-		element.addClass("highlight");
+		element.addClass("ui-state-highlight");
 		
 		var popupParams={
 			"highlight":$(this).attr("_key")
@@ -137,7 +137,7 @@ function templateList(params)
 			popupParams,
 			//closed
 			function(){
-				element.removeClass("highlight");
+				element.removeClass("ui-state-highlight");
 			}
 		);
 	};

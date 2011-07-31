@@ -1,4 +1,4 @@
-.errorHighlight
+/**.errorHighlight
 {
 	border-style: solid;
 	border-width: 2px;
@@ -15,7 +15,7 @@
 	border-color: red;
 	color: red;
 }
-
+*/
 
 /**
 .autoList:hover
@@ -98,32 +98,16 @@
 	background: #dddddd;
 }
 
-.autoError
+
+.autoClickEdit:hover, .autoClickDel:hover
 {
-	color:#ff0000;
 }
 
-
-.clickPopup:hover
-{
-	background: #dddddd;	
-}
-
-.clickPopup
+.autoClickEdit, .autoClickDel
 {
 	cursor:pointer;
 }
 
-.clickDelete:hover
-{
-	background: #dddddd;	
-}
-
-
-.clickDelete
-{
-	cursor:pointer;
-}
 
 .autoHtml_multiselect
 {
