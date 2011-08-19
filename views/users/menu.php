@@ -9,6 +9,11 @@ $this->addSub("users","list",array(
 	"view"=>"users.list",
 ));
 
+$this->addSub("users","list2",array(
+	"desc"=>"Overzicht2",
+	"view"=>"users.list2",
+));
+
 $this->addSub("users","new",array(
 	"desc"=>"Nieuw",
 	"view"=>"users.edit",

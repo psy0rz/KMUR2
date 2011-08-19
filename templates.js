@@ -64,10 +64,10 @@ function templateForm(params)
 	{
 		$(".autoClickSave", params.element).prop("disabled", true);
 
-		//determine parameters to pass to putData
+		//are there putParams that we should COPY to putData
 		var putParams={};
 		if (params['putParams'])
-			putParams=params['putParams'];
+			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
 		$(".autoFill", params.element).autoGet(putParams);
 		
 		//put data

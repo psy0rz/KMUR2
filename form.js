@@ -400,7 +400,6 @@
 		return this.each(function() {
 			var key=$(this).attr("_key");
 			var elementType=this.nodeName.toLowerCase();
-			console.log ("autogetting", $(this));
 			if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")
