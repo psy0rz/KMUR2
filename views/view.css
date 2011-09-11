@@ -1,0 +1,34 @@
+
+
+.autoClickEdit:hover, .autoClickDel:hover
+{
+}
+
+.autoClickEdit, .autoClickDel
+{
+	cursor:pointer;
+}
+
+
+.autoHtml_multiselect
+{
+	border-left-width: 1px;
+	border-left-style: solid;
+	margin-right:1em;
+	border-color: #aaaaaa;
+}
+
+.autoHtml_rights_admin
+{
+	color: red;
+}
+
+.autoHtml_active_True
+{
+}
+
+.autoHtml_active_False
+{
+	color:red;
+	
+}

@@ -1,46 +1,23 @@
-/**.errorHighlight
+.colorRows:hover
 {
-	border-style: solid;
-	border-width: 2px;
-	border-color: red;
-	background: yellow;
-	color: red;
+       background: yellow;
 }
 
-.highlight
+.colorRows
 {
-	background: yellow;
-	border-style: solid;
-	border-width: 2px;
-	border-color: red;
-	color: red;
-}
-*/
-
-/**
-.autoList:hover
-{
-	background: yellow;
+       background: #EFE;
+       cursor: pointer;
 }
 
-.autoList
+.colorRows:nth-child(2n-1)
 {
-	background: #00eeee;
-	cursor: pointer;
+       background: #DFD;
 }
 
-.autoList:nth-child(2n-1)
+.colorRows:nth-child(2n-1):hover
 {
-	background: #00ffff;
+       background: yellow;
 }
-
-.autoList:nth-child(2n-1):hover
-{
-	background: yellow;
-}
-
- 
-*/
 
 
 #viewMenu
@@ -99,34 +76,4 @@
 }
 
 
-.autoClickEdit:hover, .autoClickDel:hover
-{
-}
 
-.autoClickEdit, .autoClickDel
-{
-	cursor:pointer;
-}
-
-
-.autoHtml_multiselect
-{
-	border-left-width: 1px;
-	border-left-style: solid;
-	margin-right:1em;
-	border-color: #aaaaaa;
-}
-
-.autoHtml_rights_admin
-{
-	color: red;
-}
-
-.autoHtml_active_True
-{
-}
-
-.autoHtml_active_False
-{
-	color:red;
-}
