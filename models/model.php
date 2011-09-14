@@ -54,7 +54,10 @@ class model
 	protected function delById($collection,$id)
 	{
 		return (
-			$this->db->$collection->remove(array('_id' => new MongoId($id)))
+			$this->db->$collection->remove(
+				array('_id' => new MongoId($id)),
+				array("safe"=>true)
+			)
 		);
 	}
 
@@ -149,9 +152,11 @@ class model
 			$this->db->$collection->update(
 				array('_id' => new MongoId($id)), 
 				array('$set'=>$data),
-				array("upsert"=>true)
+				array(
+					"upsert"=>true,
+					"safe"=>true
+				)
 			);
-			
 	}
 
 	function canCall($function)
@@ -162,7 +167,6 @@ class model
 			return($this->context->hasRights($acl[$function]));
 		else
 			return($this->context->hasRights($acl["default"]));
-		
 	}
 
 	function getAcl()

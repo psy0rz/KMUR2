@@ -55,5 +55,10 @@ class userContext
 		$this->context=&$_SESSION['userContext'];
 		
 	}
+	
+	function getUser()
+	{
+		return($this->context["user"]);
+	}
 } 
 

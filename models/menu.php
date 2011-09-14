@@ -73,7 +73,8 @@ class menu extends model
 	{
 		return(array(
 			"default"=>array("admin"),
-			"get"=>array("anonymous")
+			"get"=>array("anonymous"),
+			"addFavorite"=>array("employee", "admin", "customer")
 		));
 	}
 
@@ -82,7 +83,30 @@ class menu extends model
 	{
 		return($this->tree);
 	}
-	
-	
+
+	/*
+		'menu':		"users",
+		'desc':		"Wijzig "+result.data.username,
+		'view':		"users.edit",
+		'params':	viewParams,
+		'mode':		"popup"
+	*/
+	function addFavorite($params)
+	{
+		$this->db->"menu"->update(
+			array(
+				'user' => $this->context->getUser(),
+				'menu' => $params["menu"],
+				'view' =>
+			), 
+			array(
+				'$set' => array(
+					'user' => $this->context->getUser(),
+					'desc' => $parms["desc"]
+				)
+			),
+			array("upsert"=>true)
+		);
+	}
 }
 
