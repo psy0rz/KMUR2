@@ -8,7 +8,7 @@ class userContext
 		"rights"	=>array("anonymous")
 	);
 	
-
+	//check if the user has any of the rights (one is enough)
 	function hasRights($rights)
 	{
 //		echo "need:";

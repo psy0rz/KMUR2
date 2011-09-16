@@ -190,9 +190,9 @@ function viewAddFavorite(params)
 		params,
 		function(result)
 		{
-			//uppate menu?
 		}
 	);
+	
 }
 
 //send a refresh event to all .autoRefresh classes.
@@ -201,11 +201,6 @@ function viewRefresh()
 	console.debug("Triggering refresh");
 	$(".autoRefresh").trigger('refresh');
 
-//	if (parent!=self)
-//	{
-//		console.debug("Also triggering parent frame");
-//		parent.viewTriggerRefresh(parent.$(self.frameElement));
-//	}
 }
 
 
