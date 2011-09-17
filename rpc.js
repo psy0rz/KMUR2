@@ -4,13 +4,13 @@ function rpc(classMethod, params, callback)
 {
 	console.debug("rpc call "+classMethod+": ", params);
 
-	class=classMethod.substr(0,classMethod.indexOf("."));
+	classname=classMethod.substr(0,classMethod.indexOf("."));
 	method=classMethod.substr(classMethod.indexOf(".")+1);
 	
 	//(add extra info to the url for easier debugging in webserver logs)
 	$.ajax({
 		"dataType":		"json",
-		"url":			"rpc.php/"+class+"."+method,
+		"url":			"rpc.php/"+classname+"."+method,
 		"error":
 			function (request, status, e)
 			{
@@ -31,7 +31,7 @@ function rpc(classMethod, params, callback)
 			},
 		"type": "post",
 		"data": {
-				"class":class,
+				"class":classname,
 				"method":method,
 				"params":JSON.stringify(params)
 			},

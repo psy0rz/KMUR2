@@ -31,10 +31,10 @@
 		
 		div.dialog({
 			
-			position: [ 
-				event.clientX,
-				event.clientY 
-			],
+//			position: [ 
+//				event.clientX,
+//				event.clientY 
+//			],
 			'modal':true,
 			'title':settings.title,
 			'buttons': {
@@ -82,10 +82,10 @@
 		
 		div.dialog({
 			
-			position: [ 
-				event.clientX,
-				event.clientY 
-			],
+//			position: [ 
+//				event.clientX,
+//				event.clientY 
+//			],
 			'modal':true,
 			'title':settings.title,
 			'buttons': {

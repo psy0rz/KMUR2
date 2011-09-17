@@ -16,6 +16,10 @@ $(this).ready(function()
 				'element': viewParams.element,
 				'title': 'Inloggen'
 			});
+		},
+		'saveCallback' : function()
+		{
+			menuReload();
 		}
 	});
 
