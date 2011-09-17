@@ -25,6 +25,7 @@ function viewPrintHtmlIncludes()
 	<script type="text/javascript" src="rpc.js"></script>
 	<script type="text/javascript" src="form.js"></script>
 	<script type="text/javascript" src="view.js"></script>
+	<script type="text/javascript" src="menu.js"></script>
 	<script type="text/javascript" src="templates.js"></script>
 	<link href="default.css" rel="stylesheet" type="text/css"/>
 	<link href="views/view.css" rel="stylesheet" type="text/css"/>
@@ -33,35 +34,4 @@ function viewPrintHtmlIncludes()
 
 }
 
-function viewGetPath()
-{
-	if (isset($_SERVER["PATH_INFO"]))
-		$viewPath=$_SERVER["PATH_INFO"];
-	else
-		$viewPath="";
-		
-	return($viewPath);
-}
 
-
-function viewLoad($viewPath)
-{
-	//determine what view to include
-	if ($viewPath)
-	{
-		$segments=explode("/",$viewPath);
-		$module=$segments[1];
-		$view=$segments[2];
-
-		if ($module && $view)
-		{
-			if (preg_match("/[^a-zA-Z0-9]/",$module.$view))
-				die("Illegal module or view name!");
-			
-			echo "<div class='view'>";
-			chdir("views/$module");
-			require_once("views/$module/$view.php");
-			echo "</div>";
-		}
-	}
-}
