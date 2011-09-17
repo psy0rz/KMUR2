@@ -173,27 +173,6 @@ function viewClose(element)
 	}
 }
 
-/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
-parameters:
-{
-	'menu':		"users",
-	'desc':		"Wijzig "+result.data.username,
-	'view':		"users.edit",
-	'params':	viewParams,
-	'mode':		"popup"
-}
-*/
-function viewAddFavorite(params)
-{
-	rpc(
-		"menu.addFavorite",
-		params,
-		function(result)
-		{
-		}
-	);
-	
-}
 
 //send a refresh event to all .autoRefresh classes.
 function viewRefresh()

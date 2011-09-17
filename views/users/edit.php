@@ -16,7 +16,7 @@ $(this).ready(function()
 			if (viewParams._id)
 			{
 				title="Wijzigen gebruiker "+result.data.username;
-				viewAddFavorite({
+				menuAddFavorite({
 					'menu':		"users",
 					'desc':		"Wijzig "+result.data.username,
 					'view':		"users.edit",

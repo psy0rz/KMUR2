@@ -82,7 +82,26 @@ class menu extends model
 
 	function get()
 	{
-		return($this->tree);
+		//get the tree
+		$ret=$this->tree;
+		
+		
+		//get all the favorite items for this user
+		$cursor=$this->db->menu->find(array(
+			'user' => $this->context->getUser(),
+		));
+		$cursor->sort(array("timestamp"=>-1));
+	
+		foreach ($cursor as $item)
+		{
+			//group items by menu
+			if (!isset($ret[$item["menu"]]) || count($ret[$item["menu"]])<10)
+			{
+				$ret[$item["menu"]]["favorites"][]=$item;
+			}
+		}
+		
+		return($ret);
 	}
 
 	/*
@@ -110,11 +129,12 @@ class menu extends model
 					'view' => $params["view"],
 					'params' => $params["params"],
 					'desc' => $params["desc"],
-					'mode' => $params["mode"]
+					'mode' => $params["mode"],
+					'timestamp' => time(),
 				),
-				'$inc' => array(
-					'count' => 1
-				)
+//				'$inc' => array(
+//					'count' => 1
+//				)
 			),
 			array(
 				"upsert"=>true,
@@ -127,37 +147,18 @@ class menu extends model
 			'user' => $this->context->getUser(),
 			'menu' => $params["menu"],
 		));
-		$cursor->sort(array("count"=>1));
+		$cursor->sort(array("timestamp"=>1));
 		
 		//too much items?
 		$count=$cursor->count();
 		while ($count>10)
 		{
-			//delete the one with the lowest count
+			//delete the oldest first
 			$delete=$cursor->getNext();
 			$this->delById("menu",$delete["_id"]);
 			$count--;
 		}
 	}
 	
-	function getFavorites($params)
-	{
-		//get all the favorite items for this user
-		$cursor=$this->db->menu->find(array(
-			'user' => $this->context->getUser(),
-		));
-		$cursor->sort(array("count"=>-1));
-	
-		foreach ($cursor as $item)
-		{
-			//group items by menu
-			if (!isset($ret[$item["menu"]]) || count($ret[$item["menu"]])<10)
-			{
-				$ret[$item["menu"]][]=$item;
-			}
-		}
-		
-		return($ret);
-	}
 }
 

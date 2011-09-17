@@ -1,7 +1,3 @@
-function menuReloadFavorites()
-{
-	
-}
 
 
 function menuReload()
@@ -43,7 +39,7 @@ function menuReload()
 				mainMenuDiv.append(subMenuDiv);
 				
 
-				$.each(mainMenu["subs"], function(subName,subMenu)
+				var addFunc=function(subName,subMenu)
 				{
 					if (subMenu.params==null)
 					{
@@ -76,10 +72,49 @@ function menuReload()
 								}
 							})
 					);
-				});
+				};
+
+				//add submenus
+				$.each(mainMenu["subs"], addFunc);
 			
+				//add favorites?
+				if ("favorites" in mainMenu)
+				{
+					subMenuDiv.append(
+						$("<div>")
+							.addClass("menuSeperator")
+						);
+					$.each(mainMenu["favorites"], addFunc);
+					
+				}
+				
 				menuDiv.append(mainMenuDiv);
 			});
 		}
 	);
 }
+
+
+/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
+parameters:
+{
+	'menu':		"users",
+	'desc':		"Wijzig "+result.data.username,
+	'view':		"users.edit",
+	'params':	viewParams,
+	'mode':		"popup"
+}
+*/
+function menuAddFavorite(params)
+{
+	rpc(
+		"menu.addFavorite",
+		params,
+		function(result)
+		{
+			menuReload();
+		}
+	);
+	
+}
+
