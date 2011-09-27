@@ -10,8 +10,16 @@ $result=array();
 
 try
 {
-	$class=$_REQUEST['class'];
-	$method=$_REQUEST['method'];
+	if (isset($_REQUEST['class']))
+		$class=$_REQUEST['class'];
+	else
+		$class="";
+	
+	if (isset($_REQUEST['method']))
+		$method=$_REQUEST['method'];
+	else
+		$method="";
+
 	if (isset($_REQUEST['params']))
 		$params=json_decode($_REQUEST['params'], true);
 	else

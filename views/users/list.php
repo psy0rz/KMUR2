@@ -33,11 +33,11 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th><span class='autoCreate' _key='active' _meta='desc'></span>
-	<th><span class='autoCreate' _key='username' _meta='desc'></span>
-	<th><span class='autoCreate' _key='name' _meta='desc'></span>
-	<th><span class='autoCreate' _key='gender' _meta='desc'></span>
-	<th><span class='autoCreate' _key='rights' _meta='desc'></span>
+	<th class='autoCreate' _key='active' _meta='desc'>
+	<th class='autoCreate' _key='username' _meta='desc'>
+	<th class='autoCreate' _key='name' _meta='desc'>
+	<th class='autoCreate' _key='gender' _meta='desc'>
+	<th class='autoCreate' _key='rights' _meta='desc'>
 	<th>
 </tr>
 

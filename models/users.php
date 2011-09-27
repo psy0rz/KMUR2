@@ -83,6 +83,31 @@ class users extends model
 		));
 	}
 
+	//get usernames indexed by id. (for use in selectboxes)
+	//with right you specify which right the users should have.
+	//returns:
+	// id=>name
+	function getNames($params)
+	{
+		$cursor = $this->db->users->find(array(
+			"query"=>array(
+				"rights"=>$params["right"]
+			),
+			"fields"=>array(
+				"_id"=>1,
+				"name"=>1
+			)
+		));
+
+		$ret=array();
+		foreach ($cursor as $obj) 
+		{
+			//convert id to normal string rightaway
+			$ret[(string)$obj['_id']]=$obj["name"];
+		}
+		return($ret);
+	}
+
 
 	function getAll()
 	{

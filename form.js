@@ -104,142 +104,152 @@
 		
 	};
 
-	/*** auto create input elements from metadata
+	/*** auto create input elements from metadata and add them to the element.
 	*  Use _key attribute to specify meta-field.
-	*  If _meta is specified, that meta-field will be litterly filled in as text.
+	*  If _meta is specified, that meta-field will be litterly filled in as text.(usefull for descriptions)
 	*/
 	$.fn.autoCreate = function( meta , options ) {  
 
 		var settings = {
-			'class': 'autoFill'
+			'autoFillClass': 'autoFill',
+			'autoCreateClass': 'autoCreate',
 		};
 		
 		if ( options ) { 
 			$.extend( settings, options );
 		}
 
-		return this.each(function() {        
-			var key=$(this).attr("_key");
-			var thismeta=meta[key];
+		//traverse all specified elements
+		return this.each(function() {
 			
-			$(this).empty();
-			if (thismeta!=null)
+			//check if it still has an autoCreateClass.
+			//(its possible we already processed it, because of recursion for type array or hash)
+			if ($(this).hasClass(settings.autoCreateClass))
 			{
-				if ($(this).attr("_meta"))
+				//make sure we process it only once.
+				$(this).removeClass(settings.autoCreateClass);
+				
+				var key=$(this).attr("_key");
+				var thismeta=meta[key];
+				
+			//	$(this).empty();
+				if (thismeta!=null)
 				{
-					$(this).text(thismeta[$(this).attr("_meta")]);
-				}
-				else if (thismeta.type=='string')
-				{
-					if (thismeta['max']==null || thismeta['max']>100)
+					if ($(this).attr("_meta"))
 					{
-						$(this).html(
-							$("<textarea>")
-								.addClass(settings.class)
-								.attr("_key",key)
-								.attr("title",thismeta.desc)
-						);
+						$(this).text(thismeta[$(this).attr("_meta")]);
 					}
-					else
+					else if (thismeta.type=='string')
+					{
+						if (thismeta['max']==null || thismeta['max']>100)
+						{
+							$(this).append(
+								$("<textarea>")
+									.addClass(settings.autoFillClass)
+									.attr("_key",key)
+									.attr("title",thismeta.desc)
+							);
+						}
+						else
+						{
+							$(this).append(
+								$("<input>")
+									.addClass(settings.autoFillClass)
+									.attr("_key",key)
+									.attr("type","text")
+									.attr("title",thismeta.desc)
+							);
+						}
+						$(this).val(thismeta.default);
+					}
+					else if (thismeta.type=='password')
 					{
 						$(this).append(
 							$("<input>")
-								.addClass(settings.class)
+								.addClass(settings.autoFillClass)
+								.attr("_key",key)
+								.attr("type","password")
+								.attr("title",thismeta['desc'])
+						);
+						$(this).val(thismeta.default);
+					}
+					else if (thismeta.type=='float' || thismeta.type=='integer')
+					{
+						$(this).append(
+							$("<input>")
+								.addClass(settings.autoFillClass)
 								.attr("_key",key)
 								.attr("type","text")
-								.attr("title",thismeta.desc)
+								.attr("title",thismeta['desc'])
 						);
+						$(this).val(thismeta.default);
 					}
-					$(this).val(thismeta.default);
-				}
-				else if (thismeta.type=='password')
-				{
-					$(this).append(
-						$("<input>")
-							.addClass(settings.class)
-							.attr("_key",key)
-							.attr("type","password")
-							.attr("title",thismeta['desc'])
-					);
-					$(this).val(thismeta.default);
-				}
-				else if (thismeta.type=='float' || thismeta.type=='integer')
-				{
-					$(this).append(
-						$("<input>")
-							.addClass(settings.class)
+					else if (thismeta.type=='select')
+					{
+						//create select element
+						var s=$("<select>")
+							.addClass(settings.autoFillClass)
 							.attr("_key",key)
 							.attr("type","text")
-							.attr("title",thismeta['desc'])
-					);
-					$(this).val(thismeta.default);
-				}
-				else if (thismeta.type=='select')
-				{
-					//create select element
-					var s=$("<select>")
-						.addClass(settings.class)
-						.attr("_key",key)
-						.attr("type","text")
-						.attr("title",thismeta['desc']);
+							.attr("title",thismeta['desc']);
 
-					//add choices
-					$.each(thismeta['choices'], function(choice, desc){
-						s.append(
-							$("<option>")
-								.attr("value",choice)
-								.text(desc)
-						);
-					});
+						//add choices
+						$.each(thismeta['choices'], function(choice, desc){
+							s.append(
+								$("<option>")
+									.attr("value",choice)
+									.text(desc)
+							);
+						});
 
-					s.val(thismeta.default);
+						s.val(thismeta.default);
 
-					//add results to div
-					$(this).append(s);
-				}
-				else if (thismeta.type=='multiselect')
-				{
-					var parent=$(this);
-					//add choices
-					$.each(thismeta['choices'], function(choice, desc){
-						//add checkbox
+						//add results to div
+						$(this).append(s);
+					}
+					else if (thismeta.type=='multiselect')
+					{
+						var parent=$(this);
+						//add choices
+						$.each(thismeta['choices'], function(choice, desc){
+							//add checkbox
+							var checkbox=$("<input>")
+									.addClass(settings.autoFillClass)
+									.attr("value",choice)
+									.attr("type","checkbox")
+									.attr("_key",key)
+									.attr("id",key+"."+choice)
+									.attr("title",thismeta['desc'])
+
+							checkbox.checked=(thismeta.default.indexOf(choice) != -1);
+							parent.append(checkbox);
+							
+							//add description
+							parent.append(
+								$("<label>")
+									.attr("for",key+"."+choice)
+									.attr("_errorHighlight",key)
+									.text(desc)
+							);
+							
+							//add break
+							parent.append($("<br>"));
+
+						});
+					}
+					else if (thismeta.type=='bool')
+					{
 						var checkbox=$("<input>")
-								.addClass(settings.class)
-								.attr("value",choice)
-								.attr("type","checkbox")
-								.attr("_key",key)
-								.attr("id",key+"."+choice)
-								.attr("title",thismeta['desc'])
+							.addClass(settings.autoFillClass)
+							.attr("_key",key)
+							.attr("type","checkbox")
+							.attr("value","")
+							.attr("title",thismeta['desc']);
 
-						checkbox.checked=(thismeta.default.indexOf(choice) != -1);
-						parent.append(checkbox);
-						
-						//add description
-						parent.append(
-							$("<label>")
-								.attr("for",key+"."+choice)
-								.attr("_errorHighlight",key)
-								.text(desc)
-						);
-						
-						//add break
-						parent.append($("<br>"));
-
-					});
+						checkbox.checked=thismeta.default;
+						$(this).append(checkbox);
+					}
 				}
-				else if (thismeta.type=='bool')
-				{
-					var checkbox=$("<input>")
-						.addClass(settings.class)
-						.attr("_key",key)
-						.attr("type","checkbox")
-						.attr("value","")
-						.attr("title",thismeta['desc']);
-
-					checkbox.checked=thismeta.default;
-					$(this).append(checkbox);
-				}
-
 			}
 		});
 

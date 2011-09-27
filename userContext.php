@@ -44,7 +44,7 @@ class userContext
 	//link this context the global context inside the session
 	function linkToSession()
 	{
-		session_start();
+		
 		
 		if (!isset($_SESSION['userContext']))
 		{

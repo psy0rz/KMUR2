@@ -31,12 +31,12 @@ $(this).ready(function()
 
 <table>
 <tr>
-	<td><span class='autoCreate' _key='username' _meta='desc'></span>
-	<td><span class='autoCreate' _key='username'></span>
+	<td class='autoCreate' _key='username' _meta='desc'>
+	<td class='autoCreate' _key='username'>
 </tr>
 <tr>
-	<td><span class='autoCreate' _key='password' _meta='desc'></span>
-	<td><span class='autoCreate' _key='password'></span>
+	<td class='autoCreate' _key='password' _meta='desc'>
+	<td class='autoCreate' _key='password'>
 </tr>
 </table>
 
