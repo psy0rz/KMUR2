@@ -111,8 +111,8 @@
 	$.fn.autoCreate = function( meta , options ) {  
 
 		var settings = {
-			'autoFillClass': 'autoFill',
-			'autoCreateClass': 'autoCreate',
+			autoFillClass: 'autoFill',
+			autoCreateClass: 'autoCreate',
 		};
 		
 		if ( options ) { 
@@ -135,6 +135,7 @@
 			//	$(this).empty();
 				if (thismeta!=null)
 				{
+					//just fill in the value of the specified metadata-field as plain text.
 					if ($(this).attr("_meta"))
 					{
 						$(this).text(thismeta[$(this).attr("_meta")]);
@@ -249,6 +250,11 @@
 						checkbox.checked=thismeta.default;
 						$(this).append(checkbox);
 					}
+					else if (thismeta.type=='array' || thismeta.type=='hash')
+					{
+						//array or hash, only recurse into submeta data.
+						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, options);
+					}
 				}
 			}
 		});
@@ -265,7 +271,8 @@
 	$.fn.autoFill = function( meta , data,  options ) {  
 
 		var settings = {
-			'showChanges':false
+			showChanges:false,
+			autoFillClass:'autoFill'
 		};
 		
 		if ( options ) { 
@@ -279,116 +286,142 @@
 			var elementType=this.nodeName.toLowerCase();
 			var changed=false;
 
-			//put value in attribute (doesnt work if the value is an array)
-			if (typeof $(this).attr("_value") !='undefined')
+			//check if it still has an autoFillClass.
+			//(its possible we already processed it, because of recursion for type array)
+			if ($(this).hasClass(settings.autoFillClass))
 			{
-				$(this).attr("_value", value);
-			}
-			//set value of a input-element the correct way
-			else if (elementType=="input")
-			{
-				if ($(this).attr("type")=="checkbox")
+				//make sure we process it only once.
+				$(this).removeClass(settings.autoFillClass);
+
+//				console.log(key, metaValue);
+				
+				//recurse into hash?
+				if (metaValue.type=="hash")
 				{
-					var newChecked;
-					
-					//value checkbox. check if the array contains this checkbox's value
-					if ($(this).attr("value"))
+					$("."+settings.autoFillClass, this).autoFill(metaValue['meta'], value);
+				}
+				
+				//recurse into array?
+				else if (metaValue.type=="array")
+				{
+					$(this).autoList(metaValue.meta, value);
+					//make sure we dont process the list-source-elements again.
+					$("."+settings.autoFillClass, this).removeClass(settings.autoFillClass);
+				}
+				
+				//put value in attribute (doesnt work if the value is an array)
+				else if (typeof $(this).attr("_value") !='undefined')
+				{
+					$(this).attr("_value", value);
+				}
+
+				//set value of a input-element the correct way
+				else if (elementType=="input")
+				{
+					if ($(this).attr("type")=="checkbox")
 					{
-						if (typeof(value)=='object' && value.indexOf($(this).attr("value")) != -1)
-							newChecked=true;
+						var newChecked;
+						
+						//value checkbox. check if the array contains this checkbox's value
+						if ($(this).attr("value"))
+						{
+							if (typeof(value)=='object' && value.indexOf($(this).attr("value")) != -1)
+								newChecked=true;
+							else
+								newChecked=false;
+						}
+						//simple boolean 0/1 checkbox:
 						else
-							newChecked=false;
+						{
+							if (value)
+								newChecked=true;
+							else
+								newChecked=false;
+						}
+						
+						changed=(this.checked!=newChecked);
+						this.checked=newChecked;
 					}
-					//simple boolean 0/1 checkbox:
 					else
 					{
-						if (value)
-							newChecked=true;
-						else
-							newChecked=false;
+						changed=($(this).val()!=value);
+						$(this).val(value);
 					}
-					
-					changed=(this.checked!=newChecked);
-					this.checked=newChecked;
 				}
-				else
+
+				//textareas and select boxes are easy:
+				else if (elementType=="select" || elementType=="textarea")
 				{
 					changed=($(this).val()!=value);
 					$(this).val(value);
 				}
-			}
-			//textareas and select boxes are easy:
-			else if (elementType=="select" || elementType=="textarea")
-			{
-				changed=($(this).val()!=value);
-				$(this).val(value);
-			}
-			//it regular html element, convert the value to a string and/or html
-			//depending on the datatype
-			else
-			{
-				if (metaValue.type=="bool")
+
+				//it regular html element, convert the value to a string and/or html
+				//depending on the datatype
+				else
 				{
-					var newElement=$("<span>");
-					
-					if (value)
+					if (metaValue.type=="bool")
 					{
-						newElement.addClass("autoHtml_"+metaValue.type+"_True");
-						newElement.addClass("autoHtml_"+key+"_True");
-						newElement.text("Ja");
+						var newElement=$("<span>");
+						
+						if (value)
+						{
+							newElement.addClass("autoHtml_"+metaValue.type+"_True");
+							newElement.addClass("autoHtml_"+key+"_True");
+							newElement.text("Ja");
+						}
+						else
+						{
+							newElement.addClass("autoHtml_"+metaValue.type+"_False");
+							newElement.addClass("autoHtml_"+key+"_False");
+							newElement.text("Nee");
+						}
+						changed=($(this).text()!=$(newElement).text());
+						$(this).empty();
+						$(this).append(newElement);
+					}
+					else if (metaValue.type=="select")
+					{
+						var newElement=$("<span>");
+						newElement.addClass("autoHtml_"+metaValue.type+"_"+value);
+						newElement.addClass("autoHtml_"+key+"_"+value);
+						newElement.text(metaValue.choices[value]);
+					
+						changed=($(this).text()!=newElement.text());
+						$(this).empty();
+						$(this).append(newElement);
+					}
+					else if (metaValue.type=="multiselect")
+					{
+						var oldText=$(this).text();
+						$(this).empty();
+						var first=true;
+						var element=$(this);
+						for(valueI in value)
+						{
+							element.append(
+								$("<span>")
+									.addClass("autoHtml_"+metaValue.type)
+									.addClass("autoHtml_"+metaValue.type+"_"+value[valueI])
+									.addClass("autoHtml_"+key+"_"+value[valueI])
+									.text(metaValue.choices[value[valueI]])
+							);
+						}
+						changed=($(this).text()!=oldText);
 					}
 					else
 					{
-						newElement.addClass("autoHtml_"+metaValue.type+"_False");
-						newElement.addClass("autoHtml_"+key+"_False");
-						newElement.text("Nee");
+						changed=($(this).text()!=value);
+						$(this).text(value);
 					}
-					changed=($(this).text()!=$(newElement).text());
-					$(this).empty();
-					$(this).append(newElement);
 				}
-				else if (metaValue.type=="select")
+
+				//something changed and we need to highlight it?
+				if (changed && settings.showChanges)
 				{
-					var newElement=$("<span>");
-					newElement.addClass("autoHtml_"+metaValue.type+"_"+value);
-					newElement.addClass("autoHtml_"+key+"_"+value);
-					newElement.text(metaValue.choices[value]);
-				
-					changed=($(this).text()!=newElement.text());
-					$(this).empty();
-					$(this).append(newElement);
-				}
-				else if (metaValue.type=="multiselect")
-				{
-					var oldText=$(this).text();
-					$(this).empty();
-					var first=true;
-					var element=$(this);
-					for(valueI in value)
-					{
-						element.append(
-							$("<span>")
-								.addClass("autoHtml_"+metaValue.type)
-								.addClass("autoHtml_"+metaValue.type+"_"+value[valueI])
-								.addClass("autoHtml_"+key+"_"+value[valueI])
-								.text(metaValue.choices[value[valueI]])
-						);
-					}
-					changed=($(this).text()!=oldText);
-				}
-				else
-				{
-					changed=($(this).text()!=value);
-					$(this).text(value);
+					$(this).effect('highlight', 2000);
 				}
 			}
-
-			//something changed and we need to highlight it?
-			if (changed && settings.showChanges)
-			{
-				$(this).effect('highlight', 2000);
-			}
-
 		});
 
 	};
@@ -452,8 +485,8 @@
 	$.fn.autoList = function( meta, data , options ) {
 
 		var settings = {
-			'class': 'autoFill',
-			'updateOn': false
+			class: 'autoFill',
+			updateOn: false
 		};
 		
 		if ( options ) {

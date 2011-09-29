@@ -68,10 +68,10 @@ $(this).ready(function()
 				<th class='autoCreate' _key='price' _meta='desc'>
 			</tr>
 
-			<tr class='colorRows autoList ui-widget-content'>
+			<tr class='colorRows autoList autoFill ui-widget-content' _key='items'>
 				<td class='autoCreate' _key='amount' >
 				<td class='autoCreate' _key='desc' >
-				<td class='autoCreate' _key='price'>
+				<td class='autoCreate' _key='price' >
 			</tr>
 		</table>
 </tr>

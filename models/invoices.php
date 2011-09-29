@@ -129,6 +129,105 @@ class invoices extends model
 
 	function get($params)
 	{
+		//TEST 
+		return (array(
+			"_id"=>"sdfdsaffsffsf",
+			"invoiceDate"=>13213323,
+			"number"=>"2011-0031",
+			"status"=>"send",
+			"statusDate"=>13232323,
+			"printedOwnCopy"=>0,
+			"desc"=>"blablab bla factuurrrrnotities",
+			"userId"=>"fsfsdfdsfsfs",
+			"user"=>"sf (MOET NOG)",
+			"items"=>array(
+				array(
+					"amount"=>1,
+					"desc"=>"1e item",
+					"price"=>123,
+				),
+				array(
+					"amount"=>2,
+					"desc"=>"2e item",
+					"price"=>2222,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+				array(
+					"amount"=>3,
+					"desc"=>"3e item",
+					"price"=>333,
+				),
+			),
+			"tax"=>19,
+			"total"=>1234,
+			"log"=>array(
+				array(
+					"date"=>12313123,
+					"text"=>"log regel 1",
+					"user"=>"geert"
+					),
+				array(
+					"date"=>12313523,
+					"text"=>"log regel 2",
+					"user"=>"geert"
+					),
+				array(
+					"date"=>12313843,
+					"text"=>"log regel 3",
+					"user"=>"psy"
+					),
+					
+			)
+		));
 	
 		if (isset($params['_id']) && $params['_id'])
 			$invoice=$this->getById("invoices", $params['_id']);
