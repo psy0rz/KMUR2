@@ -68,6 +68,8 @@ function templateForm(params)
 		var putParams={};
 		if (params['putParams'])
 			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
+
+		//get the data
 		$(".autoFill", params.element).autoGet(putParams);
 		
 		//put data
@@ -121,7 +123,7 @@ function templateList(params)
 
 	var edit=function(event)
 	{
-		var listParent=$(this).parent(".autoListClone");
+		var listParent=$(this).parent(".autoListItem");
 		var element=$(this);
 		var id=listParent.attr("_value");
 		element.addClass("ui-state-highlight");
@@ -144,7 +146,7 @@ function templateList(params)
 
 	var del=function(event)
 	{
-		var rowElement=$(this).parent(".autoListClone");
+		var rowElement=$(this).parent(".autoListItem");
 		var id=rowElement.attr("_value");
 		$(this).confirm(function()
 		{
@@ -178,13 +180,16 @@ function templateList(params)
 
 				if (update)
 				{
-					$(".autoList", params.element).autoList(meta, result['data'], {
-						'updateOn':params.id
+					$(".autoFill:first", params.element).autoList(meta, result['data'], {
+						updateOn:params.id,
+						keepSource: true
 					});
 				}
 				else
 				{
-					$(".autoList", params.element).autoList(meta, result['data']);
+					$(".autoFill:first", params.element).autoList(meta, result['data'], {
+						keepSource: true
+					});
 				}
 					
 				$(".autoClickDel", params.element).unbind('click');

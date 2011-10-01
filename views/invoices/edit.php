@@ -68,7 +68,7 @@ $(this).ready(function()
 				<th class='autoCreate' _key='price' _meta='desc'>
 			</tr>
 
-			<tr class='colorRows autoList autoFill ui-widget-content' _key='items'>
+			<tr class='colorRows autoFill ui-widget-content' _key='items'>
 				<td class='autoCreate' _key='amount' >
 				<td class='autoCreate' _key='desc' >
 				<td class='autoCreate' _key='price' >
