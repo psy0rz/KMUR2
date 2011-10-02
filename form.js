@@ -284,7 +284,8 @@
 		if ( options ) { 
 			$.extend( settings, options );
 		}
-		
+
+
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
@@ -300,6 +301,8 @@
 			//(its possible we already processed it, because of recursion for type array)
 			if (!$(this).hasClass(settings.autoFilledClass))
 			{
+				console.log("auto filling ", this, " with ",meta,data,settings);
+			
 				var key=$(this).attr("_key");
 				var value=data[key];
 				var metaValue=meta[key];
@@ -309,26 +312,27 @@
 				//make sure we process it only once.
 				$(this).addClass(settings.autoFilledClass);
 
-//				console.log(key, metaValue);
+				console.log(key, metaValue);
 	
 				//no or nonexisting key?, do nothing
-				if (!key in data)
+				if (!(key in data) || !(key in meta))
 				{
+					console.error("Key not found in metadata or data: ",key ,meta, data);
 					; //ignore it
 				}
 				
 				//recurse into hash?
 				else if (metaValue.type=="hash")
 				{
-					$("."+settings.autoFillClass, this).autoFill(metaValue['meta'], value, settings);
+					console.log("recursing into hash: ",key);
+					$("."+settings.autoFillClass, this).autoFill(metaValue.meta, value, settings);
 				}
 				
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
+					console.log("recursing into array via autolist:", key);
 					$(this).autoList(metaValue.meta, value, settings);
-					//make sure we dont process the list-source-elements again.
-					//autolist should do this? $("."+settings.autoFillClass, this).removeClass(settings.autoFillClass);
 				}
 				
 				//put value in attribute (doesnt work if the value is an array)
@@ -444,6 +448,10 @@
 					$(this).effect('highlight', 2000);
 				}
 			}
+			else
+			{
+				console.log("skipped auto filling ", this, " with ",meta,data,settings);
+			}
 		});
 
 	};
@@ -467,6 +475,7 @@
 			$.extend( settings, options );
 		}
 
+
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
@@ -482,6 +491,7 @@
 			//check if we didnt already process it because of recursion
 			if (!$(this).hasClass(settings.autoFilledClass))
 			{
+				console.log("auto listing ", this, " with ",meta,data,settings);
 
 				var sourceElement=this;
 				var parentElement=$(this).parent();
@@ -544,6 +554,10 @@
 				//make sure the source element doesnt get processed. (in case of array recursion)
 				$("."+settings.autoFillClass, sourceElement).addClass(settings.autoFilledClass);
 			} //has class
+			else
+			{
+				console.log("skipped auto listing ", this, " with ",meta,data,settings);
+			}
 			
 		}); //all list loop
 		
