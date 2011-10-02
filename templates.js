@@ -17,9 +17,9 @@ function templateForm(params)
 
 			//focus the correct input field
 			if (params['viewParams'] && params['viewParams']['highlight'])
-				$('[_key|="'+params['viewParams']['highlight']+'"]', params.element).focus();
+				$('[_key="'+params['viewParams']['highlight']+'"]', params.element).focus();
 			else
-				$('[_key|='+params['defaultFocus']+']', params.element).focus();
+				$('[_key='+params['defaultFocus']+']', params.element).focus();
 
 			if (params['getData'])
 			{

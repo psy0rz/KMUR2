@@ -277,18 +277,28 @@
 
 		var settings = {
 			showChanges:false,
-			autoFillClass:'autoFill'
+			autoFillClass:'autoFill',
+			autoFilledClass:'autoFilled'
 		};
 		
 		if ( options ) { 
 			$.extend( settings, options );
 		}
+		
+		//we need to remember which nodes we processed (because of recursion)
+		if (!settings.recursed)
+		{
+			//add autoget-reminders
+			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
+			settings.recursed=true;
+		}
+		
 
 		return this.each(function() {
 
-			//check if it still has an autoFillClass.
+			//check if we didnt process it yet.
 			//(its possible we already processed it, because of recursion for type array)
-			if ($(this).hasClass(settings.autoFillClass))
+			if (!$(this).hasClass(settings.autoFilledClass))
 			{
 				var key=$(this).attr("_key");
 				var value=data[key];
@@ -297,7 +307,7 @@
 				var changed=false;
 
 				//make sure we process it only once.
-				$(this).removeClass(settings.autoFillClass);
+				$(this).addClass(settings.autoFilledClass);
 
 //				console.log(key, metaValue);
 	
@@ -310,13 +320,13 @@
 				//recurse into hash?
 				else if (metaValue.type=="hash")
 				{
-					$("."+settings.autoFillClass, this).autoFill(metaValue['meta'], value);
+					$("."+settings.autoFillClass, this).autoFill(metaValue['meta'], value, settings);
 				}
 				
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
-					$(this).autoList(metaValue.meta, value);
+					$(this).autoList(metaValue.meta, value, settings);
 					//make sure we dont process the list-source-elements again.
 					//autolist should do this? $("."+settings.autoFillClass, this).removeClass(settings.autoFillClass);
 				}
@@ -438,6 +448,109 @@
 
 	};
 
+	
+	/*** Replicates the specified element for every item in the data-array
+	 * Calls autoFill everytime, for elements of class autoFill
+	 * Use updateOn to update an existing list (update, delete and add items)
+	 * Specify the data-key that should be stored in _value to be able to update
+	 */
+	$.fn.autoList = function( meta, data , options ) {
+
+		var settings = {
+			autoFillClass: 'autoFill',
+			autoFilledClass: 'autoFilled',
+			autoListClass: 'autoListItem',
+			updateOn: false
+		};
+		
+		if ( options ) {
+			$.extend( settings, options );
+		}
+
+		//we need to remember which nodes we processed (because of recursion)
+		if (!settings.recursed)
+		{
+			//add autoget-reminders
+			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
+			settings.recursed=true;
+		}
+
+
+		//traverse all the specified lists
+		var ret=this.each(function() {
+
+			//check if we didnt already process it because of recursion
+			if (!$(this).hasClass(settings.autoFilledClass))
+			{
+
+				var sourceElement=this;
+				var parentElement=$(this).parent();
+
+///				$(sourceElement).show();
+				
+				//traverse the input data
+				$.each(data, function(key, value) {
+					var updateElement={};
+				
+					//update mode?
+					if (settings.updateOn)
+					{
+						//try to find existing element
+						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", parentElement);
+						console.log("update element:",updateElement);
+					}
+
+					//not found, add new element?
+					if (!updateElement.length)
+					{
+						updateElement=$(sourceElement).clone();
+						//updateElement.removeClass("autoList");
+						updateElement.addClass(settings.autoListClass);
+						updateElement.appendTo(parentElement);
+					}
+
+					//now autofill the element and its sibblings
+					settings.showChanges=(settings.updateOn!="");
+					$(updateElement).filter("."+settings.autoFillClass).autoFill(meta, value, settings);
+					$("."+settings.autoFillClass, updateElement).autoFill(meta, value, settings);
+
+				});
+
+//				$(sourceElement).hide();
+				
+				//do we need to delete items?
+				if (settings.updateOn)
+				{
+					//build a map of currenly existing id's
+					var idMap={};
+					$.each(data, function(key, value) {
+						idMap[value[settings.updateOn]]=1;
+					});
+					
+					//traverse all the html list items
+					$("."+settings.autoListClass, parentElement).each(function() {
+						//does not exist anymore?
+						if (!idMap[$(this).attr("_value")])
+						{
+							$(this).hide(1000,function()
+							{
+								$(this).remove();
+							});
+						}
+					});
+					
+				}
+				
+				//make sure the source element doesnt get processed. (in case of array recursion)
+				$("."+settings.autoFillClass, sourceElement).addClass(settings.autoFilledClass);
+			} //has class
+			
+		}); //all list loop
+		
+		return(ret);
+	}
+
+
 	/*** Auto gets data from the elements and stores it in the data array
 	*  Uses _key attribute as hash key
 	*  Automaticly recognises element-types and uses the correct way to 'get the value'.
@@ -538,101 +651,6 @@
 		});
 	}
 
-	/*** Replicates the specified element for every item in the data-array
-	 * Calls autoFill everytime, for elements of class autoFill
-	 * Use updateOn to update an existing list (update, delete and add items)
-	 * Specify the data-key that should be stored in _value to be able to update
-	 */
-	$.fn.autoList = function( meta, data , options ) {
-
-		var settings = {
-			autoFillClass: 'autoFill',
-			autoListClass: 'autoListItem',
-			updateOn: false
-		};
-		
-		if ( options ) {
-			$.extend( settings, options );
-		}
-
-
-		//traverse all the specified lists
-		var ret=this.each(function() {
-
-			//check if it still has an autoFillClass.
-			//(its possible we already processed it)
-			if ($(this).hasClass(settings.autoFillClass))
-			{
-
-				var sourceElement=this;
-				var parentElement=$(this).parent();
-
-///				$(sourceElement).show();
-				
-				//traverse the input data
-				$.each(data, function(key, value) {
-					var updateElement={};
-				
-					//update mode?
-					if (settings.updateOn)
-					{
-						//try to find existing element
-						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", $(sourceElement).parent());
-					}
-
-					//not found, add new element?
-					if (!updateElement.length)
-					{
-						updateElement=$(sourceElement).clone();
-						//updateElement.removeClass("autoList");
-						updateElement.addClass(settings.autoListClass);
-						updateElement.appendTo(parentElement);
-					}
-
-					//now autofill the element and its sibblings
-					var autoFillSettings={};
-					autoFillSettings.showChanges=(settings.updateOn!="");
-					$(updateElement).filter("."+settings.autoFillClass).autoFill(meta, value, autoFillSettings);
-					$("."+settings.autoFillClass, updateElement).autoFill(meta, value, autoFillSettings);
-
-				});
-
-//				$(sourceElement).hide();
-				
-				//do we need to delete items?
-				if (settings.updateOn)
-				{
-					//build a map of currenly existing id's
-					var idMap={};
-					$.each(data, function(key, value) {
-						idMap[value[settings.updateOn]]=1;
-					});
-					
-					//traverse all the html list items
-					$("."+settings.autoListClass, parentElement).each(function() {
-						//does not exist anymore?
-						if (!idMap[$(this).attr("_value")])
-						{
-							$(this).hide(1000,function()
-							{
-								$(this).remove();
-							});
-						}
-					});
-					
-				}
-				
-				if (!settings.keepSource)
-				{
-					//make sure the source element doesnt get processed. (in case of array recursion)
-					$("."+settings.autoFillClass, sourceElement).removeClass(settings.autoFillClass);
-				}
-			} //has class
-			
-		}); //all list loop
-		
-		return(ret);
-	}
 
 })( jQuery );
 
