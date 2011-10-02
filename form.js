@@ -441,16 +441,31 @@
 	$.fn.autoGet = function( meta, data , options ) {  
 
 		var settings = {
+			autoGetClass="autoGet"
 		};
 		
 		if ( options ) { 
 			$.extend( settings, options );
 		}
+		
+		//we need to remember which nodes we processed (because of recursion)
+		if (!settings.recursed)
+		{
+			//clear existing autoget-reminders
+			$("[key]", settings.element).removeClass(settings.autoGetClass);
+			settings.recursed=true;
+			
+		}
 
 		return this.each(function() {
 			var key=$(this).attr("_key");
 			var elementType=this.nodeName.toLowerCase();
-			if (elementType=="input")
+			//recurse into hash array
+			if (meta[key].type=="hash")
+			{
+				
+			}
+			else if (elementType=="input")
 			{
 				if ($(this).attr("type")=="checkbox")
 				{
