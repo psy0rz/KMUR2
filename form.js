@@ -438,7 +438,7 @@
 	*  Automaticly recognises element-types and uses the correct way to 'get the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*/
-	$.fn.autoGet = function( data , options ) {  
+	$.fn.autoGet = function( meta, data , options ) {  
 
 		var settings = {
 		};

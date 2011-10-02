@@ -70,7 +70,9 @@ function templateForm(params)
 			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
 
 		//get the data
-		$(".autoFill", params.element).autoGet(putParams);
+		$("[_key]", params.element).autoGet(meta, putParams, { 
+			element: params.element 
+		});
 		
 		//put data
 		rpc(

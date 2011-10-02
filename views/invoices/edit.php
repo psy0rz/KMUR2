@@ -3,6 +3,13 @@
 <script>
 $(this).ready(function()
 {
+	
+//	console.log($(".autoCreate").not(".autoCreate .autoCreate"));
+//	console.log($(".autoCreate","#list").not(".autoCreate .autoCreate","#list"));
+//	console.log($(".autoCreate:not(.autoCreate .autoCreate)"));
+//	console.log($(".autoCreate:not(.autoCreate .autoCreate)","#list"));
+	
+
 	var title="";
 	var viewParams=<?=viewGetParams()?>;
 	templateForm({
@@ -61,7 +68,7 @@ $(this).ready(function()
 	<td class='autoCreate' _key='items' _meta='desc'>
 	<td class='autoCreate' _key='items'>
 	
-		<table >
+		<table id='list'>
 			<tr class='ui-widget-header'>
 				<th class='autoCreate' _key='amount' _meta='desc'>
 				<th class='autoCreate' _key='desc' _meta='desc'>
