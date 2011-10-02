@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 function templateForm(params)
 {
-
+	var meta;
+	
 	//disable submit button while loading
 	$(".autoClickSave", params.element).prop("disabled", true);
 	
@@ -11,7 +12,7 @@ function templateForm(params)
 		params['viewParams'],
 		function(result)
 		{
-			var meta=result['data'];
+			meta=result['data'];
 			$(".autoCreate", params.element).autoCreate(meta);
 
 			//focus the correct input field
@@ -70,7 +71,7 @@ function templateForm(params)
 			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
 
 		//get the data
-		$("[_key]", params.element).autoGet(meta, putParams, { 
+		$(".autoGet", params.element).autoGet(meta, putParams, { 
 			element: params.element 
 		});
 		

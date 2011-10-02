@@ -113,6 +113,7 @@
 		var settings = {
 			autoFillClass: 'autoFill',
 			autoCreateClass: 'autoCreate',
+			autoGetClass: 'autoGet'
 		};
 		
 		if ( options ) { 
@@ -135,79 +136,68 @@
 			//	$(this).empty();
 				if (thismeta!=null)
 				{
+					var addedElement;
+					
 					//just fill in the value of the specified metadata-field as plain text.
 					if ($(this).attr("_meta"))
 					{
 						$(this).text(thismeta[$(this).attr("_meta")]);
 					}
+					
 					else if (thismeta.type=='string')
 					{
 						if (thismeta['max']==null || thismeta['max']>100)
 						{
-							$(this).append(
-								$("<textarea>")
-									.addClass(settings.autoFillClass)
-									.attr("_key",key)
-									.attr("title",thismeta.desc)
-							);
+							addedElement=$("<textarea>");
+							$(this).append(addedElement);							
 						}
 						else
 						{
-							$(this).append(
-								$("<input>")
-									.addClass(settings.autoFillClass)
-									.attr("_key",key)
-									.attr("type","text")
-									.attr("title",thismeta.desc)
-							);
+							addedElement=$("<input>")
+								.attr("type","text");
+									
+							$(this).append(addedElement);
 						}
-						$(this).val(thismeta.default);
+						$(addedElement).val(thismeta.default);
 					}
+
 					else if (thismeta.type=='password')
 					{
-						$(this).append(
-							$("<input>")
-								.addClass(settings.autoFillClass)
-								.attr("_key",key)
-								.attr("type","password")
-								.attr("title",thismeta['desc'])
-						);
-						$(this).val(thismeta.default);
+						addedElement=$("<input>")
+							.attr("type","password");
+						$(this).append(addedElement);
+						$(addedElement).val(thismeta.default);
 					}
+
 					else if (thismeta.type=='float' || thismeta.type=='integer')
 					{
-						$(this).append(
-							$("<input>")
-								.addClass(settings.autoFillClass)
-								.attr("_key",key)
-								.attr("type","text")
-								.attr("title",thismeta['desc'])
-						);
+						addedElement=$("<input>")
+							.attr("type","text");
+						$(this).append(addedElement);
 						$(this).val(thismeta.default);
 					}
+					
 					else if (thismeta.type=='select')
 					{
 						//create select element
-						var s=$("<select>")
-							.addClass(settings.autoFillClass)
-							.attr("_key",key)
+						addedElement=$("<select>")
 							.attr("type","text")
-							.attr("title",thismeta['desc']);
 
 						//add choices
 						$.each(thismeta['choices'], function(choice, desc){
-							s.append(
+							addedElement.append(
 								$("<option>")
 									.attr("value",choice)
 									.text(desc)
 							);
 						});
 
-						s.val(thismeta.default);
+						addedElement.val(thismeta.default);
 
 						//add results to div
-						$(this).append(s);
+						$(this).append(addedElement);
 					}
+					
 					else if (thismeta.type=='multiselect')
 					{
 						var parent=$(this);
@@ -221,6 +211,11 @@
 									.attr("_key",key)
 									.attr("id",key+"."+choice)
 									.attr("title",thismeta['desc'])
+									
+							if (!thismeta.readonly)
+							{
+								checkbox.addClass(settings.autoGetClass);
+							}
 
 							checkbox.checked=(thismeta.default.indexOf(choice) != -1);
 							parent.append(checkbox);
@@ -238,27 +233,37 @@
 
 						});
 					}
+					
 					else if (thismeta.type=='bool')
 					{
-						var checkbox=$("<input>")
-							.addClass(settings.autoFillClass)
-							.attr("_key",key)
+						addedElement=$("<input>")
 							.attr("type","checkbox")
 							.attr("value","")
-							.attr("title",thismeta['desc']);
 
-						checkbox.checked=thismeta.default;
-						$(this).append(checkbox);
+						addedElement.checked=thismeta.default;
+						$(this).append(addedElement);
 					}
+					
 					else if (thismeta.type=='array' || thismeta.type=='hash')
 					{
 						//array or hash, only recurse into submeta data.
 						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, options);
 					}
+
+					if (addedElement)
+					{
+						addedElement.addClass(settings.autoFillClass)
+							.attr("_key",key)
+							.attr("title",thismeta.desc);
+						
+						if (!thismeta.readonly)
+						{
+							addedElement.addClass(settings.autoGetClass)
+						}
+					}
 				}
 			}
 		});
-
 	};
 
 
@@ -441,60 +446,94 @@
 	$.fn.autoGet = function( meta, data , options ) {  
 
 		var settings = {
-			autoGetClass="autoGet"
+			autoGetClass:'autoGet',
+			autoGotClass:'autoGot',
+			autoListClass: 'autoListItem'
 		};
 		
 		if ( options ) { 
 			$.extend( settings, options );
 		}
 		
+		//console.log("autogegt", $("[key]", settings.element));
+		
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//clear existing autoget-reminders
-			$("[key]", settings.element).removeClass(settings.autoGetClass);
+			//add autoget-reminders
+			$("."+settings.autoGotClass, settings.element).removeClass(settings.autoGotClass);
 			settings.recursed=true;
-			
 		}
 
 		return this.each(function() {
-			var key=$(this).attr("_key");
-			var elementType=this.nodeName.toLowerCase();
-			//recurse into hash array
-			if (meta[key].type=="hash")
+			
+			//check if we didnt process it yet because of recursion
+			if (!$(this).hasClass(settings.autoGotClass))
 			{
+				//make sure we process it only once.
+				$(this).addClass(settings.autoGotClass);
+
+				var key=$(this).attr("_key");
+				var elementType=this.nodeName.toLowerCase();
 				
-			}
-			else if (elementType=="input")
-			{
-				if ($(this).attr("type")=="checkbox")
+				console.log("key " , key, this);
+				//recurse into hash array
+				if (meta[key].type=="hash")
 				{
-					//value checkbox. add all the selected values to an array
-					if ($(this).attr("value"))
+					//make sure the array exists
+					if (typeof data[key] != 'array')
 					{
-						if (data[key]==null)
-							data[key]=new Array();
-						
-						if (this.checked)
-							data[key].push($(this).attr("value"));
+						data[key]=new Array();
 					}
-					//simple boolean 0/1 checkbox:
+					$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], data[key], settings);
+				}
+				//recurse into array list
+				else if (meta[key].type=="array")
+				{
+					//make sure the array exists
+					if (typeof data[key] != 'array')
+					{
+						data[key]=new Array();
+					}
+					
+					//traverse all the list items
+					$("."+settings.autoListClass, this).each(function () {
+						var itemData={};
+						$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], itemData, settings);
+						data[key].push(itemData);
+					});
+				}
+				else if (elementType=="input")
+				{
+					if ($(this).attr("type")=="checkbox")
+					{
+						//value checkbox. add all the selected values to an array
+						if ($(this).attr("value"))
+						{
+							if (data[key]==null)
+								data[key]=new Array();
+							
+							if (this.checked)
+								data[key].push($(this).attr("value"));
+						}
+						//simple boolean 0/1 checkbox:
+						else
+						{
+							if (this.checked)
+								data[key]=1;
+							else
+								data[key]=0;
+						}
+					}
 					else
 					{
-						if (this.checked)
-							data[key]=1;
-						else
-							data[key]=0;
+						data[key]=$(this).val();
 					}
 				}
-				else
+				else if (elementType=="select" || elementType=="textarea")
 				{
 					data[key]=$(this).val();
 				}
-			}
-			else if (elementType=="select" || elementType=="textarea")
-			{
-				data[key]=$(this).val();
 			}
 		});
 	}
@@ -508,6 +547,7 @@
 
 		var settings = {
 			autoFillClass: 'autoFill',
+			autoListClass: 'autoListItem',
 			updateOn: false
 		};
 		
@@ -537,7 +577,7 @@
 					if (settings.updateOn)
 					{
 						//try to find existing element
-						updateElement=$(".autoListItem[_value="+value[settings.updateOn]+"]", $(sourceElement).parent());
+						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", $(sourceElement).parent());
 					}
 
 					//not found, add new element?
@@ -545,7 +585,7 @@
 					{
 						updateElement=$(sourceElement).clone();
 						//updateElement.removeClass("autoList");
-						updateElement.addClass("autoListItem");
+						updateElement.addClass(settings.autoListClass);
 						updateElement.appendTo(parentElement);
 					}
 
@@ -569,7 +609,7 @@
 					});
 					
 					//traverse all the html list items
-					$(".autoListItem", parentElement).each(function() {
+					$("."+settings.autoListClass, parentElement).each(function() {
 						//does not exist anymore?
 						if (!idMap[$(this).attr("_value")])
 						{

@@ -157,7 +157,7 @@ class users extends model
 	function authenticate($params)
 	{
 //HACK		
-$this->context->change("psy", array("anonymous","admin")	);
+//$this->context->change("psy", array("anonymous","admin")	);
 	
 		//verify if input is ok
 		$this->verifyMeta($params);
