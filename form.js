@@ -127,6 +127,8 @@
 			//(its possible we already processed it, because of recursion for type array or hash)
 			if ($(this).hasClass(settings.autoCreateClass))
 			{
+				console.log("auto creating ", this, " with ",meta,settings);
+
 				//make sure we process it only once.
 				$(this).removeClass(settings.autoCreateClass);
 				
@@ -137,12 +139,34 @@
 				if (thismeta!=null)
 				{
 					var addedElement;
-					
-					//just fill in the value of the specified metadata-field as plain text.
+
+					//just fill in the value of the specified metadata-field as plain text?
 					if ($(this).attr("_meta"))
 					{
 						$(this).text(thismeta[$(this).attr("_meta")]);
 					}
+
+					//array or hash?, recurse into submeta data.
+					else if (thismeta.type=='array' || thismeta.type=='hash')
+					{
+						console.log("autocreate recursing into array or hash:", key);
+						
+						//make sure all the recursed subitems will be readonly as well!
+						if (thismeta.readonly)
+						{
+							settings.readonly=true;
+						}
+						
+						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, settings);
+						if (!settings.readonly)
+						{
+							$(this).addClass(settings.autoGetClass)
+						}
+						$(this).addClass(settings.autoFillClass);
+						
+						console.log("autocreate returned from recursion:", key);
+					}
+
 					
 					else if (thismeta.type=='string')
 					{
@@ -243,12 +267,7 @@
 						addedElement.checked=thismeta.default;
 						$(this).append(addedElement);
 					}
-					
-					else if (thismeta.type=='array' || thismeta.type=='hash')
-					{
-						//array or hash, only recurse into submeta data.
-						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, options);
-					}
+
 
 					if (addedElement)
 					{
@@ -256,12 +275,16 @@
 							.attr("_key",key)
 							.attr("title",thismeta.desc);
 						
-						if (!thismeta.readonly)
+						if (!thismeta.readonly && !settings.readonly)
 						{
 							addedElement.addClass(settings.autoGetClass)
 						}
 					}
 				}
+			}
+			else
+			{
+				console.log("skipped auto creating ", this, " with ",meta,settings);
 			}
 		});
 	};
@@ -289,7 +312,7 @@
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//add autoget-reminders
+			//remove old autofill-reminders
 			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
 			settings.recursed=true;
 		}
@@ -301,7 +324,7 @@
 			//(its possible we already processed it, because of recursion for type array)
 			if (!$(this).hasClass(settings.autoFilledClass))
 			{
-				console.log("auto filling ", this, " with ",meta,data,settings);
+				console.log("autofilling ", this, " with ",meta,data,settings);
 			
 				var key=$(this).attr("_key");
 				var value=data[key];
@@ -312,7 +335,7 @@
 				//make sure we process it only once.
 				$(this).addClass(settings.autoFilledClass);
 
-				console.log(key, metaValue);
+//				console.log(key, metaValue);
 	
 				//no or nonexisting key?, do nothing
 				if (!(key in data) || !(key in meta))
@@ -324,14 +347,16 @@
 				//recurse into hash?
 				else if (metaValue.type=="hash")
 				{
-					console.log("recursing into hash: ",key);
+					console.log("autofill recursing into hash: ",key);
 					$("."+settings.autoFillClass, this).autoFill(metaValue.meta, value, settings);
 				}
 				
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
-					console.log("recursing into array via autolist:", key);
+					//make sure autoList doesnt skip it!
+					$(this).removeClass(settings.autoFilledClass);
+					console.log("autofill recursing into array via autolist:", key);
 					$(this).autoList(metaValue.meta, value, settings);
 				}
 				
@@ -587,7 +612,7 @@
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//add autoget-reminders
+			//remove previous autoget-reminders
 			$("."+settings.autoGotClass, settings.element).removeClass(settings.autoGotClass);
 			settings.recursed=true;
 		}

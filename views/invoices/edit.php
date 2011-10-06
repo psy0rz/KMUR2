@@ -68,14 +68,14 @@ $(this).ready(function()
 	<td class='autoCreate' _key='items' _meta='desc'>
 	<td class='autoCreate' _key='items'>
 	
-		<table id='list'>
+		<table>
 			<tr class='ui-widget-header'>
 				<th class='autoCreate' _key='amount' _meta='desc'>
 				<th class='autoCreate' _key='desc' _meta='desc'>
 				<th class='autoCreate' _key='price' _meta='desc'>
 			</tr>
 
-			<tr class='colorRows autoFill ui-widget-content' _key='items'>
+			<tr class='colorRows autoFill ui-widget-content'>
 				<td class='autoCreate' _key='amount' >
 				<td class='autoCreate' _key='desc' >
 				<td class='autoCreate' _key='price' >
