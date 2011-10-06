@@ -66,16 +66,16 @@ $(this).ready(function()
 </tr>
 <tr>
 	<td class='autoCreate' _key='items' _meta='desc'>
-	<td class='autoCreate' _key='items'>
+	<td >
 	
-		<table>
+		<table class='autoCreate autoFill' _key='items'>
 			<tr class='ui-widget-header'>
 				<th class='autoCreate' _key='amount' _meta='desc'>
 				<th class='autoCreate' _key='desc' _meta='desc'>
 				<th class='autoCreate' _key='price' _meta='desc'>
 			</tr>
 
-			<tr class='colorRows autoFill ui-widget-content'>
+			<tr class='colorRows autoFill autoGet ui-widget-content' _key='index' _value>
 				<td class='autoCreate' _key='amount' >
 				<td class='autoCreate' _key='desc' >
 				<td class='autoCreate' _key='price' >

@@ -158,11 +158,13 @@
 						}
 						
 						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, settings);
-						if (!settings.readonly)
-						{
-							$(this).addClass(settings.autoGetClass)
-						}
-						$(this).addClass(settings.autoFillClass);
+
+//NO: leave adding autoGet or autoFill to the user in this case!
+//						if (!settings.readonly)
+//						{
+//							$(this).addClass(settings.autoGetClass)
+//						}
+//						$(this).addClass(settings.autoFillClass);
 						
 						console.log("autocreate returned from recursion:", key);
 					}
@@ -354,10 +356,8 @@
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
-					//make sure autoList doesnt skip it!
-					$(this).removeClass(settings.autoFilledClass);
-					console.log("autofill recursing into array via autolist:", key);
-					$(this).autoList(metaValue.meta, value, settings);
+					console.log("autofill recursing into array with autoList:", key);
+					$("."+settings.autoFillClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
 				//put value in attribute (doesnt work if the value is an array)
@@ -578,6 +578,7 @@
 				
 				//make sure the source element doesnt get processed. (in case of array recursion)
 				$("."+settings.autoFillClass, sourceElement).addClass(settings.autoFilledClass);
+				$(this).addClass(settings.autoFilledClass);
 			} //has class
 			else
 			{
