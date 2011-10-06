@@ -9,6 +9,13 @@ function menuReload()
 		{
 			var menuDiv=$("#viewMenu");
 			menuDiv.empty();
+
+			if ('error' in result)
+			{
+					viewShowError(result, menuDiv);
+					return;
+			}
+			
 			$.each(result['data'], function(mainName,mainMenu)
 			{
 				var mainMenuDiv=$("<div>")
