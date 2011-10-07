@@ -1,7 +1,3 @@
-.colorRows:hover
-{
-       background: yellow;
-}
 
 .colorRows
 {
@@ -14,10 +10,6 @@
        background: #DFD;
 }
 
-.colorRows:nth-child(2n-1):hover
-{
-       background: yellow;
-}
 
 
 #viewMenu

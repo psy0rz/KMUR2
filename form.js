@@ -522,6 +522,7 @@
 				var parentElement=$(this).parent();
 
 ///				$(sourceElement).show();
+				settings.showChanges=(settings.updateOn!="");
 				
 				//traverse the input data
 				$.each(data, function(key, value) {
@@ -545,7 +546,6 @@
 					}
 
 					//now autofill the element and its sibblings
-					settings.showChanges=(settings.updateOn!="");
 					$(updateElement).filter("."+settings.autoFillClass).autoFill(meta, value, settings);
 					$("."+settings.autoFillClass, updateElement).autoFill(meta, value, settings);
 
