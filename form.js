@@ -39,7 +39,7 @@
 			'title':settings.title,
 			'buttons': {
 				"Ja": function() {
-					settings['callback']();
+					settings['callback'].call(parent);
 					$( this ).dialog( "close" );
 				},
 				"Nee": function() {
@@ -492,6 +492,7 @@
 			autoFillClass: 'autoFill',
 			autoFilledClass: 'autoFilled',
 			autoListClass: 'autoListItem',
+			autoClickAddClass: 'autoClickAdd',
 			updateOn: false
 		};
 		
@@ -520,10 +521,21 @@
 				var sourceElement=this;
 				var parentElement=$(this).parent();
 
+				//create an add-handler. when clicked it will insert a clone of the source element after this element
+				$("."+settings.autoClickAddClass, sourceElement).click(function(){
+					//console.log("add", sourceElement);
+					var addElement=$(sourceElement).clone(true);
+					addElement.addClass(settings.autoListClass);
+					addElement.insertAfter(
+						$(this).closest("."+settings.autoListClass)
+					);
+				});
+
+				
 ///				$(sourceElement).show();
 				settings.showChanges=(settings.updateOn!="");
 				
-				//traverse the input data
+				//traverse the input list
 				$.each(data, function(key, value) {
 					var updateElement={};
 				
@@ -540,12 +552,13 @@
 					{
 						updateElement=$(sourceElement).clone(true);
 						updateElement.addClass(settings.autoListClass);
-						updateElement.appendTo(parentElement);
+						updateElement.insertAfter(sourceElement);
 					}
 
 					//now autofill the element and its sibblings
 					$(updateElement).filter("."+settings.autoFillClass).autoFill(meta, value, settings);
 					$("."+settings.autoFillClass, updateElement).autoFill(meta, value, settings);
+
 
 				});
 

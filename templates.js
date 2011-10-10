@@ -17,11 +17,16 @@ function templateForm(params)
 			
 			//add delete handlers for lists
 			$(".autoClickDel", params.element).click(function()
-			{
-				var listItem=$(this).closest(".autoListItem");
-				listItem.hide('fast',function()
+			{		
+				$(this).confirm(function()
 				{
-					listItem.remove();
+					console.log(this);
+					var listItem=$(this).closest(".autoListItem");
+					listItem.hide('fast',function()
+					{
+						listItem.remove();
+					});
+					
 				});
 			});
 			

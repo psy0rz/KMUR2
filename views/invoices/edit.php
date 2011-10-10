@@ -76,6 +76,7 @@ $(this).ready(function()
 					<th class='autoCreate' _key='desc' _meta='desc'>
 					<th class='autoCreate' _key='price' _meta='desc'>
 					<th>
+					<th>
 				</tr>
 			</thead>
 			<tbody class='autoSort'>
@@ -85,6 +86,7 @@ $(this).ready(function()
 					<td class='autoCreate' _key='desc' >
 					<td class='autoCreate' _key='price' >
 					<td class='autoClickDel ui-icon ui-icon-trash'>
+					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
 			</tbody>
 		</table>
