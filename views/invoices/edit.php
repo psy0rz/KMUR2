@@ -69,17 +69,21 @@ $(this).ready(function()
 	<td >
 	
 		<table class='autoCreate' _key='items'>
-			<tr class='ui-widget-header'>
-				<th class='autoCreate' _key='amount' _meta='desc'>
-				<th class='autoCreate' _key='desc' _meta='desc'>
-				<th class='autoCreate' _key='price' _meta='desc'>
-			</tr>
-
-			<tr class='colorRows autoFill ui-widget-content' _key='index' _value>
-				<td class='autoCreate' _key='amount' >
-				<td class='autoCreate' _key='desc' >
-				<td class='autoCreate' _key='price' >
-			</tr>
+			<thead>
+				<tr class='ui-widget-header'>
+					<th class='autoCreate' _key='amount' _meta='desc'>
+					<th class='autoCreate' _key='desc' _meta='desc'>
+					<th class='autoCreate' _key='price' _meta='desc'>
+				</tr>
+			</thead>
+			<tbody class='autoSort'>
+				<tr class='colorRows autoFill ui-widget-content' _key='index' _value>
+					<td class='autoCreate' _key='amount' >
+					<td class='autoCreate' _key='desc' >
+					<td class='autoCreate' _key='price' >
+					<td class='autoClickDel'><img src='icons/del.png'/>
+				</tr>
+			</tbody>
 		</table>
 </tr>
 </table>

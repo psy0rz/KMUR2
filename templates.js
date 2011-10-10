@@ -14,7 +14,22 @@ function templateForm(params)
 		{
 			meta=result['data'];
 			$(".autoCreate", params.element).autoCreate(meta);
-
+			
+			//add delete handlers for lists
+			$(".autoClickDel", params.element).click(function()
+			{
+				var listItem=$(this).closest(".autoListItem");
+				listItem.hide('fast',function()
+				{
+					listItem.remove();
+				});
+			});
+			
+			//make stuff sortable
+			$(".autoSort", params.element).sortable({
+				placeholder: "autoSortPlaceholder"
+			});
+			
 			//focus the correct input field
 			if (params['viewParams'] && params['viewParams']['highlight'])
 				$('[_key="'+params['viewParams']['highlight']+'"]', params.element).focus();
@@ -35,6 +50,7 @@ function templateForm(params)
 						{
 							$(".autoFill", params.element).autoFill(meta, result.data);
 						}
+						
 
 						if (viewShowError(result, params.element))
 						{

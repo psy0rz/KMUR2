@@ -538,8 +538,7 @@
 					//not found, add new element?
 					if (!updateElement.length)
 					{
-						updateElement=$(sourceElement).clone();
-						//updateElement.removeClass("autoList");
+						updateElement=$(sourceElement).clone(true);
 						updateElement.addClass(settings.autoListClass);
 						updateElement.appendTo(parentElement);
 					}
@@ -566,7 +565,7 @@
 						//does not exist anymore?
 						if (!idMap[$(this).attr("_value")])
 						{
-							$(this).hide(1000,function()
+							$(this).hide('fast',function()
 							{
 								$(this).remove();
 							});
