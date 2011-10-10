@@ -32,7 +32,8 @@ function templateForm(params)
 			
 			//make stuff sortable
 			$(".autoSort", params.element).sortable({
-				placeholder: "autoSortPlaceholder"
+				placeholder: "autoSortPlaceholder",
+				handle: ".autoClickSort"
 			});
 			
 			//focus the correct input field

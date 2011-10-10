@@ -81,7 +81,7 @@ $(this).ready(function()
 			</thead>
 			<tbody class='autoSort'>
 				<tr class='colorRows autoFill ui-widget-content' _key='index' _value>
-					<td class='ui-icon ui-icon-arrowthick-2-n-s'> 
+					<td class='autoClickSort ui-icon ui-icon-arrowthick-2-n-s'> 
 					<td class='autoCreate' _key='amount' >
 					<td class='autoCreate' _key='desc' >
 					<td class='autoCreate' _key='price' >
