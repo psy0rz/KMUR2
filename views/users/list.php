@@ -47,7 +47,7 @@ $(document).ready(function()
 	<td class='autoFill autoClickEdit' _key='name'>
 	<td class='autoFill autoClickEdit' _key='gender'>
 	<td class='autoFill autoClickEdit' _key='rights'>
-	<td class='autoClickDel'><img src='icons/del.png'/>
+	<td class='autoClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
 

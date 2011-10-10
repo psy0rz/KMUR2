@@ -71,17 +71,20 @@ $(this).ready(function()
 		<table class='autoCreate' _key='items'>
 			<thead>
 				<tr class='ui-widget-header'>
+					<th>
 					<th class='autoCreate' _key='amount' _meta='desc'>
 					<th class='autoCreate' _key='desc' _meta='desc'>
 					<th class='autoCreate' _key='price' _meta='desc'>
+					<th>
 				</tr>
 			</thead>
 			<tbody class='autoSort'>
 				<tr class='colorRows autoFill ui-widget-content' _key='index' _value>
+					<td class='ui-icon ui-icon-arrowthick-2-n-s'> 
 					<td class='autoCreate' _key='amount' >
 					<td class='autoCreate' _key='desc' >
 					<td class='autoCreate' _key='price' >
-					<td class='autoClickDel'><img src='icons/del.png'/>
+					<td class='autoClickDel ui-icon ui-icon-trash'>
 				</tr>
 			</tbody>
 		</table>
