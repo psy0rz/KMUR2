@@ -159,12 +159,11 @@
 						
 						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, settings);
 
-//NO: leave adding autoGet or autoFill to the user in this case!
-//						if (!settings.readonly)
-//						{
-//							$(this).addClass(settings.autoGetClass)
-//						}
-//						$(this).addClass(settings.autoFillClass);
+						if (!settings.readonly)
+						{
+							$(this).addClass(settings.autoGetClass)
+						}
+						$(this).addClass(settings.autoFillClass);
 						
 						console.log("autocreate returned from recursion:", key);
 					}
@@ -629,7 +628,7 @@
 				var key=$(this).attr("_key");
 				var elementType=this.nodeName.toLowerCase();
 				
-				console.log("key " , key, this);
+				console.log("auto getting ", key, this);
 				//recurse into hash array
 				if (meta[key].type=="hash")
 				{
@@ -638,7 +637,8 @@
 					{
 						data[key]=new Array();
 					}
-					$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], data[key], settings);
+					console.log("autoget recursing into hash");
+					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);
 				}
 				//recurse into array list
 				else if (meta[key].type=="array")
@@ -650,11 +650,15 @@
 					}
 					
 					//traverse all the list items
+					console.log("autoget traversing list");
 					$("."+settings.autoListClass, this).each(function () {
 						var itemData={};
 						$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], itemData, settings);
 						data[key].push(itemData);
 					});
+					
+					//make sure we skip the 'source' list item and other crap
+					$("."+settings.autoGetClass, this).addClass(settings.autoGotClass);
 				}
 				else if (elementType=="input")
 				{
