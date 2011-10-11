@@ -549,6 +549,7 @@
 					//not found, add new element?
 					if (!updateElement.length)
 					{
+						console.log("adding new element");
 						updateElement=$(sourceElement).clone(true);
 						updateElement.removeClass(settings.autoListSourceClass);
 						updateElement.insertBefore(sourceElement);

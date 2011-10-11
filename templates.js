@@ -85,7 +85,9 @@ function templateForm(params)
 
 						if (result.data)
 						{
-							$(".autoPut", params.element).autoPut(meta, result.data);
+							$(".autoPut", params.element).autoPut(meta, result.data, {
+								element: params.element
+							});
 						}
 						
 
@@ -204,22 +206,25 @@ function templateList(params)
 	{
 		var rowElement=$(this).parent(".autoListItem");
 		var id=rowElement.attr("_value");
-		$(this).confirm(function()
+		if (!rowElement.hasClass("autoListSource"))
 		{
-			var rpcParams={};
-			rpcParams[params.id]=id;
-			rpc(
-				params.delData,
-				rpcParams,
-				function(result)
-				{
-					if (!viewShowError(result, rowElement))
+			$(this).confirm(function()
+			{
+				var rpcParams={};
+				rpcParams[params.id]=id;
+				rpc(
+					params.delData,
+					rpcParams,
+					function(result)
 					{
-						viewRefresh();
+						if (!viewShowError(result, rowElement))
+						{
+							viewRefresh();
+						}
 					}
-				}
-			);
-		});
+				);
+			});
+		}
 	};
 
 	function getData(update)
@@ -238,13 +243,13 @@ function templateList(params)
 				{
 					$(".autoPut:first", params.element).autoList(meta, result['data'], {
 						updateOn:params.id,
-						keepSource: true
+						element: params.element
 					});
 				}
 				else
 				{
 					$(".autoPut:first", params.element).autoList(meta, result['data'], {
-						keepSource: true
+						element: params.element
 					});
 				}
 					
