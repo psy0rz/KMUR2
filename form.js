@@ -504,7 +504,7 @@
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//add autoget-reminders
+			//remove autofilled-reminders
 			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
 			settings.recursed=true;
 		}
@@ -552,7 +552,7 @@
 					{
 						updateElement=$(sourceElement).clone(true);
 						updateElement.addClass(settings.autoListClass);
-						updateElement.insertAfter(sourceElement);
+						updateElement.insertBefore(sourceElement);
 					}
 
 					//now autofill the element and its sibblings
@@ -664,9 +664,12 @@
 					//traverse all the list items
 					console.log("autoget traversing list");
 					$("."+settings.autoListClass, this).each(function () {
-						var itemData={};
-						$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], itemData, settings);
-						data[key].push(itemData);
+						if (!$(this).hasClass(settings.autoGotClass))
+						{
+							var itemData={};
+							$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], itemData, settings);
+							data[key].push(itemData);
+						}
 					});
 					
 					//make sure we skip the 'source' list item and other crap

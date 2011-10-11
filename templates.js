@@ -21,7 +21,7 @@ function templateForm(params)
 				$(this).confirm(function()
 				{
 					console.log(this);
-					var listItem=$(this).closest(".autoListItem");
+					var listItem=$(this, params.element).closest(".autoListItem");
 					listItem.hide('fast',function()
 					{
 						listItem.remove();
