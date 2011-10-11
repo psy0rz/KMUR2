@@ -543,6 +543,8 @@
 					{
 						//try to find existing element
 						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", parentElement);
+						if (updateElement.hasClass(settings.autoListSourceClass))
+							updateElement=[];
 						console.log("update element:",updateElement);
 					}
 
@@ -574,13 +576,17 @@
 					
 					//traverse all the html list items
 					$("."+settings.autoListClass, parentElement).each(function() {
-						//does not exist anymore?
-						if (!idMap[$(this).attr("_value")])
+						if (!$(this).hasClass(settings.autoListSourceClass))
 						{
-							$(this).hide('fast',function()
+							//does not exist anymore?
+							if (!idMap[$(this).attr("_value")])
 							{
-								$(this).remove();
-							});
+								console.log("removing element",this);
+								$(this).hide('fast',function()
+								{
+									$(this).remove();
+								});
+							}
 						}
 					});
 					

@@ -241,7 +241,8 @@ function templateList(params)
 
 				if (update)
 				{
-					$(".autoPut:first", params.element).autoList(meta, result['data'], {
+					//since its an update, dont get confused with the other autoput-list items
+					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
 						updateOn:params.id,
 						element: params.element
 					});
