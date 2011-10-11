@@ -13,7 +13,7 @@ function templateForm(params)
 		function(result)
 		{
 			meta=result['data'];
-			$(".autoCreate", params.element).autoCreate(meta);
+			$(".autoMeta", params.element).autoMeta(meta);
 			
 			//add delete handlers for lists
 			$(".autoClickDel", params.element).click(function()
@@ -54,7 +54,7 @@ function templateForm(params)
 
 						if (result.data)
 						{
-							$(".autoFill", params.element).autoFill(meta, result.data);
+							$(".autoPut", params.element).autoPut(meta, result.data);
 						}
 						
 
@@ -205,14 +205,14 @@ function templateList(params)
 
 				if (update)
 				{
-					$(".autoFill:first", params.element).autoList(meta, result['data'], {
+					$(".autoPut:first", params.element).autoList(meta, result['data'], {
 						updateOn:params.id,
 						keepSource: true
 					});
 				}
 				else
 				{
-					$(".autoFill:first", params.element).autoList(meta, result['data'], {
+					$(".autoPut:first", params.element).autoList(meta, result['data'], {
 						keepSource: true
 					});
 				}
@@ -244,8 +244,8 @@ function templateList(params)
 		function(result)
 		{
 			meta=result['data'];
-			//add real input to autoCreate divs. 
-			$(".autoCreate", params.element).autoCreate(meta);
+			//add real input to autoMeta divs. 
+			$(".autoMeta", params.element).autoMeta(meta);
 			getData(false);
 		}
 	)

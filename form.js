@@ -108,11 +108,11 @@
 	*  Use _key attribute to specify meta-field.
 	*  If _meta is specified, that meta-field will be litterly filled in as text.(usefull for descriptions)
 	*/
-	$.fn.autoCreate = function( meta , options ) {  
+	$.fn.autoMeta = function( meta , options ) {  
 
 		var settings = {
-			autoFillClass: 'autoFill',
-			autoCreateClass: 'autoCreate',
+			autoPutClass: 'autoPut',
+			autoMetaClass: 'autoMeta',
 			autoGetClass: 'autoGet'
 		};
 		
@@ -123,14 +123,14 @@
 		//traverse all specified elements
 		return this.each(function() {
 			
-			//check if it still has an autoCreateClass.
+			//check if it still has an autoMetaClass.
 			//(its possible we already processed it, because of recursion for type array or hash)
-			if ($(this).hasClass(settings.autoCreateClass))
+			if ($(this).hasClass(settings.autoMetaClass))
 			{
 				console.log("auto creating ", this, " with ",meta,settings);
 
 				//make sure we process it only once.
-				$(this).removeClass(settings.autoCreateClass);
+				$(this).removeClass(settings.autoMetaClass);
 				
 				var key=$(this).attr("_key");
 				var thismeta=meta[key];
@@ -149,7 +149,7 @@
 					//array or hash?, recurse into submeta data.
 					else if (thismeta.type=='array' || thismeta.type=='hash')
 					{
-						console.log("autocreate recursing into array or hash:", key);
+						console.log("autoMeta recursing into array or hash:", key);
 						
 						//make sure all the recursed subitems will be readonly as well!
 						if (thismeta.readonly)
@@ -157,15 +157,15 @@
 							settings.readonly=true;
 						}
 						
-						$("."+settings.autoCreateClass, this).autoCreate(thismeta.meta, settings);
+						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, settings);
 
 						if (!settings.readonly)
 						{
 							$(this).addClass(settings.autoGetClass)
 						}
-						$(this).addClass(settings.autoFillClass);
+						$(this).addClass(settings.autoPutClass);
 						
-						console.log("autocreate returned from recursion:", key);
+						console.log("autoMeta returned from recursion:", key);
 					}
 
 					
@@ -230,7 +230,7 @@
 						$.each(thismeta['choices'], function(choice, desc){
 							//add checkbox
 							var checkbox=$("<input>")
-									.addClass(settings.autoFillClass)
+									.addClass(settings.autoPutClass)
 									.attr("value",choice)
 									.attr("type","checkbox")
 									.attr("_key",key)
@@ -272,7 +272,7 @@
 
 					if (addedElement)
 					{
-						addedElement.addClass(settings.autoFillClass)
+						addedElement.addClass(settings.autoPutClass)
 							.attr("_key",key)
 							.attr("title",thismeta.desc);
 						
@@ -297,12 +297,12 @@
 	*  Automaticly recognises element-types and uses the correct way to 'fill in the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*/
-	$.fn.autoFill = function( meta , data,  options ) {  
+	$.fn.autoPut = function( meta , data,  options ) {  
 
 		var settings = {
 			showChanges:false,
-			autoFillClass:'autoFill',
-			autoFilledClass:'autoFilled'
+			autoPutClass:'autoPut',
+			autoPutedClass:'autoPuted'
 		};
 		
 		if ( options ) { 
@@ -313,8 +313,8 @@
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//remove old autofill-reminders
-			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
+			//remove old autoPut-reminders
+			$("."+settings.autoPutedClass, settings.element).removeClass(settings.autoPutedClass);
 			settings.recursed=true;
 		}
 		
@@ -323,9 +323,9 @@
 
 			//check if we didnt process it yet.
 			//(its possible we already processed it, because of recursion for type array)
-			if (!$(this).hasClass(settings.autoFilledClass))
+			if (!$(this).hasClass(settings.autoPutedClass))
 			{
-				console.log("autofilling ", this, " with ",meta,data,settings);
+				console.log("autoPuting ", this, " with ",meta,data,settings);
 			
 				var key=$(this).attr("_key");
 				var value=data[key];
@@ -334,7 +334,7 @@
 				var changed=false;
 
 				//make sure we process it only once.
-				$(this).addClass(settings.autoFilledClass);
+				$(this).addClass(settings.autoPutedClass);
 
 //				console.log(key, metaValue);
 	
@@ -348,15 +348,15 @@
 				//recurse into hash?
 				else if (metaValue.type=="hash")
 				{
-					console.log("autofill recursing into hash: ",key);
-					$("."+settings.autoFillClass, this).autoFill(metaValue.meta, value, settings);
+					console.log("autoPut recursing into hash: ",key);
+					$("."+settings.autoPutClass, this).autoPut(metaValue.meta, value, settings);
 				}
 				
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
-					console.log("autofill recursing into array with autoList:", key);
-					$("."+settings.autoFillClass, this).autoList(metaValue.meta, value, settings);
+					console.log("autoPut recursing into array with autoList:", key);
+					$("."+settings.autoPutClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
 				//put value in attribute (doesnt work if the value is an array)
@@ -482,15 +482,15 @@
 
 	
 	/*** Replicates the specified element for every item in the data-array
-	 * Calls autoFill everytime, for elements of class autoFill
+	 * Calls autoPut everytime, for elements of class autoPut
 	 * Use updateOn to update an existing list (update, delete and add items)
 	 * Specify the data-key that should be stored in _value to be able to update
 	 */
 	$.fn.autoList = function( meta, data , options ) {
 
 		var settings = {
-			autoFillClass: 'autoFill',
-			autoFilledClass: 'autoFilled',
+			autoPutClass: 'autoPut',
+			autoPutedClass: 'autoPuted',
 			autoListClass: 'autoListItem',
 			autoClickAddClass: 'autoClickAdd',
 			updateOn: false
@@ -504,8 +504,8 @@
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			//remove autofilled-reminders
-			$("."+settings.autoFilledClass, settings.element).removeClass(settings.autoFilledClass);
+			//remove autoPuted-reminders
+			$("."+settings.autoPutedClass, settings.element).removeClass(settings.autoPutedClass);
 			settings.recursed=true;
 		}
 
@@ -514,7 +514,7 @@
 		var ret=this.each(function() {
 
 			//check if we didnt already process it because of recursion
-			if (!$(this).hasClass(settings.autoFilledClass))
+			if (!$(this).hasClass(settings.autoPutedClass))
 			{
 				console.log("auto listing ", this, " with ",meta,data,settings);
 
@@ -555,9 +555,9 @@
 						updateElement.insertBefore(sourceElement);
 					}
 
-					//now autofill the element and its sibblings
-					$(updateElement).filter("."+settings.autoFillClass).autoFill(meta, value, settings);
-					$("."+settings.autoFillClass, updateElement).autoFill(meta, value, settings);
+					//now autoPut the element and its sibblings
+					$(updateElement).filter("."+settings.autoPutClass).autoPut(meta, value, settings);
+					$("."+settings.autoPutClass, updateElement).autoPut(meta, value, settings);
 
 
 				});
@@ -588,8 +588,8 @@
 				}
 				
 				//make sure the source element doesnt get processed. (in case of array recursion)
-				$("."+settings.autoFillClass, sourceElement).addClass(settings.autoFilledClass);
-				$(this).addClass(settings.autoFilledClass);
+				$("."+settings.autoPutClass, sourceElement).addClass(settings.autoPutedClass);
+				$(this).addClass(settings.autoPutedClass);
 			} //has class
 			else
 			{

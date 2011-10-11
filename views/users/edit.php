@@ -45,36 +45,36 @@ $(this).ready(function()
 
 <table>
 <tr>
-	<td class='autoCreate' _key='active' _meta='desc'>
-	<td class='autoCreate' _key='active'>
+	<td class='autoMeta' _key='active' _meta='desc'>
+	<td class='autoMeta' _key='active'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='username' _meta='desc'>
-	<td class='autoCreate' _key='username'>
+	<td class='autoMeta' _key='username' _meta='desc'>
+	<td class='autoMeta' _key='username'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='password' _meta='desc'>
-	<td class='autoCreate' _key='password'>
+	<td class='autoMeta' _key='password' _meta='desc'>
+	<td class='autoMeta' _key='password'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='rights' _meta='desc'>
-	<td class='autoCreate' _key='rights'>
+	<td class='autoMeta' _key='rights' _meta='desc'>
+	<td class='autoMeta' _key='rights'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='name' _meta='desc'>
-	<td class='autoCreate' _key='name'>
+	<td class='autoMeta' _key='name' _meta='desc'>
+	<td class='autoMeta' _key='name'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='gender' _meta='desc'>
-	<td class='autoCreate' _key='gender'>
+	<td class='autoMeta' _key='gender' _meta='desc'>
+	<td class='autoMeta' _key='gender'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='country' _meta='desc'>
-	<td class='autoCreate' _key='country'>
+	<td class='autoMeta' _key='country' _meta='desc'>
+	<td class='autoMeta' _key='country'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='address' _meta='desc'>
-	<td class='autoCreate' _key='address'>
+	<td class='autoMeta' _key='address' _meta='desc'>
+	<td class='autoMeta' _key='address'>
 </tr>
 </table>
 

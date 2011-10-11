@@ -33,20 +33,20 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoCreate' _key='active' _meta='desc'>
-	<th class='autoCreate' _key='username' _meta='desc'>
-	<th class='autoCreate' _key='name' _meta='desc'>
-	<th class='autoCreate' _key='gender' _meta='desc'>
-	<th class='autoCreate' _key='rights' _meta='desc'>
+	<th class='autoMeta' _key='active' _meta='desc'>
+	<th class='autoMeta' _key='username' _meta='desc'>
+	<th class='autoMeta' _key='name' _meta='desc'>
+	<th class='autoMeta' _key='gender' _meta='desc'>
+	<th class='autoMeta' _key='rights' _meta='desc'>
 	<th>
 </tr>
 
-<tr class='colorRows autoFill ui-widget-content' _key='_id' _value>
-	<td class='autoFill autoClickEdit' _key='active'>
-	<td class='autoFill autoClickEdit' _key='username'>
-	<td class='autoFill autoClickEdit' _key='name'>
-	<td class='autoFill autoClickEdit' _key='gender'>
-	<td class='autoFill autoClickEdit' _key='rights'>
+<tr class='colorRows autoPut ui-widget-content' _key='_id' _value>
+	<td class='autoPut autoClickEdit' _key='active'>
+	<td class='autoPut autoClickEdit' _key='username'>
+	<td class='autoPut autoClickEdit' _key='name'>
+	<td class='autoPut autoClickEdit' _key='gender'>
+	<td class='autoPut autoClickEdit' _key='rights'>
 	<td class='autoClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
