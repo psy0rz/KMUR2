@@ -80,7 +80,7 @@ $(this).ready(function()
 				</tr>
 			</thead>
 			<tbody class='autoSort'>
-				<tr class='colorRows autoPut ui-widget-content' _key='index' _value>
+				<tr class='colorRows autoPut autoFocusAdd ui-widget-content' _key='index' _value>
 					<td class='autoClickSort ui-icon ui-icon-arrowthick-2-n-s'> 
 					<td class='autoMeta' _key='amount' >
 					<td class='autoMeta' _key='desc' >

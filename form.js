@@ -485,6 +485,9 @@
 	 * Calls autoPut everytime, for elements of class autoPut
 	 * Use updateOn to update an existing list (update, delete and add items)
 	 * Specify the data-key that should be stored in _value to be able to update
+	 * 
+	 * All the listitems get the autoListClass. (even the source item)
+	 * The source item also get the autoListSourceClass, so we know we should skip it when getting the list.
 	 */
 	$.fn.autoList = function( meta, data , options ) {
 
@@ -492,7 +495,7 @@
 			autoPutClass: 'autoPut',
 			autoPutedClass: 'autoPuted',
 			autoListClass: 'autoListItem',
-			autoClickAddClass: 'autoClickAdd',
+			autoListSourceClass: 'autoListSource',
 			updateOn: false
 		};
 		
@@ -521,16 +524,12 @@
 				var sourceElement=this;
 				var parentElement=$(this).parent();
 
-				//create an add-handler. when clicked it will insert a clone of the source element after this element
-				$("."+settings.autoClickAddClass, sourceElement).click(function(){
-					//console.log("add", sourceElement);
-					var addElement=$(sourceElement).clone(true);
-					addElement.addClass(settings.autoListClass);
-					addElement.insertAfter(
-						$(this).closest("."+settings.autoListClass)
-					);
-				});
+				//make sure we can recognize all the list items for reading them back
+				$(sourceElement).addClass(settings.autoListClass);
 
+				//make sure we can recognise the source so we can skip it when reading the list
+				$(sourceElement).addClass(settings.autoListSourceClass);
+				
 				
 ///				$(sourceElement).show();
 				settings.showChanges=(settings.updateOn!="");
@@ -551,14 +550,13 @@
 					if (!updateElement.length)
 					{
 						updateElement=$(sourceElement).clone(true);
-						updateElement.addClass(settings.autoListClass);
+						updateElement.removeClass(settings.autoListSourceClass);
 						updateElement.insertBefore(sourceElement);
 					}
 
 					//now autoPut the element and its sibblings
-					$(updateElement).filter("."+settings.autoPutClass).autoPut(meta, value, settings);
+					updateElement.filter("."+settings.autoPutClass).autoPut(meta, value, settings);
 					$("."+settings.autoPutClass, updateElement).autoPut(meta, value, settings);
-
 
 				});
 
@@ -612,7 +610,8 @@
 		var settings = {
 			autoGetClass:'autoGet',
 			autoGotClass:'autoGot',
-			autoListClass: 'autoListItem'
+			autoListClass: 'autoListItem',
+			autoListSourceClass: 'autoListSource',
 		};
 		
 		if ( options ) { 
@@ -629,6 +628,7 @@
 			settings.recursed=true;
 		}
 
+		//traverse all the lists
 		return this.each(function() {
 			
 			//check if we didnt process it yet because of recursion
@@ -660,6 +660,10 @@
 					{
 						data[key]=new Array();
 					}
+					
+					//make sure we skip the source item + subitems
+					$("."+settings.autoListSourceClass, this).addClass(settings.autoGotClass);
+					$("."+settings.autoListSourceClass+" ."+settings.autoGetClass, this).addClass(settings.autoGotClass);
 					
 					//traverse all the list items
 					console.log("autoget traversing list");

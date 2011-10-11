@@ -35,5 +35,10 @@
 
 .autoSortPlaceholder 
 {
-	height: 1em;
+	height: 4em;
+}
+
+.autoListSource
+{
+	background: #DDD  !important;
 }

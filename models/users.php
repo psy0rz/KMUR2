@@ -61,7 +61,6 @@ class users extends model
 			"name"=>array(
 				"desc"=>"Voornaam en achternaam",
 				"type"=>"string",
-				"default"=>"sdf",
 				"min"=>3,
 				"max"=>50
 			),

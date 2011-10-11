@@ -14,26 +14,57 @@ function templateForm(params)
 		{
 			meta=result['data'];
 			$(".autoMeta", params.element).autoMeta(meta);
+
+			//create an add-handler to add items to lists
+			$(".autoClickAdd", params.element).click(function(){
+				//find the clicked list element, and the source element of the list
+				var clickedElement=$(this, params.element).closest(".autoListItem");
+				var sourceElement=clickedElement.parent().children(".autoListSource");
+				var addElement=$(sourceElement).clone(true);
+				addElement.removeClass("autoListSource");
+				if (clickedElement.hasClass("autoListSource"))
+					addElement.insertBefore(clickedElement);
+				else
+					addElement.insertAfter(clickedElement);
+			});
 			
+			//create an auto-add handler if the source-element is changed
+			$(".autoFocusAdd :input", params.element).focus(function(){
+				var changedElement=$(this, params.element).closest(".autoListItem");
+				//is this the source element?
+				if (changedElement.hasClass("autoListSource"))
+				{
+					//create a new source element
+					var addElement=$(changedElement).clone(true);
+					changedElement.removeClass("autoListSource");
+					addElement.insertAfter(changedElement);
+				}
+			});
+			
+
 			//add delete handlers for lists
 			$(".autoClickDel", params.element).click(function()
 			{		
-				$(this).confirm(function()
+				var clickedElement=$(this, params.element).closest(".autoListItem");
+				if (!clickedElement.hasClass("autoListSource"))
 				{
-					console.log(this);
-					var listItem=$(this, params.element).closest(".autoListItem");
-					listItem.hide('fast',function()
+					$(this).confirm(function()
 					{
-						listItem.remove();
+						clickedElement.hide('fast',function()
+						{
+							clickedElement.remove();
+						});
 					});
-					
-				});
+				}
 			});
 			
 			//make stuff sortable
 			$(".autoSort", params.element).sortable({
 				placeholder: "autoSortPlaceholder",
-				handle: ".autoClickSort"
+				handle: ".autoClickSort",
+				cancel: ".autoListSource",
+				forceHelperSize: true,
+				forcePlaceholderSize: true
 			});
 			
 			//focus the correct input field
