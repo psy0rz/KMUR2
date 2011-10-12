@@ -37,7 +37,7 @@ function randomStr(length) {
 }
 
 if (window.location.search.indexOf('kmur.debug') != -1)
-	logDebug=function () { console.apply(this, arguments) };
+	logDebug=function () { console.debug( arguments ); };
 else
 	logDebug=function () { };
 
