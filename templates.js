@@ -249,7 +249,7 @@ function templateList(params)
 				}
 				else
 				{
-					$(".autoPut:first", params.element).autoList(meta, result['data'], {
+					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
 						element: params.element
 					});
 				}

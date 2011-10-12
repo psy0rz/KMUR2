@@ -302,7 +302,8 @@
 		var settings = {
 			showChanges:false,
 			autoPutClass:'autoPut',
-			autoPutedClass:'autoPuted'
+			autoPutedClass:'autoPuted',
+			autoListSourceClass:'autoListSource'
 		};
 		
 		if ( options ) { 
@@ -356,7 +357,7 @@
 				else if (metaValue.type=="array")
 				{
 					logDebug("autoPut recursing into array with autoList:", key);
-					$("."+settings.autoPutClass, this).autoList(metaValue.meta, value, settings);
+					$("."+settings.autoListSourceClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
 				//put value in attribute (doesnt work if the value is an array)
@@ -486,8 +487,8 @@
 	 * Use updateOn to update an existing list (update, delete and add items)
 	 * Specify the data-key that should be stored in _value to be able to update
 	 * 
+	 * The source item should have the autoListSourceClass
 	 * All the listitems get the autoListClass. (even the source item)
-	 * The source item also get the autoListSourceClass, so we know we should skip it when getting the list.
 	 */
 	$.fn.autoList = function( meta, data , options ) {
 
@@ -527,10 +528,6 @@
 				//make sure we can recognize all the list items for reading them back
 				$(sourceElement).addClass(settings.autoListClass);
 
-				//make sure we can recognise the source so we can skip it when reading the list
-				$(sourceElement).addClass(settings.autoListSourceClass);
-				
-				
 ///				$(sourceElement).show();
 				settings.showChanges=(settings.updateOn!="");
 				
@@ -594,7 +591,7 @@
 				
 				//make sure the source element doesnt get processed. (in case of array recursion)
 				$("."+settings.autoPutClass, sourceElement).addClass(settings.autoPutedClass);
-				$(this).addClass(settings.autoPutedClass);
+				$(sourceElement).addClass(settings.autoPutedClass);
 			} //has class
 			else
 			{
