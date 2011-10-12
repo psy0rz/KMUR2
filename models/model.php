@@ -97,9 +97,12 @@ class model
 		 "*": Allow anything and dont check it. dont forget to check it yourself!
 	*/
 
-	protected function verifyMeta($data)
+	protected function verifyMeta($data, $meta='')
 	{
-		$meta=$this->getMeta();
+		if (!$meta)
+		{
+			$meta=$this->getMeta();
+		}
 	
 		foreach ($data as $key=>$value)
 		{
@@ -149,7 +152,7 @@ class model
 				if (!is_array($value))
 					throw new FieldException("dit veld dient een hash-array te zijn", $key);
 				
-				verifyMeta($meta[$key]["meta"], $value);
+				$this->verifyMeta($value,$meta[$key]["meta"]);
 			}
 			//normal array, examine every item recursively
 			else if ($meta[$key]["type"]=="array")
@@ -158,7 +161,7 @@ class model
 					throw new FieldException("dit veld dient een array te zijn", $key);
 				foreach ($value as $subData)
 				{
-					verifyMeta($meta[$key]["meta"], $subData);
+					$this->verifyMeta($subData, $meta[$key]["meta"]);
 				}
 			}
 			//a select list should contain one 'selected' choice from a list

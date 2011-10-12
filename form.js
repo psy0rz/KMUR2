@@ -127,7 +127,7 @@
 			//(its possible we already processed it, because of recursion for type array or hash)
 			if ($(this).hasClass(settings.autoMetaClass))
 			{
-				console.log("auto creating ", this, " with ",meta,settings);
+				logDebug("auto creating ", this, " with ",meta,settings);
 
 				//make sure we process it only once.
 				$(this).removeClass(settings.autoMetaClass);
@@ -149,7 +149,7 @@
 					//array or hash?, recurse into submeta data.
 					else if (thismeta.type=='array' || thismeta.type=='hash')
 					{
-						console.log("autoMeta recursing into array or hash:", key);
+						logDebug("autoMeta recursing into array or hash:", key);
 						
 						//make sure all the recursed subitems will be readonly as well!
 						if (thismeta.readonly)
@@ -165,7 +165,7 @@
 						}
 						$(this).addClass(settings.autoPutClass);
 						
-						console.log("autoMeta returned from recursion:", key);
+						logDebug("autoMeta returned from recursion:", key);
 					}
 
 					
@@ -285,7 +285,7 @@
 			}
 			else
 			{
-				console.log("skipped auto creating ", this, " with ",meta,settings);
+				logDebug("skipped auto creating ", this, " with ",meta,settings);
 			}
 		});
 	};
@@ -325,7 +325,7 @@
 			//(its possible we already processed it, because of recursion for type array)
 			if (!$(this).hasClass(settings.autoPutedClass))
 			{
-				console.log("autoPuting ", this, " with ",meta,data,settings);
+				logDebug("autoPuting ", this, " with ",meta,data,settings);
 			
 				var key=$(this).attr("_key");
 				var value=data[key];
@@ -336,7 +336,7 @@
 				//make sure we process it only once.
 				$(this).addClass(settings.autoPutedClass);
 
-//				console.log(key, metaValue);
+//				logDebug(key, metaValue);
 	
 				//no or nonexisting key?, do nothing
 				if (!(key in data) || !(key in meta))
@@ -348,14 +348,14 @@
 				//recurse into hash?
 				else if (metaValue.type=="hash")
 				{
-					console.log("autoPut recursing into hash: ",key);
+					logDebug("autoPut recursing into hash: ",key);
 					$("."+settings.autoPutClass, this).autoPut(metaValue.meta, value, settings);
 				}
 				
 				//recurse into array?
 				else if (metaValue.type=="array")
 				{
-					console.log("autoPut recursing into array with autoList:", key);
+					logDebug("autoPut recursing into array with autoList:", key);
 					$("."+settings.autoPutClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
@@ -474,7 +474,7 @@
 			}
 			else
 			{
-				console.log("skipped auto filling ", this, " with ",meta,data,settings);
+				logDebug("skipped auto filling ", this, " with ",meta,data,settings);
 			}
 		});
 
@@ -519,7 +519,7 @@
 			//check if we didnt already process it because of recursion
 			if (!$(this).hasClass(settings.autoPutedClass))
 			{
-				console.log("auto listing ", this, " with ",meta,data,settings);
+				logDebug("auto listing ", this, " with ",meta,data,settings);
 
 				var sourceElement=this;
 				var parentElement=$(this).parent();
@@ -545,13 +545,13 @@
 						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", parentElement);
 						if (updateElement.hasClass(settings.autoListSourceClass))
 							updateElement=[];
-						console.log("update element:",updateElement);
+						logDebug("update element:",updateElement);
 					}
 
 					//not found, add new element?
 					if (!updateElement.length)
 					{
-						console.log("adding new element");
+						logDebug("adding new element");
 						updateElement=$(sourceElement).clone(true);
 						updateElement.removeClass(settings.autoListSourceClass);
 						updateElement.insertBefore(sourceElement);
@@ -581,7 +581,7 @@
 							//does not exist anymore?
 							if (!idMap[$(this).attr("_value")])
 							{
-								console.log("removing element",this);
+								logDebug("removing element",this);
 								$(this).hide('fast',function()
 								{
 									$(this).remove();
@@ -598,7 +598,7 @@
 			} //has class
 			else
 			{
-				console.log("skipped auto listing ", this, " with ",meta,data,settings);
+				logDebug("skipped auto listing ", this, " with ",meta,data,settings);
 			}
 			
 		}); //all list loop
@@ -625,7 +625,7 @@
 			$.extend( settings, options );
 		}
 		
-		//console.log("autogegt", $("[key]", settings.element));
+		//logDebug("autogegt", $("[key]", settings.element));
 		
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
@@ -647,7 +647,7 @@
 				var key=$(this).attr("_key");
 				var elementType=this.nodeName.toLowerCase();
 				
-				console.log("auto getting ", key, this);
+				logDebug("auto getting ", key, this);
 				//recurse into hash array
 				if (meta[key].type=="hash")
 				{
@@ -656,7 +656,7 @@
 					{
 						data[key]=new Array();
 					}
-					console.log("autoget recursing into hash");
+					logDebug("autoget recursing into hash");
 					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);
 				}
 				//recurse into array list
@@ -673,7 +673,7 @@
 					$("."+settings.autoListSourceClass+" ."+settings.autoGetClass, this).addClass(settings.autoGotClass);
 					
 					//traverse all the list items
-					console.log("autoget traversing list");
+					logDebug("autoget traversing list");
 					$("."+settings.autoListClass, this).each(function () {
 						if (!$(this).hasClass(settings.autoGotClass))
 						{

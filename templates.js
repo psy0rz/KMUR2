@@ -129,7 +129,7 @@ function templateForm(params)
 		$(".autoGet", params.element).autoGet(meta, putParams, { 
 			element: params.element 
 		});
-		
+
 		//put data
 		rpc(
 			params['putData'],

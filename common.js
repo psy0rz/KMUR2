@@ -36,6 +36,12 @@ function randomStr(length) {
 	return(s);
 }
 
+if (window.location.search.indexOf('kmur.debug') != -1)
+	logDebug=function () { console.apply(this, arguments) };
+else
+	logDebug=function () { };
+
+
 //get a random unguessable client identifier that stays the same accross javascript instances and browser sessions
 //(this one IS stored in a cookie, contrary to the authCookie which is different among javascript instances)
 function getClientId()
