@@ -9,12 +9,12 @@ function viewShowError(result, parent)
 
 	if (result!=null)
 	{
-		if (result["error"]!=null)
+		if ('error' in result)
 		{
 			//show in html element?
 			if ($(".autoError", parent).size()!=0)
 			{
-				$(".autoError", parent).text(result["error"]["message"]);
+				$(".autoError", parent).text(result.error.message);
 				$(".autoError", parent).addClass("ui-state-error");
 
 			}
@@ -29,10 +29,24 @@ function viewShowError(result, parent)
 				});
 			}
 			
-			if (result["error"]["field"]!=null)
+			if ('fields' in result.error)
 			{
-				$('[_key="'+result["error"]["field"]+'"]', parent).addClass("ui-state-error").focus();
-				$('[_errorHighlight="'+result["error"]["field"]+'"]', parent).addClass("ui-state-error");
+				//create selector string from fields
+				var selectorStr='';
+				$.each(result.error.fields, function (i, field){
+					if (typeof field=='number')
+					{
+						selectorStr+='.autoListItem:nth-child('+(field+1)+') ';
+					}
+					else
+					{
+						selectorStr+='.autoGet[_key="'+field+'"] ';
+					}
+				});
+				
+				//console.log(selectorStr);
+				$(selectorStr, parent).addClass("ui-state-error").focus();
+				$(selectorStr, parent).addClass("ui-state-error");
 			}
 			return(true);
 		}

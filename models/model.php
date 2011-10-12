@@ -126,8 +126,11 @@ class model
 			}
 			else if ($meta[$key]["type"]=="integer" || $meta[$key]["type"]=="float")
 			{
-				if ($meta[$key]["type"]=="integer" || !is_integer($value))
+				if (($meta[$key]["type"]=="integer") && ( (string)(int)$value!=(string)$value ))
 					throw new FieldException("dit veld moet een geheel getal zijn", $key);
+
+				if (($meta[$key]["type"]=="float") && ( (string)(float)$value!=(string)$value ))
+					throw new FieldException("dit veld moet een getal zijn", $key);
 
 				if (isset($meta[$key]["max"]) && $value>$meta[$key]["max"])
 					throw new FieldException("dit veld mag niet groter dan ".$meta[$key]["max"]." zijn", $key);
