@@ -55,8 +55,7 @@ catch (FieldException $e)
 	$result=array(
 		"error"=>array(
 			"message"=>$e->getMessage(),
-			"field"=>$e->field,
-			"id"=>$e->id
+			"fields"=>$e->getFields(),
 		)
 	);
 }

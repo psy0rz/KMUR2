@@ -11,7 +11,7 @@ function viewShowError(result, parent)
 	{
 		if (result["error"]!=null)
 		{
-			//show in html element or make a popup?
+			//show in html element?
 			if ($(".autoError", parent).size()!=0)
 			{
 				$(".autoError", parent).text(result["error"]["message"]);

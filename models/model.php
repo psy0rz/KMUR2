@@ -152,16 +152,37 @@ class model
 				if (!is_array($value))
 					throw new FieldException("dit veld dient een hash-array te zijn", $key);
 				
-				$this->verifyMeta($value,$meta[$key]["meta"]);
+				try
+				{
+					$this->verifyMeta($value,$meta[$key]["meta"]);
+				}
+				catch(FieldException $e)
+				{
+					//make sure the fieldlist is ok, so the userinterface can highlight the correct field.
+					$e->insertField($key);
+					throw $e;
+				}
 			}
 			//normal array, examine every item recursively
 			else if ($meta[$key]["type"]=="array")
 			{
 				if (!is_array($value))
 					throw new FieldException("dit veld dient een array te zijn", $key);
+				$fieldIndex=0;
 				foreach ($value as $subData)
 				{
-					$this->verifyMeta($subData, $meta[$key]["meta"]);
+					try
+					{
+						$this->verifyMeta($subData, $meta[$key]["meta"]);
+					}
+					catch(FieldException $e)
+					{
+						//make sure the fieldlist is ok, so the userinterface can highlight the correct field.
+						$e->insertField($fieldIndex);
+						$e->insertField($key);
+						throw $e;
+					}
+					$fieldIndex++;
 				}
 			}
 			//a select list should contain one 'selected' choice from a list
