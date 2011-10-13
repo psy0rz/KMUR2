@@ -1,4 +1,13 @@
 ------------------
+zelf tranciever maken?
+
+http://homeeasyhacking.wikia.com/wiki/Nano_Breadboard_Interface
+
+http://code.google.com/p/arduinoha/
+
+sander.schutten@gmail.com gemailed met vragen.
+
+------------------
 tellstick
 http://www.telldus.com/products/tellstick_duo
 
