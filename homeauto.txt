@@ -1,0 +1,136 @@
+------------------
+tellstick
+http://www.telldus.com/products/tellstick_duo
+
+http://www.telldus.com/products/compability
+
+------------------
+visonic (compatible rfxcom, wel +50 euro!)
+
+pir aanbieding 36 euro (normaal 72?)
+http://www.waakzaamwonen.com/mcpir3000-chubb-draadloze-bewegingsmelder-p-514.html
+
+pir ebay 17 euro + 7
+http://www.ebay.nl/itm/Visonic-K980-Pet-Immune-PIR-Detector-/130585130974?pt=UK_Burglar_Alarms&hash=item1e677af7de#ht_1009wt_936
+
+deurcontact 25 euro + 7
+(normaal 47 euro)
+http://www.ebay.nl/itm/Visonic-MCT-302-Door-Window-Contact-Brand-New-/130585166812?pt=UK_Burglar_Alarms&hash=item1e677b83dc#ht_695wt_936
+
+universeel 2 inputs naar rf 50 euro
+http://www.waakzaamwonen.com/mct100-draadloze-universele-zender-met-2-bekabelde-ingangen-p-259.html
+
+-----------------------
+klikaanklikuit
+
+deursensor 10 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/draadloze-deur-raam-sensor/
+
+schemer sensor 20 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/draadloze-schermsensor/
+
+pir 24 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/draadloze-bewegingsmelder-binnen/
+
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/deurbel-met-inbouwzender/
+
+schakelaar 11 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/stekkerdoos-schakelaar/
+
+miniinbouw  dim 17.50
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/2-mini-inbouwdimmers/
+
+dimmer set 20 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/Set-stekkerdoos-dimmer-met-afstandsbediening/
+
+stekkerdoos dimmer 15 euro
+http://www.gamma.com/assortiment/elektra/draadloos-schakel-en-dimsysteem/stekkerdoos-dimmer/
+
+
+------------------------
+intertechno
+
+dimmer stekker 20 euro
+http://www.home4u-store.com/intertechno-itlr300-funk-zwischenstecker-dimmer-soft-design-p-6095.html
+
+pir 26 euro
+http://www.home4u-store.com/intertechno-pir1000-funkbewegungsmelder-indoor-p-4719.html
+battery
+
+
+deur schakelaar 22 euro
+http://www.home4u-store.com/intertechno-itm100-funkmagnetschalter-p-4320.html
+3 jaar battery?
+
+
+
+------------------
+homeeasy (compatible met rfxcom)
+
+dimmer stekker ebay 15 euro
+
+schakelaar ebay 17 euro
+
+pir ebay 39 euro of 25 + 15
+
+pir kijkshop 30 euro
+
+pir 24 euro
+http://www.home4u-store.com/elro-home-easy-funk-bewegungsmelder-he851-p-6146.html
+
+dimmer stekker 20 euro.
+dimmer inbouw ook 20
+schijnt te presetten zijn
+http://www.kijkshop.nl/product/26874/5152-5190-5508/huis-en-klussen/huis-techniek-divers/home-easy/home-easy-plug-in-dimmerunit-he202eu/
+
+inbouw aanuit 15 kijkshop
+
+zapper 14 euro 16 kanaals
+
+deurcontact 14 euro
+
+----------------------------
+elro
+
+ab440d dimmer 8 euro
+http://www.home4u-store.com/elro-home-control-funk-dimmbare-steckdose-wei%C3%9F-ab440d-p-5955.html
+
+ab600 dimmer 10 euro (rxcom compatible?)
+http://www.home4u-store.com/elro-home-comfort-dimmbare-funk-steckdose-silber-ab600da-p-5930.html
+hoeveel stappen? preset baar?
+
+
+
+------------------
+zwave
+zwave z-stick usb dongle http://www.ezhome.nl/aeon-labs-usb-z-stick.html 60 euro
+z-stick http://www.ezhome.nl/controllers/pc-adapters/z-wave-me-z-wave-usb-stick.html 37 euro
+
+
+deursensor 60 euro
+http://www.ezhome.nl/sensoren/aeon-labs-raam-deur-sensor.html
+2 jaar op CR2 batterij
+
+dimmer/pir combi 66 euro
+dimmer/pir combi plafond 80 euro
+http://www.ezhome.nl/sensoren/bewegingsmelders/qees-wall-pir-power-66.html
+
+schakelaar tussenstekker 40-45 euro
+dimmer tussenstekker 54 euro
+http://www.ezhome.nl/schakelaars/tussenstekkers.html
+
+losse dimmer 35 euro
+http://www.home4u-store.com/homepro-zdp200-zwischenstecker-dimmer-zwave-p-4474.html
+
+
+
+
+-----------------------
+x10 rf
+deursensor ds10 en ds90
+
+
+-----------------------
+zigbee (open standaard)
+dimmer/pircombi 60-70 euro
+
