@@ -145,43 +145,21 @@ class invoices extends model
 			"user"=>"sf (MOET NOG)",
 			"items"=>array(
 				array(
-					"index"=>1,
 					"amount"=>1,
 					"desc"=>"1e item",
 					"price"=>123,
 				),
 				array(
-					"index"=>2,
 					"amount"=>2,
 					"desc"=>"2e item",
 					"price"=>2222,
 				),
 				array(
-					"index"=>3,
 					"amount"=>3,
 					"desc"=>"3e item",
 					"price"=>333,
 				),
 				array(
-					"index"=>4,
-					"amount"=>3,
-					"desc"=>"3e item",
-					"price"=>333,
-				),
-				array(
-					"index"=>5,
-					"amount"=>3,
-					"desc"=>"3e item",
-					"price"=>333,
-				),
-				array(
-					"index"=>6,
-					"amount"=>3,
-					"desc"=>"3e item",
-					"price"=>333,
-				),
-				array(
-					"index"=>7,
 					"amount"=>3,
 					"desc"=>"3e item",
 					"price"=>333,

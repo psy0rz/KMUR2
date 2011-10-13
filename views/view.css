@@ -32,3 +32,13 @@
 	color:red;
 	
 }
+
+.autoSortPlaceholder 
+{
+	height: 4em;
+}
+
+.autoListSource
+{
+	background: #DDD  !important;
+}

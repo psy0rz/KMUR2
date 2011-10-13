@@ -4,10 +4,10 @@
 $(this).ready(function()
 {
 	
-//	console.log($(".autoCreate").not(".autoCreate .autoCreate"));
-//	console.log($(".autoCreate","#list").not(".autoCreate .autoCreate","#list"));
-//	console.log($(".autoCreate:not(.autoCreate .autoCreate)"));
-//	console.log($(".autoCreate:not(.autoCreate .autoCreate)","#list"));
+//	console.log($(".autoMeta").not(".autoMeta .autoMeta"));
+//	console.log($(".autoMeta","#list").not(".autoMeta .autoMeta","#list"));
+//	console.log($(".autoMeta:not(.autoMeta .autoMeta)"));
+//	console.log($(".autoMeta:not(.autoMeta .autoMeta)","#list"));
 	
 
 	var title="";
@@ -53,33 +53,42 @@ $(this).ready(function()
 
 <table>
 <tr>
-	<td class='autoCreate' _key='userId' _meta='desc'>
-	<td class='autoCreate' _key='userId'>
+	<td class='autoMeta' _key='userId' _meta='desc'>
+	<td class='autoMeta' _key='userId'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='status' _meta='desc'>
-	<td class='autoCreate' _key='status'>
+	<td class='autoMeta' _key='status' _meta='desc'>
+	<td class='autoMeta' _key='status'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='desc' _meta='desc'>
-	<td class='autoCreate' _key='desc'>
+	<td class='autoMeta' _key='desc' _meta='desc'>
+	<td class='autoMeta' _key='desc'>
 </tr>
 <tr>
-	<td class='autoCreate' _key='items' _meta='desc'>
+	<td class='autoMeta' _key='items' _meta='desc'>
 	<td >
 	
-		<table class='autoCreate autoFill' _key='items'>
-			<tr class='ui-widget-header'>
-				<th class='autoCreate' _key='amount' _meta='desc'>
-				<th class='autoCreate' _key='desc' _meta='desc'>
-				<th class='autoCreate' _key='price' _meta='desc'>
-			</tr>
-
-			<tr class='colorRows autoFill autoGet ui-widget-content' _key='index' _value>
-				<td class='autoCreate' _key='amount' >
-				<td class='autoCreate' _key='desc' >
-				<td class='autoCreate' _key='price' >
-			</tr>
+		<table class='autoMeta' _key='items'>
+			<thead>
+				<tr class='ui-widget-header'>
+					<th>
+					<th class='autoMeta' _key='amount' _meta='desc'>
+					<th class='autoMeta' _key='desc' _meta='desc'>
+					<th class='autoMeta' _key='price' _meta='desc'>
+					<th>
+					<th>
+				</tr>
+			</thead>
+			<tbody class='autoSort'>
+				<tr class='colorRows autoListSource autoFocusAdd ui-widget-content'>
+					<td class='autoClickSort ui-icon ui-icon-arrowthick-2-n-s'> 
+					<td class='autoMeta' _key='amount' >
+					<td class='autoMeta' _key='desc' >
+					<td class='autoMeta' _key='price' >
+					<td class='autoClickDel ui-icon ui-icon-trash'>
+					<td class='autoClickAdd ui-icon ui-icon-plus'>
+				</tr>
+			</tbody>
 		</table>
 </tr>
 </table>

@@ -97,9 +97,12 @@ class model
 		 "*": Allow anything and dont check it. dont forget to check it yourself!
 	*/
 
-	protected function verifyMeta($data)
+	protected function verifyMeta($data, $meta='')
 	{
-		$meta=$this->getMeta();
+		if (!$meta)
+		{
+			$meta=$this->getMeta();
+		}
 	
 		foreach ($data as $key=>$value)
 		{
@@ -123,8 +126,11 @@ class model
 			}
 			else if ($meta[$key]["type"]=="integer" || $meta[$key]["type"]=="float")
 			{
-				if ($meta[$key]["type"]=="integer" || !is_integer($value))
+				if (($meta[$key]["type"]=="integer") && ( (string)(int)$value!=(string)$value ))
 					throw new FieldException("dit veld moet een geheel getal zijn", $key);
+
+				if (($meta[$key]["type"]=="float") && ( (string)(float)$value!=(string)$value ))
+					throw new FieldException("dit veld moet een getal zijn", $key);
 
 				if (isset($meta[$key]["max"]) && $value>$meta[$key]["max"])
 					throw new FieldException("dit veld mag niet groter dan ".$meta[$key]["max"]." zijn", $key);
@@ -149,16 +155,37 @@ class model
 				if (!is_array($value))
 					throw new FieldException("dit veld dient een hash-array te zijn", $key);
 				
-				verifyMeta($meta[$key]["meta"], $value);
+				try
+				{
+					$this->verifyMeta($value,$meta[$key]["meta"]);
+				}
+				catch(FieldException $e)
+				{
+					//make sure the fieldlist is ok, so the userinterface can highlight the correct field.
+					$e->insertField($key);
+					throw $e;
+				}
 			}
 			//normal array, examine every item recursively
 			else if ($meta[$key]["type"]=="array")
 			{
 				if (!is_array($value))
 					throw new FieldException("dit veld dient een array te zijn", $key);
+				$fieldIndex=0;
 				foreach ($value as $subData)
 				{
-					verifyMeta($meta[$key]["meta"], $subData);
+					try
+					{
+						$this->verifyMeta($subData, $meta[$key]["meta"]);
+					}
+					catch(FieldException $e)
+					{
+						//make sure the fieldlist is ok, so the userinterface can highlight the correct field.
+						$e->insertField($fieldIndex);
+						$e->insertField($key);
+						throw $e;
+					}
+					$fieldIndex++;
 				}
 			}
 			//a select list should contain one 'selected' choice from a list

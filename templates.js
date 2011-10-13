@@ -13,8 +13,60 @@ function templateForm(params)
 		function(result)
 		{
 			meta=result['data'];
-			$(".autoCreate", params.element).autoCreate(meta);
+			$(".autoMeta", params.element).autoMeta(meta);
 
+			//create an add-handler to add items to lists
+			$(".autoClickAdd", params.element).click(function(){
+				//find the clicked list element, and the source element of the list
+				var clickedElement=$(this, params.element).closest(".autoListItem");
+				var sourceElement=clickedElement.parent().children(".autoListSource");
+				var addElement=$(sourceElement).clone(true);
+				addElement.removeClass("autoListSource");
+				if (clickedElement.hasClass("autoListSource"))
+					addElement.insertBefore(clickedElement);
+				else
+					addElement.insertAfter(clickedElement);
+			});
+			
+			//create an auto-add handler if the source-element is changed
+			$(".autoFocusAdd :input", params.element).focus(function(){
+				var changedElement=$(this, params.element).closest(".autoListItem");
+				//is this the source element?
+				if (changedElement.hasClass("autoListSource"))
+				{
+					//create a new source element
+					var addElement=$(changedElement).clone(true);
+					changedElement.removeClass("autoListSource");
+					addElement.insertAfter(changedElement);
+				}
+			});
+			
+
+			//add delete handlers for lists
+			$(".autoClickDel", params.element).click(function()
+			{		
+				var clickedElement=$(this, params.element).closest(".autoListItem");
+				if (!clickedElement.hasClass("autoListSource"))
+				{
+					$(this).confirm(function()
+					{
+						clickedElement.hide('fast',function()
+						{
+							clickedElement.remove();
+						});
+					});
+				}
+			});
+			
+			//make stuff sortable
+			$(".autoSort", params.element).sortable({
+				placeholder: "autoSortPlaceholder",
+				handle: ".autoClickSort",
+				cancel: ".autoListSource",
+				forceHelperSize: true,
+				forcePlaceholderSize: true
+			});
+			
 			//focus the correct input field
 			if (params['viewParams'] && params['viewParams']['highlight'])
 				$('[_key="'+params['viewParams']['highlight']+'"]', params.element).focus();
@@ -33,8 +85,11 @@ function templateForm(params)
 
 						if (result.data)
 						{
-							$(".autoFill", params.element).autoFill(meta, result.data);
+							$(".autoPut", params.element).autoPut(meta, result.data, {
+								element: params.element
+							});
 						}
+						
 
 						if (viewShowError(result, params.element))
 						{
@@ -74,7 +129,7 @@ function templateForm(params)
 		$(".autoGet", params.element).autoGet(meta, putParams, { 
 			element: params.element 
 		});
-		
+
 		//put data
 		rpc(
 			params['putData'],
@@ -151,22 +206,25 @@ function templateList(params)
 	{
 		var rowElement=$(this).parent(".autoListItem");
 		var id=rowElement.attr("_value");
-		$(this).confirm(function()
+		if (!rowElement.hasClass("autoListSource"))
 		{
-			var rpcParams={};
-			rpcParams[params.id]=id;
-			rpc(
-				params.delData,
-				rpcParams,
-				function(result)
-				{
-					if (!viewShowError(result, rowElement))
+			$(this).confirm(function()
+			{
+				var rpcParams={};
+				rpcParams[params.id]=id;
+				rpc(
+					params.delData,
+					rpcParams,
+					function(result)
 					{
-						viewRefresh();
+						if (!viewShowError(result, rowElement))
+						{
+							viewRefresh();
+						}
 					}
-				}
-			);
-		});
+				);
+			});
+		}
 	};
 
 	function getData(update)
@@ -183,15 +241,16 @@ function templateList(params)
 
 				if (update)
 				{
-					$(".autoFill:first", params.element).autoList(meta, result['data'], {
+					//since its an update, dont get confused with the other autoput-list items
+					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
 						updateOn:params.id,
-						keepSource: true
+						element: params.element
 					});
 				}
 				else
 				{
-					$(".autoFill:first", params.element).autoList(meta, result['data'], {
-						keepSource: true
+					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
+						element: params.element
 					});
 				}
 					
@@ -222,8 +281,8 @@ function templateList(params)
 		function(result)
 		{
 			meta=result['data'];
-			//add real input to autoCreate divs. 
-			$(".autoCreate", params.element).autoCreate(meta);
+			//add real input to autoMeta divs. 
+			$(".autoMeta", params.element).autoMeta(meta);
 			getData(false);
 		}
 	)
