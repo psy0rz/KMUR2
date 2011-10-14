@@ -289,6 +289,10 @@ function templateList(params)
 			meta=result['data'];
 			//add real input to autoMeta divs. 
 			$(".autoMeta", params.element).autoMeta(meta);
+			
+			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
+			$(".autoListSource:first", params.element).addClass("autoListItem");
+			
 			getData(false);
 		}
 	)
