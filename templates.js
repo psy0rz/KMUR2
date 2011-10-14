@@ -74,10 +74,10 @@ function templateForm(params)
 			});
 			
 			//focus the correct input field
-			if (params['viewParams'] && params['viewParams']['highlight'])
-				$('[_key="'+params['viewParams']['highlight']+'"]', params.element).focus();
+			if (params.viewParams && params.viewParams.focus)
+				$(viewFieldsToSelector(params.viewParams.focus), params.element).focus();
 			else
-				$('[_key='+params['defaultFocus']+']', params.element).focus();
+				$(viewFieldsToSelector(params.defaultFocus), params.element).focus();
 
 			if (params['getData'])
 			{
@@ -187,13 +187,21 @@ function templateList(params)
 
 	var edit=function(event)
 	{
-		var listParent=$(this).parent(".autoListItem");
+		var listParent=$(this).closest(".autoListItem");
 		var element=$(this);
 		var id=listParent.attr("_value");
 		element.addClass("ui-state-highlight");
 		
+		//determine the focus fields path
+		var fields=[];
+		$(this).parents("[_key]", listParent).each(function(index,element)
+		{
+			fields.unshift($(element).attr("_key"));
+		});
+		console.log("fields", fields);
+		
 		var popupParams={
-			"highlight":$(this).attr("_key")
+			"focus": fields
 		};
 		popupParams[params.id]=id;
 		

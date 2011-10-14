@@ -1,3 +1,22 @@
+function viewFieldsToSelector(fields)
+{
+	//create selector string from fields
+	var selectorStr='';
+	$.each(fields, function (i, field){
+		if (typeof field=='number')
+		{
+			selectorStr+='.autoListItem:nth-child('+(field+1)+') ';
+		}
+		else
+		{
+			selectorStr+='.autoGet[_key="'+field+'"] ';
+		}
+	});
+	
+	return(selectorStr);
+}
+
+
 /*** Shows error and highlights field
  * Returns false if there are no errors to report
  * If there is 
@@ -31,18 +50,7 @@ function viewShowError(result, parent)
 			
 			if ('fields' in result.error)
 			{
-				//create selector string from fields
-				var selectorStr='';
-				$.each(result.error.fields, function (i, field){
-					if (typeof field=='number')
-					{
-						selectorStr+='.autoListItem:nth-child('+(field+1)+') ';
-					}
-					else
-					{
-						selectorStr+='.autoGet[_key="'+field+'"] ';
-					}
-				});
+				selectorStr=viewFieldsToSelector(result.error.fields);
 				
 				//console.log(selectorStr);
 				$(selectorStr, parent).addClass("ui-state-error").focus();

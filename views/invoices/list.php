@@ -42,8 +42,8 @@ $(document).ready(function()
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
 	<td class='autoPut autoClickEdit' _key='number'>
-	<td class='autoPut autoClickEdit' _key='user'>
-		<span class='autoPut' _key='username'></span>
+	<td class='autoPut' _key='user'>
+		<span class='autoPut autoClickEdit' _key='username'></span>
 	<td class='autoPut autoClickEdit' _key='desc'>
 	<td class='autoPut autoClickEdit' _key='status'>
 	<td class='autoClickDel ui-icon ui-icon-trash'>
