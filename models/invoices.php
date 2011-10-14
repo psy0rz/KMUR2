@@ -4,26 +4,37 @@ require_once "model.php";
 
 class invoices extends model
 {
-	function getMeta()
+	//invoice metadata depens on the current state of the invoice.
+	function getMeta($params='')
 	{
 		$users=new users();
+		
+		$readonly=false;
+		if (isset($params['_id']) && $params['_id'])
+		{
+			$invoice=$this->getById("invoices", $params["_id"], $params);
+			if ($invoice["status"]!="new")
+				$readonly=true;
+		}
+
 		return (array(
 			"_id"=>array(
 				"type"=>"id"
 			),
 			"invoiceDate"=>array(
-				"readonly"=>true,
+				"readonly"=>$readonly,
 				"desc"=>"Factuur datum",
 				"type"=>"date"
 			),
 			"number"=>array(
-				"readonly"=>true,
+				"readonly"=>$readonly,
 				"desc"=>"Factuur nummer",
 				"type"=>"string",
 			),
 			"status"=>array(
 				"desc"=>"Factuur status",
 				"type"=>"select",
+				"readonly"=>$readonly,
 				"default"=>"new",
 				"choices"=>array(
 					"new"=>"Nieuw (wijzigbaar)",
@@ -43,10 +54,12 @@ class invoices extends model
 				"type"=>"bool",
 			),
 			"desc"=>array(
+				"readonly"=>$readonly,
 				"desc"=>"Factuur notities",
 				"type"=>"string",
 			),
 			"userId"=>array(
+				"readonly"=>$readonly,
 				"desc"=>"Klant",
 				"type"=>"select",
 				"choices"=>$users->getNames(array("right"=>"customer"))
@@ -54,13 +67,13 @@ class invoices extends model
 			"user"=>array(
 				"desc"=>"Copy klant gegevens",
 				"type"=>"hash",
-				"readonly"=>true,
+				"readonly"=>$readonly,
 				"meta"=>$users->getMeta(),
 			),
 			"items"=>array(
 				"desc"=>"Factuur data",
 				"type"=>"array",
-//				"readonly"=>true,
+//				"readonly"=>$readonly,
 				"meta"=>array(
 					"index"=>array(
 						"type"=>"integer"
@@ -80,6 +93,7 @@ class invoices extends model
 				)
 			),
 			"tax"=>array(
+				"readonly"=>$readonly,
 				"desc"=>"Belasting percentage",
 				"type"=>"float",
 				"default"=>"19",
@@ -133,66 +147,11 @@ class invoices extends model
 
 	function get($params)
 	{
-		//TEST 
-		return (array(
-			"_id"=>"sdfdsaffsffsf",
-			"invoiceDate"=>13213323,
-			"number"=>"2011-0031",
-			"statusDate"=>1318494259,
-			"printedOwnCopy"=>0,
-			"desc"=>"blablab bla factuurrrrnotities",
-			"userId"=>"fsfsdfdsfsfs",
-			"user"=>array(
-					"username"=>"geert",
-			),
-			"items"=>array(
-				array(
-					"amount"=>1,
-					"desc"=>"1e item",
-					"price"=>123,
-				),
-				array(
-					"amount"=>2,
-					"desc"=>"2e item",
-					"price"=>2222,
-				),
-				array(
-					"amount"=>3,
-					"desc"=>"3e item",
-					"price"=>333,
-				),
-				array(
-					"amount"=>3,
-					"desc"=>"3e item",
-					"price"=>333,
-				),
-			),
-			"tax"=>19,
-			"total"=>1234,
-			"log"=>array(
-				array(
-					"date"=>12313123,
-					"text"=>"log regel 1",
-					"user"=>"geert"
-					),
-				array(
-					"date"=>12313523,
-					"text"=>"log regel 2",
-					"user"=>"geert"
-					),
-				array(
-					"date"=>12313843,
-					"text"=>"log regel 3",
-					"user"=>"psy"
-					),
-					
-			)
-		));
-	
 		if (isset($params['_id']) && $params['_id'])
 			$invoice=$this->getById("invoices", $params['_id']);
 		else
 			$invoice=null;
+			
 	
 		return ($invoice);
 	}
@@ -200,7 +159,7 @@ class invoices extends model
 	//update/add project
 	function put($params)
 	{
-		$this->verifyMeta($params);
+//		$this->verifyMeta($params, $this->getMeta($params));
 	
 		//project exists?
 //		$existing=$this->db->projects->findOne(array('projectname'=>$params['projectname']));
@@ -208,7 +167,7 @@ class invoices extends model
 //		if ($existing && $existing["_id"]!=$params["_id"])
 //			throw new FieldException("Project bestaat al!", "projectname");
 
-		$this->setById("invoices", $params["_id"], $params);
+		$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
 	}
 
 	function del($params)

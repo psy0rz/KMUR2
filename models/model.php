@@ -231,12 +231,12 @@ class model
 	//verifys if data is compatible with getMeta() rules
 	//if id is set, updates data in collection
 	//if id is not set, add data to collection
-	protected function setById($collection, $id, $data)
+	protected function setById($collection, $id, $data, $meta='')
 	{
 			//dont set the id (its not a MongoId object anyway)
 			unset($data["_id"]);
 
-			$this->verifyMeta($data);
+			$this->verifyMeta($data, $meta);
 			$this->db->$collection->update(
 				array('_id' => new MongoId($id)), 
 				array('$set'=>$data),

@@ -114,6 +114,7 @@
 			autoPutClass: 'autoPut',
 			autoMetaClass: 'autoMeta',
 			autoGetClass: 'autoGet',
+			autoListClass: 'autoListItem',
 			autoListSourceClass: 'autoListSource'
 		};
 		
@@ -171,6 +172,10 @@
 							$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
 
 						}
+
+						//give all the list sources the autoListItem, so we can recognize all the list items.
+						$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
+			
 						$(this).addClass(settings.autoPutClass);
 						
 						logDebug("autoMeta returned from recursion:", key);
@@ -547,7 +552,7 @@
 		}
 
 
-		//traverse all the specified lists
+		//traverse all the specified list sources
 		var ret=this.each(function() {
 
 			//check if we didnt already process it because of recursion
@@ -558,8 +563,6 @@
 				var sourceElement=this;
 				var parentElement=$(this).parent();
 
-				//make sure we can recognize all the list items for reading them back
-				$(sourceElement).addClass(settings.autoListClass);
 
 ///				$(sourceElement).show();
 				settings.showChanges=(settings.updateOn!="");
