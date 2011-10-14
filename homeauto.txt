@@ -1,13 +1,4 @@
 ------------------
-zelf tranciever maken?
-
-http://homeeasyhacking.wikia.com/wiki/Nano_Breadboard_Interface
-
-http://code.google.com/p/arduinoha/
-
-sander.schutten@gmail.com gemailed met vragen.
-
-------------------
 tellstick
 http://www.telldus.com/products/tellstick_duo
 
@@ -91,6 +82,8 @@ dimmer stekker 20 euro.
 dimmer inbouw ook 20
 schijnt te presetten zijn
 http://www.kijkshop.nl/product/26874/5152-5190-5508/huis-en-klussen/huis-techniek-divers/home-easy/home-easy-plug-in-dimmerunit-he202eu/
+enige soort dimmer dat preset baar is!
+
 
 inbouw aanuit 15 kijkshop
 

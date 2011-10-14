@@ -12,7 +12,7 @@ class invoices extends model
 				"type"=>"id"
 			),
 			"invoiceDate"=>array(
-				"readonly"=>true,
+//				"readonly"=>true,
 				"desc"=>"Factuur datum",
 				"type"=>"date"
 			),
@@ -34,7 +34,7 @@ class invoices extends model
 				)
 			),
 			"statusDate"=>array(
-				"readonly"=>true,
+//				"readonly"=>true,
 				"desc"=>"Laatste status wijziging",
 				"type"=>"date"
 			),
@@ -137,8 +137,7 @@ class invoices extends model
 			"_id"=>"sdfdsaffsffsf",
 			"invoiceDate"=>13213323,
 			"number"=>"2011-0031",
-			"status"=>"send",
-			"statusDate"=>13232323,
+			"statusDate"=>1318494259,
 			"printedOwnCopy"=>0,
 			"desc"=>"blablab bla factuurrrrnotities",
 			"userId"=>"fsfsdfdsfsfs",

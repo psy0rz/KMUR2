@@ -269,6 +269,18 @@
 						$(this).append(addedElement);
 					}
 
+					else if (thismeta.type=='date')
+					{
+						addedElement=$("<input>")
+							.attr("type","text");
+						$(this).append(addedElement);
+						$(this).val(thismeta.default);
+						addedElement.datepicker({
+							dateFormat:'dd-mm-yy',
+//							altFormat:'yy-mm-dd'
+						});
+					}
+
 
 					if (addedElement)
 					{
@@ -296,6 +308,7 @@
 	*  Specify _value to store the value in this attribute instead of the element itself.
 	*  Automaticly recognises element-types and uses the correct way to 'fill in the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
+	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datpicker )
 	*/
 	$.fn.autoPut = function( meta , data,  options ) {  
 
@@ -337,13 +350,14 @@
 				//make sure we process it only once.
 				$(this).addClass(settings.autoPutedClass);
 
-//				logDebug(key, metaValue);
-	
 				//no or nonexisting key?, do nothing
 				if (!(key in data) || !(key in meta))
 				{
-					console.error("Key not found in metadata or data: ",key ,meta, data);
-					; //ignore it
+					//its normal that a key does not exist in data, but it always should exist in metadata
+					if (!(key in meta))
+					{
+						console.error("Key not found in metadata: ",key ,meta, data);
+					}
 				}
 				
 				//recurse into hash?
@@ -360,7 +374,13 @@
 					$("."+settings.autoListSourceClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
-				//put value in attribute (doesnt work if the value is an array)
+				//date (use datepicker)
+				else if (metaValue.type=="date")
+				{
+					$(this).datepicker("setDate", new Date(value*1000));
+				}
+				
+				//put value in attribute 
 				else if (typeof $(this).attr("_value") !='undefined')
 				{
 					$(this).attr("_value", value);
@@ -608,6 +628,7 @@
 	*  Uses _key attribute as hash key
 	*  Automaticly recognises element-types and uses the correct way to 'get the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
+	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datpicker )
 	*/
 	$.fn.autoGet = function( meta, data , options ) {  
 
@@ -632,7 +653,7 @@
 			settings.recursed=true;
 		}
 
-		//traverse all the lists
+		//traverse all the elements
 		return this.each(function() {
 			
 			//check if we didnt process it yet because of recursion
@@ -682,6 +703,12 @@
 					
 					//make sure we skip the 'source' list item and other crap
 					$("."+settings.autoGetClass, this).addClass(settings.autoGotClass);
+				}
+				//date (use datepicker)
+				else if (meta[key].type=="date")
+				{
+					var date=new Date($(this).datepicker("getDate"));
+					data[key]=date.getTime()/1000;
 				}
 				else if (elementType=="input")
 				{

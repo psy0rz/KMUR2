@@ -65,6 +65,10 @@ $(this).ready(function()
 	<td class='autoMeta' _key='desc'>
 </tr>
 <tr>
+	<td class='autoMeta' _key='statusDate' _meta='desc'>
+	<td class='autoMeta' _key='statusDate'>
+</tr>
+<tr>
 	<td class='autoMeta' _key='items' _meta='desc'>
 	<td >
 	

@@ -215,6 +215,13 @@ class model
 			{
 				//any data allowed, dont check it!
 			}
+			//date (always as unix timestamp)
+			else if ( ($meta[$key]["type"]=="date") || ($meta[$key]["type"]=="time"))
+			{
+				if (( (string)(int)$value!=(string)$value ) || ($value<0))
+					throw new FieldException("dit is geen geldige unix timestamp", $key);
+
+			}
 			else
 				throw new FieldException("veldtype '".$meta[$key]["type"]."' word niet ondersteund.", $key);
 			
