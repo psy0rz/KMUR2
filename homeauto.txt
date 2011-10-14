@@ -1,3 +1,31 @@
+----------------
+zelfbouw
+
+
+
+recv
+http://uk.rs-online.com/web/p/products/6172050/
+QAM-RX4
+discontinued
+
+zend
+http://uk.rs-online.com/web/p/products/6172072/
+qam-tx1  (3volt)
+out of stock
+
+
+
+recv AM-HRR30 (Maplins VY48)
+http://nl.farnell.com/rf-solutions/am-hrr30-433/receiver-rx-mini-super-regen/dp/7901321?Ntt=AM-HRR30
+
+zend AM-RT4 (Maplins VY48)
+http://nl.farnell.com/rf-solutions/am-rt4-433fr/am-transmitter-hybrid/dp/1201014?Ntt=AM-RT4
+
+beide besteld
+
+
+
+
 ------------------
 tellstick
 http://www.telldus.com/products/tellstick_duo

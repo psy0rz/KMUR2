@@ -9,7 +9,7 @@ $(this).ready(function()
 		'element'		: viewParams.element,
 		'getMeta'		: 'users.getMeta',
 		'putData'		: 'users.authenticate',
-		'defaultFocus'	: 'username',
+		'defaultFocus'	: ['username'],
 		'loadCallback' : function(result)
 		{
 			viewReady({

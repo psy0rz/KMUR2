@@ -761,6 +761,76 @@
 		});
 	}
 
+	/**
+	 * Looks up all the fields recursively and returns the element that matches
+	 */
+	$.fn.autoFindField = function( fields, options ) {  
+
+		var settings = {
+			autoGetClass:'autoGet',
+			autoListClass: 'autoListItem',
+			autoFindClass: 'autoFindClass'
+		};
+		
+		if ( options ) { 
+			$.extend( settings, options );
+		}
+		
+		//we need to remember which nodes we processed (because of recursion)
+		if (!settings.recursed)
+		{
+			$("."+settings.autoGet, settings.element).addClass(settings.autoFindClass);
+			settings.recursed=true;
+		}
+
+		//copy array, but without first element
+		var recurseFields=fields.splice();
+		recurseFields.shift();
+
+		//traverse all the elements
+		this.each(function() {
+			
+			//skip if we already processed it
+			if ($(this).hasClass(settings.autoFindClass))
+			{
+				//prevent us from processing it again (for recursion)
+				$(this).removeClass(settings.autoFindClass);
+								
+				//look for array index number?
+				if (typeof fields[0]=='number')
+				{
+					//traverse the list (if found)
+					$('.'+settings.autoListClass+':nth-child('+(fields[0]+1)+')', this).each(function()
+					{
+						//nothing left? then return the final result
+						if (recurseFields.length==0)
+							return(this);
+
+						//recurse into subelements
+						return($("."+settings.autoFindClass, this).autoFindField(recurseFields, settings));
+					});
+				}
+				//look for key
+				else 
+				{
+					//its matches?
+					if ($(this).attr("_key")==fields[0])
+					{
+						//nothing left? then return the final result
+						if (recurseFields.length==0)
+							return(this);
+						
+						//recurse into subelements
+						return($("."+settings.autoFindClass, this).autoFindField(recurseFields, settings));
+					}
+				}
+			}
+			
+			//not found
+			return(null);
+		});
+	};
 
 })( jQuery );
+
 

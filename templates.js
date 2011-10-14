@@ -74,10 +74,12 @@ function templateForm(params)
 			});
 			
 			//focus the correct input field
-			if (params.viewParams && params.viewParams.focus)
-				$(viewFieldsToSelector(params.viewParams.focus), params.element).focus();
-			else
-				$(viewFieldsToSelector(params.defaultFocus), params.element).focus();
+//			console.log($(".autoGet", params.element).autoFindField(params.viewParams.focus));
+//			console.log($(viewFieldsToSelector(params.viewParams.focus), params.element));
+	//		if (params.viewParams && params.viewParams.focus)
+		//		$(viewFieldsToSelector(params.viewParams.focus), params.element).focus();
+			//else
+				//$(viewFieldsToSelector(params.defaultFocus), params.element).focus();
 
 			if (params['getData'])
 			{
@@ -194,12 +196,14 @@ function templateList(params)
 		
 		//determine the focus fields path
 		var fields=[];
+		if ($(this).attr("_key"))
+			fields.unshift($(this).attr("_key"));
+		
 		$(this).parents("[_key]", listParent).each(function(index,element)
 		{
-			console.log("tra", element);
-			fields.unshift($(element).attr("_key"));
+			if ($(element).attr("_key")!="_id")
+				fields.unshift($(element).attr("_key"));
 		});
-		console.log("fields", fields);
 		
 		var popupParams={
 			"focus": fields

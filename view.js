@@ -1,7 +1,7 @@
-function viewFieldsToSelector(fields)
+/*function viewFieldsToSelector(fields)
 {
 	//create selector string from fields
-	var selectorStr='';
+	var selectorStr=':not(.autoGet) ';
 	$.each(fields, function (i, field){
 		if (typeof field=='number')
 		{
@@ -14,7 +14,7 @@ function viewFieldsToSelector(fields)
 	});
 	
 	return(selectorStr);
-}
+}*/
 
 
 /*** Shows error and highlights field
@@ -50,11 +50,8 @@ function viewShowError(result, parent)
 			
 			if ('fields' in result.error)
 			{
-				selectorStr=viewFieldsToSelector(result.error.fields);
-				
-				//console.log(selectorStr);
-				$(selectorStr, parent).addClass("ui-state-error").focus();
-				$(selectorStr, parent).addClass("ui-state-error");
+				field=$(".autoGet", parent).autoFindField(result.error.fields);
+				$(field).addClass("ui-state-error").focus();
 			}
 			return(true);
 		}
