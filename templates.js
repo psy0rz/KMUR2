@@ -196,6 +196,7 @@ function templateList(params)
 		var fields=[];
 		$(this).parents("[_key]", listParent).each(function(index,element)
 		{
+			console.log("tra", element);
 			fields.unshift($(element).attr("_key"));
 		});
 		console.log("fields", fields);
