@@ -152,17 +152,20 @@
 					{
 						logDebug("autoMeta recursing into array or hash:", key);
 						
+						var recurseSettings={};
+						$.extend( recurseSettings, settings );
+						
 						//make sure all the recursed subitems will be readonly as well!
 						if (thismeta.readonly)
 						{
-							settings.readonly=true;
+							recurseSettings.readonly=true;
 						}
 						
-						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, settings);
+						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, recurseSettings);
 
-						if (!settings.readonly)
+						if (!recurseSettings.readonly)
 						{
-							$(this).addClass(settings.autoGetClass)
+							$(this).addClass(settings.autoGetClass);
 
 							//give the autoListsources a autoGet if its not readonly (only used to determine readonly status in autoClick handlers )
 							$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
@@ -682,7 +685,7 @@
 					//make sure the array exists
 					if (typeof data[key] != 'array')
 					{
-						data[key]=new Array();
+						data[key]=new Object();
 					}
 					logDebug("autoget recursing into hash");
 					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);

@@ -57,6 +57,17 @@ $(this).ready(function()
 	<td class='autoMeta' _key='userId'>
 </tr>
 <tr>
+	<td class='autoMeta' _key='user' _meta='desc'>
+	<td class='autoMeta' _key='user'>
+		<table >
+			<tr>
+				<td class='autoMeta' _key='username' _meta='desc'>
+				<td class='autoMeta' _key='username'>
+			</tr>
+		</table>
+</tr>
+
+<tr>
 	<td class='autoMeta' _key='status' _meta='desc'>
 	<td class='autoMeta' _key='status'>
 </tr>

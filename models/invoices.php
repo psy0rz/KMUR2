@@ -142,7 +142,9 @@ class invoices extends model
 			"printedOwnCopy"=>0,
 			"desc"=>"blablab bla factuurrrrnotities",
 			"userId"=>"fsfsdfdsfsfs",
-			"user"=>"sf (MOET NOG)",
+			"user"=>array(
+					"username"=>"geert",
+			),
 			"items"=>array(
 				array(
 					"amount"=>1,
