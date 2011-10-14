@@ -27,7 +27,8 @@ class invoices extends model
 				"type"=>"date"
 			),
 			"number"=>array(
-				"readonly"=>$readonly,
+				"readonly"=>true,
+				"max"=>20,
 				"desc"=>"Factuur nummer",
 				"type"=>"string",
 			),
@@ -73,7 +74,7 @@ class invoices extends model
 			"items"=>array(
 				"desc"=>"Factuur data",
 				"type"=>"array",
-//				"readonly"=>$readonly,
+				"readonly"=>$readonly,
 				"meta"=>array(
 					"index"=>array(
 						"type"=>"integer"

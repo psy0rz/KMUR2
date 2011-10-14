@@ -8,8 +8,8 @@ function templateForm(params)
 	
 	//get meta data
 	rpc(
-		params['getMeta'], 
-		params['viewParams'],
+		params.getMeta, 
+		params.viewParams,
 		function(result)
 		{
 			meta=result['data'];
@@ -83,8 +83,8 @@ function templateForm(params)
 			{
 				//get data
 				rpc(
-					params['getData'], 
-					params['viewParams'],
+					params.getData, 
+					params.viewParams,
 					function(result)
 					{
 						$(".autoClickSave", params.element).prop("disabled", false);
@@ -239,8 +239,7 @@ function templateList(params)
 		//get data
 		rpc(
 			params.getData,
-			{
-			},						
+			params.viewParams,						
 			function(result)
 			{
 				viewShowError(result, params.element);
@@ -282,8 +281,7 @@ function templateList(params)
 	//get meta
 	rpc(
 		params.getMeta,
-		{
-		},						
+		params.viewParams,
 		function(result)
 		{
 			meta=result['data'];
