@@ -113,7 +113,8 @@
 		var settings = {
 			autoPutClass: 'autoPut',
 			autoMetaClass: 'autoMeta',
-			autoGetClass: 'autoGet'
+			autoGetClass: 'autoGet',
+			autoListSourceClass: 'autoListSource'
 		};
 		
 		if ( options ) { 
@@ -162,6 +163,10 @@
 						if (!settings.readonly)
 						{
 							$(this).addClass(settings.autoGetClass)
+
+							//give the autoListsources a autoGet if its not readonly (only used to determine readonly status in autoClick handlers )
+							$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
+
 						}
 						$(this).addClass(settings.autoPutClass);
 						
@@ -291,6 +296,10 @@
 						if (!thismeta.readonly && !settings.readonly)
 						{
 							addedElement.addClass(settings.autoGetClass)
+						}
+						else
+						{
+							addedElement.attr('disabled',true);
 						}
 					}
 				}
@@ -513,6 +522,7 @@
 	$.fn.autoList = function( meta, data , options ) {
 
 		var settings = {
+			autoGetClass: 'autoGet',
 			autoPutClass: 'autoPut',
 			autoPutedClass: 'autoPuted',
 			autoListClass: 'autoListItem',
@@ -552,7 +562,7 @@
 				settings.showChanges=(settings.updateOn!="");
 				
 				//traverse the input list
-				$.each(data, function(key, value) {
+				$.each(data, function(index, value) {
 					var updateElement={};
 				
 					//update mode?

@@ -12,7 +12,7 @@ class invoices extends model
 				"type"=>"id"
 			),
 			"invoiceDate"=>array(
-//				"readonly"=>true,
+				"readonly"=>true,
 				"desc"=>"Factuur datum",
 				"type"=>"date"
 			),
@@ -34,7 +34,7 @@ class invoices extends model
 				)
 			),
 			"statusDate"=>array(
-//				"readonly"=>true,
+				"readonly"=>true,
 				"desc"=>"Laatste status wijziging",
 				"type"=>"date"
 			),
@@ -60,6 +60,7 @@ class invoices extends model
 			"items"=>array(
 				"desc"=>"Factuur data",
 				"type"=>"array",
+//				"readonly"=>true,
 				"meta"=>array(
 					"index"=>array(
 						"type"=>"integer"

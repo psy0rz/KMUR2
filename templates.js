@@ -19,6 +19,11 @@ function templateForm(params)
 			$(".autoClickAdd", params.element).click(function(){
 				//find the clicked list element, and the source element of the list
 				var clickedElement=$(this, params.element).closest(".autoListItem");
+				
+				//readonly
+				if (!clickedElement.hasClass("autoGet"))
+					return;
+				
 				var sourceElement=clickedElement.parent().children(".autoListSource");
 				var addElement=$(sourceElement).clone(true);
 				addElement.removeClass("autoListSource");
@@ -46,7 +51,7 @@ function templateForm(params)
 			$(".autoClickDel", params.element).click(function()
 			{		
 				var clickedElement=$(this, params.element).closest(".autoListItem");
-				if (!clickedElement.hasClass("autoListSource"))
+				if (!clickedElement.hasClass("autoListSource") && clickedElement.hasClass("autoGet"))
 				{
 					$(this).confirm(function()
 					{
@@ -63,6 +68,7 @@ function templateForm(params)
 				placeholder: "autoSortPlaceholder",
 				handle: ".autoClickSort",
 				cancel: ".autoListSource",
+				items:".autoGet",
 				forceHelperSize: true,
 				forcePlaceholderSize: true
 			});
