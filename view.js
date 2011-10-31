@@ -21,7 +21,7 @@
  * Returns false if there are no errors to report
  * If there is 
  */
-function viewShowError(result, parent)
+function viewShowError(meta, result, parent)
 {
 	$(".autoError", parent).text("");
 	$(".ui-state-error", parent).removeClass("ui-state-error");
@@ -50,7 +50,7 @@ function viewShowError(result, parent)
 			
 			if ('fields' in result.error)
 			{
-				field=$(".autoGet", parent).autoFindField(result.error.fields);
+				field=$(".autoGet", parent).autoFindField(meta, result.error.fields);
 				$(field).addClass("ui-state-error").focus();
 			}
 			return(true);

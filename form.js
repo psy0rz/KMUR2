@@ -764,10 +764,10 @@
 	/**
 	 * Looks up all the fields recursively and returns the element that matches
 	 */
-	$.fn.autoFindField = function( fields, options ) {  
-
+	$.fn.autoFindField = function( meta, fields, options ) {  
+		
+		
 		var settings = {
-			autoGetClass:'autoGet',
 			autoListClass: 'autoListItem',
 			autoFindClass: 'autoFindClass'
 		};
@@ -776,59 +776,93 @@
 			$.extend( settings, options );
 		}
 		
+		
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
-			$("."+settings.autoGet, settings.element).addClass(settings.autoFindClass);
+			this.addClass(settings.autoFindClass);
 			settings.recursed=true;
 		}
 
-		//copy array, but without first element
-		var recurseFields=fields.splice();
-		recurseFields.shift();
-
+		var result=null;
+		
 		//traverse all the elements
 		this.each(function() {
 			
 			//skip if we already processed it
 			if ($(this).hasClass(settings.autoFindClass))
 			{
+				logDebug("auto finding ", fields, " in ", this);
+
 				//prevent us from processing it again (for recursion)
 				$(this).removeClass(settings.autoFindClass);
 								
-				//look for array index number?
-				if (typeof fields[0]=='number')
+				var key=$(this).attr("_key");
+				
+				//key matches?
+				if (key==fields[0])
 				{
-					//traverse the list (if found)
-					$('.'+settings.autoListClass+':nth-child('+(fields[0]+1)+')', this).each(function()
-					{
-						//nothing left? then return the final result
-						if (recurseFields.length==0)
-							return(this);
+					//copy array, but without first element
+					var recurseFields=fields.slice();
+					recurseFields.shift();
 
-						//recurse into subelements
-						return($("."+settings.autoFindClass, this).autoFindField(recurseFields, settings));
-					});
-				}
-				//look for key
-				else 
-				{
-					//its matches?
-					if ($(this).attr("_key")==fields[0])
+					//this was the last field?
+					if (recurseFields.length==0)
 					{
-						//nothing left? then return the final result
-						if (recurseFields.length==0)
-							return(this);
-						
-						//recurse into subelements
-						return($("."+settings.autoFindClass, this).autoFindField(recurseFields, settings));
+						result=this;
+						return (false);
 					}
+					
+					//recurse into hash?
+					if (meta[key].type=="hash")
+					{
+						result=$("."+settings.autoFindClass, this).autoFindField(
+							meta[key].meta, recurseFields, settings
+						);
+						if (result)
+							return (false);
+					}
+					
+					//recurse into array?
+					else if (meta[key].type=="array")
+					{
+						logDebug("array");
+						//get the correct list item
+						var itemIndex=(recurseFields[0]+1);
+						var listItem=$('.'+settings.autoListClass+':nth-child('+itemIndex+')', this);
+
+						recurseFields.shift();
+
+						//no items left, then return the listItem
+						if (recurseFields.length==0)
+						{
+							result=listItem;
+							return (false);
+						}
+						
+						//recurse into listelement
+						result=$("."+settings.autoFindClass, listItem).autoFindField(
+							meta[key].meta, recurseFields, settings
+						);
+						logDebug("recursion result", result);
+
+						if (result)
+							return (false);						
+						
+					}
+				}
+				//key does not match
+				else
+				{
+					//make sure we dont process any subitems inside it (arrays/hash)
+					$("."+settings.autoFindClass, this).removeClass(settings.autoFindClass);
 				}
 			}
 			
 			//not found
-			return(null);
+			return(true);
 		});
+		return (result);
 	};
 
 })( jQuery );
