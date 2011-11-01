@@ -10,78 +10,83 @@ var gViews={};
 $(document).ready(function()
 {
 	$.history.init(function(hash){
-		if(hash == "") {
-			// initialize your app
-			console.log("view init");
-		} else {
-			// hash changed, update views:
-			console.log("view new hash", hash);
-			
-			var newViews=JSON.decode(hash);
+		if (hash == "") 
+			hash="{}";
 
-			//traverse the old views, and compare to new
-			$.each(gViews, function(viewSelector, view)
+		// hash changed, update views:
+		console.log("view detected new url hash", hash);
+		
+		var newViews=JSON.parse(hash);
+
+		//traverse the old views, and compare to new
+		$.each(gViews, function(viewSelector, view)
+		{
+			//deleted?
+			//(changed stuff will also be deleted and recreated below)
+			if (! viewSelector in newViews) 
 			{
-				//deleted?
-				//(changed stuff will also be deleted and recreated below)
-				if ( 
-					(! viewSelector in newViews) || //deleted
+				console.log("deleting: "+viewSelector);
+				//if its a popup, delete it properly
+				if (view.create=='popup')
 				{
-					//if its a popup, delete it properly
-					if (view.create=='popup')
-					{
-						var dialogDiv=$(viewSelector).parent();
-						dialogDiv.dialog('close'); //will delete itself
-					}
-					else
-					//just clear it
-					{
-						$(viewSelector).unbind();
-						$(viewSelector).empty();
-					}
+					var dialogDiv=$(viewSelector).parent();
+					dialogDiv.dialog('close'); //will delete itself
+				}
+				else
+				//just clear it
+				{
+					$(viewSelector).unbind();
+					$(viewSelector).empty();
 				}
 			}
+		});
 
-			//traverse the new views, and compare to old
-			$.each(newViews, function(viewSelector, view)
+		//traverse the new views, and compare to old
+		$.each(newViews, function(viewSelector, view)
+		{
+			//new or changed
+			if (
+				(! (viewSelector in gViews)) || //new
+				gViews[viewSelector].name!=view.name || //different view name or params?
+				gViews[viewSelector].viewParams.join('')!=view.viewParams.join('') 
+			)
 			{
-				//new or changed
-				if (
-					! viewSelector in gViews ||
-					gViews[viewSelector].name!=view.name || //different view name or params?
-					gViews[viewSelector].viewParams.join('')!=view.viewParams.join('') 
-				)
+				//viewSelector doesnt exist yet?
+				if ($(viewSelector).length==0)
 				{
-					//viewSelector doesnt exist yet?
-					if ($(viewSelector).length==0)
-					{
-						//create popup?
-						if (view.create=='popup')
-						{
-							viewCreatePopup(viewSelector, view.x, view.y, view.highlight);
-						}
-						//doesnt exist and cant create it :(
-						else
-						{
-							console.error("cant load view, element not found", viewSelector, view);
-						}						
-					}
-
-					//store viewId in params, so that the view knows what its element is
-					var viewParams={
-						element:viewSelector
-					};
-					$.extend( viewParams, view.viewParams );
+					console.log("creating: "+viewSelector);
 					
-					//(re)load the view
-					viewLoad(
-						viewSelector,
-						view.name,
-						viewParams
-					);
+					//create popup?
+					if (view.create=='popup')
+					{
+						viewCreatePopup(viewSelector, view.x, view.y, view.highlight);
+					}
+					//doesnt exist and cant create it :(
+					else
+					{
+						console.error("cant load view, element not found", viewSelector, view);
+					}						
 				}
-			);
-		}
+
+				console.log("loading: "+viewSelector);
+
+				//store viewId in params, so that the view knows what its element is
+				var viewParams={
+					element:viewSelector
+				};
+				$.extend( viewParams, view.viewParams );
+				
+				//(re)load the view
+				viewLoad(
+					viewSelector,
+					view.name,
+					viewParams
+				);
+			}
+		});
+		
+		//store the updated view state
+		gViews=newViews;
 	});
 });
 
@@ -112,6 +117,7 @@ function viewCreate(params)
 	{
 		gViewCount++;
 		viewSelector="#view"+gViewCount;
+		views[viewSelector]={};
 
 		views[viewSelector].x=params.x;
 		views[viewSelector].y=params.y;
@@ -128,10 +134,12 @@ function viewCreate(params)
 	else if (params.mode=='main')
 	{
 		viewSelector="#viewMain";
+		views[viewSelector]={};
 	}
 	else if (params.mode=='existing')
 	{
 		viewSelector=outerParams.selector;
+		views[viewSelector]={};
 	}
 	else
 	{
@@ -246,7 +254,8 @@ function viewLoad(selector, view, viewParams)
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
-				//console.debug("viewLoad  "+view);
+				console.debug("viewLoad success "+view);
+				console.log(selector, $(selector));
 
 				//clear/unbind old stuff
 				$(selector).unbind();
@@ -255,8 +264,6 @@ function viewLoad(selector, view, viewParams)
 				//FIXME: better debugging of javascript inside html
 				$(selector).html(result);
 
-				if (typeof readyCallback!='undefined')
-					readyCallback();
 			},
 		"error":
 			function (request, status, e)

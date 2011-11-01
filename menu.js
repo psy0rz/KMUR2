@@ -61,22 +61,23 @@ function menuReload()
 							.click(function(event) 
 							{
 								subMenuDiv.hide();
-								if (subMenu["mode"] == "popup")
+								
+								var view={};
+								view.name=subMenu.view;
+								view.viewParams=subMenu.params;
+								if (subMenu.mode == "popup")
 								{
-									viewPopup(
-										event,
-										subMenu["view"],
-										subMenu["params"]
-									);
+									view.mode='popup';
+									view.x=event.clientX;
+									view.y=event.clientY;
 								}
 								else
 								{
-									subMenu.params.element="#viewMain";
-									viewLoad(
-										subMenu["view"],
-										subMenu["params"]
-									);
+									view.mode='main';
 								}
+
+								viewCreate(view);
+
 							})
 					);
 				};
