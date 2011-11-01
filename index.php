@@ -20,7 +20,6 @@
 			menuReload();
 			$("#themeswitcher").themeswitcher();
 
-			
 		});
 	</script>
 

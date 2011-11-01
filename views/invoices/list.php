@@ -13,7 +13,7 @@ $(document).ready(function()
 		'getData'		: 'invoices.getAll',
 		'delData'		: 'invoices.del',
 		'viewParams' 	: viewParams,
-		'noPopup'		: true,
+		'noPopup'		: false,
 		'editView'		: 'invoices.edit',
 		'id'			: '_id',
 		'loadCallback'	: function(result) {
