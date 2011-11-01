@@ -205,20 +205,36 @@ function templateList(params)
 				fields.unshift($(element).attr("_key"));
 		});
 		
-		var popupParams={
+		var loadParams={
 			"focus": fields
 		};
-		popupParams[params.id]=id;
-		
-		viewPopup(
-			event,
-			params.editView, 
-			popupParams,
-			//closed
-			function(){
-				element.removeClass("ui-state-highlight");
-			}
-		);
+		loadParams[params.id]=id;
+	
+		if (params.noPopup)
+		{
+			//no popup, so load it into the view we're in now
+			loadParams.element=params.element;
+			viewLoad(
+				params.editView, 
+				loadParams,
+				//closed
+				function(){
+					element.removeClass("ui-state-highlight");
+				}
+			);
+		}
+		else
+		{
+			viewPopup(
+				event,
+				params.editView, 
+				loadParams,
+				//closed
+				function(){
+					element.removeClass("ui-state-highlight");
+				}
+			);
+		}
 	};
 
 	var del=function(event)

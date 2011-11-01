@@ -236,6 +236,9 @@ class model
 			//dont set the id (its not a MongoId object anyway)
 			unset($data["_id"]);
 
+			if (!$data)
+				return;
+
 			$this->verifyMeta($data, $meta);
 			$this->db->$collection->update(
 				array('_id' => new MongoId($id)), 
