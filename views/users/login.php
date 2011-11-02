@@ -1,7 +1,6 @@
 <? require_once("../view.php"); ?>
 
 <script>
-console.log("CHEA!@#!");
 $(this).ready(function()
 {
 	var viewParams=<?=viewGetParams()?>;

@@ -14,71 +14,73 @@ $(document).ready(function()
 			hash="{}";
 
 		// hash changed, update views:
-		console.log("view detected new url hash", hash);
+		console.log("view detected new url hash    :", hash);
+		console.log("view comparing to current views:", JSON.stringify(gViews));
 		
 		var newViews=JSON.parse(hash);
 
 		//traverse the old views, and compare to new
-		$.each(gViews, function(viewSelector, view)
+		$.each(gViews, function(viewId, view)
 		{
 			//deleted?
 			//(changed stuff will also be deleted and recreated below)
-			if (! viewSelector in newViews) 
+			if (! (viewId in newViews)) 
 			{
-				console.log("deleting: "+viewSelector);
+				console.log("view deleting: "+viewId);
 				//if its a popup, delete it properly
 				if (view.create=='popup')
 				{
-					var dialogDiv=$(viewSelector).parent();
+					var dialogDiv=$("#"+viewId).parent();
 					dialogDiv.dialog('close'); //will delete itself
 				}
 				else
 				//just clear it
 				{
-					$(viewSelector).unbind();
-					$(viewSelector).empty();
+					$("#"+viewId).unbind();
+					$("#"+viewId).empty();
 				}
 			}
 		});
 
 		//traverse the new views, and compare to old
-		$.each(newViews, function(viewSelector, view)
+		$.each(newViews, function(viewId, view)
 		{
+//			console.log(gViews[viewId], view);
 			//new or changed
 			if (
-				(! (viewSelector in gViews)) || //new
-				gViews[viewSelector].name!=view.name || //different view name or params?
-				gViews[viewSelector].viewParams.join('')!=view.viewParams.join('') 
+				(! (viewId in gViews)) || //new
+				gViews[viewId].name!=view.name || //different view name or params?
+				JSON.stringify(gViews[viewId].viewParams)!=JSON.stringify(view.viewParams) 
 			)
 			{
-				//viewSelector doesnt exist yet?
-				if ($(viewSelector).length==0)
+				//viewId doesnt exist yet?
+				if ($("#"+viewId).length==0)
 				{
-					console.log("creating: "+viewSelector);
+					console.log("view creating: "+viewId);
 					
 					//create popup?
 					if (view.create=='popup')
 					{
-						viewCreatePopup(viewSelector, view.x, view.y, view.highlight);
+						viewCreatePopup(viewId, view.x, view.y, view.highlight);
 					}
 					//doesnt exist and cant create it :(
 					else
 					{
-						console.error("cant load view, element not found", viewSelector, view);
+						console.error("cant load view, element not found", viewId, view);
 					}						
 				}
 
-				console.log("loading: "+viewSelector);
+				console.log("view loading: "+viewId);
 
 				//store viewId in params, so that the view knows what its element is
 				var viewParams={
-					element:viewSelector
+					element:"#"+viewId
 				};
 				$.extend( viewParams, view.viewParams );
 				
 				//(re)load the view
 				viewLoad(
-					viewSelector,
+					"#"+viewId,
 					view.name,
 					viewParams
 				);
@@ -90,6 +92,30 @@ $(document).ready(function()
 	});
 });
 
+// update the browser url with specified view.
+// this will trigger the history tracker which in turn will create and delete actual view elements.
+function viewUpdateUrl(id, viewData)
+{
+	//copy the current global viewstatus and expand it with this new view
+	var views={};
+	$.extend( views, gViews );
+
+	//no params is delete
+	if (!viewData)
+	{
+		delete views[id];
+	}
+	else
+	{
+		views[id]=viewData;
+	}
+	
+	//now copy the new views array to the browser url, triggering the history tracker which applies the actual changes:
+	var hash=JSON.stringify(views);
+	console.log("view changing url hash to: "+hash);
+	jQuery.history.load(hash);
+}
+
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
 	name: name of the view. e.g. 'users.list' (will load views/users/list.php)
 	viewParams: view specific parameters, used inside the view. (is passed along almost unchanged, only the selector of the container is added so the view can operate in that scope)
@@ -100,46 +126,43 @@ $(document).ready(function()
 		TODO:'stack': create new view to stack on top of mainwindow or other stacked views. This way the main window stays intact, so that when you close the stacked window and give the user the feeling he is back in the previous screen. This also highlights all the changes he made.
 		
 	x,y: (for mode 'popup') coordinates for popup
-	selector: (for mode 'existing'): global uniq jquery selector string to load the view in (e.g. '#view321bla')
+	id: (for mode 'existing'): id of the element to load the view in (e.g. 'view321bla')
 	creator: (optional for mode 'popup'): element-object that was responsible for creating the popup. Will be used for popups to highlight the object. 
 
+Loading views this way also ensures correct browser url and history updating.
 
+Call viewClose to close the view.
 */
 function viewCreate(params)
 {
-	//copy the current global viewstatus and expand it with this new view
-	var views={};
-	$.extend( views, gViews );
 	
-	var viewSelector="";
+	var viewId="";
+	var viewData={};
 
 	if (params.mode=='popup')
 	{
 		gViewCount++;
-		viewSelector="#view"+gViewCount;
-		views[viewSelector]={};
+		viewId="view"+gViewCount;
 
-		views[viewSelector].x=params.x;
-		views[viewSelector].y=params.y;
-		views[viewSelector].create="popup";
+		viewData.x=params.x;
+		viewData.y=params.y;
+		viewData.create="popup";
 		
 		if (params.creator)
 		{
 			//TODO: create better method that doesnt need adding a class?
-			$(params.creator).addClass("view"+gViewCount);
-			views[viewSelector].highlight=".view"+gViewCount;
+			$(params.creator).addClass(viewId);
+			viewData.highlight=".view"+gViewCount;
 		}
 		
 	}
 	else if (params.mode=='main')
 	{
-		viewSelector="#viewMain";
-		views[viewSelector]={};
+		viewId="viewMain";
 	}
 	else if (params.mode=='existing')
 	{
-		viewSelector=outerParams.selector;
-		views[viewSelector]={};
+		viewId=outerParams.id;
 	}
 	else
 	{
@@ -148,21 +171,18 @@ function viewCreate(params)
 	}
 	
 	//set common options
-	views[viewSelector].name=params.name;
-	views[viewSelector].viewParams=params.viewParams;
+	viewData.name=params.name;
+	viewData.viewParams=params.viewParams;
 	
-	//now copy the new views array to the browser url, triggering the actual changes:
-	var hash=JSON.stringify(views);
-	console.log("view changing url hash to: "+hash);
-	jQuery.history.load(hash);
-	
+	viewUpdateUrl(viewId, viewData);
 }
 
 
 //closes the specified view
-function viewClose(element)
+function viewClose(id)
 {
-	
+	//no data deletes view from url
+	viewUpdateUrl(id);
 }
 
 /*** Shows error and highlights field
@@ -207,6 +227,7 @@ function viewShowError(meta, result, parent)
 }
 
 //creates an empty popup window. dont call directly, used internally
+//returns the viewdiv
 function viewCreatePopup(id, x, y, highlight)
 {
 	if (highlight)
@@ -237,12 +258,16 @@ function viewCreatePopup(id, x, y, highlight)
 			$(this).remove();
 			if (highlight)
 				$(highlight).removeClass("ui-state-highlight");
+			//NOTE: this "loops": the url will be updated, triggering a history event. then the open views will be compared to the wanted views. views that are popups will be deleted by calling this close function. shouldnt be a problem, since we are already gone by the time this happens.
+			viewClose(id);
 		}
 	});
+	
+	return(viewDiv);
 }
 
 //loads a view in the specified element
-//(dont call this directly, use viewCreate instead, to update browser history)
+//( use viewCreate instead, if you want to update browser history and create popups etc)
 function viewLoad(selector, view, viewParams)
 {
 	console.debug("viewLoad", selector, view, viewParams);

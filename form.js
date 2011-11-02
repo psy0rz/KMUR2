@@ -121,6 +121,9 @@
 		if ( options ) { 
 			$.extend( settings, options );
 		}
+		
+		if (!meta)
+			return;
 
 		//traverse all specified elements
 		return this.each(function() {
