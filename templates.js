@@ -74,12 +74,10 @@ function templateForm(params)
 			});
 			
 			//focus the correct input field
-//			console.log($(".autoGet", params.element).autoFindField(params.viewParams.focus));
-//			console.log($(viewFieldsToSelector(params.viewParams.focus), params.element));
-	//		if (params.viewParams && params.viewParams.focus)
-		//		$(viewFieldsToSelector(params.viewParams.focus), params.element).focus();
-			//else
-				//$(viewFieldsToSelector(params.defaultFocus), params.element).focus();
+			if (params.viewParams && params.viewParams.focus)
+			{
+				$(".autoGet", params.element).autoFindField(meta, params.viewParams.focus).focus();
+			}
 
 			if (params['getData'])
 			{
@@ -204,37 +202,18 @@ function templateList(params)
 			if ($(element).attr("_key")!="_id")
 				fields.unshift($(element).attr("_key"));
 		});
-		
-		var loadParams={
-			"focus": fields
-		};
-		loadParams[params.id]=id;
-	
-		if (params.noPopup)
-		{
-			//no popup, so load it into the view we're in now
-			loadParams.element=params.element;
-			viewLoad(
-				params.editView, 
-				loadParams,
-				//closed
-				function(){
-					element.removeClass("ui-state-highlight");
-				}
-			);
-		}
-		else
-		{
-			viewPopup(
-				event,
-				params.editView, 
-				loadParams,
-				//closed
-				function(){
-					element.removeClass("ui-state-highlight");
-				}
-			);
-		}
+
+		//create the view
+		var editView={};
+		$.extend( editView, params.editView );
+		if (! editView.viewParams)
+			editView.viewParams={};
+		editView.viewParams.focus=fields;
+		editView.viewParams._id=id;
+		editView.x=event.clientX;
+		editView.y=event.clientY;
+		editView.creator=element;
+		viewCreate(editView);
 	};
 
 	var del=function(event)

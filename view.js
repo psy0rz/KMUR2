@@ -1,10 +1,11 @@
 
-//counter to create unique id's for view-stuff
-var gViewCount=0;
 
-//array containing the data of all views. 
-//views will be created and destroyed by comparing this to the url hash
-var gViews={};
+//array containing view status
+//views will be created and destroyed by comparing this data to the url hash
+var gViewStatus={
+	count:0
+	views:{}
+};
 
 //initialize view history tracker
 $(document).ready(function()
@@ -14,17 +15,17 @@ $(document).ready(function()
 			hash="{}";
 
 		// hash changed, update views:
-		console.log("view detected new url hash    :", hash);
-		console.log("view comparing to current views:", JSON.stringify(gViews));
+		console.log("view detected new url hash:", hash);
+		console.log("view comparing to current viewstatus:", JSON.stringify(gViewStatus));
 		
-		var newViews=JSON.parse(hash);
+		var newViewStatus=JSON.parse(hash);
 
 		//traverse the old views, and compare to new
-		$.each(gViews, function(viewId, view)
+		$.each(gViewStatus.views, function(viewId, view)
 		{
 			//deleted?
 			//(changed stuff will also be deleted and recreated below)
-			if (! (viewId in newViews)) 
+			if (! (viewId in newViewStatus.views))
 			{
 				console.log("view deleting: "+viewId);
 				//if its a popup, delete it properly
@@ -43,14 +44,14 @@ $(document).ready(function()
 		});
 
 		//traverse the new views, and compare to old
-		$.each(newViews, function(viewId, view)
+		$.each(newViewStatus, function(viewId, view)
 		{
-//			console.log(gViews[viewId], view);
+//			console.log(gViewStatus[viewId], view);
 			//new or changed
 			if (
-				(! (viewId in gViews)) || //new
-				gViews[viewId].name!=view.name || //different view name or params?
-				JSON.stringify(gViews[viewId].viewParams)!=JSON.stringify(view.viewParams) 
+				(! (viewId in gViewStatus.views)) || //new
+				gViewStatus.views[viewId].name!=view.name || //different view name or params?
+				JSON.stringify(gViewStatus.views[viewId].viewParams)!=JSON.stringify(view.viewParams) 
 			)
 			{
 				//viewId doesnt exist yet?
@@ -88,7 +89,7 @@ $(document).ready(function()
 		});
 		
 		//store the updated view state
-		gViews=newViews;
+		gViewStatus=newViewStatus;
 	});
 });
 
@@ -98,7 +99,7 @@ function viewUpdateUrl(id, viewData)
 {
 	//copy the current global viewstatus and expand it with this new view
 	var views={};
-	$.extend( views, gViews );
+	$.extend( views, gViewStatus );
 
 	//no params is delete
 	if (!viewData)
@@ -122,7 +123,7 @@ function viewUpdateUrl(id, viewData)
 	mode:
 		'main': load the view in the mainwindow. (TODO:deletes any open stacked windows)
 		'popup': create a new popup window to load the view. 
-		'existing': load view into an existing selector (see below)
+		'existing': load view into an existing element id (see below)
 		TODO:'stack': create new view to stack on top of mainwindow or other stacked views. This way the main window stays intact, so that when you close the stacked window and give the user the feeling he is back in the previous screen. This also highlights all the changes he made.
 		
 	x,y: (for mode 'popup') coordinates for popup
@@ -217,8 +218,8 @@ function viewShowError(meta, result, parent)
 			
 			if ('fields' in result.error)
 			{
-				field=$(".autoGet", parent).autoFindField(meta, result.error.fields);
-				$(field).addClass("ui-state-error").focus();
+				$(".autoGet", parent).autoFindField(meta, result.error.fields)
+					.addClass("ui-state-error").focus();
 			}
 			return(true);
 		}

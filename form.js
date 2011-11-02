@@ -787,7 +787,7 @@
 			settings.recursed=true;
 		}
 
-		var result=null;
+		var result=$();
 		
 		//traverse all the elements
 		this.each(function() {
@@ -812,7 +812,7 @@
 					//this was the last field?
 					if (recurseFields.length==0)
 					{
-						result=this;
+						result=$(this);
 						return (false);
 					}
 					
@@ -822,7 +822,7 @@
 						result=$("."+settings.autoFindClass, this).autoFindField(
 							meta[key].meta, recurseFields, settings
 						);
-						if (result)
+						if (result.length)
 							return (false);
 					}
 					
@@ -849,7 +849,7 @@
 						);
 						logDebug("recursion result", result);
 
-						if (result)
+						if (result.length)
 							return (false);						
 						
 					}

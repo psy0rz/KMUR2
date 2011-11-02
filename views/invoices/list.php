@@ -8,22 +8,24 @@ $(document).ready(function()
 	var viewParams=<?=viewGetParams()?>;
 	
 	templateList({
-		'element'		: viewParams.element,
-		'getMeta'		: 'invoices.getMeta',		
-		'getData'		: 'invoices.getAll',
-		'delData'		: 'invoices.del',
-		'viewParams' 	: viewParams,
-		'noPopup'		: false,
-		'editView'		: 'invoices.edit',
-		'id'			: '_id',
-		'loadCallback'	: function(result) {
+		element		: viewParams.element,
+		getMeta		: 'invoices.getMeta',		
+		getData		: 'invoices.getAll',
+		delData		: 'invoices.del',
+		viewParams 	: viewParams,
+		editView	: {
+			name: 'invoices.edit',
+			mode: 'popup'
+		},
+		id			: '_id',
+		loadCallback: function(result) {
 			viewReady({
 				'element':viewParams.element,
 				'title': "Factuur overzicht"
 			});
 		},
-		'errorCallback'	: function(result) { },
-		'saveCallback'	: function(result) { }
+		errorCallback	: function(result) { },
+		saveCallback	: function(result) { }
 	});
 
 

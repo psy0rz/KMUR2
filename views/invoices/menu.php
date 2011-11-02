@@ -6,14 +6,20 @@ $this->addMain("invoices",array(
 
 $this->addSub("invoices","list",array(
 	"desc"=>"Overzicht",
-	"view"=>"invoices.list",
+	"view"=>array(
+		"name"=>"invoices.list",
+		"mode"=>"popup"
+	)
 ));
 
 $this->addSub("invoices","new",array(
 	"desc"=>"Nieuw",
-	"view"=>"invoices.edit",
-	"params"=>array(
-		"_id"=>""
+	"view"=>array(
+		"name"=>"invoices.edit",
+		"mode"=>"main",
+		"viewParams"=>array(
+			"_id"=>""
+		)
 	)
 ));
 

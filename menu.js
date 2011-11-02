@@ -62,20 +62,11 @@ function menuReload()
 							{
 								subMenuDiv.hide();
 								
+								//create the view
 								var view={};
-								view.name=subMenu.view;
-								view.viewParams=subMenu.params;
-								if (subMenu.mode == "popup")
-								{
-									view.mode='popup';
-									view.x=event.clientX;
-									view.y=event.clientY;
-								}
-								else
-								{
-									view.mode='main';
-								}
-
+								$.extend( view, subMenu.view );
+								view.x=event.clientX;
+								view.y=event.clientY;
 								viewCreate(view);
 
 							})
