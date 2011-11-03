@@ -25,11 +25,13 @@ $(this).ready(function()
 			{
 				title="Wijzigen factuur "+result.data.number;
 				menuAddFavorite({
-					'menu':		"invoices",
-					'desc':		"Wijzig factuur "+result.data.number,
-					'view':		"invoices.edit",
-					'params':	viewParams,
-					'mode':		"normal"
+					menu:		"invoices",
+					desc:		"Wijzig factuur "+result.data.number,
+					view:	{
+						name: "invoices.edit",
+						viewParams: viewParams,
+						mode: "main"
+					}
 				});
 			}
 			else

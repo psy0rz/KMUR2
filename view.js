@@ -78,17 +78,11 @@ $(document).ready(function()
 
 				console.log("view loading: "+viewId);
 
-				//store viewId in params, so that the view knows what its element is
-				var viewParams={
-					element:"#"+viewId
-				};
-				$.extend( viewParams, view.viewParams );
-				
 				//(re)load the view
 				viewLoad(
 					"#"+viewId,
 					view.name,
-					viewParams
+					view.viewParams
 				);
 			}
 		});
@@ -275,8 +269,14 @@ function viewCreatePopup(id, x, y, highlight)
 //( use viewCreate instead, if you want to update browser history and create popups etc)
 function viewLoad(selector, view, viewParams)
 {
-	console.debug("viewLoad", selector, view, viewParams);
-	var uriParams=encodeURIComponent(JSON.stringify(viewParams));
+	//copy the viewParams so that we can set or overwrite the element.
+	//(this is needed in the view to make sure jquery can operate within context)
+	var viewParamsCopy={};
+	$.extend( viewParamsCopy, viewParams );
+	viewParamsCopy.element=selector;
+
+	console.debug("viewLoad", selector, view, viewParamsCopy);
+	var uriParams=encodeURIComponent(JSON.stringify(viewParamsCopy));
 	
 	$.ajax({
 		"dataType":		"html",

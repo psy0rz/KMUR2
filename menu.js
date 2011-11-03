@@ -99,10 +99,7 @@ parameters:
 {
 	'menu':		"users",
 	'desc':		"Wijzig "+result.data.username,
-	'view':		"users.edit",
-	'params':	viewParams,
-	'mode':		"popup"
-}
+	'view':		(view parameters, look at viewCreate in view.js)}
 */
 function menuAddFavorite(params)
 {

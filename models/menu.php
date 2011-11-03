@@ -107,9 +107,7 @@ class menu extends model
 	/*
 		'menu':		"users",
 		'desc':		"Wijzig "+result.data.username,
-		'view':		"users.edit",
-		'params':	viewParams,
-		'mode':		"popup"
+		'view':		(same parameters as viewCreate() in view.js)
 	*/
 	function addFavorite($params)
 	{
@@ -119,7 +117,6 @@ class menu extends model
 			array(
 				'user' => $this->context->getUser(),
 				'menu' => $params["menu"],
-				'view' => $params["view"],
 				'desc' => $params["desc"],
 			), 
 			array(
@@ -127,9 +124,7 @@ class menu extends model
 					'user' => $this->context->getUser(),
 					'menu' => $params["menu"],
 					'view' => $params["view"],
-					'params' => $params["params"],
 					'desc' => $params["desc"],
-					'mode' => $params["mode"],
 					'timestamp' => time(),
 				),
 //				'$inc' => array(
