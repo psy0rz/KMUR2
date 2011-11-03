@@ -17,7 +17,6 @@ $(document).ready(function()
 			name: 'invoices.edit',
 			mode: 'popup'
 		},
-		id			: '_id',
 		loadCallback: function(result) {
 			viewReady({
 				'element':viewParams.element,

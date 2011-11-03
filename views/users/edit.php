@@ -5,36 +5,36 @@ $(this).ready(function()
 {
 	var viewParams=<?=viewGetParams()?>;
 	templateForm({
-		'element'		: viewParams.element,
-		'getMeta'		: 'users.getMeta',
-		'getData'		: 'users.get',
-		'viewParams' 	: viewParams,
-		'putData'		: 'users.put',
-		'putParams'		: { "_id": viewParams._id },
-		'defaultFocus'	: 'username',
-		'loadCallback'	: function(result) {
+		element			: viewParams.element,
+		getMeta			: 'users.getMeta',
+		getData			: 'users.get',
+		viewParams 		: viewParams,
+		putData			: 'users.put',
+		putParams		: { "_id": viewParams._id },
+		defaultFocus	: 'username',
+		loadCallback	: function(result) {
 			if (viewParams._id)
 			{
 				title="Wijzigen gebruiker "+result.data.username;
 				menuAddFavorite({
-					'menu':		"users",
-					'desc':		"Wijzig "+result.data.username,
-					'view':		"users.edit",
-					'params':	viewParams,
-					'mode':		"popup"
+					menu:		"users",
+					desc:		"Wijzig "+result.data.username,
+					view:		"users.edit",
+					params:	viewParams,
+					mode:		"popup"
 				});
 			}
 			else
 				title="Nieuwe gebruiker";
 				
 			viewReady({
-				'element':viewParams.element,
-				'title':title
+				element:viewParams.element,
+				title:title
 			});
 			
 		},
-		'errorCallback'	: function(result) { },
-		'saveCallback'	: function(result) { }
+		errorCallback	: function(result) { },
+		saveCallback	: function(result) { }
 	});
 
 });

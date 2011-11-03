@@ -75,9 +75,9 @@ function templateForm(params)
 			
 			//focus the correct input field
 			if (params.viewParams && params.viewParams.focus)
-			{
 				$(".autoGet", params.element).autoFindField(meta, params.viewParams.focus).focus();
-			}
+			else if (params.defaultFocus)
+				$(".autoGet", params.element).autoFindField(meta, params.defaultFocus).focus();
 
 			if (params['getData'])
 			{

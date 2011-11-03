@@ -8,21 +8,23 @@ $(document).ready(function()
 	var viewParams=<?=viewGetParams()?>;
 	
 	templateList({
-		'element'		: viewParams.element,
-		'getMeta'		: 'users.getMeta',		
-		'getData'		: 'users.getAll',
-		'delData'		: 'users.del',
-		'viewParams' 	: viewParams,
-		'editView'		: 'users.edit',
-		'id'			: '_id',
-		'loadCallback'	: function(result) {
+		element		: viewParams.element,
+		getMeta		: 'users.getMeta',		
+		getData		: 'users.getAll',
+		delData		: 'users.del',
+		viewParams 	: viewParams,
+		editView		: {
+			name: 'users.edit',
+			mode: 'popup'
+		},
+		loadCallback	: function(result) {
 			viewReady({
-				'element':viewParams.element,
-				'title': "Gebruikers overzicht"
+				element:viewParams.element,
+				title: "Gebruikers overzicht"
 			});
 		},
-		'errorCallback'	: function(result) { },
-		'saveCallback'	: function(result) { }
+		errorCallback	: function(result) { },
+		saveCallback	: function(result) { }
 	});
 
 
