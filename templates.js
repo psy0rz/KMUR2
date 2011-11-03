@@ -97,7 +97,7 @@ function templateForm(params)
 						}
 						
 
-						if (viewShowError(meta, result, params.element))
+						if (viewShowError(result, params.element, meta))
 						{
 							if (params['errorCallback'])
 								params['errorCallback'](result);
@@ -144,7 +144,7 @@ function templateForm(params)
 			{
 				$(".autoClickSave", params.element).prop("disabled", false);
 				
-				viewShowError(meta, result, params.element);
+				viewShowError(result, params.element, meta);
 
 				if (result)
 				{
@@ -231,7 +231,7 @@ function templateList(params)
 					rpcParams,
 					function(result)
 					{
-						if (!viewShowError(meta, result, rowElement))
+						if (!viewShowError(result, rowElement, meta))
 						{
 							viewRefresh();
 						}
@@ -250,7 +250,7 @@ function templateList(params)
 			params.viewParams,						
 			function(result)
 			{
-				viewShowError(meta, result, params.element);
+				viewShowError(result, params.element, meta);
 
 				if (update)
 				{

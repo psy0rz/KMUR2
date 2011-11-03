@@ -6,23 +6,31 @@ $this->addMain("users",array(
 
 $this->addSub("users","list",array(
 	"desc"=>"Overzicht",
-	"view"=>"users.list",
+	"view"=>array(
+		"name"=>"users.list",
+		"mode"=>"main"
+	)
+
 ));
 
 
 $this->addSub("users","new",array(
 	"desc"=>"Nieuw",
-	"view"=>"users.edit",
-	"params"=>array(
-		"_id"=>""
-	),
-	"mode"=>"popup",
+	"view"=>array(
+		"name"=>"users.edit",
+		"mode"=>"popup",
+		"viewParams"=>array(
+			"_id"=>""
+		)
+	)
 ));
 
 $this->addSub("users","login",array(
 	"desc"=>"Inloggen",
-	"view"=>"users.login",
-	"mode"=>"popup",
+	"view"=>array(
+		"name"=>"users.login",
+		"mode"=>"popup",
+	)
 ));
 
 

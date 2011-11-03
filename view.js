@@ -3,7 +3,7 @@
 //array containing view status
 //views will be created and destroyed by comparing this data to the url hash
 var gViewStatus={
-	count:0
+	count:0,
 	views:{}
 };
 
@@ -12,16 +12,21 @@ $(document).ready(function()
 {
 	$.history.init(function(hash){
 		if (hash == "") 
-			hash="{}";
+			hash='{"count":0, "views":{}}';
 
 		// hash changed, update views:
 		console.log("view detected new url hash:", hash);
 		console.log("view comparing to current viewstatus:", JSON.stringify(gViewStatus));
 		
+		var oldViewStatus={};
+		$.extend(true, oldViewStatus, gViewStatus);
 		var newViewStatus=JSON.parse(hash);
 
+		//store the updated view state right away. (some objects do stuff with viewUpdateUrl when we delete or create them)
+		gViewStatus=newViewStatus;
+
 		//traverse the old views, and compare to new
-		$.each(gViewStatus.views, function(viewId, view)
+		$.each(oldViewStatus.views, function(viewId, view)
 		{
 			//deleted?
 			//(changed stuff will also be deleted and recreated below)
@@ -44,14 +49,14 @@ $(document).ready(function()
 		});
 
 		//traverse the new views, and compare to old
-		$.each(newViewStatus, function(viewId, view)
+		$.each(newViewStatus.views, function(viewId, view)
 		{
 //			console.log(gViewStatus[viewId], view);
 			//new or changed
 			if (
-				(! (viewId in gViewStatus.views)) || //new
-				gViewStatus.views[viewId].name!=view.name || //different view name or params?
-				JSON.stringify(gViewStatus.views[viewId].viewParams)!=JSON.stringify(view.viewParams) 
+				(! (viewId in oldViewStatus.views)) || //new
+				oldViewStatus.views[viewId].name!=view.name || //different view name or params?
+				JSON.stringify(oldViewStatus.views[viewId].viewParams)!=JSON.stringify(view.viewParams) 
 			)
 			{
 				//viewId doesnt exist yet?
@@ -88,8 +93,6 @@ $(document).ready(function()
 			}
 		});
 		
-		//store the updated view state
-		gViewStatus=newViewStatus;
 	});
 });
 
@@ -98,21 +101,23 @@ $(document).ready(function()
 function viewUpdateUrl(id, viewData)
 {
 	//copy the current global viewstatus and expand it with this new view
-	var views={};
-	$.extend( views, gViewStatus );
+	var viewStatus={};
+	$.extend( true, viewStatus, gViewStatus );
 
 	//no params is delete
 	if (!viewData)
 	{
-		delete views[id];
+		delete viewStatus.views[id];
 	}
+	//add/update
 	else
 	{
-		views[id]=viewData;
+		viewStatus.views[id]=viewData;
+		viewStatus.count++;		
 	}
 	
 	//now copy the new views array to the browser url, triggering the history tracker which applies the actual changes:
-	var hash=JSON.stringify(views);
+	var hash=JSON.stringify(viewStatus);
 	console.log("view changing url hash to: "+hash);
 	jQuery.history.load(hash);
 }
@@ -142,8 +147,7 @@ function viewCreate(params)
 
 	if (params.mode=='popup')
 	{
-		gViewCount++;
-		viewId="view"+gViewCount;
+		viewId="view"+gViewStatus.count;
 
 		viewData.x=params.x;
 		viewData.y=params.y;
@@ -153,7 +157,7 @@ function viewCreate(params)
 		{
 			//TODO: create better method that doesnt need adding a class?
 			$(params.creator).addClass(viewId);
-			viewData.highlight=".view"+gViewCount;
+			viewData.highlight=".view"+gViewStatus.count;
 		}
 		
 	}
@@ -163,11 +167,11 @@ function viewCreate(params)
 	}
 	else if (params.mode=='existing')
 	{
-		viewId=outerParams.id;
+		viewId=params.id;
 	}
 	else
 	{
-		console.error("Unknown view mode! ",outerParams);
+		console.error("viewCreate: Unknown view mode! ",params);
 		return;
 	}
 	
@@ -189,7 +193,7 @@ function viewClose(id)
 /*** Shows error and highlights field
  * Returns false if there are no errors to report
  */
-function viewShowError(meta, result, parent)
+function viewShowError(result, parent, meta)
 {
 	$(".autoError", parent).text("");
 	$(".ui-state-error", parent).removeClass("ui-state-error");
