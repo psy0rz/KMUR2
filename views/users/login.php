@@ -3,17 +3,17 @@
 <script>
 $(this).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
+	var view=<?=viewGet()?>;
 
 	templateForm({
-		'element'		: viewParams.element,
+		'view'			: view,
 		'getMeta'		: 'users.getMeta',
 		'putData'		: 'users.authenticate',
 		'defaultFocus'	: ['username'],
 		'loadCallback' : function(result)
 		{
 			viewReady({
-				'element': viewParams.element,
+				'view': view,
 				'title': 'Inloggen'
 			});
 		},

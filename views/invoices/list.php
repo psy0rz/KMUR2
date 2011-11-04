@@ -5,29 +5,27 @@
   
 $(document).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
+	var view=<?=viewGet()?>;
 	
 	templateList({
-		element		: viewParams.element,
+		view		: view,
+		id			: '_id',
 		getMeta		: 'invoices.getMeta',		
 		getData		: 'invoices.getAll',
 		delData		: 'invoices.del',
-		viewParams 	: viewParams,
 		editView	: {
 			name: 'invoices.edit',
 			mode: 'popup'
 		},
 		loadCallback: function(result) {
 			viewReady({
-				'element':viewParams.element,
-				'title': "Factuur overzicht"
+				view: view,
+				title: "Factuur overzicht"
 			});
 		},
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) { }
 	});
-
-
 });
 
 </script>

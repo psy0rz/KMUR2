@@ -8,7 +8,7 @@
  *
  * Use this to get the parameters that where specified while loading the current view.
  */
-function viewGetParams()
+function viewGet()
 {
 	//the decode/encode cycle is neccesary to prevent script injection attacks!
 	return(json_encode(json_decode(urldecode(

@@ -5,21 +5,21 @@
   
 $(document).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
+	var view=<?=viewGet()?>;
 	
 	templateList({
-		element		: viewParams.element,
+		view		: view,
+		id			: '_id',
 		getMeta		: 'users.getMeta',		
 		getData		: 'users.getAll',
 		delData		: 'users.del',
-		viewParams 	: viewParams,
 		editView		: {
 			name: 'users.edit',
 			mode: 'popup'
 		},
 		loadCallback	: function(result) {
 			viewReady({
-				element:viewParams.element,
+				view: view,
 				title: "Gebruikers overzicht"
 			});
 		},

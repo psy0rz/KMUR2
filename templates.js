@@ -2,23 +2,24 @@
 function templateForm(params)
 {
 	var meta;
+	var context=$("#"+params.view.id);
 	
 	//disable submit button while loading
-	$(".autoClickSave", params.element).prop("disabled", true);
+	$(".autoClickSave", context).prop("disabled", true);
 	
 	//get meta data
 	rpc(
 		params.getMeta, 
-		params.viewParams,
+		params.view.params,
 		function(result)
 		{
 			meta=result['data'];
-			$(".autoMeta", params.element).autoMeta(meta);
+			$(".autoMeta", context).autoMeta(meta);
 
 			//create an add-handler to add items to lists
-			$(".autoClickAdd", params.element).click(function(){
+			$(".autoClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
-				var clickedElement=$(this, params.element).closest(".autoListItem");
+				var clickedElement=$(this, context).closest(".autoListItem");
 				
 				//readonly
 				if (!clickedElement.hasClass("autoGet"))
@@ -34,8 +35,8 @@ function templateForm(params)
 			});
 			
 			//create an auto-add handler if the source-element is changed
-			$(".autoFocusAdd :input", params.element).focus(function(){
-				var changedElement=$(this, params.element).closest(".autoListItem");
+			$(".autoFocusAdd :input", context).focus(function(){
+				var changedElement=$(this, context).closest(".autoListItem");
 				//is this the source element?
 				if (changedElement.hasClass("autoListSource"))
 				{
@@ -48,9 +49,9 @@ function templateForm(params)
 			
 
 			//add delete handlers for lists
-			$(".autoClickDel", params.element).click(function()
+			$(".autoClickDel", context).click(function()
 			{		
-				var clickedElement=$(this, params.element).closest(".autoListItem");
+				var clickedElement=$(this, context).closest(".autoListItem");
 				if (!clickedElement.hasClass("autoListSource") && clickedElement.hasClass("autoGet"))
 				{
 					$(this).confirm(function()
@@ -64,7 +65,7 @@ function templateForm(params)
 			});
 			
 			//make stuff sortable
-			$(".autoSort", params.element).sortable({
+			$(".autoSort", context).sortable({
 				placeholder: "autoSortPlaceholder",
 				handle: ".autoClickSort",
 				cancel: ".autoListSource",
@@ -75,29 +76,29 @@ function templateForm(params)
 			
 			//focus the correct input field
 			if (params.viewParams && params.viewParams.focus)
-				$(".autoGet", params.element).autoFindField(meta, params.viewParams.focus).focus();
+				$(".autoGet", context).autoFindField(meta, params.viewParams.focus).focus();
 			else if (params.defaultFocus)
-				$(".autoGet", params.element).autoFindField(meta, params.defaultFocus).focus();
+				$(".autoGet", context).autoFindField(meta, params.defaultFocus).focus();
 
 			if (params['getData'])
 			{
 				//get data
 				rpc(
 					params.getData, 
-					params.viewParams,
+					params.view.params,
 					function(result)
 					{
-						$(".autoClickSave", params.element).prop("disabled", false);
+						$(".autoClickSave", context).prop("disabled", false);
 
 						if (result.data)
 						{
-							$(".autoPut", params.element).autoPut(meta, result.data, {
-								element: params.element
+							$(".autoPut", context).autoPut(meta, result.data, {
+								context: context
 							});
 						}
 						
 
-						if (viewShowError(result, params.element, meta))
+						if (viewShowError(result, context, meta))
 						{
 							if (params['errorCallback'])
 								params['errorCallback'](result);
@@ -113,7 +114,7 @@ function templateForm(params)
 			//when not loading data, dont forget to call the loadCallback:
 			else
 			{
-				$(".autoClickSave", params.element).prop("disabled", false);
+				$(".autoClickSave", context).prop("disabled", false);
 
 				if (params['loadCallback'])
 					params['loadCallback'](result);
@@ -124,7 +125,7 @@ function templateForm(params)
 	//save 
 	var save=function()
 	{
-		$(".autoClickSave", params.element).prop("disabled", true);
+		$(".autoClickSave", context).prop("disabled", true);
 
 		//are there putParams that we should COPY to putData
 		var putParams={};
@@ -132,8 +133,8 @@ function templateForm(params)
 			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
 
 		//get the data
-		$(".autoGet", params.element).autoGet(meta, putParams, { 
-			element: params.element 
+		$(".autoGet", context).autoGet(meta, putParams, { 
+			context: context 
 		});
 
 		//put data
@@ -142,9 +143,9 @@ function templateForm(params)
 			putParams,
 			function(result)
 			{
-				$(".autoClickSave", params.element).prop("disabled", false);
+				$(".autoClickSave", context).prop("disabled", false);
 				
-				viewShowError(result, params.element, meta);
+				viewShowError(result, context, meta);
 
 				if (result)
 				{
@@ -164,14 +165,14 @@ function templateForm(params)
 				viewRefresh();
 				
 				//all ok, close window
-				viewClose(params.element);
+				viewClose(params.view);
 			}
 		);
 	};
 
 	
-	$(".autoClickSave", params.element).click(save);
-	$(params.element).bind('keypress', function(e) {
+	$(".autoClickSave", context).click(save);
+	$(context).bind('keypress', function(e) {
 		
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
@@ -184,6 +185,7 @@ function templateForm(params)
 function templateList(params)
 {
 	var meta={};
+	var context=$("#"+params.view.id);
 
 	var edit=function(event)
 	{
@@ -203,13 +205,13 @@ function templateList(params)
 				fields.unshift($(element).attr("_key"));
 		});
 
-		//create the view
+		//create the view to edit the clicked item
 		var editView={};
 		$.extend( editView, params.editView );
-		if (! editView.viewParams)
-			editView.viewParams={};
-		editView.viewParams.focus=fields;
-		editView.viewParams._id=id;
+		if (! editView.params)
+			editView.params={};
+		editView.params.focus=fields;
+		editView.params._id=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;
 		editView.creator=element;
@@ -247,30 +249,30 @@ function templateList(params)
 		//get data
 		rpc(
 			params.getData,
-			params.viewParams,						
+			params.view.params,						
 			function(result)
 			{
-				viewShowError(result, params.element, meta);
+				viewShowError(result, context, meta);
 
 				if (update)
 				{
 					//since its an update, dont get confused with the other autoput-list items
-					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
+					$(".autoListSource:first", context).autoList(meta, result['data'], {
 						updateOn:params.id,
-						element: params.element
+						context: context
 					});
 				}
 				else
 				{
-					$(".autoListSource:first", params.element).autoList(meta, result['data'], {
-						element: params.element
+					$(".autoListSource:first", context).autoList(meta, result['data'], {
+						context: context
 					});
 				}
 					
-				$(".autoClickDel", params.element).unbind('click');
-				$(".autoClickDel", params.element).click( del);
-				$(".autoClickEdit", params.element).unbind( 'click');
-				$(".autoClickEdit", params.element).click( edit);
+				$(".autoClickDel", context).unbind('click');
+				$(".autoClickDel", context).click( del);
+				$(".autoClickEdit", context).unbind( 'click');
+				$(".autoClickEdit", context).click( edit);
 
 				if (!update)
 				{
@@ -280,7 +282,7 @@ function templateList(params)
 		);
 	}
 
-	$(params.element).bind('refresh',function()
+	$(context).bind('refresh',function()
 	{
 		//console.log("reresh!!");
 		getData(true);
@@ -294,10 +296,10 @@ function templateList(params)
 		{
 			meta=result['data'];
 			//add real input to autoMeta divs. 
-			$(".autoMeta", params.element).autoMeta(meta);
+			$(".autoMeta", context).autoMeta(meta);
 			
 			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
-			$(".autoListSource:first", params.element).addClass("autoListItem");
+			$(".autoListSource:first", context).addClass("autoListItem");
 			
 			getData(false);
 		}

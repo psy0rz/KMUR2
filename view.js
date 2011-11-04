@@ -67,7 +67,7 @@ $(document).ready(function()
 					//create popup?
 					if (view.create=='popup')
 					{
-						viewCreatePopup(viewId, view.x, view.y, view.highlight);
+						viewCreatePopup(view);
 					}
 					//doesnt exist and cant create it :(
 					else
@@ -79,11 +79,7 @@ $(document).ready(function()
 				console.log("view loading: "+viewId);
 
 				//(re)load the view
-				viewLoad(
-					"#"+viewId,
-					view.name,
-					view.viewParams
-				);
+				viewLoad(view);
 			}
 		});
 		
@@ -118,7 +114,7 @@ function viewUpdateUrl(id, viewData)
 
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
 	name: name of the view. e.g. 'users.list' (will load views/users/list.php)
-	viewParams: view specific parameters, used inside the view. (is passed along almost unchanged, only the selector of the container is added so the view can operate in that scope)
+	params: view specific parameters, used inside the view. (passed along without changing)
 	mode:
 		'main': load the view in the mainwindow. (TODO:deletes any open stacked windows)
 		'popup': create a new popup window to load the view. 
@@ -126,7 +122,7 @@ function viewUpdateUrl(id, viewData)
 		TODO:'stack': create new view to stack on top of mainwindow or other stacked views. This way the main window stays intact, so that when you close the stacked window and give the user the feeling he is back in the previous screen. This also highlights all the changes he made.
 		
 	x,y: (for mode 'popup') coordinates for popup
-	id: (for mode 'existing'): id of the element to load the view in (e.g. 'view321bla')
+	id: id of the element to load the view in (auto set in case of main and popup)
 	creator: (optional for mode 'popup'): element-object that was responsible for creating the popup. Will be used for popups to highlight the object. 
 
 Loading views this way also ensures correct browser url and history updating.
@@ -136,13 +132,11 @@ Call viewClose to close the view.
 function viewCreate(params)
 {
 	
-	var viewId="";
 	var viewData={};
 
 	if (params.mode=='popup')
 	{
-		viewId="view"+gViewStatus.count;
-
+		viewData.id="view"+gViewStatus.count;
 		viewData.x=params.x;
 		viewData.y=params.y;
 		viewData.create="popup";
@@ -150,18 +144,18 @@ function viewCreate(params)
 		if (params.creator)
 		{
 			//TODO: create better method that doesnt need adding a class?
-			$(params.creator).addClass(viewId);
-			viewData.highlight=".view"+gViewStatus.count;
+			$(params.creator).addClass(viewData.id);
+			viewData.highlight="."+viewData.id;
 		}
 		
 	}
 	else if (params.mode=='main')
 	{
-		viewId="viewMain";
+		viewData.id="viewMain";
 	}
 	else if (params.mode=='existing')
 	{
-		viewId=params.id;
+		viewData.id=params.id;
 	}
 	else
 	{
@@ -171,17 +165,17 @@ function viewCreate(params)
 	
 	//set common options
 	viewData.name=params.name;
-	viewData.viewParams=params.viewParams;
+	viewData.params=params.params;
 	
-	viewUpdateUrl(viewId, viewData);
+	viewUpdateUrl(viewData.id, viewData);
 }
 
 
 //closes the specified view
-function viewClose(id)
+function viewClose(view)
 {
 	//no data deletes view from url
-	viewUpdateUrl(id);
+	viewUpdateUrl(view.id);
 }
 
 /*** Shows error and highlights field
@@ -227,21 +221,20 @@ function viewShowError(result, parent, meta)
 
 //creates an empty popup window. dont call directly, used internally
 //returns the viewdiv
-function viewCreatePopup(id, x, y, highlight)
+function viewCreatePopup(view)
 {
-	if (highlight)
-		$(highlight).addClass("ui-state-highlight");
+	if (view.highlight)
+		$(view.highlight).addClass("ui-state-highlight");
 
 	var dialogDiv=$("<div>");
 	dialogDiv.addClass("viewPopup");
 	
 	var viewDiv=$("<div>");
-	viewDiv.attr("id",id);
+	viewDiv.attr("id",view.id);
 	viewDiv.addClass("autoRefresh");
 	
 	$("body").append(dialogDiv);	
 	dialogDiv.append(viewDiv);
-
 
 	var dialog=dialogDiv.dialog({
 		height: 'auto',
@@ -250,15 +243,15 @@ function viewCreatePopup(id, x, y, highlight)
 //		autoOpen: false,
 		title: 'loading...',
 		position: [ 
-			x,
-			y 
+			view.x,
+			view.y 
 		],
 		close: function(ev, ui) {
 			$(this).remove();
-			if (highlight)
-				$(highlight).removeClass("ui-state-highlight");
+			if (view.highlight)
+				$(view.highlight).removeClass("ui-state-highlight");
 			//NOTE: this "loops": the url will be updated, triggering a history event. then the open views will be compared to the wanted views. views that are popups will be deleted by calling this close function. shouldnt be a problem, since we are already gone by the time this happens.
-			viewClose(id);
+			viewClose(view);
 		}
 	});
 	
@@ -267,63 +260,54 @@ function viewCreatePopup(id, x, y, highlight)
 
 //loads a view in the specified element
 //( use viewCreate instead, if you want to update browser history and create popups etc)
-function viewLoad(selector, view, viewParams)
+function viewLoad(view)
 {
-	//copy the viewParams so that we can set or overwrite the element.
-	//(this is needed in the view to make sure jquery can operate within context)
-	var viewParamsCopy={};
-	$.extend( viewParamsCopy, viewParams );
-	viewParamsCopy.element=selector;
-
-	console.debug("viewLoad", selector, view, viewParamsCopy);
-	var uriParams=encodeURIComponent(JSON.stringify(viewParamsCopy));
+	console.debug("viewLoad", view);
+	var uriParams=encodeURIComponent(JSON.stringify(view));
 	
 	$.ajax({
 		"dataType":		"html",
-		"url":			"views/"+view.replace(".","/")+".php?"+uriParams,
+		"url":			"views/"+view.name.replace(".","/")+".php?"+uriParams,
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
-				console.debug("viewLoad success "+view);
-				console.log(selector, $(selector));
+				console.debug("viewLoad success ",view);
 
 				//clear/unbind old stuff
-				$(selector).unbind();
-				$(selector).empty();
+				$("#"+view.id).unbind();
+				$("#"+view.id).empty();
 				
 				//FIXME: better debugging of javascript inside html
-				$(selector).html(result);
+				$("#"+view.id).html(result);
 
 			},
 		"error":
 			function (request, status, e)
 			{
 				console.error("Error while loading view via ajax request: ",request.responseText,status,e);
-				$(selector).text("Error while loading data: "+request.responseText);
+				$("#"+view.id).text("Error while loading data: "+request.responseText);
 			},
 	});
 			
 }
 
 
-/** Called by the view to indicate its ready and set some final options like title.
+/** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
  */
-function viewReady(options)
+function viewReady(params)
 {
+	var viewDiv=$("#"+params.view.id);
 	
 	//view is inside a dialogdiv?
-	var dialogDiv=$(options.element).parent();
+	var dialogDiv=viewDiv.parent();
 	if (dialogDiv.hasClass("viewPopup"))
 	{
-		if (options)	
-		{
-			if ('title' in options)
-				dialogDiv.dialog('option', 'title', options['title']);
-		}
+		if ('title' in params)
+			dialogDiv.dialog('option', 'title', params.title);
 		
 		//get correct dimentions
-		var cw=$(options.element).width()+50;
-		var ch=$(options.element).height()+100;
+		var cw=viewDiv.width()+50;
+		var ch=viewDiv.height()+100;
 		console.debug("dialog content dimentions" ,cw,ch);
 		
 

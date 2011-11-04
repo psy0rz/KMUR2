@@ -11,40 +11,35 @@ $(this).ready(function()
 	
 
 	var title="";
-	var viewParams=<?=viewGetParams()?>;
+	var view=<?=viewGet()?>;
 	templateForm({
-		'element'		: viewParams.element,
-		'getMeta'		: 'invoices.getMeta',
-		'getData'		: 'invoices.get',
-		'viewParams' 	: viewParams,
-		'putData'		: 'invoices.put',
-		'putParams'		: { "_id": viewParams._id },
-		'defaultFocus'	: '',
-		'loadCallback'	: function(result) {
-			if (viewParams._id)
+		view			: view,
+		getMeta			: 'invoices.getMeta',
+		getData			: 'invoices.get',
+		putData			: 'invoices.put',
+		putParams		: { "_id": view.params._id },
+		defaultFocus	: '',
+		loadCallback	: function(result) {
+			if (view.params._id)
 			{
 				title="Wijzigen factuur "+result.data.number;
 				menuAddFavorite({
-					menu:		"invoices",
-					desc:		"Wijzig factuur "+result.data.number,
-					view:	{
-						name: "invoices.edit",
-						viewParams: viewParams,
-						mode: "main"
-					}
+					menu:	"invoices",
+					desc:	"Wijzig factuur "+result.data.number,
+					view:	view
 				});
 			}
 			else
 				title="Nieuwe factuur";
 				
 			viewReady({
-				'element':viewParams.element,
-				'title':title
+				view	:view,
+				title	:title
 			});
 			
 		},
-		'errorCallback'	: function(result) { },
-		'saveCallback'	: function(result) { }
+		errorCallback	: function(result) { },
+		saveCallback	: function(result) { }
 	});
 
 });

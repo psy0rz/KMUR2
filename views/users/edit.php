@@ -3,32 +3,29 @@
 <script>
 $(this).ready(function()
 {
-	var viewParams=<?=viewGetParams()?>;
+	var view=<?=viewGet()?>;
 	templateForm({
-		element			: viewParams.element,
+		view			: view,
 		getMeta			: 'users.getMeta',
 		getData			: 'users.get',
-		viewParams 		: viewParams,
 		putData			: 'users.put',
-		putParams		: { "_id": viewParams._id },
+		putParams		: { "_id": view.params._id },
 		defaultFocus	: 'username',
 		loadCallback	: function(result) {
-			if (viewParams._id)
+			if (view.params._id)
 			{
 				title="Wijzigen gebruiker "+result.data.username;
 				menuAddFavorite({
 					menu:		"users",
 					desc:		"Wijzig "+result.data.username,
-					view:		"users.edit",
-					params:	viewParams,
-					mode:		"popup"
+					view:		view
 				});
 			}
 			else
 				title="Nieuwe gebruiker";
 				
 			viewReady({
-				element:viewParams.element,
+				view: view,
 				title:title
 			});
 			

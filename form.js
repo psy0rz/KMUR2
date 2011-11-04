@@ -348,7 +348,7 @@
 		if (!settings.recursed)
 		{
 			//remove old autoPut-reminders
-			$("."+settings.autoPutedClass, settings.element).removeClass(settings.autoPutedClass);
+			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
 			settings.recursed=true;
 		}
 		
@@ -550,7 +550,7 @@
 		if (!settings.recursed)
 		{
 			//remove autoPuted-reminders
-			$("."+settings.autoPutedClass, settings.element).removeClass(settings.autoPutedClass);
+			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
 			settings.recursed=true;
 		}
 
@@ -662,13 +662,13 @@
 			$.extend( settings, options );
 		}
 		
-		//logDebug("autogegt", $("[key]", settings.element));
+		//logDebug("autogegt", $("[key]", settings.context));
 		
 		//we need to remember which nodes we processed (because of recursion)
 		if (!settings.recursed)
 		{
 			//remove previous autoget-reminders
-			$("."+settings.autoGotClass, settings.element).removeClass(settings.autoGotClass);
+			$("."+settings.autoGotClass, settings.context).removeClass(settings.autoGotClass);
 			settings.recursed=true;
 		}
 
