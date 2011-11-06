@@ -75,8 +75,8 @@ function templateForm(params)
 			});
 			
 			//focus the correct input field
-			if (params.viewParams && params.viewParams.focus)
-				$(".autoGet", context).autoFindField(meta, params.viewParams.focus).focus();
+			if (params.view.params && params.view.params.focus)
+				$(".autoGet", context).autoFindField(meta, params.view.params.focus).focus();
 			else if (params.defaultFocus)
 				$(".autoGet", context).autoFindField(meta, params.defaultFocus).focus();
 
@@ -291,7 +291,7 @@ function templateList(params)
 	//get meta
 	rpc(
 		params.getMeta,
-		params.viewParams,
+		params.view.params,
 		function(result)
 		{
 			meta=result['data'];

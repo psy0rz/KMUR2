@@ -17,7 +17,7 @@ $this->addSub("invoices","new",array(
 	"view"=>array(
 		"name"=>"invoices.edit",
 		"mode"=>"main",
-		"viewParams"=>array(
+		"params"=>array(
 			"_id"=>""
 		)
 	)

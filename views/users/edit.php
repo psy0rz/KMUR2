@@ -10,7 +10,7 @@ $(this).ready(function()
 		getData			: 'users.get',
 		putData			: 'users.put',
 		putParams		: { "_id": view.params._id },
-		defaultFocus	: 'username',
+		defaultFocus	: [ "username" ],
 		loadCallback	: function(result) {
 			if (view.params._id)
 			{

@@ -56,7 +56,7 @@ $(document).ready(function()
 			if (
 				(! (viewId in oldViewStatus.views)) || //new
 				oldViewStatus.views[viewId].name!=view.name || //different view name or params?
-				JSON.stringify(oldViewStatus.views[viewId].viewParams)!=JSON.stringify(view.viewParams) 
+				JSON.stringify(oldViewStatus.views[viewId].params)!=JSON.stringify(view.params) 
 			)
 			{
 				//viewId doesnt exist yet?
