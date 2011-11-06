@@ -34,7 +34,7 @@ $(document).ready(function()
 			{
 				console.log("view deleting: "+viewId);
 				//if its a popup, delete it properly
-				if (view.create=='popup')
+				if (view.mode=='popup')
 				{
 					var dialogDiv=$("#"+viewId).parent();
 					dialogDiv.dialog('close'); //will delete itself
@@ -65,7 +65,7 @@ $(document).ready(function()
 					console.log("view creating: "+viewId);
 					
 					//create popup?
-					if (view.create=='popup')
+					if (view.mode=='popup')
 					{
 						viewCreatePopup(view);
 					}
@@ -131,21 +131,26 @@ Call viewClose to close the view.
 */
 function viewCreate(params)
 {
-	
+	//create copy to work on:
 	var viewData={};
+	$.extend(true, viewData, params);
 
-	if (params.mode=='popup')
+	if (viewData.mode=='popup')
 	{
 		viewData.id="view"+gViewStatus.count;
-		viewData.x=params.x;
-		viewData.y=params.y;
-		viewData.create="popup";
 		
-		if (params.creator)
+		//highlight a creator?
+		if (viewData.creator)
 		{
-			//TODO: create better method that doesnt need adding a class?
-			$(params.creator).addClass(viewData.id);
+			//TODO: change this system?
+			$(viewData.creator).addClass(viewData.id);
 			viewData.highlight="."+viewData.id;
+			delete viewData.creator;
+		}
+		else
+		{
+			//(when reinvoked from favorites, the highlight object wont exist anymore)
+			delete viewData.highlight;
 		}
 		
 	}
@@ -153,19 +158,6 @@ function viewCreate(params)
 	{
 		viewData.id="viewMain";
 	}
-	else if (params.mode=='existing')
-	{
-		viewData.id=params.id;
-	}
-	else
-	{
-		console.error("viewCreate: Unknown view mode! ",params);
-		return;
-	}
-	
-	//set common options
-	viewData.name=params.name;
-	viewData.params=params.params;
 	
 	viewUpdateUrl(viewData.id, viewData);
 }
@@ -220,7 +212,6 @@ function viewShowError(result, parent, meta)
 }
 
 //creates an empty popup window. dont call directly, used internally
-//returns the viewdiv
 function viewCreatePopup(view)
 {
 	if (view.highlight)
@@ -234,7 +225,7 @@ function viewCreatePopup(view)
 	viewDiv.addClass("autoRefresh");
 	
 	$("body").append(dialogDiv);	
-	dialogDiv.append(viewDiv);
+	dialogDiv.append(viewDiv);	
 
 	var dialog=dialogDiv.dialog({
 		height: 'auto',
@@ -254,8 +245,6 @@ function viewCreatePopup(view)
 			viewClose(view);
 		}
 	});
-	
-	return(viewDiv);
 }
 
 //loads a view in the specified element
