@@ -23,6 +23,7 @@ function viewPrintHtmlIncludes()
 	<script type="text/javascript" src="lib/jquery.cooquery.js"></script>
 	<script type="text/javascript" src="lib/jquery.url.js"></script>
 	<script type="text/javascript" src="lib/jquery.history.js"></script>
+	<script type="text/javascript" src="lib/rison.js"></script>
 	<script type="text/javascript" src="common.js"></script>
 	<script type="text/javascript" src="rpc.js"></script>
 	<script type="text/javascript" src="form.js"></script>

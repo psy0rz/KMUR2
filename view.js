@@ -12,7 +12,7 @@ $(document).ready(function()
 {
 	$.history.init(function(hash){
 		if (hash == "") 
-			hash='{"count":0, "views":{}}';
+			hash="('count':0,'views':())";
 
 		// hash changed, update views:
 		console.log("view detected new url hash:", hash);
@@ -20,7 +20,7 @@ $(document).ready(function()
 		
 		var oldViewStatus={};
 		$.extend(true, oldViewStatus, gViewStatus);
-		var newViewStatus=JSON.parse(hash);
+		var newViewStatus=rison.decode(hash);
 
 		//store the updated view state right away. (some objects do stuff with viewUpdateUrl when we delete or create them)
 		gViewStatus=newViewStatus;
@@ -82,8 +82,9 @@ $(document).ready(function()
 				viewLoad(view);
 			}
 		});
-		
-	});
+	},
+	{ 'unescape': true } //dont urlencode 	
+	);
 });
 
 // update the browser url with specified view.
@@ -107,7 +108,7 @@ function viewUpdateUrl(id, viewData)
 	}
 	
 	//now copy the new views array to the browser url, triggering the history tracker which applies the actual changes:
-	var hash=JSON.stringify(viewStatus);
+	var hash=rison.encode(viewStatus);
 	console.log("view changing url hash to: "+hash);
 	jQuery.history.load(hash);
 }
