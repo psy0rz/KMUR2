@@ -32,19 +32,7 @@ $(document).ready(function()
 			//(changed stuff will also be deleted and recreated below)
 			if (! (viewId in newViewStatus.views))
 			{
-				console.log("view deleting: "+viewId);
-				//if its a popup, delete it properly
-				if (view.mode=='popup')
-				{
-					var dialogDiv=$("#"+viewId).parent();
-					dialogDiv.dialog('close'); //will delete itself
-				}
-				else
-				//just clear it
-				{
-					$("#"+viewId).unbind();
-					$("#"+viewId).empty();
-				}
+				viewDOMdel(view);
 			}
 		});
 
@@ -62,18 +50,7 @@ $(document).ready(function()
 				//viewId doesnt exist yet?
 				if ($("#"+viewId).length==0)
 				{
-					console.log("view creating: "+viewId);
-					
-					//create popup?
-					if (view.mode=='popup')
-					{
-						viewCreatePopup(view);
-					}
-					//doesnt exist and cant create it :(
-					else
-					{
-						console.error("cant load view, element not found", viewId, view);
-					}						
+					viewDOMadd(view);
 				}
 
 				console.log("view loading: "+viewId);
@@ -136,7 +113,7 @@ function viewCreate(params)
 	var viewData={};
 	$.extend(true, viewData, params);
 
-	if (viewData.mode=='popup')
+	if (viewData.mode=='popup' || viewData.mode=='stack')
 	{
 		viewData.id="view"+gViewStatus.count;
 		
@@ -212,40 +189,80 @@ function viewShowError(result, parent, meta)
 	return(false);
 }
 
-//creates an empty popup window. dont call directly, used internally
-function viewCreatePopup(view)
+
+//adds a new view to the DOM tree
+function viewDOMadd(view)
 {
 	if (view.highlight)
 		$(view.highlight).addClass("ui-state-highlight");
 
-	var dialogDiv=$("<div>");
-	dialogDiv.addClass("viewPopup");
 	
-	var viewDiv=$("<div>");
-	viewDiv.attr("id",view.id);
-	viewDiv.addClass("autoRefresh");
-	
-	$("body").append(dialogDiv);	
-	dialogDiv.append(viewDiv);	
+	if (view.mode=='stack')
+	{
+		var stackDiv=$("<div>");
+		stackDiv.addClass("viewStack");
+		stackDiv.attr("id",view.id);
+		stackDiv.addClass("autoRefresh");
+		
+		$("body").append(stackDiv);	
+	}
+	else if (view.mode=='popup')
+	{
+		var dialogDiv=$("<div>");
+		dialogDiv.addClass("viewPopup");
+		
+		var viewDiv=$("<div>");
+		viewDiv.attr("id",view.id);
+		viewDiv.addClass("autoRefresh");
+		
+		$("body").append(dialogDiv);	
+		dialogDiv.append(viewDiv);	
 
-	var dialog=dialogDiv.dialog({
-		height: 'auto',
-		width: 'auto',
-//		autoResize: true,
-//		autoOpen: false,
-		title: 'loading...',
-		position: [ 
-			view.x,
-			view.y 
-		],
-		close: function(ev, ui) {
-			$(this).remove();
-			if (view.highlight)
-				$(view.highlight).removeClass("ui-state-highlight");
-			//NOTE: this "loops": the url will be updated, triggering a history event. then the open views will be compared to the wanted views. views that are popups will be deleted by calling this close function. shouldnt be a problem, since we are already gone by the time this happens.
-			viewClose(view);
-		}
-	});
+		var dialog=dialogDiv.dialog({
+			height: 'auto',
+			width: 'auto',
+	//		autoResize: true,
+	//		autoOpen: false,
+			title: 'loading...',
+			position: [ 
+				view.x,
+				view.y 
+			],
+			close: function(ev, ui) {
+				$(this).remove();
+				//NOTE: this "loops": the url will be updated, triggering a history event. then the open views will be compared to the wanted views. views that are popups will be deleted by calling this close function. shouldnt be a problem, since we are already gone by the time this happens.
+				viewClose(view);
+			}
+		});
+		
+	}
+	else
+	{
+		console.error("viewCreate: unknown view mode",view);
+	}
+}
+
+//deletes a view from the DOM-tree in the correct way 
+function viewDOMdel(view)
+{
+	if (view.highlight)
+		$(view.highlight).removeClass("ui-state-highlight");
+
+	if (view.mode=='popup')
+	{
+		var dialogDiv=$("#"+view.id).parent();
+		dialogDiv.dialog('close'); //will delete itself
+	}
+	else if (view.mode=='stack')
+	{
+		$("#"+view.id).remove();
+	}
+	else //mode existing or main
+	{
+		//just clear it
+		$("#"+view.id).unbind();
+		$("#"+view.id).empty();
+	}
 }
 
 //loads a view in the specified element
