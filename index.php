@@ -11,14 +11,17 @@
 		viewPrintHtmlIncludes();
 	?>
 
-	<script type="text/javascript"
+<!--	<script type="text/javascript"
 	src="http://jqueryui.com/themeroller/themeswitchertool/">
 	</script>
+-->
+
 	<script>
+
 		$(document).ready(function()
 		{
 			menuReload();
-			$("#themeswitcher").themeswitcher();
+//			$("#themeswitcher").themeswitcher();
 
 		});
 	</script>
@@ -36,9 +39,11 @@
 <div style='float:right' id='themeswitcher'></div>
 </div>
 
+<div id='viewPath' class='menuOffset'>
 
+</div>
 
-<div id='viewMain' class='ui-widget-content  menuOffset autoRefresh'>
+<div id='views'>
 </div>
 
 </body> 

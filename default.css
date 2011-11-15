@@ -75,3 +75,16 @@
 	
 }
 
+
+.viewTitle
+{
+	background-color:red;
+	float:left;
+	margin:10px;
+}
+
+.viewTitleHistory
+{
+	background-color:green;
+}
+

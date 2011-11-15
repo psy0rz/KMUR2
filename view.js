@@ -91,7 +91,7 @@ function viewUpdateUrl(id, viewData)
 }
 
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
-	name: name of the view. e.g. 'users.list' (will load views/users/list.php)
+	name: name of	 the view. e.g. 'users.list' (will load views/users/list.php)
 	params: view specific parameters, used inside the view. (passed along without changing)
 	mode:
 		'main': load the view in the mainwindow. (TODO:deletes any open stacked windows)
@@ -112,29 +112,30 @@ function viewCreate(params)
 	//create copy to work on:
 	var viewData={};
 	$.extend(true, viewData, params);
+	
+	viewData.id="view"+gViewStatus.count;
+	
+	//highlight a creator?
+	if (viewData.creator)
+	{
+		//TODO: change this system?
+		$(viewData.creator).addClass(viewData.id);
+		viewData.highlight="."+viewData.id;
+		delete viewData.creator;
+	}
+	else
+	{
+		//(when reinvoked from favorites, the highlight object wont exist anymore)
+		delete viewData.highlight;
+	}
 
 	if (viewData.mode=='popup' || viewData.mode=='stack')
 	{
-		viewData.id="view"+gViewStatus.count;
-		
-		//highlight a creator?
-		if (viewData.creator)
-		{
-			//TODO: change this system?
-			$(viewData.creator).addClass(viewData.id);
-			viewData.highlight="."+viewData.id;
-			delete viewData.creator;
-		}
-		else
-		{
-			//(when reinvoked from favorites, the highlight object wont exist anymore)
-			delete viewData.highlight;
-		}
-		
 	}
 	else if (params.mode=='main')
 	{
-		viewData.id="viewMain";
+		//clear all stacked windows 
+		//FIXME
 	}
 	
 	viewUpdateUrl(viewData.id, viewData);
@@ -189,6 +190,19 @@ function viewShowError(result, parent, meta)
 	return(false);
 }
 
+//reset viewpath click handlers and visuals
+function viewPathUpdate()
+{
+	//only the last title is the active one so it shouldnt be clickable
+	$("#viewPath .viewTitle").addClass("viewTitleHistory");
+	$("#viewPath .viewTitle:last").removeClass("viewTitleHistory");
+
+	//when clicking history items, remove the views on the right of it
+	$(".viewTitle").unbind();
+	$(".viewTitleHistory").click(function(){
+		console.log("woei");
+	});
+}
 
 //adds a new view to the DOM tree
 function viewDOMadd(view)
@@ -197,14 +211,22 @@ function viewDOMadd(view)
 		$(view.highlight).addClass("ui-state-highlight");
 
 	
-	if (view.mode=='stack')
+	if (view.mode=='main')
 	{
-		var stackDiv=$("<div>");
-		stackDiv.addClass("viewStack");
-		stackDiv.attr("id",view.id);
-		stackDiv.addClass("autoRefresh");
+		//add title to path
+		var titleDiv=$("<div>");
+		titleDiv.addClass("viewTitle");
+		titleDiv.attr("id",view.id+"Title");
+		titleDiv.text("(loading...)");
+		$("#viewPath").append(titleDiv);
+		viewPathUpdate();
 		
-		$("body").append(stackDiv);	
+		var viewDiv=$("<div>");
+		viewDiv.addClass("ui-widget-content");
+		viewDiv.attr("id",view.id);
+		viewDiv.addClass("autoRefresh");
+		$("#views").append(viewDiv);
+		
 	}
 	else if (view.mode=='popup')
 	{
@@ -253,9 +275,10 @@ function viewDOMdel(view)
 		var dialogDiv=$("#"+view.id).parent();
 		dialogDiv.dialog('close'); //will delete itself
 	}
-	else if (view.mode=='stack')
+	else if (view.mode=='main')
 	{
 		$("#"+view.id).remove();
+		$("#"+view.id+"Title").remove();
 	}
 	else //mode existing or main
 	{
@@ -264,6 +287,40 @@ function viewDOMdel(view)
 		$("#"+view.id).empty();
 	}
 }
+
+/** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
+ */
+function viewReady(params)
+{
+	var viewDiv=$("#"+params.view.id);
+	
+	if (params.view.mode=='popup')
+	{
+		var dialogDiv=viewDiv.parent();
+		if ('title' in params)
+			dialogDiv.dialog('option', 'title', params.title);
+		
+		//get correct dimentions
+		var cw=viewDiv.width()+50;
+		var ch=viewDiv.height()+100;
+		console.debug("dialog content dimentions" ,cw,ch);
+		
+
+		//resize iframe so the contents fit
+		dialogDiv.dialog('option','width',cw);
+		dialogDiv.dialog('option','height',ch);
+		//parent.$(self.frameElement).height(ch);
+
+		//reset position, this makes sure the dialog stays inside the browserwindow
+		var pos=dialogDiv.dialog('option', 'position');
+		dialogDiv.dialog('option', 'position', pos);
+	}
+	else if (params.view.mode=='stack')
+	{
+		viewDiv.prev().text(params.title);
+	}
+}
+
 
 //loads a view in the specified element
 //( use viewCreate instead, if you want to update browser history and create popups etc)
@@ -299,36 +356,6 @@ function viewLoad(view)
 }
 
 
-/** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
- */
-function viewReady(params)
-{
-	var viewDiv=$("#"+params.view.id);
-	
-	//view is inside a dialogdiv?
-	var dialogDiv=viewDiv.parent();
-	if (dialogDiv.hasClass("viewPopup"))
-	{
-		if ('title' in params)
-			dialogDiv.dialog('option', 'title', params.title);
-		
-		//get correct dimentions
-		var cw=viewDiv.width()+50;
-		var ch=viewDiv.height()+100;
-		console.debug("dialog content dimentions" ,cw,ch);
-		
-
-		//resize iframe so the contents fit
-		dialogDiv.dialog('option','width',cw);
-		dialogDiv.dialog('option','height',ch);
-		//parent.$(self.frameElement).height(ch);
-
-		//reset position, this makes sure the dialog stays inside the browserwindow
-		var pos=dialogDiv.dialog('option', 'position');
-		dialogDiv.dialog('option', 'position', pos);
-	}
-	
-}
 
 //send a refresh event to all .autoRefresh classes.
 function viewRefresh()
