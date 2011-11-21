@@ -35,15 +35,13 @@
 ?>
 
 <div id='viewMenu' class=''>
-
-<div style='float:right' id='themeswitcher'></div>
+	<div style='float:right' id='themeswitcher'></div>
 </div>
 
-<div id='viewPath' class='menuOffset'>
-
+<div id='viewPath'>
 </div>
 
-<div id='views'>
+<div id='views' class='ui-widget'>
 </div>
 
 </body> 

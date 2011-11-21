@@ -94,11 +94,10 @@ function viewUpdateUrl(id, viewData)
 	name: name of	 the view. e.g. 'users.list' (will load views/users/list.php)
 	params: view specific parameters, used inside the view. (passed along without changing)
 	mode:
-		'main': load the view in the mainwindow. (TODO:deletes any open stacked windows)
+		'main': add the view in the mainwindow and update viewPath.
 		'popup': create a new popup window to load the view. 
 		'existing': load view into an existing element id (see below)
-		TODO:'stack': create new view to stack on top of mainwindow or other stacked views. This way the main window stays intact, so that when you close the stacked window and give the user the feeling he is back in the previous screen. This also highlights all the changes he made.
-		
+	clear: set to true to delete all other main-windows before adding a new one.
 	x,y: (for mode 'popup') coordinates for popup
 	id: id of the element to load the view in (auto set in case of main and popup)
 	creator: (optional for mode 'popup'): element-object that was responsible for creating the popup. Will be used for popups to highlight the object. 
@@ -129,12 +128,10 @@ function viewCreate(params)
 		delete viewData.highlight;
 	}
 
-	if (viewData.mode=='popup' || viewData.mode=='stack')
+	//clear all main-windows?
+	if (viewData.clear)
 	{
-	}
-	else if (params.mode=='main')
-	{
-		//clear all stacked windows 
+		delete viewData.clear;
 		//FIXME
 	}
 	
@@ -197,6 +194,10 @@ function viewPathUpdate()
 	$("#viewPath .viewTitle").addClass("viewTitleHistory");
 	$("#viewPath .viewTitle:last").removeClass("viewTitleHistory");
 
+	//only the last view should be visible
+	$("#views .viewMain:last").show();
+	$("#views .viewMain:last").prev().hide();
+
 	//when clicking history items, remove the views on the right of it
 	$(".viewTitle").unbind();
 	$(".viewTitleHistory").click(function(){
@@ -219,13 +220,15 @@ function viewDOMadd(view)
 		titleDiv.attr("id",view.id+"Title");
 		titleDiv.text("(loading...)");
 		$("#viewPath").append(titleDiv);
-		viewPathUpdate();
 		
 		var viewDiv=$("<div>");
 		viewDiv.addClass("ui-widget-content");
+		viewDiv.addClass("viewMain");
 		viewDiv.attr("id",view.id);
 		viewDiv.addClass("autoRefresh");
 		$("#views").append(viewDiv);
+
+		viewPathUpdate();
 		
 	}
 	else if (view.mode=='popup')
@@ -279,6 +282,7 @@ function viewDOMdel(view)
 	{
 		$("#"+view.id).remove();
 		$("#"+view.id+"Title").remove();
+		viewPathUpdate();
 	}
 	else //mode existing or main
 	{
@@ -292,11 +296,12 @@ function viewDOMdel(view)
  */
 function viewReady(params)
 {
-	var viewDiv=$("#"+params.view.id);
 	
 	if (params.view.mode=='popup')
 	{
+		var viewDiv=$("#"+params.view.id);
 		var dialogDiv=viewDiv.parent();
+
 		if ('title' in params)
 			dialogDiv.dialog('option', 'title', params.title);
 		
@@ -315,9 +320,10 @@ function viewReady(params)
 		var pos=dialogDiv.dialog('option', 'position');
 		dialogDiv.dialog('option', 'position', pos);
 	}
-	else if (params.view.mode=='stack')
+	else if (params.view.mode=='main')
 	{
-		viewDiv.prev().text(params.title);
+		var viewTitleDiv=$("#"+params.view.id+"Title");
+		viewTitleDiv.text(params.title);
 	}
 }
 

@@ -75,16 +75,30 @@
 	
 }
 
+#viewPath
+{
+	margin: 3px;
+	margin-top: 2em;
+
+}
 
 .viewTitle
 {
-	background-color:red;
-	float:left;
-	margin:10px;
+	display:inline;	
+	margin-right:1em;
+    cursor: default;
+	color: black;
+	font-weight: bold;
 }
 
 .viewTitleHistory
 {
-	background-color:green;
+    cursor: pointer;
+	color: blue;
+	font-weight: normal;
+}
+
+.viewMain
+{
 }
 

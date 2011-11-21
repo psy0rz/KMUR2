@@ -15,7 +15,7 @@ $(document).ready(function()
 		delData		: 'invoices.del',
 		editView	: {
 			name: 'invoices.edit',
-			mode: 'stack'
+			mode: 'main'
 		},
 		loadCallback: function(result) {
 			viewReady({
