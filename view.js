@@ -22,6 +22,10 @@ $(document).ready(function()
 		$.extend(true, oldViewStatus, gViewStatus);
 		var newViewStatus=rison.decode(hash);
 
+		//always keep highest counter
+		if (oldViewStatus.count>newViewStatus.count)
+			newViewStatus.count=oldViewStatus.count;
+
 		//store the updated view state right away. (some objects do stuff with viewUpdateUrl when we delete or create them)
 		gViewStatus=newViewStatus;
 
@@ -270,9 +274,6 @@ function viewDOMadd(view)
 //deletes a view from the DOM-tree in the correct way 
 function viewDOMdel(view)
 {
-	if (view.highlight)
-		$(view.highlight).removeClass("ui-state-highlight");
-
 	if (view.mode=='popup')
 	{
 		var dialogDiv=$("#"+view.id).parent();
@@ -290,6 +291,17 @@ function viewDOMdel(view)
 		$("#"+view.id).unbind();
 		$("#"+view.id).empty();
 	}
+
+	//remove highlight and scroll to it?
+	if (view.highlight)
+	{
+		$("body").scrollTop($(view.highlight).offset().top-100);
+		$(view.highlight).removeClass("ui-state-highlight");
+		//NO: goes wrong when adding stuff to formlists
+		//$(view.highlight).effect('highlight',2000);
+
+	}
+
 }
 
 /** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
