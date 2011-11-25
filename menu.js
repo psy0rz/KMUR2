@@ -67,7 +67,13 @@ function menuReload()
 								$.extend( view, subMenu.view );
 								view.x=event.clientX;
 								view.y=event.clientY;
-								viewCreate(view);
+								if (view.highlight)
+									delete view.highlight;
+								
+								if (view.mode=='main')
+									viewCreate({clear:true},view);
+								else
+									viewCreate({clear:false},view);
 
 							})
 					);

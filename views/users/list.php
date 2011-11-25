@@ -9,7 +9,7 @@ $(document).ready(function()
 	
 	templateList({
 		view		: view,
-		id			: '_id',
+		id		: '_id',
 		getMeta		: 'users.getMeta',		
 		getData		: 'users.getAll',
 		delData		: 'users.del',

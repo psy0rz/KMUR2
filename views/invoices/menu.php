@@ -8,8 +8,7 @@ $this->addSub("invoices","list",array(
 	"desc"=>"Overzicht",
 	"view"=>array(
 		"name"=>"invoices.list",
-		"mode"=>"main",
-		"clear"=>true
+		"mode"=>"main"
 	)
 ));
 

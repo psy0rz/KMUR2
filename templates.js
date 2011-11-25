@@ -214,8 +214,11 @@ function templateList(params)
 		editView.params._id=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;
-		editView.creator=element;
-		viewCreate(editView);
+		viewCreate(
+			{
+				creator: element
+			},
+			editView);
 	};
 
 	var del=function(event)

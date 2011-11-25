@@ -101,51 +101,63 @@ function viewUpdateUrl(id, viewData)
 }
 
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
-	name: name of	 the view. e.g. 'users.list' (will load views/users/list.php)
-	params: view specific parameters, used inside the view. (passed along without changing)
-	mode:
-		'main': add the view in the mainwindow and update viewPath.
-		'popup': create a new popup window to load the view. 
-		'existing': load view into an existing element id (see below)
-	clear: set to true to delete all other main-windows before adding a new one.
-	x,y: (for mode 'popup') coordinates for popup
-	id: id of the element to load the view in (auto set in case of main and popup)
-	creator: (optional for mode 'popup'): element-object that was responsible for creating the popup. Will be used for popups to highlight the object. 
+	params:
+		clear: set to true to delete all other main-windows before adding the new one.
+		creator: element-object that was responsible for creating the view. Will be highlighted and scrolled to on close. (will create view.highlight)
+
+	view:
+		name: name of	 the view. e.g. 'users.list' (will load views/users/list.php)
+		params: view specific parameters, used inside the view. (passed along without changing)
+		mode:
+			'main': add the view in the mainwindow and update viewPath.
+			'popup': create a new popup window to load the view. 
+			'existing': load view into an existing element id (see below)
+		x,y: (for mode 'popup') coordinates for popup
+		id: id of the element to load the view in (auto set in case of main and popup)
+		highlight: a field to highlight during open and scroll-to after close
 
 Loading views this way also ensures correct browser url and history updating.
 
 Call viewClose to close the view.
 */
-function viewCreate(params)
+function viewCreate(params, view)
 {
-	//create copy to work on:
-	var viewData={};
-	$.extend(true, viewData, params);
-	
-	viewData.id="view"+gViewStatus.count;
-	
-	//highlight a creator?
-	if (viewData.creator)
-	{
-		//TODO: change this system?
-		$(viewData.creator).addClass(viewData.id);
-		viewData.highlight="."+viewData.id;
-		delete viewData.creator;
-	}
-	else
-	{
-		//(when reinvoked from favorites, the highlight object wont exist anymore)
-		delete viewData.highlight;
-	}
+	//copy the current global viewstatus and change it to what we want
+	var viewStatus={};
+	$.extend( true, viewStatus, gViewStatus );
 
 	//clear all main-windows?
-	if (viewData.clear)
+	if (params.clear==true)
+//	if (false)
 	{
-		delete viewData.clear;
-		//FIXME
+		//remove all mainviews
+		$.each(gViewStatus.views,function(id,view)
+		{
+			if (viewStatus.views[id].mode=='main')
+				delete viewStatus.views[id];
+		});
+	}
+
+	//create new viewid
+	viewStatus.count++;
+	var id="view"+viewStatus.count;
+
+	//add new view to viewStatus:
+	viewStatus.views[id]={};
+	$.extend(true, viewStatus.views[id], view);
+
+	//add id field
+	viewStatus.views[id].id=id;
+
+	//highlight a creator?
+	if (params.creator)
+	{
+		//TODO: change this system?
+		$(params.creator).addClass(id);
+		viewStatus.views[id].highlight="."+id;
 	}
 	
-	viewUpdateUrl(viewData.id, viewData);
+	viewSetUrl(viewStatus);
 }
 
 
@@ -309,7 +321,7 @@ function viewDOMdel(view)
 	}
 
 	//remove highlight and scroll to it?
-	if (view.highlight)
+	if ($(view.highlight).length!=0)
 	{
 		$("body").scrollTop($(view.highlight).offset().top-100);
 		$(view.highlight).removeClass("ui-state-highlight");
