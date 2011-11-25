@@ -85,17 +85,19 @@
 .viewTitle
 {
 	display:inline;	
-	margin-right:1em;
-    cursor: default;
+	cursor: default;
 	color: black;
 	font-weight: bold;
 }
 
 .viewTitleHistory
 {
-    cursor: pointer;
+	cursor: pointer;
 	color: blue;
 	font-weight: normal;
+	
+	
+	
 }
 
 .viewMain

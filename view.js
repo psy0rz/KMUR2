@@ -68,6 +68,14 @@ $(document).ready(function()
 	);
 });
 
+
+function viewSetUrl(viewStatus)
+{
+	var hash=rison.encode(viewStatus);
+	console.log("view changing url hash to: "+hash);
+	jQuery.history.load(hash);
+}
+
 // update the browser url with specified view.
 // this will trigger the history tracker which in turn will create and delete actual view elements.
 function viewUpdateUrl(id, viewData)
@@ -89,9 +97,7 @@ function viewUpdateUrl(id, viewData)
 	}
 	
 	//now copy the new views array to the browser url, triggering the history tracker which applies the actual changes:
-	var hash=rison.encode(viewStatus);
-	console.log("view changing url hash to: "+hash);
-	jQuery.history.load(hash);
+	viewSetUrl(viewStatus);	
 }
 
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
@@ -205,7 +211,16 @@ function viewPathUpdate()
 	//when clicking history items, remove the views on the right of it
 	$(".viewTitle").unbind();
 	$(".viewTitleHistory").click(function(){
-		console.log("woei");
+		//copy the current global viewstatus and expand it with this new view
+		var viewStatus={};
+		$.extend( true, viewStatus, gViewStatus );
+		//remove everything on the right of us
+		$(this).nextAll().each(function()
+		{
+			console.log("deleting",this);
+			delete viewStatus.views[$(this).attr("viewId")];
+		});
+		viewSetUrl(viewStatus);
 	});
 }
 
@@ -222,6 +237,7 @@ function viewDOMadd(view)
 		var titleDiv=$("<div>");
 		titleDiv.addClass("viewTitle");
 		titleDiv.attr("id",view.id+"Title");
+		titleDiv.attr("viewId",view.id);
 		titleDiv.text("(loading...)");
 		$("#viewPath").append(titleDiv);
 		
@@ -335,7 +351,7 @@ function viewReady(params)
 	else if (params.view.mode=='main')
 	{
 		var viewTitleDiv=$("#"+params.view.id+"Title");
-		viewTitleDiv.text(params.title);
+		viewTitleDiv.text(params.title+" » ");
 	}
 }
 
