@@ -44,6 +44,9 @@
 <div id='views' class='ui-widget'>
 </div>
 
+<div id='debugLogger'>
+</div>
+
 </body> 
 </html> 
  

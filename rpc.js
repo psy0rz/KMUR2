@@ -27,6 +27,16 @@ function rpc(classMethod, params, callback)
 			{
 				
 				console.debug("rpc result "+classMethod+": ", result);
+				if (result.debug)
+				{
+					$.each(result.debug, function(i,debugLine)
+					{
+						var debugDiv=$("<div class='debug'>");
+						debugDiv.append(debugLine["file"]+" line "+debugLine["line"]+":");
+						debugDiv.append("<pre>"+JSON.stringify(debugLine["object"], null, ' ')+"</pre>");
+						$('#debugLogger').prepend(debugDiv);
+					});
+				}
 				callback(result);
 			},
 		"type": "post",

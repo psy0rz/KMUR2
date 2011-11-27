@@ -5,9 +5,9 @@
 */
 
 require_once("core.php");
+require_once("debug.php");
 
 $result=array();
-
 try
 {
 	if (isset($_REQUEST['class']))
@@ -67,5 +67,12 @@ catch (Exception $e)
 		)
 	);
 }
+
+global $gDebugBuffer;
+if ($gDebugBuffer)
+{
+	$result["debug"]=$gDebugBuffer;
+}
+
 
 echo json_encode($result);

@@ -27,10 +27,10 @@ class invoices extends model
 				"type"=>"date"
 			),
 			"number"=>array(
-				"readonly"=>true,
+				"readonly"=>$readonly,
 				"max"=>20,
 				"desc"=>"Factuur nummer",
-				"type"=>"string",
+				"type"=>"integer",
 			),
 			"status"=>array(
 				"desc"=>"Factuur status",
@@ -157,9 +157,10 @@ class invoices extends model
 		return ($invoice);
 	}
 
-	//update/add project
+	//update/add invoice
 	function put($params)
 	{
+			debug(time());
 //		$this->verifyMeta($params, $this->getMeta($params));
 	
 		//project exists?
@@ -167,6 +168,17 @@ class invoices extends model
 		
 //		if ($existing && $existing["_id"]!=$params["_id"])
 //			throw new FieldException("Project bestaat al!", "projectname");
+		//new invoice?
+		if (!$params["_id"])
+		{
+			//determine new number
+			$cursor=$this->db->invoices->find();
+			$cursor->sort(array(
+				'number' => -1
+			))->limit(1);
+			$lastInvoice=$cursor->getNext();
+			$params["number"]=($lastInvoice["number"]+1);
+		}
 
 		$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
 	}

@@ -1,6 +1,7 @@
 <?
 
 require_once("userContext.php");
+require_once("debug.php");
 
 class model
 {
