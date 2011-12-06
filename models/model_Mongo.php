@@ -11,6 +11,7 @@ class model_Mongo extends model
 
 		parent::__construct($userContext);
 
+		//TODO: use one global mongo connection for optimisation?
 		
 		// connect
 		$this->mongoObj = new Mongo();
@@ -21,7 +22,7 @@ class model_Mongo extends model
 	
 	/** Iterates over a cursor and collects results in a hash array, indexed by _id
 	*/
-	function run($cursor)
+	protected function run($cursor)
 	{
 		//iterate through the results
 		$ret=array();
