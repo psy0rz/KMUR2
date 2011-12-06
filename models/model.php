@@ -3,11 +3,9 @@
 require_once("userContext.php");
 require_once("debug.php");
 
+//base model class, not database specific. Every model should inherit from this one or from a database-subclass
 class model
 {
-	protected $mongoObj;
-	protected $db;
-
 	protected $context;
 
 	function __construct($userContext="")
@@ -21,46 +19,8 @@ class model
 			$this->context->linkToSession();
 		}
 		
-		// connect
-		$this->mongoObj = new Mongo();
-
-		// select a database
-		$this->db = $this->mongoObj->kmur;
 	}
 	
-	/** Iterates over a cursor and collects results in a hash array, indexed by _id
-	*/
-	function run($cursor)
-	{
-		//iterate through the results
-		$ret=array();
-		foreach ($cursor as $obj) 
-		{
-			//convert id to normal string rightaway
-			$id="";
-			$obj['_id']=(string)$obj['_id'];
-			$ret[]=$obj;
-		}
-		return ($ret);
-	}
-	
-	protected function getById($collection,$id)
-	{
-		$ret=$this->db->$collection->findOne(array('_id'=>new MongoId($id)));
-		if ($ret==null)
-			throw new Exception("Item niet gevonden in database");
-		return ($ret);
-	}
-
-	protected function delById($collection,$id)
-	{
-		return (
-			$this->db->$collection->remove(
-				array('_id' => new MongoId($id)),
-				array("safe"=>true)
-			)
-		);
-	}
 
 
 
@@ -207,7 +167,7 @@ class model
 						throw new FieldException("'$value' is geen geldige optie", $key);
 				}
 			}
-			else if ($meta[$key]["type"]=="id")
+			else if ($meta[$key]["type"]=="mongoId")
 			{
 				if ($value!="" && $value!=new MongoId($value))
 					throw new FieldException("'$value' is geen geldig id", $key);
@@ -229,27 +189,6 @@ class model
 		}
 	}
 
-	//verifys if data is compatible with getMeta() rules
-	//if id is set, updates data in collection
-	//if id is not set, add data to collection
-	protected function setById($collection, $id, $data, $meta='')
-	{
-			//dont set the id (its not a MongoId object anyway)
-			unset($data["_id"]);
-
-			if (!$data)
-				return;
-
-			$this->verifyMeta($data, $meta);
-			$this->db->$collection->update(
-				array('_id' => new MongoId($id)), 
-				array('$set'=>$data),
-				array(
-					"upsert"=>true,
-					"safe"=>true
-				)
-			);
-	}
 
 	function canCall($function)
 	{

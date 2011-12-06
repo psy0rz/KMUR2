@@ -2,7 +2,7 @@
 
 require_once "model.php";
 
-class invoices extends model
+class invoices extends model_Mongo
 {
 	//invoice metadata depens on the current state of the invoice.
 	function getMeta($params='')
@@ -19,7 +19,7 @@ class invoices extends model
 
 		return (array(
 			"_id"=>array(
-				"type"=>"id"
+				"type"=>"mongoId"
 			),
 			"invoiceDate"=>array(
 				"readonly"=>$readonly,

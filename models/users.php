@@ -2,14 +2,14 @@
 
 require_once "model.php";
 
-class users extends model
+class users extends model_Mongo
 {
 	//meta data for users
 	function getMeta()
 	{
 		return (array(
 			"_id"=>array(
-				"type"=>"id"
+				"type"=>"mongoId"
 			),
 			"username"=>array(
 				"desc"=>"Username",

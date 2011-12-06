@@ -2,13 +2,13 @@
 
 require_once "model.php";
 
-class projects extends model
+class projects extends model_Mongo
 {
 	function getMeta()
 	{
 		return (array(
 			"_id"=>array(
-				"type"=>"id"
+				"type"=>"mongoId"
 			),
 			"projectname"=>array(
 				"desc"=>"Project naam",

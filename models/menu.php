@@ -2,13 +2,13 @@
 
 require_once "model.php";
 
-class menu extends model
+class menu extends model_Mongo
 {
 	private $tree;
 	
 	private $meta=array(
 		"_id"=>array(
-			"type"=>"id"
+			"type"=>"mongoId"
 		),
 		"menu"=>array(
 			"desc"=>"Menu naam",
