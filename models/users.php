@@ -1,6 +1,5 @@
 <?
 
-require_once "model.php";
 
 class users extends model_Mongo
 {
@@ -174,6 +173,9 @@ class users extends model_Mongo
 		//dont foget to always give users anonymous rights!
 		$user["rights"][]="anonymous";
 		$this->context->change($user["username"], $user["rights"]);
+
+		$log=new log();
+		$log->info("Ingelogd");
 	}
 
 }

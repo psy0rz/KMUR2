@@ -1,6 +1,5 @@
 <?
 
-require_once "model.php";
 
 class menu extends model_Mongo
 {

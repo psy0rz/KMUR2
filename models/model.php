@@ -7,6 +7,7 @@ require_once("debug.php");
 class model
 {
 	protected $context;
+	protected $log;
 
 	function __construct($userContext="")
 	{
@@ -18,7 +19,6 @@ class model
 			$this->context=new userContext();
 			$this->context->linkToSession();
 		}
-		
 	}
 	
 

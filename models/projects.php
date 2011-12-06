@@ -1,6 +1,5 @@
 <?
 
-require_once "model.php";
 
 class projects extends model_Mongo
 {

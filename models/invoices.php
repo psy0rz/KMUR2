@@ -1,6 +1,5 @@
 <?
 
-require_once "model.php";
 
 class invoices extends model_Mongo
 {
@@ -201,11 +200,15 @@ class invoices extends model_Mongo
 			//set new number:
 			$params["number"]=("$year-".sprintf("%04s",$count));
 
-			debug($params["number"]);
 		}
 
 		//store it 
 		$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
+
+		//$log=new log();
+
+		
+		//$log->info("invoices","Factuur  
 	}
 
 	function del($params)
