@@ -28,9 +28,10 @@ class invoices extends model
 			),
 			"number"=>array(
 				"readonly"=>$readonly,
-				"max"=>20,
+				"max"=>9,
+				"min"=>9,
 				"desc"=>"Factuur nummer",
-				"type"=>"integer",
+				"type"=>"string",
 			),
 			"status"=>array(
 				"desc"=>"Factuur status",
@@ -160,7 +161,6 @@ class invoices extends model
 	//update/add invoice
 	function put($params)
 	{
-			debug(time());
 //		$this->verifyMeta($params, $this->getMeta($params));
 	
 		//project exists?
@@ -171,15 +171,40 @@ class invoices extends model
 		//new invoice?
 		if (!$params["_id"])
 		{
-			//determine new number
+			//determine current invoice number:
 			$cursor=$this->db->invoices->find();
 			$cursor->sort(array(
 				'number' => -1
 			))->limit(1);
 			$lastInvoice=$cursor->getNext();
-			$params["number"]=($lastInvoice["number"]+1);
+
+			//parse year and count
+			$year="";
+			$fields=explode("-",$lastInvoice["number"]);
+			debug($fields);
+			if (count($fields)==2)
+			{	
+				$year=$fields[0];
+				$count=$fields[1];
+			}
+	
+			//year changed?
+			if ($year != date("Y"))
+			{
+				$year=date("Y");
+				$count=1;
+			}
+			//same year, just increase counter
+			else
+				$count++;
+
+			//set new number:
+			$params["number"]=("$year-".sprintf("%04s",$count));
+
+			debug($params["number"]);
 		}
 
+		//store it 
 		$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
 	}
 
