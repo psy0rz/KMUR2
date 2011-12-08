@@ -1,7 +1,7 @@
 <?
 
 require_once("userContext.php");
-require_once("debug.php");
+require_once("log.php");
 
 //base model class, not database specific. Every model should inherit from this one or from a database-subclass
 class model

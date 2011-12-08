@@ -3,6 +3,18 @@
 
 class log extends model_Mongo
 {
+	//array of last logged stuff
+	protected $logBuffer;
+
+	//debug buffer: debugging messages during this session are stored here
+	protected $debugBuffer;
+
+	function __construct($userContext="")
+	{
+		parent::__construct($userContext);
+		$this->logBuffer=array();
+	}
+
 	//meta data for users
 	function getMeta()
 	{
@@ -27,7 +39,7 @@ class log extends model_Mongo
 				"desc"=>"Log text",
 				"type"=>"string",
 			),
-			"date"=>array(
+			"time"=>array(
 				"desc"=>"Tijd",
 				"type"=>"date",
 			),
@@ -54,25 +66,44 @@ class log extends model_Mongo
 			array("upsert" => true)
 		);
 
-		$this->db->log->insert(
-			array(
+		$log=array(
 				"id"=>$counter["value"],
-				"date"=>time(),
 				"text"=>$params["text"],
 				"type"=>$params["type"],
+				"time"=>time(),
 				"username"=>$this->context->getUser()
-			),
+			);
+
+		$this->logBuffer[]=$log;
+
+		$this->db->log->insert(
+			$log,
 			array("safe"=>true)
 		);
+
 	}
 
-	function info($text)
+	//called by rpc.php to get log-events that happend during this session.
+	function getLogBuffer()
 	{
-		$this->add(array(
-			"type"=>"info",
-			"text"=>$text
-		));
+		return ($this->logBuffer);
 	}
+
+
+	function getDebugBuffer()
+	{
+		return ($this->debugBuffer);
+	}
+
+	function debug($object)
+	{
+		$debug["object"]=$object;
+		$bt=debug_backtrace();
+		$debug["line"]=$bt[1]["line"];
+		$debug["file"]=$bt[1]["file"];
+		$this->debugBuffer[]=$debug;
+	}
+
 
 	function getAll()
 	{

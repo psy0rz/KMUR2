@@ -174,8 +174,7 @@ class users extends model_Mongo
 		$user["rights"][]="anonymous";
 		$this->context->change($user["username"], $user["rights"]);
 
-		$log=new log();
-		$log->info("Ingelogd");
+		logger("info", "Ingelogd");
 	}
 
 }

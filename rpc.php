@@ -5,7 +5,8 @@
 */
 
 require_once("core.php");
-require_once("debug.php");
+require_once("log.php");
+
 
 $result=array();
 try
@@ -68,11 +69,17 @@ catch (Exception $e)
 	);
 }
 
-global $gDebugBuffer;
-if ($gDebugBuffer)
 {
-	$result["debug"]=$gDebugBuffer;
-}
+	global $globalLog;
 
+	$buf=$globalLog->getDebugBuffer();
+	if ($buf)
+		$result["debug"]=$buf;
+
+	$buf=$globalLog->getLogBuffer();
+	if ($buf)
+		$result["log"]=$buf;
+
+}
 
 echo json_encode($result);
