@@ -203,20 +203,24 @@ class invoices extends model_Mongo
 		}
 
 		//store it 
-		$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
+		$id=$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
 
-		//$log=new log();
-
-		
-		//$log->info("invoices","Factuur  
-	}
-
-	function del($params)
-	{
-		$this->verifyMeta($params);
-		$this->delById("invoices", $params["_id"]);
+		//do logging
+		$data=$this->getById("invoices",$id);
+		if ($params["_id"])
+			logger("info", "Factuur ".$data["number"]." gewijzigd.");
+		else
+			logger("info", "Factuur ".$data["number"]." toegevoegd.");
 
 	}
+
+	//cant delete invoice once its created to keep bookkeeping consistent!
+//	function del($params)
+//	{
+//		$this->verifyMeta($params);
+//		$this->delById("invoices", $params["_id"]);
+//
+//	}
 
 
 }

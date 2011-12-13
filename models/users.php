@@ -20,6 +20,8 @@ class users extends model_Mongo
 				"desc"=>"Gebruikers rechten",
 				"type"=>"multiselect",
 				"default"=>array("customer"),
+				//Note: anonymous users have the 'anonymous' right
+				//logged in users have the 'anonymous' AND 'user' right, in addition to the rights defined below:
 				"choices"=>array(
 					"admin"=>"Administrator",
 					"employee"=>"Medewerker",
@@ -142,14 +144,23 @@ class users extends model_Mongo
 		if ($existing && $existing["_id"]!=$params["_id"])
 			throw new FieldException("Gebruiker bestaat al!", "username");
 
-		$this->setById("users", $params["_id"], $params);
+		$id=$this->setById("users", $params["_id"], $params);
+
+		//do logging
+		$data=$this->getById("users",$id);
+		if ($params["_id"])
+			logger("info", "Gebruiker ".$data["username"]." gewijzigd.");
+		else
+			logger("info", "Gebruiker ".$data["username"]." toegevoegd.");
+
 	}
 
 	function del($params)
 	{
 		$this->verifyMeta($params);
+		$data=$this->getById("users",$params["_id"]);
 		$this->delById("users", $params["_id"]);
-
+		logger("info", "Gebruiker ".$data["username"]." verwijderd.");
 	}
 
 	function authenticate($params)
@@ -164,15 +175,22 @@ class users extends model_Mongo
 		$user=$this->db->users->findOne(array('username'=>$params['username']));
 		
 		if (!$user || $user["password"]!=$params["password"] )
+		{
+			logger("warning", "Login poging met verkeerd wachtwoord door: ".$params["username"]);
 			throw new FieldException("Ongeldige gebruikersnaam of wachtwoord", "password");
+		}
 
 		if (!$user["active"])
+		{
+			logger("warning", "Login poging door uitgeschakelde gebruiker: ".$params["username"]);
 			throw new FieldException("Uw account is uitgeschakeld", "username");
+		}
 		
 		//login validated? change current context
-		//dont foget to always give users anonymous rights!
+		//dont foget to always give users anonymous and user rights!
 		$user["rights"][]="anonymous";
-		$this->context->change($user["username"], $user["rights"]);
+		$user["rights"][]="user";
+		$this->context->change($user["username"], $user["rights"], $user["_id"]);
 
 		logger("info", "Ingelogd");
 	}

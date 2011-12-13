@@ -40,7 +40,7 @@ class model_Mongo extends model
 	{
 		$ret=$this->db->$collection->findOne(array('_id'=>new MongoId($id)));
 		if ($ret==null)
-			throw new Exception("Item niet gevonden in database");
+			throw new Exception("Item $id niet gevonden in collectie $collection");
 		return ($ret);
 	}
 
@@ -58,25 +58,43 @@ class model_Mongo extends model
 
 
 	//verifys if data is compatible with getMeta() rules
-	//if id is set, updates data in collection
+	//if id is set, updates data in collection. throws exception when not found
 	//if id is not set, add data to collection
+	//always returns created or updated mongo id object
 	protected function setById($collection, $id, $data, $meta='')
 	{
-			//dont set the id (its not a MongoId object anyway)
-			unset($data["_id"]);
+		//always ignore the _id (its not a MongoId object anyway)
+		unset($data["_id"]);
 
-			if (!$data)
-				return;
+		if (!$data)
+			return;
 
-			$this->verifyMeta($data, $meta);
-			$this->db->$collection->update(
-				array('_id' => new MongoId($id)), 
+		$this->verifyMeta($data, $meta);
+		if ($id)
+		{
+			$mongoId=new MongoId($id);
+			$status=$this->db->$collection->update(
+				array('_id' => $mongoId), 
 				array('$set'=>$data),
 				array(
-					"upsert"=>true,
 					"safe"=>true
 				)
 			);
+			if (!$status["updatedExisting"])
+				throw new Exception("Opgegeven id $id niet gevonden in collectie $collection.");
+				
+			return($mongoId);
+		}
+		else
+		{
+			$status=$this->db->$collection->insert(
+				$data,
+				array(
+					"safe"=>true
+				)
+			);
+			return($data["_id"]);
+		}
 	}
 
 }

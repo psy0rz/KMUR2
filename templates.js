@@ -13,6 +13,9 @@ function templateForm(params)
 		params.view.params,
 		function(result)
 		{
+			
+			viewShowError(result, context, meta);
+
 			meta=result['data'];
 			$(".autoMeta", context).autoMeta(meta);
 
@@ -297,6 +300,8 @@ function templateList(params)
 		params.view.params,
 		function(result)
 		{
+			viewShowError(result, context, meta);
+
 			meta=result['data'];
 			//add real input to autoMeta divs. 
 			$(".autoMeta", context).autoMeta(meta);

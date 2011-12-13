@@ -5,7 +5,8 @@ class userContext
 
 	private $context=array(
 		"user"		=>"anonymous",
-		"rights"	=>array("anonymous")
+		"rights"	=>array("anonymous"),
+		"userId"	=>null
 	);
 	
 	//check if the user has any of the rights (one is enough)
@@ -35,10 +36,11 @@ class userContext
 			throw new Exception("U heeft onvoldoende rechten. ($right benodigd)");
 	}
 	
-	function change($user, array $rights)
+	function change($user, array $rights, $userId)
 	{
 		$this->context["user"]=$user;
 		$this->context["rights"]=$rights;
+		$this->context["userId"]=$userId;
 	}
 	
 	//link this context the global context inside the session
@@ -60,5 +62,12 @@ class userContext
 	{
 		return($this->context["user"]);
 	}
+
+	function getUserId()
+	{
+		return($this->context["userId"]);
+	}
+
+
 } 
 

@@ -2,7 +2,6 @@
 .colorRows 
 {
        background: #EFE;
-       cursor: pointer;
 }
 
 .colorRows:nth-child(2n-1)

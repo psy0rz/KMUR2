@@ -42,3 +42,28 @@
 {
 	background: #DDD  !important;
 }
+
+
+
+.autoHtml_logType_info
+{
+	padding-left:1em;
+	padding-right:1em;
+}
+
+.autoHtml_logType_error
+{
+	background-color: red;
+	color:white;
+	padding-left:1em;
+	padding-right:1em;
+}
+
+.autoHtml_logType_warning
+{
+	background-color: yellow;
+	color: black;
+	padding-left:1em;
+	padding-right:1em;
+}
+

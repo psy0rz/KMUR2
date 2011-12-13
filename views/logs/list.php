@@ -9,18 +9,18 @@ $(document).ready(function()
 	
 	templateList({
 		view		: view,
-		id			: '_id',
-		getMeta		: 'invoices.getMeta',		
-		getData		: 'invoices.getAll',
-		delData		: 'invoices.del',
+		id		: '_id',
+		getMeta		: 'logs.getMeta',		
+		getData		: 'logs.getAll',
+		delData		: null,
 		editView	: {
-			name: 'invoices.edit',
-			mode: 'main'
+			name: null,
+			mode: null
 		},
 		loadCallback: function(result) {
 			viewReady({
 				view: view,
-				title: "Factuur overzicht"
+				title: "Log overzicht"
 			});
 		},
 		errorCallback	: function(result) { },
@@ -33,20 +33,17 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta' _key='number' _meta='desc'>
-	<th class='autoMeta' _key='user' _meta='desc'>
-	<th class='autoMeta' _key='desc' _meta='desc'>
-	<th class='autoMeta' _key='status' _meta='desc'>
-	<th>
+	<th class='autoMeta' _key='time' _meta='desc'>
+	<th class='autoMeta' _key='username' _meta='desc'>
+	<th class='autoMeta' _key='logType' _meta='desc'>
+	<th class='autoMeta' _key='text' _meta='desc'>
 </tr>
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut autoClickEdit' _key='number'>
-	<td class='autoPut' _key='user'>
-		<span class='autoPut autoClickEdit' _key='username'></span>
-	<td class='autoPut autoClickEdit' _key='desc'>
-	<td class='autoPut autoClickEdit' _key='status'>
-	<td class='autoClickDel ui-icon ui-icon-trash'>
+	<td class='autoPut' _key='time'>
+	<td class='autoPut' _key='username'>
+	<td class='autoPut' _key='logType'>
+	<td class='autoPut' _key='text'>
 </tr>
 </table>
 

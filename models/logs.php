@@ -1,7 +1,7 @@
 <?
 
 
-class log extends model_Mongo
+class logs extends model_Mongo
 {
 	//array of last logged stuff
 	protected $logBuffer;
@@ -26,7 +26,7 @@ class log extends model_Mongo
 				"desc"=>"Gebruiker",
 				"type"=>"string",
 			),
-			"type"=>array(
+			"logType"=>array(
 				"desc"=>"Log soort",
 				"type"=>"select",
 				"choices"=>array(
@@ -41,8 +41,8 @@ class log extends model_Mongo
 			),
 			"time"=>array(
 				"desc"=>"Tijd",
-				"type"=>"date",
-			),
+				"type"=>"time",
+			)
 		));
 	}
 
@@ -51,6 +51,8 @@ class log extends model_Mongo
 	{
 		return(array(
 			"default"=>array("admin"),
+			"getAll"=>array("user"),
+			"getMeta"=>array("user")
 
 		));
 	}
@@ -59,24 +61,17 @@ class log extends model_Mongo
 	{
 		$this->verifyMeta($params);
 
-		//get/update counter value
-		$counter=$this->db->settings->update(
-			array("key" => "logCounter"), 
-			array('$inc' => array("value" => 1)), 
-			array("upsert" => true)
-		);
-
 		$log=array(
-				"id"=>$counter["value"],
 				"text"=>$params["text"],
-				"type"=>$params["type"],
+				"logType"=>$params["logType"],
 				"time"=>time(),
-				"username"=>$this->context->getUser()
+				"username"=>$this->context->getUser(),
+				"userId"=>$this->context->getUserId()
 			);
 
 		$this->logBuffer[]=$log;
 
-		$this->db->log->insert(
+		$this->db->logs->insert(
 			$log,
 			array("safe"=>true)
 		);
@@ -107,11 +102,27 @@ class log extends model_Mongo
 
 	function getAll()
 	{
-		return $this->run(
-			$this->db->log->find()->sort(
-				array("id"=>1)
-			)
-		);
+		if ($this->context->hasRight("admin"))
+		{
+			//admin sees all logs
+			return $this->run(
+				$this->db->logs->find()->sort(
+					array("_id"=>-1)
+				)
+			);
+		}
+		else
+		{
+			//only logs of this user
+			return $this->run(
+				$this->db->logs->find(
+					array("userId"=>$this->context->getUserId())
+				)->sort(
+					array("_id"=>-1)
+				)
+			);
+
+		}
 	}
 
 }
