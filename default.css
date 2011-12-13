@@ -10,25 +10,26 @@
 }
 
 
-#viewMenu
+#menuHolder
 {
 	position: fixed;
 	left: 0px;
 	right: 0px;
 	top:0px;
 	background: #eeeeee;
-	cursor: pointer;
 	border-bottom-style: solid;
 }
 
-.menuOffset
+#viewMenu
 {
-	margin-top: 2em;
 }
+
+
 
 .menuMain
 {
-	float: left;
+	display:inline-block;
+	cursor: pointer;
 	
 }
 
@@ -77,8 +78,7 @@
 #viewPath
 {
 	margin: 3px;
-	margin-top: 2em;
-
+	margin-top: 3em;
 }
 
 .viewTitle
@@ -101,7 +101,22 @@
 
 .viewMain
 {
+	
 }
+
+#viewLog
+{
+}
+
+
+.log
+{
+	margin-left: 1em;
+	margin-right: 1em;
+	margin-top: 0.1em;
+	margin-bottom: 0.1em;	
+}
+
 
 .debug
 {
@@ -109,3 +124,6 @@
 	border-top-style:solid;
 	background:#ddddff;
 }
+
+
+.

@@ -1,7 +1,7 @@
 <?
 /** Common functions that are only used inside views
 
-  Try not to include other php files in here.
+  Try not to include other php files in here!
 */
 
 /** Get the JSON parameters that are specified in the query string and santize them

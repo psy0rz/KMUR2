@@ -22,6 +22,10 @@
 		{
 			menuReload();
 //			$("#themeswitcher").themeswitcher();
+			$("#viewLog").click(function(){
+				$(this).empty();
+			});
+
 
 		});
 	</script>
@@ -34,8 +38,12 @@
 
 ?>
 
-<div id='viewMenu' class=''>
-	<div style='float:right' id='themeswitcher'></div>
+<div id='menuHolder'>
+	<div id='viewMenu'>
+	</div>
+
+	<div id='viewLog'>
+	</div>
 </div>
 
 <div id='viewPath'>
@@ -44,7 +52,7 @@
 <div id='views' class='ui-widget'>
 </div>
 
-<div id='debugLogger'>
+<div id='viewDebug'>
 </div>
 
 </body> 

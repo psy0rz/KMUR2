@@ -1,5 +1,7 @@
 
 
+var gLogTime=0;
+
 function rpc(classMethod, params, callback)
 {
 	console.debug("rpc call "+classMethod+": ", params);
@@ -27,16 +29,49 @@ function rpc(classMethod, params, callback)
 			{
 				
 				console.debug("rpc result "+classMethod+": ", result);
+
+				//print debug info
 				if (result.debug)
 				{
 					$.each(result.debug, function(i,debugLine)
 					{
 						var debugDiv=$("<div class='debug'>");
-						debugDiv.append(debugLine["file"]+" line "+debugLine["line"]+":");
-						debugDiv.append("<pre>"+JSON.stringify(debugLine["object"], null, ' ')+"</pre>");
-						$('#debugLogger').prepend(debugDiv);
+						debugDiv.append(debugLine.file+" line "+debugLine.line+":");
+						debugDiv.append("<pre>"+JSON.stringify(debugLine.object, null, ' ')+"</pre>");
+						$('#viewDebug').prepend(debugDiv);
 					});
 				}
+				
+				//print log info
+			        var currentTime=new Date().getTime();
+
+				if (currentTime-gLogTime>5000)
+					$('#viewLog').empty();
+
+				if (result.log)
+				{
+					$('#viewLog').empty();
+					gLogTime=currentTime;
+						$.each(result.log, function(i,logLine)
+					{
+						var logDiv;
+						if (logLine.logType=='info')
+						{
+							logDiv=$('<div class="log ui-state-highlight ui-corner-all" ><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span><strong>Info: </strong><span class="logtxt"></span></div>');
+						}
+						else if (logLine.logType=='warning')
+						{
+							logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Let op: </strong><span class="logtxt"></span></div>');
+						}
+						else
+						{
+							logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Fout: </strong><span class="logtxt"></span></div>');
+						}
+						$(".logtxt", logDiv).text(logLine.text);							
+						$('#viewLog').append(logDiv);
+					});
+				}
+				
 				callback(result);
 			},
 		"type": "post",
