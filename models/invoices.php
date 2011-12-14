@@ -136,12 +136,15 @@ class invoices extends model_Mongo
 	}
 
 
-	function getAll()
+	function getAll($params)
 	{
 		$collection = $this->db->invoices;
 
 		// find everything in the collection
 		$cursor=$collection->find();
+
+		if (isset($params['sort']))
+			$cursor->sort($params['sort']);
 
 		return ($this->run($cursor));
 	}

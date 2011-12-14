@@ -10,6 +10,27 @@
 }
 
 
+.autoOrder
+{
+	cursor:pointer;
+	background-image: url("../icons/order.png");
+	background-repeat:no-repeat;
+	background-position: right center;
+	padding-right: 16px;
+	
+	
+}
+
+.autoOrderAsc
+{
+	background-image: url("../icons/orderAsc.png");
+}
+
+.autoOrderDesc
+{
+	background-image: url("../icons/orderDesc.png");
+}
+
 .autoHtml_multiselect
 {
 	border-left-width: 1px;

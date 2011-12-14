@@ -190,6 +190,12 @@ function templateList(params)
 	var meta={};
 	var context=$("#"+params.view.id);
 
+	//getParams can be changed by clicking sort colums, and by search queries etc
+	var getParams={};
+	if (params.view.params)
+		getParams=jQuery.extend(true, {}, params.view.params); 
+	
+	
 	var edit=function(event)
 	{
 		var listParent=$(this).closest(".autoListItem");
@@ -255,7 +261,7 @@ function templateList(params)
 		//get data
 		rpc(
 			params.getData,
-			params.view.params,						
+			getParams,
 			function(result)
 			{
 				viewShowError(result, context, meta);
@@ -270,6 +276,8 @@ function templateList(params)
 				}
 				else
 				{
+					//delete old list contents
+					$(".autoListItem",context).not(".autoListSource").remove();
 					$(".autoListSource:first", context).autoList(meta, result['data'], {
 						context: context
 					});
@@ -292,6 +300,42 @@ function templateList(params)
 	{
 		//console.log("reresh!!");
 		getData(true);
+	});
+
+	
+	//what is the current selected sorting column?
+	if ($(".autoOrderAsc",context).length !=0)
+	{
+		getParams.sort={};
+		getParams.sort[$(".autoOrderAsc").attr("_key")]=1;
+	}
+	else if ($(".autoOrderDesc",context).length !=0)
+	{
+		getParams.sort={};
+		getParams.sort[$(".autoOrderDesc").attr("_key")]=-1;
+	}
+		
+
+	$(".autoOrder", context).click(function()
+	{
+		getParams.sort={};
+		
+		if ($(this).hasClass("autoOrderAsc"))
+		{
+			$(".autoOrderAsc",context).removeClass("autoOrderAsc");
+			$(".autoOrderDesc",context).removeClass("autoOrderDesc");
+			getParams.sort[$(this).attr("_key")]=-1;
+			$(this).addClass("autoOrderDesc");
+		}
+		else
+		{
+			$(".autoOrderAsc",context).removeClass("autoOrderAsc");
+			$(".autoOrderDesc",context).removeClass("autoOrderDesc");
+			getParams.sort[$(this).attr("_key")]=1;
+			$(this).addClass("autoOrderAsc");
+		}
+		
+		getData(false);
 	});
 
 	//get meta

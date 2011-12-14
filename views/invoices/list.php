@@ -9,7 +9,7 @@ $(document).ready(function()
 	
 	templateList({
 		view		: view,
-		id			: '_id',
+		id		: '_id',
 		getMeta		: 'invoices.getMeta',		
 		getData		: 'invoices.getAll',
 		delData		: 'invoices.del',
@@ -33,10 +33,10 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta' _key='number' _meta='desc'>
-	<th class='autoMeta' _key='user' _meta='desc'>
-	<th class='autoMeta' _key='desc' _meta='desc'>
-	<th class='autoMeta' _key='status' _meta='desc'>
+	<th class='autoMeta autoOrder autoOrderDesc' _key='number' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='user' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='desc' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='status' _meta='desc'>
 	<th>
 </tr>
 
