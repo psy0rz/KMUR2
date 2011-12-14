@@ -33,10 +33,10 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta' _key='time' _meta='desc'>
-	<th class='autoMeta' _key='username' _meta='desc'>
-	<th class='autoMeta' _key='logType' _meta='desc'>
-	<th class='autoMeta' _key='text' _meta='desc'>
+	<th class='autoMeta autoOrder autoOrderDesc' _key='time' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='username' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='logType' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='text' _meta='desc'>
 </tr>
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>

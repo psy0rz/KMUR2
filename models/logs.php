@@ -100,29 +100,31 @@ class logs extends model_Mongo
 	}
 
 
-	function getAll()
+	function getAll($params)
 	{
 		if ($this->context->hasRight("admin"))
 		{
-			//admin sees all logs
-			return $this->run(
-				$this->db->logs->find()->sort(
-					array("_id"=>-1)
-				)
-			);
+			//admin sees all
+			$cursor=$this->db->logs->find();
 		}
 		else
 		{
-			//only logs of this user
-			return $this->run(
-				$this->db->logs->find(
-					array("userId"=>$this->context->getUserId())
-				)->sort(
-					array("_id"=>-1)
-				)
+			//users only sees own logs
+			$cursor=$this->db->logs->find(
+				array("userId"=>$this->context->getUserId())
 			);
-
 		}
+
+		if (isset($params['sort']))
+		{
+			//time sorting is too course, so use _id instead
+			if (isset($params['sort']['time']))
+				$cursor->sort( array("_id"=> $params['sort']['time']) );
+			else
+				$cursor->sort($params['sort']);
+		}
+
+		return ($this->run($cursor));
 	}
 
 }
