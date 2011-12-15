@@ -394,12 +394,6 @@
 					$("."+settings.autoListSourceClass, this).autoList(metaValue.meta, value, settings);
 				}
 				
-				//date (use datepicker)
-				else if (metaValue.type=="date")
-				{
-					$(this).datepicker("setDate", new Date(value*1000));
-				}
-				
 				//put value in attribute 
 				else if (typeof $(this).attr("_value") !='undefined')
 				{
@@ -409,7 +403,12 @@
 				//set value of a input-element the correct way
 				else if (elementType=="input")
 				{
-					if ($(this).attr("type")=="checkbox")
+					//date (use datepicker)
+					if (metaValue.type=="date")
+					{
+						$(this).datepicker("setDate", new Date(value*1000));
+					}
+					else if ($(this).attr("type")=="checkbox")
 					{
 						var newChecked;
 						
