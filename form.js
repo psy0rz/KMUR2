@@ -258,7 +258,7 @@
 								checkbox.addClass(settings.autoGetClass);
 							}
 
-							checkbox.checked=(thismeta.default.indexOf(choice) != -1);
+							checkbox.attr("checked", thismeta.default.indexOf(choice) != -1);
 							parent.append(checkbox);
 							
 							//add description
@@ -280,9 +280,8 @@
 						addedElement=$("<input>")
 							.attr("type","checkbox")
 							.attr("value","")
-
-						addedElement.checked=thismeta.default;
 						$(this).append(addedElement);
+						addedElement.attr("checked", thismeta.default);
 					}
 
 					else if (thismeta.type=='date')
@@ -429,8 +428,8 @@
 								newChecked=false;
 						}
 						
-						changed=(this.checked!=newChecked);
-						this.checked=newChecked;
+						changed=($(this).attr("checked")!=newChecked);
+						$(this).attr("checked",newChecked);
 					}
 					else
 					{
@@ -738,13 +737,13 @@
 							if (data[key]==null)
 								data[key]=new Array();
 							
-							if (this.checked)
+							if ($(this).attr("checked"))
 								data[key].push($(this).attr("value"));
 						}
 						//simple boolean 0/1 checkbox:
 						else
 						{
-							if (this.checked)
+							if ($(this).attr("checked"))
 								data[key]=1;
 							else
 								data[key]=0;

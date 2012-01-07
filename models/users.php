@@ -56,7 +56,7 @@ class users extends model_Mongo
 			),
 			"active"=>array(
 				"desc"=>"User mag inloggen",
-				"default"=>1,
+				"default"=>true,
 				"type"=>"bool",
 			),
 			"name"=>array(
@@ -173,6 +173,8 @@ class users extends model_Mongo
 	
 		//verify if input is ok
 		$this->verifyMeta($params);
+
+		
 		
 		//get user
 		$user=$this->db->users->findOne(array('username'=>$params['username']));
