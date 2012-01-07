@@ -7,9 +7,11 @@ $(this).ready(function()
 	templateForm({
 		view			: view,
 		getMeta			: 'users.getMeta',
+		getMetaParams		: view.params,
 		getData			: 'users.get',
+		getDataParams		: view.params,
 		putData			: 'users.put',
-		putParams		: { "_id": view.params._id },
+		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: [ "username" ],
 		loadCallback	: function(result) {
 			if (view.params._id)

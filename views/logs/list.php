@@ -10,12 +10,15 @@ $(document).ready(function()
 	templateList({
 		view		: view,
 		id		: '_id',
-		getMeta		: 'logs.getMeta',		
+		getMeta		: 'logs.getMeta',
+		getMetaParams	: view.params,
 		getData		: 'logs.getAll',
+		getDataParams	: view.params,
 		delData		: null,
 		editView	: {
 			name: null,
-			mode: null
+			mode: null,
+			params: view.params,
 		},
 		loadCallback: function(result) {
 			viewReady({

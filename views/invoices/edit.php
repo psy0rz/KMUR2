@@ -15,9 +15,11 @@ $(this).ready(function()
 	templateForm({
 		view			: view,
 		getMeta			: 'invoices.getMeta',
+		getMetaParams		: view.params,
 		getData			: 'invoices.get',
+		getDataParams		: view.params,
 		putData			: 'invoices.put',
-		putParams		: { "_id": view.params._id },
+		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: '',
 		loadCallback	: function(result) {
 			if (view.params._id)

@@ -10,12 +10,15 @@ $(document).ready(function()
 	templateList({
 		view		: view,
 		id		: '_id',
-		getMeta		: 'users.getMeta',		
+		getMeta		: 'users.getMeta',
+		getMetaParams	: view.params,
 		getData		: 'users.getAll',
+		getDataParams	: view.params,
 		delData		: 'users.del',
 		editView		: {
 			name: 'users.edit',
-			mode: 'popup'
+			mode: 'popup',
+			params: view.params
 		},
 		loadCallback	: function(result) {
 			viewReady({

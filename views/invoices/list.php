@@ -11,7 +11,9 @@ $(document).ready(function()
 		view		: view,
 		id		: '_id',
 		getMeta		: 'invoices.getMeta',		
+		getMetaParams	: view.params,
 		getData		: 'invoices.getAll',
+		getDataParams	: view.params,
 		delData		: 'invoices.del',
 		editView	: {
 			name: 'invoices.edit',

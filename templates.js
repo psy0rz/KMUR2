@@ -10,7 +10,7 @@ function templateForm(params)
 	//get meta data
 	rpc(
 		params.getMeta, 
-		params.view.params,
+		params.getMetaParams,
 		function(result)
 		{
 			
@@ -88,7 +88,7 @@ function templateForm(params)
 				//get data
 				rpc(
 					params.getData, 
-					params.view.params,
+					params.getDataParams,
 					function(result)
 					{
 						$(".autoClickSave", context).prop("disabled", false);
@@ -132,8 +132,8 @@ function templateForm(params)
 
 		//are there putParams that we should COPY to putData
 		var putParams={};
-		if (params['putParams'])
-			putParams=jQuery.extend(true, {}, params['putParams']); //COPY, and not by reference!
+		if (params.putDataParams)
+			putParams=jQuery.extend(true, {}, params.putDataParams); //COPY, and not by reference!
 
 		//get the data
 		$(".autoGet", context).autoGet(meta, putParams, { 
@@ -142,7 +142,7 @@ function templateForm(params)
 
 		//put data
 		rpc(
-			params['putData'],
+			params.putData,
 			putParams,
 			function(result)
 			{
@@ -192,8 +192,8 @@ function templateList(params)
 
 	//getParams can be changed by clicking sort colums, and by search queries etc
 	var getParams={};
-	if (params.view.params)
-		getParams=jQuery.extend(true, {}, params.view.params); 
+	if (params.getDataParams)
+		getParams=jQuery.extend(true, {}, params.getDataParams); 
 	
 	
 	var edit=function(event)
@@ -341,7 +341,7 @@ function templateList(params)
 	//get meta
 	rpc(
 		params.getMeta,
-		params.view.params,
+		params.getMetaParams,
 		function(result)
 		{
 			viewShowError(result, context, meta);
