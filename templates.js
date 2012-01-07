@@ -190,11 +190,12 @@ function templateList(params)
 	var meta={};
 	var context=$("#"+params.view.id);
 
+	////// GENERIC LIST STUFF
+	
 	//getParams can be changed by clicking sort colums, and by search queries etc
 	var getParams={};
 	if (params.getDataParams)
 		getParams=jQuery.extend(true, {}, params.getDataParams); 
-	
 	
 	var edit=function(event)
 	{
@@ -302,6 +303,27 @@ function templateList(params)
 		getData(true);
 	});
 
+	//get meta
+	rpc(
+		params.getMeta,
+		params.getMetaParams,
+		function(result)
+		{
+			viewShowError(result, context, meta);
+
+			meta=result['data'];
+			//add real input to autoMeta divs. 
+			$(".autoMeta", context).autoMeta(meta);
+			
+			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
+			$(".autoListSource:first", context).addClass("autoListItem");
+			
+			getData(false);
+		}
+	)
+
+	
+	/// SORT STUFF
 	
 	//what is the current selected sorting column?
 	if ($(".autoOrderAsc",context).length !=0)
@@ -314,7 +336,6 @@ function templateList(params)
 		getParams.sort={};
 		getParams.sort[$(".autoOrderDesc").attr("_key")]=-1;
 	}
-		
 
 	$(".autoOrder", context).click(function()
 	{
@@ -337,24 +358,20 @@ function templateList(params)
 		
 		getData(false);
 	});
+	
 
-	//get meta
-	rpc(
-		params.getMeta,
-		params.getMetaParams,
-		function(result)
-		{
-			viewShowError(result, context, meta);
+	/// FILTER STUFF
+	//handle filtering 
+	$(".autoFilter", context).focus();
 
-			meta=result['data'];
-			//add real input to autoMeta divs. 
-			$(".autoMeta", context).autoMeta(meta);
-			
-			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
-			$(".autoListSource:first", context).addClass("autoListItem");
-			
-			getData(false);
-		}
-	)
+	$(".autoFilter", context).keyup(function()
+	{
+		if ($(this).val()!="")
+			getParams.filter=$(this).val();
+		else
+			delete getParams.filter;
+		getData(false);
+	});
+	
 }
 

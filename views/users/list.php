@@ -35,6 +35,7 @@ $(document).ready(function()
 
 </script>
 
+Zoeken: <input type='text' class='autoFilter'>
 
 <table >
 <tr class='ui-widget-header'>

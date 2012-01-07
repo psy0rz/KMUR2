@@ -102,18 +102,23 @@ class logs extends model_Mongo
 
 	function getAll($params)
 	{
-		if ($this->context->hasRight("admin"))
+		$filter=array();
+
+		if (!$this->context->hasRight("admin"))
 		{
-			//admin sees all
-			$cursor=$this->db->logs->find();
+			$filter["userId"]=$this->context->getUserId();
 		}
-		else
+
+		if (isset($params['filter']))
 		{
-			//users only sees own logs
-			$cursor=$this->db->logs->find(
-				array("userId"=>$this->context->getUserId())
-			);
+//			$filter["text"]=array(
+//				'$regex'=>"/".$params["filter"]."/i"
+//			);
+			$filter["text"]="/$params[filter]/i";
+			
 		}
+
+		$cursor=$this->db->logs->find($filter);
 
 		if (isset($params['sort']))
 		{
@@ -123,6 +128,8 @@ class logs extends model_Mongo
 			else
 				$cursor->sort($params['sort']);
 		}
+
+
 
 		return ($this->run($cursor));
 	}
