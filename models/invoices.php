@@ -140,8 +140,19 @@ class invoices extends model_Mongo
 	{
 		$collection = $this->db->invoices;
 
+		//filtering
+		$filter=array();
+		if (isset($params['filter']))
+		{
+			foreach($params['filter'] as $key=>$value)
+			{
+				if (isset($params['filter'][$key]))
+					$filter[$key]=new MongoRegex("/$value/i");			
+			}
+		}
+
 		// find everything in the collection
-		$cursor=$collection->find();
+		$cursor=$collection->find($filter);
 
 		if (isset($params['sort']))
 			$cursor->sort($params['sort']);
@@ -183,7 +194,7 @@ class invoices extends model_Mongo
 			//parse year and count
 			$year="";
 			$fields=explode("-",$lastInvoice["number"]);
-			debug($fields);
+		
 			if (count($fields)==2)
 			{	
 				$year=$fields[0];

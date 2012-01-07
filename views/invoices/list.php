@@ -41,6 +41,12 @@ $(document).ready(function()
 	<th class='autoMeta autoOrder' _key='status' _meta='desc'>
 	<th>
 </tr>
+<tr>
+	<td><input type='text' class='autoFilter autoFilterFocus' _key='number'>
+	<td><input type='text' class='autoFilter' _key='user.username'>
+	<td><input type='text' class='autoFilter' _key='desc'>
+	<td>
+</tr>
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
 	<td class='autoPut autoClickEdit' _key='number'>

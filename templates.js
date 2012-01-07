@@ -362,14 +362,17 @@ function templateList(params)
 
 	/// FILTER STUFF
 	//handle filtering 
-	$(".autoFilter", context).focus();
+	$(".autoFilterFocus", context).focus();
 
 	$(".autoFilter", context).keyup(function()
 	{
+		if (!getParams.filter)
+			getParams.filter={};
+		
 		if ($(this).val()!="")
-			getParams.filter=$(this).val();
+			getParams.filter[$(this).attr("_key")]=$(this).val();
 		else
-			delete getParams.filter;
+			delete getParams.filter[$(this).attr("_key")];
 		getData(false);
 	});
 	

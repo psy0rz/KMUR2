@@ -33,7 +33,6 @@ $(document).ready(function()
 
 </script>
 
-Zoeken: <input type='text' class='autoFilter'>
 
 <table >
 <tr class='ui-widget-header'>
@@ -41,8 +40,14 @@ Zoeken: <input type='text' class='autoFilter'>
 	<th class='autoMeta autoOrder' _key='username' _meta='desc'>
 	<th class='autoMeta autoOrder' _key='logType' _meta='desc'>
 	<th class='autoMeta autoOrder' _key='text' _meta='desc'>
-</tr>
 
+</tr>
+<tr>
+	<td>
+	<td><input type='text' class='autoFilter' _key='username'>
+	<td>
+	<td><input type='text' class='autoFilter autoFilterFocus' _key='text'>
+</tr>
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
 	<td class='autoPut' _key='time'>
 	<td class='autoPut' _key='username'>

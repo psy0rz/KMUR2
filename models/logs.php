@@ -104,22 +104,27 @@ class logs extends model_Mongo
 	{
 		$filter=array();
 
+
+		//filtering: only allow filtering on specific fields
+		if (isset($params['filter']))
+		{
+			foreach($params['filter'] as $key=>$value)
+			{
+				if (isset($params['filter'][$key]))
+					$filter[$key]=new MongoRegex("/$value/i");			
+			}
+		}
+
+
+		//normal users only see their own logs
 		if (!$this->context->hasRight("admin"))
 		{
 			$filter["userId"]=$this->context->getUserId();
 		}
 
-		if (isset($params['filter']))
-		{
-//			$filter["text"]=array(
-//				'$regex'=>"/".$params["filter"]."/i"
-//			);
-			$filter["text"]="/$params[filter]/i";
-			
-		}
-
 		$cursor=$this->db->logs->find($filter);
 
+		//sorting
 		if (isset($params['sort']))
 		{
 			//time sorting is too course, so use _id instead
@@ -128,8 +133,6 @@ class logs extends model_Mongo
 			else
 				$cursor->sort($params['sort']);
 		}
-
-
 
 		return ($this->run($cursor));
 	}
