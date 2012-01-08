@@ -190,7 +190,15 @@ class users extends model_Mongo
 		foreach ($cursor as $obj) 
 		{
 			//convert id to normal string rightaway
-			$ret[(string)$obj['_id']]=$obj["name"];
+			if (isset($obj["name"]) && $obj["name"])
+				$name=$obj["name"];
+			else
+				$name=$obj["username"];
+				
+			if (isset($obj["company"]) && $obj["company"])
+				$name.=" (".$obj["company"].")";
+		$ret[(string)$obj['_id']]=$name;
+
 		}
 		return($ret);
 	}

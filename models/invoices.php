@@ -95,9 +95,14 @@ class invoices extends model_Mongo
 			),
 			"tax"=>array(
 				"readonly"=>$readonly,
-				"desc"=>"Belasting percentage",
-				"type"=>"float",
-				"default"=>"19",
+				"desc"=>"BTW",
+				"type"=>"select",
+				"default"=>"0.19",
+				"choices"=>array(
+					"0.19"=>"19 %",
+					"0.6"=>"6 %",
+					"0"=>"0 %",
+				)
 			),
 			"total"=>array(
 				"readonly"=>true,

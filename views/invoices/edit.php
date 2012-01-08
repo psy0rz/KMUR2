@@ -4,12 +4,6 @@
 $(this).ready(function()
 {
 	
-//	console.log($(".autoMeta").not(".autoMeta .autoMeta"));
-//	console.log($(".autoMeta","#list").not(".autoMeta .autoMeta","#list"));
-//	console.log($(".autoMeta:not(.autoMeta .autoMeta)"));
-//	console.log($(".autoMeta:not(.autoMeta .autoMeta)","#list"));
-	
-
 	var title="";
 	var view=<?=viewGet()?>;
 	templateForm({
@@ -48,32 +42,46 @@ $(this).ready(function()
 
 </script>
 
+<fieldset style='display:inline'>
+	<legend>Factuur info</legend>
+	<table>
+		<tr>
+			<td class='autoMeta' _key='number' _meta='desc'>
+			<td class='autoFill' _key='number'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='status' _meta='desc'>
+			<td class='autoMeta' _key='status'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='tax' _meta='desc'>
+			<td class='autoMeta' _key='tax'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='userId' _meta='desc'>
+			<td class='autoMeta' _key='userId'>
+		</tr>
+		
+	</table>
+</fieldset>
+
+<fieldset style='display:inline'>
+	<legend>Adres gegevens</legend>
+	<table>
+		<tr>
+			<td class='autoMeta' _key='user' _meta='desc'>
+			<td class='autoMeta' _key='user'>
+				<table >
+					<tr>
+						<td class='autoMeta' _key='username' _meta='desc'>
+						<td class='autoMeta' _key='username'>
+					</tr>
+				</table>
+		</tr>
+	</table>
+</fieldset>
 
 
-<table>
-<tr>
-	<td class='autoMeta' _key='number' _meta='desc'>
-	<td class='autoFill' _key='number'>
-</tr>
-<tr>
-	<td class='autoMeta' _key='userId' _meta='desc'>
-	<td class='autoMeta' _key='userId'>
-</tr>
-<tr>
-	<td class='autoMeta' _key='user' _meta='desc'>
-	<td class='autoMeta' _key='user'>
-		<table >
-			<tr>
-				<td class='autoMeta' _key='username' _meta='desc'>
-				<td class='autoMeta' _key='username'>
-			</tr>
-		</table>
-</tr>
-
-<tr>
-	<td class='autoMeta' _key='status' _meta='desc'>
-	<td class='autoMeta' _key='status'>
-</tr>
 <tr>
 	<td class='autoMeta' _key='desc' _meta='desc'>
 	<td class='autoMeta' _key='desc'>
@@ -86,6 +94,12 @@ $(this).ready(function()
 	<td class='autoMeta' _key='items' _meta='desc'>
 	<td >
 	
+</tr>
+</table>
+
+<fieldset style='display:inline-block;'>
+	<legend>Factuur items</legend>
+
 		<table class='autoMeta' _key='items'>
 			<thead>
 				<tr class='ui-widget-header'>
@@ -108,9 +122,7 @@ $(this).ready(function()
 				</tr>
 			</tbody>
 		</table>
-</tr>
-</table>
-
+</fieldset>
 
 <button class='autoClickSave'>Opslaan</button>
 <span class='autoError'></span>
