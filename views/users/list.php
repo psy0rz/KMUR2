@@ -17,7 +17,7 @@ $(document).ready(function()
 		delData		: 'users.del',
 		editView		: {
 			name: 'users.edit',
-			mode: 'popup',
+			mode: 'main',
 			params: view.params
 		},
 		loadCallback	: function(result) {
@@ -40,7 +40,7 @@ $(document).ready(function()
 	<th class='autoMeta autoOrder' _key='active' _meta='desc'>
 	<th class='autoMeta autoOrder autoOrderAsc' _key='username' _meta='desc'>
 	<th class='autoMeta autoOrder' _key='name' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='gender' _meta='desc'>
+	<th class='autoMeta autoOrder' _key='company' _meta='desc'>
 	<th class='autoMeta autoOrder' _key='rights' _meta='desc'>
 	<th>
 </tr>
@@ -49,7 +49,7 @@ $(document).ready(function()
 	<td>
 	<td><input type='text' class='autoFilter autoFilterFocus' _key='username'>
 	<td><input type='text' class='autoFilter' _key='name'>
-	<td>
+	<td><input type='text' class='autoFilter' _key='company'>
 	<td>
 </tr>
 
@@ -57,7 +57,7 @@ $(document).ready(function()
 	<td class='autoPut autoClickEdit' _key='active'>
 	<td class='autoPut autoClickEdit' _key='username'>
 	<td class='autoPut autoClickEdit' _key='name'>
-	<td class='autoPut autoClickEdit' _key='gender'>
+	<td class='autoPut autoClickEdit' _key='company'>
 	<td class='autoPut autoClickEdit' _key='rights'>
 	<td class='autoClickDel ui-icon ui-icon-trash'>
 </tr>

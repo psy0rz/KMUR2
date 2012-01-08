@@ -5,13 +5,15 @@ class users extends model_Mongo
 {
 	//meta data for users
 	function getMeta()
-	{
+	{	
 		return (array(
 			"_id"=>array(
 				"type"=>"mongoId"
 			),
+
+			/// Authentication stuff
 			"username"=>array(
-				"desc"=>"Username",
+				"desc"=>"Inlog naam",
 				"type"=>"string",
 				"max"=>20,
 				"min"=>3
@@ -29,26 +31,6 @@ class users extends model_Mongo
 					"finance"=>"Financieel",
 				)
 			),
-			"gender"=>array(
-				"desc"=>"Geslacht",
-				"type"=>"select",
-				"default"=>"M",
-				"choices"=>array(
-					"M"=>"Man",
-					"F"=>"Vrouw",
-					"A"=>"Alien",
-				)
-			),
-			"country"=>array(
-				"desc"=>"Land",
-				"type"=>"select",
-				"default"=>"nl",
-				"choices"=>array(
-					"nl"=>"Nederland",
-					"de"=>"Das reich",
-					"ov"=>"Overig",
-				)
-			),
 			"password"=>array(
 				"desc"=>"Wachtwoord",
 				"type"=>"password",
@@ -59,16 +41,121 @@ class users extends model_Mongo
 				"default"=>true,
 				"type"=>"bool",
 			),
+
+			/// Company stuff
+			"company"=>array(
+				"desc"=>"Bedrijfsnaam",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"tax"=>array(
+				"desc"=>"BTW",
+				"type"=>"select",
+				"default"=>"0.19",
+				"choices"=>array(
+					"0.19"=>"19 %",
+					"0.6"=>"6 %",
+					"0"=>"0 %",
+				)
+			),
+
+			/// User/Company contact info
 			"name"=>array(
 				"desc"=>"Voornaam en achternaam",
 				"type"=>"string",
-				"min"=>3,
+				"min"=>0,
 				"max"=>50
 			),
 			"address"=>array(
-				"desc"=>"Adres gegevens",
+				"desc"=>"Adres",
 				"type"=>"string",
-			)
+				"min"=>0,
+				"max"=>50
+			),
+			"city"=>array(
+				"desc"=>"Woonplaats",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"postalcode"=>array(
+				"desc"=>"Postcode",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"country"=>array(
+				"desc"=>"Land",
+				"type"=>"select",
+				"default"=>"nl",
+				"choices"=>array(
+					"nl"=>"Nederland",
+					"be"=>"Belgie",
+					"de"=>"Duitsland",
+				)
+			),
+			"email"=>array(
+				"desc"=>"Email address",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"phone"=>array(
+				"desc"=>"Telefoonnummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+
+			/// Invoice contact info
+			"invoiceName"=>array(
+				"desc"=>"Ter attentie van",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceAddress"=>array(
+				"desc"=>"Adres",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCity"=>array(
+				"desc"=>"Woonplaats",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePostalcode"=>array(
+				"desc"=>"Postcode",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCountry"=>array(
+				"desc"=>"Land",
+				"type"=>"select",
+				"default"=>"nl",
+				"choices"=>array(
+					"nl"=>"Nederland",
+					"be"=>"Belgie",
+					"de"=>"Duitsland",
+				)
+			),
+			"invoiceEmail"=>array(
+				"desc"=>"Email address",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePhone"=>array(
+				"desc"=>"Telefoonnummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+
 		));
 	}
 
@@ -149,9 +236,6 @@ class users extends model_Mongo
 	{
 		$this->verifyMeta($params);
 	
-		if ($params["gender"]=="F" && in_array("admin", $params["rights"]))
-			throw new FieldException("Een vrouw kan geen administrator zijn!", "gender");
-
 		//user exists?
 		$existing=$this->db->users->findOne(array('username'=>$params['username']));
 		

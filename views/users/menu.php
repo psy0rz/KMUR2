@@ -18,7 +18,7 @@ $this->addSub("users","new",array(
 	"desc"=>"Nieuw",
 	"view"=>array(
 		"name"=>"users.edit",
-		"mode"=>"popup",
+		"mode"=>"main",
 		"params"=>array(
 			"_id"=>""
 		)

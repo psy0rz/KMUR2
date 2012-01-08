@@ -174,11 +174,11 @@ class invoices extends model_Mongo
 	//update/add invoice
 	function put($params)
 	{
-//		$this->verifyMeta($params, $this->getMeta($params));
+		$this->verifyMeta($params, $this->getMeta($params));
 	
 		//project exists?
 //		$existing=$this->db->projects->findOne(array('projectname'=>$params['projectname']));
-		
+
 //		if ($existing && $existing["_id"]!=$params["_id"])
 //			throw new FieldException("Project bestaat al!", "projectname");
 		//new invoice?
@@ -225,6 +225,8 @@ class invoices extends model_Mongo
 			logger("info", "Factuur ".$data["number"]." gewijzigd.");
 		else
 			logger("info", "Factuur ".$data["number"]." toegevoegd.");
+			
+		
 
 	}
 
