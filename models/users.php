@@ -3,10 +3,11 @@
 
 class users extends model_Mongo
 {
+
 	//meta data for users
 	function getMeta()
 	{	
-		return (array(
+		$meta=(array(
 			"_id"=>array(
 				"type"=>"mongoId"
 			),
@@ -42,23 +43,6 @@ class users extends model_Mongo
 				"type"=>"bool",
 			),
 
-			/// Company stuff
-			"company"=>array(
-				"desc"=>"Bedrijfsnaam",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"tax"=>array(
-				"desc"=>"BTW",
-				"type"=>"select",
-				"default"=>"0.19",
-				"choices"=>array(
-					"0.19"=>"19 %",
-					"0.6"=>"6 %",
-					"0"=>"0 %",
-				)
-			),
 
 			/// User/Company contact info
 			"name"=>array(
@@ -108,55 +92,18 @@ class users extends model_Mongo
 				"max"=>50
 			),
 
-			/// Invoice contact info
-			"invoiceName"=>array(
-				"desc"=>"Ter attentie van",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceAddress"=>array(
-				"desc"=>"Adres",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceCity"=>array(
-				"desc"=>"Woonplaats",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoicePostalcode"=>array(
-				"desc"=>"Postcode",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceCountry"=>array(
-				"desc"=>"Land",
-				"type"=>"select",
-				"default"=>"nl",
-				"choices"=>array(
-					"nl"=>"Nederland",
-					"be"=>"Belgie",
-					"de"=>"Duitsland",
-				)
-			),
-			"invoiceEmail"=>array(
-				"desc"=>"Email address",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoicePhone"=>array(
-				"desc"=>"Telefoonnummer",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
 
 		));
+
+		//add invoice stuff that is also used in user-model:
+		$invoices=new invoices();
+		foreach ($invoices->getUserMeta() as $key=>$userMeta)
+		{
+			$meta[$key]=$userMeta;
+		}
+
+		return($meta);
+
 	}
 
 	//acl for users

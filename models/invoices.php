@@ -3,6 +3,76 @@
 
 class invoices extends model_Mongo
 {
+	//meta data that is also stored in the user-model (mostly invoice address data and tax)
+	function getUserMeta()
+	{
+		return(array(
+			/// Common and invoiceSpecific stuff (used by invoices model)
+			"company"=>array(
+				"desc"=>"Bedrijfsnaam",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"tax"=>array(
+				"desc"=>"BTW",
+				"type"=>"select",
+				"default"=>"0.19",
+				"choices"=>array(
+					"0.19"=>"19 %",
+					"0.6"=>"6 %",
+					"0"=>"0 %",
+				)
+			),
+			"invoiceName"=>array(
+				"desc"=>"Ter attentie van",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceAddress"=>array(
+				"desc"=>"Adres",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCity"=>array(
+				"desc"=>"Woonplaats",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePostalcode"=>array(
+				"desc"=>"Postcode",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCountry"=>array(
+				"desc"=>"Land",
+				"type"=>"select",
+				"default"=>"nl",
+				"choices"=>array(
+					"nl"=>"Nederland",
+					"be"=>"Belgie",
+					"de"=>"Duitsland",
+				)
+			),
+			"invoiceEmail"=>array(
+				"desc"=>"Email address",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePhone"=>array(
+				"desc"=>"Telefoonnummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+		));
+	}
+
 	//invoice metadata depens on the current state of the invoice.
 	function getMeta($params='')
 	{
@@ -16,7 +86,7 @@ class invoices extends model_Mongo
 				$readonly=true;
 		}
 
-		return (array(
+		$meta=(array(
 			"_id"=>array(
 				"type"=>"mongoId"
 			),
@@ -64,12 +134,6 @@ class invoices extends model_Mongo
 				"desc"=>"Klant",
 				"type"=>"select",
 				"choices"=>$users->getNames(array("right"=>"customer"))
-			),
-			"user"=>array(
-				"desc"=>"Copy klant gegevens",
-				"type"=>"hash",
-				"readonly"=>$readonly,
-				"meta"=>$users->getMeta(),
 			),
 			"items"=>array(
 				"desc"=>"Factuur data",
@@ -127,8 +191,66 @@ class invoices extends model_Mongo
 						"type"=>"string",
 					)
 				)
-			)
+			),
+			/// Invoice contact info
+			"invoiceName"=>array(
+				"desc"=>"Ter attentie van",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceAddress"=>array(
+				"desc"=>"Adres",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCity"=>array(
+				"desc"=>"Woonplaats",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePostalcode"=>array(
+				"desc"=>"Postcode",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoiceCountry"=>array(
+				"desc"=>"Land",
+				"type"=>"select",
+				"default"=>"nl",
+				"choices"=>array(
+					"nl"=>"Nederland",
+					"be"=>"Belgie",
+					"de"=>"Duitsland",
+				)
+			),
+			"invoiceEmail"=>array(
+				"desc"=>"Email address",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"invoicePhone"=>array(
+				"desc"=>"Telefoonnummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+
 		));
+
+		//add invoice stuff that is also used in user-model:
+		foreach ($this->getUserMeta() as $key=>$userMeta)
+		{
+			$meta[$key]=$userMeta;
+			$meta[$key]["readonly"]=$readonly;
+		}
+
+
+		return ($meta);
 	}
 
 	
