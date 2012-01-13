@@ -150,6 +150,7 @@ class invoices extends model_Mongo
 					"desc"=>array(
 						"desc"=>"Product omschrijving",
 						"type"=>"string",
+						"max"=>50,
 					),
 					"price"=>array(
 						"desc"=>"Prijs",
