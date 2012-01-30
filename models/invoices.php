@@ -56,6 +56,7 @@ class invoices extends model_Mongo
 					"nl"=>"Nederland",
 					"be"=>"Belgie",
 					"de"=>"Duitsland",
+					"bu"=>"Bulga",
 				)
 			),
 			"invoiceEmail"=>array(
@@ -158,17 +159,6 @@ class invoices extends model_Mongo
 					),
 				)
 			),
-			"tax"=>array(
-				"readonly"=>$readonly,
-				"desc"=>"BTW",
-				"type"=>"select",
-				"default"=>"0.19",
-				"choices"=>array(
-					"0.19"=>"19 %",
-					"0.6"=>"6 %",
-					"0"=>"0 %",
-				)
-			),
 			"total"=>array(
 				"readonly"=>true,
 				"desc"=>"Totaal prijs (incl btw)",
@@ -193,53 +183,6 @@ class invoices extends model_Mongo
 					)
 				)
 			),
-			/// Invoice contact info
-			"invoiceName"=>array(
-				"desc"=>"Ter attentie van",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceAddress"=>array(
-				"desc"=>"Adres",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceCity"=>array(
-				"desc"=>"Woonplaats",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoicePostalcode"=>array(
-				"desc"=>"Postcode",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoiceCountry"=>array(
-				"desc"=>"Land",
-				"type"=>"select",
-				"default"=>"nl",
-				"choices"=>array(
-					"nl"=>"Nederland",
-					"be"=>"Belgie",
-					"de"=>"Duitsland",
-				)
-			),
-			"invoiceEmail"=>array(
-				"desc"=>"Email address",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
-			"invoicePhone"=>array(
-				"desc"=>"Telefoonnummer",
-				"type"=>"string",
-				"min"=>0,
-				"max"=>50
-			),
 
 		));
 
@@ -250,6 +193,9 @@ class invoices extends model_Mongo
 			$meta[$key]["readonly"]=$readonly;
 		}
 
+		//we want tax PER item, so move it. :)
+		$meta["items"]["meta"]["tax"]=$meta["tax"];
+		unset($meta["tax"]);
 
 		return ($meta);
 	}
@@ -354,7 +300,7 @@ class invoices extends model_Mongo
 		else
 			logger("info", "Factuur ".$data["number"]." toegevoegd.");
 			
-		
+			
 
 	}
 

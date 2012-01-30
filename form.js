@@ -221,20 +221,20 @@
 					else if (thismeta.type=='select')
 					{
 						//create select element
-						addedElement=$("<select>")
-							.attr("type","text")
-
+						addedElement=$("<select>");
+						
 						//add choices
 						$.each(thismeta['choices'], function(choice, desc){
-							addedElement.append(
-								$("<option>")
-									.attr("value",choice)
-									.text(desc)
-							);
+							var optionElement=$("<option>")
+								.attr("value",choice)
+								.text(desc);
+							
+							//we use this instead of addedElement.val(thismeta.default) because clone wont work with this.
+							if (choice==thismeta.default)
+								optionElement.attr("selected","selected");
+							addedElement.append(optionElement);
 						});
-
-						addedElement.val(thismeta.default);
-
+						
 						//add results to div
 						$(this).append(addedElement);
 					}

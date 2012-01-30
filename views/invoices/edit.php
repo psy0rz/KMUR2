@@ -55,10 +55,6 @@ $(this).ready(function()
 			<td><span class='autoMeta' _key='status'/> Sinds: <span class='autoPut' _key='statusDate'/>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='tax' _meta='desc'>
-			<td class='autoMeta' _key='tax'>
-		</tr>
-		<tr>
 			<td class='autoMeta' _key='userId' _meta='desc'>
 			<td class='autoMeta' _key='userId'>
 		</tr>
@@ -120,6 +116,7 @@ $(this).ready(function()
 					<th class='autoMeta' _key='amount' _meta='desc'>
 					<th class='autoMeta' _key='desc' _meta='desc'>
 					<th class='autoMeta' _key='price' _meta='desc'>
+					<th class='autoMeta' _key='tax' _meta='desc'>
 					<th>
 					<th>
 				</tr>
@@ -130,6 +127,7 @@ $(this).ready(function()
 					<td class='autoMeta' _key='amount' >
 					<td class='autoMeta' _key='desc' >
 					<td class='autoMeta' _key='price' >
+					<td class='autoMeta' _key='tax'>					
 					<td class='autoClickDel ui-icon ui-icon-trash'>
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>

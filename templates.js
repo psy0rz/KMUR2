@@ -24,17 +24,27 @@ function templateForm(params)
 				//find the clicked list element, and the source element of the list
 				var clickedElement=$(this, context).closest(".autoListItem");
 				
-				//readonly
+				//readonly?
 				if (!clickedElement.hasClass("autoGet"))
 					return;
 				
 				var sourceElement=clickedElement.parent().children(".autoListSource");
-				var addElement=$(sourceElement).clone(true);
+				var addElement=$(sourceElement).clone(true,true);
 				addElement.removeClass("autoListSource");
-				if (clickedElement.hasClass("autoListSource"))
+
+				//workaround for bug http://stackoverflow.com/questions/742810/clone-isnt-cloning-select-values
+				//http://bugs.jquery.com/ticket/1294
+//				var selects = $(sourceElement).find("select");
+	//	        $(selects).each(function(i) {
+		//                var select = this;
+		  //              $(addElement).find("select").eq(i).val($(select).val());
+		    //    });
+
+		        if (clickedElement.hasClass("autoListSource"))
 					addElement.insertBefore(clickedElement);
 				else
 					addElement.insertAfter(clickedElement);
+				
 			});
 			
 			//create an auto-add handler if the source-element is changed
