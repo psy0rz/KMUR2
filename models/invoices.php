@@ -25,7 +25,7 @@ class invoices extends model_Mongo
 				)
 			),
 			"invoiceName"=>array(
-				"desc"=>"Ter attentie van",
+				"desc"=>"Contactpersoon",
 				"type"=>"string",
 				"min"=>0,
 				"max"=>50
@@ -71,6 +71,24 @@ class invoices extends model_Mongo
 				"min"=>0,
 				"max"=>50
 			),
+			"taxNumber"=>array(
+				"desc"=>"BTW nummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"kvkNumber"=>array(
+				"desc"=>"KVK nummer",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),
+			"bankNumber"=>array(
+				"desc"=>"Bankrekening",
+				"type"=>"string",
+				"min"=>0,
+				"max"=>50
+			),		
 		));
 	}
 
@@ -106,7 +124,7 @@ class invoices extends model_Mongo
 			"status"=>array(
 				"desc"=>"Factuur status",
 				"type"=>"select",
-				"readonly"=>$readonly,
+				"readonly"=>true,
 				"default"=>"new",
 				"choices"=>array(
 					"new"=>"Nieuw (wijzigbaar)",
@@ -209,29 +227,9 @@ class invoices extends model_Mongo
 		));
 	}
 
-
 	function getAll($params)
 	{
-		$collection = $this->db->invoices;
-
-		//filtering
-		$filter=array();
-		if (isset($params['filter']))
-		{
-			foreach($params['filter'] as $key=>$value)
-			{
-				if (isset($params['filter'][$key]))
-					$filter[$key]=new MongoRegex("/$value/i");			
-			}
-		}
-
-		// find everything in the collection
-		$cursor=$collection->find($filter);
-
-		if (isset($params['sort']))
-			$cursor->sort($params['sort']);
-
-		return ($this->run($cursor));
+		return($this->genericGetAll("invoices",$params));
 	}
 
 	function get($params)

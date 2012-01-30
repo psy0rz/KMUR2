@@ -88,3 +88,10 @@
 	padding-right:1em;
 }
 
+.value
+{
+	border-width: 1px;
+	border-bottom-style: dashed;
+}
+
+

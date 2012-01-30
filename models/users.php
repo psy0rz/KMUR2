@@ -153,26 +153,7 @@ class users extends model_Mongo
 
 	function getAll($params)
 	{
-		$collection = $this->db->users;
-
-		//filtering: only allow filtering on specific fields
-		$filter=array();
-		if (isset($params['filter']))
-		{
-			foreach($params['filter'] as $key=>$value)
-			{
-				if (isset($params['filter'][$key]))
-					$filter[$key]=new MongoRegex("/$value/i");			
-			}
-		}
-
-		// find everything in the collection
-		$cursor=$collection->find($filter);
-
-		if (isset($params['sort']))
-			$cursor->sort($params['sort']);
-
-		return ($this->run($cursor));
+		return($this->genericGetAll("users",$params));
 	}
 
 	function get($params)

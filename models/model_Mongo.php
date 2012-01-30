@@ -96,6 +96,34 @@ class model_Mongo extends model
 			return($data["_id"]);
 		}
 	}
+	
+	//generic function to get all data and apply filtering and sorting options.
+	//we make this protected so that the programmer cant accedently allow this function by using a different getAcl-default-setting.	
+	protected function genericGetAll($collectionName,$params)
+	{
+		
+		$collection = $this->db->selectCollection($collectionName);
+	
+		//filtering
+		$filter=array();
+		if (isset($params['filter']))
+		{
+			foreach($params['filter'] as $key=>$value)
+			{
+				if (isset($params['filter'][$key]))
+				$filter[$key]=new MongoRegex("/$value/i");
+			}
+		}
+	
+		// find everything in the collection
+		$cursor=$collection->find($filter);
+	
+		if (isset($params['sort']))
+		$cursor->sort($params['sort']);
+	
+		return ($this->run($cursor));
+	}
+	
 
 }
 

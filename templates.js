@@ -171,14 +171,16 @@ function templateForm(params)
 					}
 				}
 
+
+				viewRefresh();
+
 				//all ok, call save callback?
 				if (params['saveCallback']!=null)
 					params['saveCallback'](result);
-
-				viewRefresh();
 				
 				//all ok, close window
-				viewClose(params.view);
+				if (params.closeAfterSave)
+					viewClose(params.view);
 			}
 		);
 	};

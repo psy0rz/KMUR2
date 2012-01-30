@@ -15,6 +15,7 @@ $(this).ready(function()
 		putData			: 'invoices.put',
 		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: '',
+		closeAfterSave	: false,
 		loadCallback	: function(result) {
 			if (view.params._id)
 			{
@@ -35,7 +36,11 @@ $(this).ready(function()
 			
 		},
 		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
+		saveCallback	: function(result) 
+		{ 
+			//reload view
+			viewLoad(view);
+		}
 	});
 
 });
@@ -48,11 +53,11 @@ $(this).ready(function()
 	<table>
 		<tr>
 			<td class='autoMeta' _key='number' _meta='desc'>
-			<td class='autoPut' _key='number' style='font-weight:bold'>
+			<td class='autoPut value' _key='number' style='font-weight:bold'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='status' _meta='desc'>
-			<td><span class='autoMeta' _key='status'/> Sinds: <span class='autoPut' _key='statusDate'/>
+			<td><span class='autoPut value' _key='status'/> Sinds: <span class='autoPut value' _key='statusDate'/>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='userId' _meta='desc'>
@@ -61,8 +66,7 @@ $(this).ready(function()
 		<tr>
 			<td class='autoMeta' _key='desc' _meta='desc'>
 			<td class='autoMeta' _key='desc'>
-		</tr>
-		
+		</tr>		
 	</table>
 </fieldset>
 
@@ -72,35 +76,35 @@ $(this).ready(function()
 	<table >
 		<tr>
 			<td class='autoMeta' _key='company' _meta='desc'>
-			<td class='autoMeta' _key='company'>
+			<td class='autoPut value' _key='company'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoiceName' _meta='desc'>
-			<td class='autoMeta' _key='invoiceName'>
+			<td class='autoPut value' _key='invoiceName'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoiceAddress' _meta='desc'>
-			<td class='autoMeta' _key='invoiceAddress'>
+			<td class='autoPut value' _key='invoiceAddress'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoicePostalcode' _meta='desc'>
-			<td class='autoMeta' _key='invoicePostalcode'>
+			<td class='autoPut value' _key='invoicePostalcode'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoiceCity' _meta='desc'>
-			<td class='autoMeta' _key='invoiceCity'>
+			<td class='autoPut value' _key='invoiceCity'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoiceCountry' _meta='desc'>
-			<td class='autoMeta' _key='invoiceCountry'>
+			<td class='autoPut value' _key='invoiceCountry'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoiceEmail' _meta='desc'>
-			<td class='autoMeta' _key='invoiceEmail'>
+			<td class='autoPut value' _key='invoiceEmail'>
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='invoicePhone' _meta='desc'>
-			<td class='autoMeta' _key='invoicePhone'>
+			<td class='autoPut value' _key='invoicePhone'>
 		</tr>
 	</table>
 </fieldset>
@@ -131,11 +135,17 @@ $(this).ready(function()
 					<td class='autoClickDel ui-icon ui-icon-trash'>
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
+				<tr>
+					<td colspan=3>
+					<td> 1000
+					<td>
+					<td>				
 			</tbody>
 		</table>
 </fieldset>
 
 
-<button class='autoClickSave' style='display:block'>Opslaan</button>
 <span class='autoError'></span>
+<button class='autoClickSave' style='display:block'>Opslaan</button>
+<button class='autoClickSave' style='display:block'>Opslaan en versturen</button>
 

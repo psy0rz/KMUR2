@@ -13,6 +13,7 @@ $(this).ready(function()
 		putData			: 'users.put',
 		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: [ "username" ],
+		closeAfterSave	: true,
 		loadCallback	: function(result) {
 			if (view.params._id)
 			{
@@ -134,6 +135,18 @@ $(this).ready(function()
 		<tr>
 			<td class='autoMeta' _key='invoicePhone' _meta='desc'>
 			<td class='autoMeta' _key='invoicePhone'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='bankNumber' _meta='desc'>
+			<td class='autoMeta' _key='bankNumber'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='taxNumber' _meta='desc'>
+			<td class='autoMeta' _key='taxNumber'>
+		</tr>
+		<tr>
+			<td class='autoMeta' _key='kvkNumber' _meta='desc'>
+			<td class='autoMeta' _key='kvkNumber'>
 		</tr>
 	</table>
 </fieldset>
