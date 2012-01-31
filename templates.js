@@ -47,13 +47,13 @@ function templateForm(params)
 				
 			});
 			
-			//create an auto-add handler if the source-element is changed
+			//create an auto-add handler if the source-element is focussed
 			$(".autoFocusAdd :input", context).focus(function(){
 				var changedElement=$(this, context).closest(".autoListItem");
 				//is this the source element?
 				if (changedElement.hasClass("autoListSource"))
 				{
-					//create a new source element
+					//clone the listSource
 					var addElement=$(changedElement).clone(true);
 					changedElement.removeClass("autoListSource");
 					addElement.insertAfter(changedElement);

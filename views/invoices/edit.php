@@ -113,7 +113,7 @@ $(this).ready(function()
 <fieldset style='display:block;'>
 	<legend>Factuur items</legend>
 
-		<table class='autoMeta' _key='items'>
+		<table >
 			<thead>
 				<tr class='ui-widget-header'>
 					<th>
@@ -126,12 +126,12 @@ $(this).ready(function()
 				</tr>
 			</thead>
 			<tbody class='autoSort'>
-				<tr class='colorRows autoListSource autoFocusAdd ui-widget-content'>
+				<tr class='colorRows autoFocusAdd ui-widget-content autoMeta' _key='items'>
 					<td class='autoClickSort ui-icon ui-icon-arrowthick-2-n-s'> 
-					<td class='autoMeta' _key='amount' >
-					<td class='autoMeta' _key='desc' >
-					<td class='autoMeta' _key='price' >
-					<td class='autoMeta' _key='tax'>					
+					<td class='autoMeta' _key='items.amount' >
+					<td class='autoMeta' _key='items.desc' >
+					<td class='autoMeta' _key='items.price' >
+					<td class='autoMeta' _key='items.tax'>					
 					<td class='autoClickDel ui-icon ui-icon-trash'>
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
@@ -140,7 +140,8 @@ $(this).ready(function()
 					<td class='autoMeta' key='calcedTotal' _meta='desc'>
 					<td class='autoPut value' key='calcedTotal'>
 					<td>
-					<td>				
+					<td>
+				</tr>				
 			</tbody>
 		</table>
 </fieldset>

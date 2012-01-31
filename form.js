@@ -112,7 +112,7 @@
 
 		var settings = {
 			autoPutClass: 'autoPut',
-			autoMetaClass: 'autoMeta',
+//			autoMetaClass: 'autoMeta',
 			autoGetClass: 'autoGet',
 			autoListClass: 'autoListItem',
 			autoListSourceClass: 'autoListSource'
@@ -130,15 +130,37 @@
 			
 			//check if it still has an autoMetaClass.
 			//(its possible we already processed it, because of recursion for type array or hash)
-			if ($(this).hasClass(settings.autoMetaClass))
-			{
+//			if ($(this).hasClass(settings.autoMetaClass))
+//			{
 				logDebug("auto creating ", this, " with ",meta,settings);
 
 				//make sure we process it only once.
-				$(this).removeClass(settings.autoMetaClass);
+//				$(this).removeClass(settings.autoMetaClass);
 				
 				var key=$(this).attr("_key");
-				var thismeta=meta[key];
+
+				thismeta=null;
+				if (key)
+				{
+					//resolve key 
+					var keyList=key.split(".");
+					console.log(keyList);
+					thismeta=meta[keyList[0]];
+					for (keyI=1; keyI<keyList.length; keyI++)
+					{	
+						if (("meta" in thismeta) && (keyList[keyI] in thismeta["meta"]))
+						{
+							thismeta=thismeta["meta"][keyList[keyI]];
+						}
+						else
+						{
+							//key not found in meta
+							thismeta=null;
+							break;
+						}
+					}
+				}
+				console.log(thismeta);
 				
 			//	$(this).empty();
 				if (thismeta!=null)
@@ -150,38 +172,46 @@
 					{
 						$(this).text(thismeta[$(this).attr("_meta")]);
 					}
-
-					//array or hash?, recurse into submeta data.
-					else if (thismeta.type=='array' || thismeta.type=='hash')
+					else if (thismeta.type=='hash')
 					{
-						logDebug("autoMeta recursing into array or hash:", key);
+						;//dont have to do anything?
 						
-						var recurseSettings={};
-						$.extend( recurseSettings, settings );
+					}
+					else if (thismeta.type=='array')
+					{
+//						logDebug("autoMeta recursing into array or hash:", key);
 						
-						//make sure all the recursed subitems will be readonly as well!
-						if (thismeta.readonly)
-						{
-							recurseSettings.readonly=true;
-						}
-						
-						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, recurseSettings);
+//						var recurseSettings={};
+//						$.extend( recurseSettings, settings );
+//						
+//						//make sure all the recursed subitems will be readonly as well!
+//						if (thismeta.readonly)
+//						{
+//							recurseSettings.readonly=true;
+//						}
+//						
+//						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, recurseSettings);
 
-						if (!recurseSettings.readonly)
+						if (!thismeta.readonly)
 						{
 							$(this).addClass(settings.autoGetClass);
 
-							//give the autoListsources a autoGet if its not readonly (only used to determine readonly status in autoClick handlers )
-							$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
+	//						//give the autoListsources a autoGet if its not readonly (only used to determine readonly status in autoClick handlers )
+	//						$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
 
 						}
 
 						//give all the list sources the autoListItem, so we can recognize all the list items.
-						$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
+		//				$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
 			
 						$(this).addClass(settings.autoPutClass);
+						$(this).addClass(settings.autoListSourceClass);
+						$(this).addClass(settings.autoListClass);
+
 						
-						logDebug("autoMeta returned from recursion:", key);
+						//				$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
+
+		//				logDebug("autoMeta returned from recursion:", key);
 					}
 
 					
@@ -313,11 +343,11 @@
 						}
 					}
 				}
-			}
-			else
-			{
-				logDebug("skipped auto creating ", this, " with ",meta,settings);
-			}
+//			}
+//			else
+//			{
+//				logDebug("skipped auto creating ", this, " with ",meta,settings);
+//			}
 		});
 	};
 
