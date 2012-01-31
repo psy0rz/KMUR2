@@ -136,8 +136,9 @@ $(this).ready(function()
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
 				<tr>
-					<td colspan=3>
-					<td> 1000
+					<td colspan=2>
+					<td class='autoMeta' key='calcedTotal' _meta='desc'>
+					<td class='autoPut value' key='calcedTotal'>
 					<td>
 					<td>				
 			</tbody>

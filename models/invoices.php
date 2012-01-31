@@ -177,11 +177,6 @@ class invoices extends model_Mongo
 					),
 				)
 			),
-			"total"=>array(
-				"readonly"=>true,
-				"desc"=>"Totaal prijs (incl btw)",
-				"type"=>"float",
-			),
 			"log"=>array(
 				"desc"=>"Logboek",
 				"type"=>"array",
@@ -201,7 +196,12 @@ class invoices extends model_Mongo
 					)
 				)
 			),
-
+			"calcedTotal"=>array(
+				"readonly"=>$readonly,
+				"desc"=>"Subtotaal (ex btw)",
+				"type"=>"float",
+			),
+			
 		));
 
 		//add invoice stuff that is also used in user-model:
@@ -243,6 +243,19 @@ class invoices extends model_Mongo
 		return ($invoice);
 	}
 
+	//doesnt do any database operations: just returns a calculted version of the provided input
+	function calculateInvoice($params)
+	{
+		$params["calcedTotal"]=0;
+		
+		foreach ($params["items"] as $item )
+		{
+			$params["calcedTotal"]+=($item["amount"]*$item["price"]);	
+		}
+		
+		return ($params);	
+	}
+	
 	//update/add invoice
 	function put($params)
 	{
@@ -287,6 +300,10 @@ class invoices extends model_Mongo
 			$params["number"]=("$year-".sprintf("%04s",$count));
 
 		}
+		
+		//calculate it. 
+		//NOTE: we store calculated values as well because the bookkeeping rules demand that an invoice never changes.
+		$params=$this->calculateInvoice($params);
 
 		//store it 
 		$id=$this->setById("invoices", $params["_id"], $params, $this->getMeta($params));
