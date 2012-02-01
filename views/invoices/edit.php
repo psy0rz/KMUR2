@@ -117,10 +117,10 @@ $(this).ready(function()
 			<thead>
 				<tr class='ui-widget-header'>
 					<th>
-					<th class='autoMeta' _key='amount' _meta='desc'>
-					<th class='autoMeta' _key='desc' _meta='desc'>
-					<th class='autoMeta' _key='price' _meta='desc'>
-					<th class='autoMeta' _key='tax' _meta='desc'>
+					<th class='autoMeta' _key='items.amount' _meta='desc'>
+					<th class='autoMeta' _key='items.desc' _meta='desc'>
+					<th class='autoMeta' _key='items.price' _meta='desc'>
+					<th class='autoMeta' _key='items.tax' _meta='desc'>
 					<th>
 					<th>
 				</tr>
@@ -137,8 +137,8 @@ $(this).ready(function()
 				</tr>
 				<tr>
 					<td colspan=2>
-					<td class='autoMeta' key='calcedTotal' _meta='desc'>
-					<td class='autoPut value' key='calcedTotal'>
+					<td class='autoMeta' _key='calcedTotal' _meta='desc'>
+					<td class='autoPut value' _key='calcedTotal'>
 					<td>
 					<td>
 				</tr>				

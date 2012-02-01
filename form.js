@@ -104,6 +104,72 @@
 		
 	};
 
+	function stripKey(strip, key)
+	{
+		//need to strip something?
+		if (strip)
+		{
+			//it doesnt match, so we cant strip it!
+			if (key.substr(0,strip.length+1)!=strip+".")
+				return "";
+			
+			return(key.substr(strip.length+1));
+		}
+		return (key);		
+	}
+	
+	//searches in meta for the meta-data that belongs to key.
+	//example key: items.price
+	//return metadata that belongs to key.
+	function resolveMeta(key, meta)
+	{
+		if (!key)
+			return(null);
+		
+		var keyList=key.split(".");
+		var thismeta=meta[keyList[0]];
+		for (keyI=1; keyI<keyList.length; keyI++)
+		{	
+			if (("meta" in thismeta) && (keyList[keyI] in thismeta["meta"]))
+			{
+				thismeta=thismeta["meta"][keyList[keyI]];
+			}
+			else
+			{
+				//key not found in meta
+				thismeta=null;
+				break;
+			}
+		}
+		return (thismeta);
+	}
+	
+	//searches in data for the value of key.
+	//example key: items.price
+	//return value to key.
+	function resolveData(key, data)
+	{
+		if (!key)
+			return(null);
+
+		var keyList=key.split(".");
+		var thisdata=data;
+		for (keyI=0; keyI<keyList.length; keyI++)
+		{	
+			if (keyList[keyI] in thisdata)
+			{
+				thisdata=thisdata[keyList[keyI]];
+			}
+			else
+			{
+				//key not found in meta
+				thisdata=null;
+				break;
+			}
+		}
+		return (thisdata);
+	}
+	
 	/*** auto create input elements from metadata and add them to the element.
 	*  Use _key attribute to specify meta-field.
 	*  If _meta is specified, that meta-field will be litterly filled in as text.(usefull for descriptions)
@@ -138,34 +204,28 @@
 //				$(this).removeClass(settings.autoMetaClass);
 				
 				var key=$(this).attr("_key");
-
-				thismeta=null;
-				if (key)
-				{
-					//resolve key 
-					var keyList=key.split(".");
-					console.log(keyList);
-					thismeta=meta[keyList[0]];
-					for (keyI=1; keyI<keyList.length; keyI++)
-					{	
-						if (("meta" in thismeta) && (keyList[keyI] in thismeta["meta"]))
-						{
-							thismeta=thismeta["meta"][keyList[keyI]];
-						}
-						else
-						{
-							//key not found in meta
-							thismeta=null;
-							break;
-						}
-					}
-				}
+				thismeta=resolveMeta(key,meta);
 				console.log(thismeta);
+
+				var addedElement;
+
 				
 			//	$(this).empty();
-				if (thismeta!=null)
+				if (thismeta==null)
 				{
-					var addedElement;
+					if (!key)
+						console.error("autoMeta: _key not specified in ",this);
+					else if (!thismeta)
+						console.error("autoMeta: _key not found in metadata: ",key ,meta);
+
+					addedElement=$("<span>")
+						.addClass("autoProgramError")
+						.text("unknown _key:"+key);
+					$(this).append(addedElement);
+
+				}
+				else
+				{
 
 					//just fill in the value of the specified metadata-field as plain text?
 					if ($(this).attr("_meta"))
@@ -364,7 +424,7 @@
 		var settings = {
 			showChanges:false,
 			autoPutClass:'autoPut',
-			autoPutedClass:'autoPuted',
+//			autoPutedClass:'autoPuted',
 			autoListSourceClass:'autoListSource'
 		};
 		
@@ -373,54 +433,73 @@
 		}
 
 
-		//we need to remember which nodes we processed (because of recursion)
-		if (!settings.recursed)
-		{
-			//remove old autoPut-reminders
-			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
-			settings.recursed=true;
-		}
+//		//we need to remember which nodes we processed (because of recursion)
+//		if (!settings.recursed)
+//		{
+//			//remove old autoPut-reminders
+//			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
+//			settings.recursed=true;
+//		}
 		
+		logDebug("autoPut called with ",meta,data,options);
 
 		return this.each(function() {
 
-			//check if we didnt process it yet.
-			//(its possible we already processed it, because of recursion for type array)
-			if (!$(this).hasClass(settings.autoPutedClass))
-			{
-				logDebug("autoPuting ", this, " with ",meta,data,settings);
+//			//check if we didnt process it yet.
+//			//(its possible we already processed it, because of recursion for type array)
+//			if (!$(this).hasClass(settings.autoPutedClass))
+//			{
 			
 				var key=$(this).attr("_key");
-				var value=data[key];
-				var metaValue=meta[key];
+				var strippedKey=stripKey(settings.parentKey, key);
+				
+				var thismeta=resolveMeta(strippedKey, meta);
+				var value=resolveData(strippedKey, data);
+				
 				var elementType=this.nodeName.toLowerCase();
 				var changed=false;
 
+				logDebug("autoPuting ", this, " with ", key, thismeta,value);
+
+				
 				//make sure we process it only once.
 				$(this).addClass(settings.autoPutedClass);
 
 				//no or nonexisting key?, do nothing
-				if (!(key in data) || !(key in meta))
+				if (value==null || thismeta==null)
 				{
 					//its normal that a key does not exist in data, but it always should exist in metadata
-					if (!(key in meta))
+					if (thismeta==null)
 					{
-						console.error("Key not found in metadata: ",key ,meta, data);
+						if (!key)
+							console.error("autoPut: _key not specified in ",this);
+						else if (!thismeta)
+							console.error("autoPut: _key not found in metadata: ",key ,meta, data);
+
+						var addedElement=$("<span>")
+							.addClass("autoProgramError")
+							.text("unknown _key:"+key);
+						$(this).append(addedElement);
 					}
 				}
 				
-				//recurse into hash?
-				else if (metaValue.type=="hash")
+//				//recurse into hash?
+				else if (thismeta.type=="hash")
 				{
-					logDebug("autoPut recursing into hash: ",key);
-					$("."+settings.autoPutClass, this).autoPut(metaValue.meta, value, settings);
+					; //do nothing?
+//					logDebug("autoPut recursing into hash: ",key);
+//					$("."+settings.autoPutClass, this).autoPut(thismeta.meta, value, settings);
 				}
 				
 				//recurse into array?
-				else if (metaValue.type=="array")
+				else if (thismeta.type=="array")
 				{
+					var subSettings={};
+					$.extend( subSettings, settings );
+					subSettings.parentKey=key;
+
 					logDebug("autoPut recursing into array with autoList:", key);
-					$("."+settings.autoListSourceClass, this).autoList(metaValue.meta, value, settings);
+					$(this).autoList(thismeta.meta, value, subSettings);
 				}
 				
 				//put value in attribute 
@@ -433,7 +512,7 @@
 				else if (elementType=="input")
 				{
 					//date (use datepicker)
-					if (metaValue.type=="date")
+					if (thismeta.type=="date")
 					{
 						$(this).datepicker("setDate", new Date(value*1000));
 					}
@@ -479,19 +558,19 @@
 				//depending on the datatype
 				else
 				{
-					if (metaValue.type=="bool")
+					if (thismeta.type=="bool")
 					{
 						var newElement=$("<span>");
 						
 						if (value)
 						{
-							newElement.addClass("autoHtml_"+metaValue.type+"_True");
+							newElement.addClass("autoHtml_"+thismeta.type+"_True");
 							newElement.addClass("autoHtml_"+key+"_True");
 							newElement.text("Ja");
 						}
 						else
 						{
-							newElement.addClass("autoHtml_"+metaValue.type+"_False");
+							newElement.addClass("autoHtml_"+thismeta.type+"_False");
 							newElement.addClass("autoHtml_"+key+"_False");
 							newElement.text("Nee");
 						}
@@ -499,18 +578,18 @@
 						$(this).empty();
 						$(this).append(newElement);
 					}
-					else if (metaValue.type=="select")
+					else if (thismeta.type=="select")
 					{
 						var newElement=$("<span>");
-						newElement.addClass("autoHtml_"+metaValue.type+"_"+value);
+						newElement.addClass("autoHtml_"+thismeta.type+"_"+value);
 						newElement.addClass("autoHtml_"+key+"_"+value);
-						newElement.text(metaValue.choices[value]);
+						newElement.text(thismeta.choices[value]);
 					
 						changed=($(this).text()!=newElement.text());
 						$(this).empty();
 						$(this).append(newElement);
 					}
-					else if (metaValue.type=="multiselect")
+					else if (thismeta.type=="multiselect")
 					{
 						var oldText=$(this).text();
 						$(this).empty();
@@ -520,10 +599,10 @@
 						{
 							element.append(
 								$("<span>")
-									.addClass("autoHtml_"+metaValue.type)
-									.addClass("autoHtml_"+metaValue.type+"_"+value[valueI])
+									.addClass("autoHtml_"+thismeta.type)
+									.addClass("autoHtml_"+thismeta.type+"_"+value[valueI])
 									.addClass("autoHtml_"+key+"_"+value[valueI])
-									.text(metaValue.choices[value[valueI]])
+									.text(thismeta.choices[value[valueI]])
 							);
 						}
 						changed=($(this).text()!=oldText);
@@ -540,11 +619,11 @@
 				{
 					$(this).effect('highlight', 2000);
 				}
-			}
-			else
-			{
-				logDebug("skipped auto filling ", this, " with ",meta,data,settings);
-			}
+//			}
+//			else
+//			{
+//				logDebug("skipped auto filling ", this, " with ",meta,data,settings);
+//			}
 		});
 
 	};
@@ -563,7 +642,7 @@
 		var settings = {
 			autoGetClass: 'autoGet',
 			autoPutClass: 'autoPut',
-			autoPutedClass: 'autoPuted',
+//			autoPutedClass: 'autoPuted',
 			autoListClass: 'autoListItem',
 			autoListSourceClass: 'autoListSource',
 			updateOn: false
@@ -574,21 +653,21 @@
 		}
 
 
-		//we need to remember which nodes we processed (because of recursion)
-		if (!settings.recursed)
-		{
-			//remove autoPuted-reminders
-			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
-			settings.recursed=true;
-		}
+//		//we need to remember which nodes we processed (because of recursion)
+//		if (!settings.recursed)
+//		{
+//			//remove autoPuted-reminders
+//			$("."+settings.autoPutedClass, settings.context).removeClass(settings.autoPutedClass);
+//			settings.recursed=true;
+//		}
 
 
 		//traverse all the specified list sources
 		var ret=this.each(function() {
 
-			//check if we didnt already process it because of recursion
-			if (!$(this).hasClass(settings.autoPutedClass))
-			{
+//			//check if we didnt already process it because of recursion
+//			if (!$(this).hasClass(settings.autoPutedClass))
+//			{
 				logDebug("auto listing ", this, " with ",meta,data,settings);
 
 				var sourceElement=this;
@@ -621,8 +700,9 @@
 						updateElement.insertBefore(sourceElement);
 					}
 
-					//now autoPut the element and its sibblings
-					updateElement.filter("."+settings.autoPutClass).autoPut(meta, value, settings);
+					//now autoPut the element
+//and its sibblings
+//					updateElement.filter("."+settings.autoPutClass).autoPut(meta, value, settings);
 					$("."+settings.autoPutClass, updateElement).autoPut(meta, value, settings);
 
 				});
@@ -659,11 +739,11 @@
 				//make sure the source element doesnt get processed. (in case of array recursion)
 				$("."+settings.autoPutClass, sourceElement).addClass(settings.autoPutedClass);
 				$(sourceElement).addClass(settings.autoPutedClass);
-			} //has class
-			else
-			{
-				logDebug("skipped auto listing ", this, " with ",meta,data,settings);
-			}
+//			} //has class
+//			else
+//			{
+//				logDebug("skipped auto listing ", this, " with ",meta,data,settings);
+//			}
 			
 		}); //all list loop
 		
