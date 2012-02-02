@@ -283,8 +283,10 @@ function templateList(params)
 				{
 					//since its an update, dont get confused with the other autoput-list items
 					$(".autoListSource:first", context).autoList(meta, result['data'], {
-						updateOn:params.id,
-						context: context
+						indexKey:params.id,
+						context: context,
+						update:true,
+						showChanges:true
 					});
 				}
 				else
@@ -292,6 +294,8 @@ function templateList(params)
 					//delete old list contents
 					$(".autoListItem",context).not(".autoListSource").remove();
 					$(".autoListSource:first", context).autoList(meta, result['data'], {
+						indexKey:params.id,
+						updateOn:params.id,
 						context: context
 					});
 				}

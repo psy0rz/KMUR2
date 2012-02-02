@@ -118,9 +118,9 @@
 		return (key);		
 	}
 	
-	//searches in meta for the meta-data that belongs to key.
+	//returns a reference in the meta-object, by traversing the key
 	//example key: items.price
-	//return metadata that belongs to key.
+	//returns null when key can not be found.
 	function resolveMeta(key, meta)
 	{
 		if (!key)
@@ -144,9 +144,9 @@
 		return (thismeta);
 	}
 	
-	//searches in data for the value of key.
+	//returns a reference in the dataobject, by traversing the key.
 	//example key: items.price
-	//return value to key.
+	//note: creates Objects() in data for keys that do not yet exist. (e.g. builds a hasharray for you)
 	function resolveData(key, data)
 	{
 		if (!key)
@@ -162,9 +162,14 @@
 			}
 			else
 			{
-				//key not found in meta
-				thisdata=null;
-				break;
+				//key not found in meta, create it:
+				if (typeof(thismeta)!='object')
+				{
+					console.error("resolveData warning: changing data to object:",key,data);
+					thisdata=new Object();
+				}
+				thisdata[keyList[keyI]]=null;
+				thisdata=thisdata[keyList[keyI]];
 			}
 		}
 		return (thisdata);
@@ -414,7 +419,7 @@
 
 	/*** Auto fills elements with specified data array
 	*  Uses _key attribute to determine which data to fill.
-	*  Specify _value to store the value in this attribute instead of the element itself.
+	*  XXX Specify _value to store the value in this attribute instead of the element itself.
 	*  Automaticly recognises element-types and uses the correct way to 'fill in the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datpicker )
@@ -502,11 +507,11 @@
 					$(this).autoList(thismeta.meta, value, subSettings);
 				}
 				
-				//put value in attribute 
-				else if (typeof $(this).attr("_value") !='undefined')
-				{
-					$(this).attr("_value", value);
-				}
+//				//put value in attribute 
+//				else if (typeof $(this).attr("_value") !='undefined')
+//				{
+//					$(this).attr("_value", value);
+//				}
 
 				//set value of a input-element the correct way
 				else if (elementType=="input")
@@ -631,8 +636,9 @@
 	
 	/*** Replicates the specified element for every item in the data-array
 	 * Calls autoPut everytime, for elements of class autoPut
-	 * Use updateOn to update an existing list (update, delete and add items)
-	 * Specify the data-key that should be stored in _value to be able to update
+	 * Use update:true to update an existing list with new data.
+	 * Set indexkey to specify with key to use as listitem index. (usually some kinds of id)
+	 * Use showChanges:true to show changes in update-mode.
 	 * 
 	 * The source item should have the autoListSourceClass
 	 * All the listitems get the autoListClass. (even the source item)
@@ -645,7 +651,9 @@
 //			autoPutedClass: 'autoPuted',
 			autoListClass: 'autoListItem',
 			autoListSourceClass: 'autoListSource',
-			updateOn: false
+			showChanges: false,
+			indexKey: '',
+			update:false
 		};
 		
 		if ( options ) {
@@ -675,17 +683,17 @@
 
 
 ///				$(sourceElement).show();
-				settings.showChanges=(settings.updateOn!="");
+//				settings.showChanges=(settings.updateOn!="");
 				
 				//traverse the input list
 				$.each(data, function(index, value) {
 					var updateElement={};
 				
 					//update mode?
-					if (settings.updateOn)
+					if (settings.update)
 					{
 						//try to find existing element
-						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.updateOn]+"]", parentElement);
+						updateElement=$("."+settings.autoListClass+"[_value="+value[settings.indexKey]+"]", parentElement);
 						if (updateElement.hasClass(settings.autoListSourceClass))
 							updateElement=[];
 						logDebug("update element:",updateElement);
@@ -703,6 +711,8 @@
 					//now autoPut the element
 //and its sibblings
 //					updateElement.filter("."+settings.autoPutClass).autoPut(meta, value, settings);
+					console.log("ASDFSDF",value,settings);
+					$(updateElement).attr("_value", value[settings.indexKey]);
 					$("."+settings.autoPutClass, updateElement).autoPut(meta, value, settings);
 
 				});
@@ -710,12 +720,12 @@
 //				$(sourceElement).hide();
 				
 				//do we need to delete items?
-				if (settings.updateOn)
+				if (settings.update)
 				{
 					//build a map of currenly existing id's
 					var idMap={};
 					$.each(data, function(key, value) {
-						idMap[value[settings.updateOn]]=1;
+						idMap[value[settings.indexKey]]=1;
 					});
 					
 					//traverse all the html list items
@@ -755,7 +765,7 @@
 	*  Uses _key attribute as hash key
 	*  Automaticly recognises element-types and uses the correct way to 'get the value'.
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
-	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datpicker )
+	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datepicker )
 	*/
 	$.fn.autoGet = function( meta, data , options ) {  
 
@@ -790,52 +800,64 @@
 				$(this).addClass(settings.autoGotClass);
 
 				var key=$(this).attr("_key");
+				var strippedKey=stripKey(settings.parentKey, key);
+				var thismeta=resolveMeta(strippedKey, meta);
+				var value=resolveData(strippedKey, data);
+
 				var elementType=this.nodeName.toLowerCase();
-				
-				logDebug("auto getting ", key, this);
+
+				logDebug("autoGetting ", this, " with ", key, thismeta);
+
 				//recurse into hash array
-				if (meta[key].type=="hash")
+				if (thismeta.type=="hash")
 				{
-					//make sure the array exists
-					if (typeof data[key] != 'array')
-					{
-						data[key]=new Object();
-					}
-					logDebug("autoget recursing into hash");
-					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);
+//					//make sure the array exists
+//					if (typeof data[key] != 'array')
+//					{
+//						data[key]=new Object();
+//					}
+//					logDebug("autoget recursing into hash");
+//					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);
+					; //ignore?
 				}
 				//recurse into array list
-				else if (meta[key].type=="array")
+				else if (thismeta.type=="array")
 				{
 					//make sure the array exists
-					if (typeof data[key] != 'array')
-					{
-						data[key]=new Array();
-					}
+					if (typeof value != 'array')
+						value=new Array();
+	
+					var parent=$(this).parent();
 					
 					//make sure we skip the source item + subitems
-					$("."+settings.autoListSourceClass, this).addClass(settings.autoGotClass);
-					$("."+settings.autoListSourceClass+" ."+settings.autoGetClass, this).addClass(settings.autoGotClass);
+					$("."+settings.autoListSourceClass, parent).addClass(settings.autoGotClass);
+					$("."+settings.autoListSourceClass+" ."+settings.autoGetClass, parent).addClass(settings.autoGotClass);
 					
 					//traverse all the list items
 					logDebug("autoget traversing list");
-					$("."+settings.autoListClass, this).each(function () {
+					$("."+settings.autoListClass, parent).each(function () {
 						if (!$(this).hasClass(settings.autoGotClass))
 						{
 							var itemData={};
-							$("."+settings.autoGetClass, this).autoGet(meta[key]['meta'], itemData, settings);
-							data[key].push(itemData);
+							var itemSettings={};
+							$.extend( itemSettings, settings );
+							itemSettings.parentKey=key;
+
+							$(this).addClass(settings.autoGotClass);
+
+							$("."+settings.autoGetClass, this).autoGet(thismeta.meta, itemData, settings);
+							value.push(itemData);
 						}
 					});
 					
-					//make sure we skip the 'source' list item and other crap
-					$("."+settings.autoGetClass, this).addClass(settings.autoGotClass);
+//					//make sure we skip the 'source' list item and other crap
+//					$("."+settings.autoGetClass, this).addClass(settings.autoGotClass);
 				}
 				//date (use datepicker)
-				else if (meta[key].type=="date")
+				else if (thismeta.type=="date")
 				{
 					var date=new Date($(this).datepicker("getDate"));
-					data[key]=date.getTime()/1000;
+					value=date.getTime()/1000;
 				}
 				else if (elementType=="input")
 				{
@@ -844,29 +866,30 @@
 						//value checkbox. add all the selected values to an array
 						if ($(this).attr("value"))
 						{
-							if (data[key]==null)
-								data[key]=new Array();
+							if (typeof value != 'array')
+								value=new Array();
 							
 							if ($(this).attr("checked"))
-								data[key].push($(this).attr("value"));
+								value.push($(this).attr("value"));
 						}
 						//simple boolean 0/1 checkbox:
 						else
 						{
 							if ($(this).attr("checked"))
-								data[key]=1;
+								value=1;
 							else
-								data[key]=0;
+								value=0;
 						}
 					}
 					else
 					{
-						data[key]=$(this).val();
+						//all other inputs can use val:
+						value=$(this).val();
 					}
 				}
 				else if (elementType=="select" || elementType=="textarea")
 				{
-					data[key]=$(this).val();
+					value=$(this).val();
 				}
 			}
 		});
