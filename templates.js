@@ -17,8 +17,8 @@ function templateForm(params)
 			viewShowError(result, context, meta);
 
 			meta=result['data'];
-			$(".autoMeta", context).autoMeta(meta);
-
+			$(context).autoMeta(meta);
+			
 			//create an add-handler to add items to lists
 			$(".autoClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
@@ -146,9 +146,7 @@ function templateForm(params)
 			putParams=jQuery.extend(true, {}, params.putDataParams); //COPY, and not by reference!
 
 		//get the data
-		$(".autoGet", context).autoGet(meta, putParams, { 
-			context: context 
-		});
+		$(context).autoGet(meta, putParams);
 
 		//put data
 		rpc(

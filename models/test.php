@@ -117,6 +117,13 @@ class test extends model_Mongo
 		logger("info", "test verwijderd.");
 	}
 
+	function getAcl()
+	{
+		return(array(
+				"default"=>array("anonymous")
+		));
+	}
+	
 }
 
 

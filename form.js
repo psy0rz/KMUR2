@@ -175,247 +175,75 @@
 		return (thisdata);
 	}
 	
-	/*** auto create input elements from metadata and add them to the element.
-	*  Use _key attribute to specify meta-field.
-	*  If _meta is specified, that meta-field will be litterly filled in as text.(usefull for descriptions)
+	/*** 
 	*/
-	$.fn.autoMeta = function( meta , options ) {  
+	$.fn.autoMeta = function( meta , parentKey ) {  
 
-		var settings = {
-			autoPutClass: 'autoPut',
-//			autoMetaClass: 'autoMeta',
-			autoGetClass: 'autoGet',
-			autoListClass: 'autoListItem',
-			autoListSourceClass: 'autoListSource'
-		};
-		
-		if ( options ) { 
-			$.extend( settings, options );
-		}
+//		var settings = {
+//			autoPutClass: 'autoPut',
+////			autoMetaClass: 'autoMeta',
+//			autoGetClass: 'autoGet',
+//			autoListClass: 'autoListItem',
+//			autoListSourceClass: 'autoListSource'
+//		};
+//		
+//		if ( options ) { 
+//			$.extend( settings, options );
+//		}
 		
 		if (!meta)
 			return;
 
-		//traverse all specified elements
+		//traverse all specified elements (usually its just one)
 		return this.each(function() {
-			
-			//check if it still has an autoMetaClass.
-			//(its possible we already processed it, because of recursion for type array or hash)
-//			if ($(this).hasClass(settings.autoMetaClass))
-//			{
-				logDebug("auto creating ", this, " with ",meta,settings);
+			var context=this;
 
-				//make sure we process it only once.
-//				$(this).removeClass(settings.autoMetaClass);
-				
-				var key=$(this).attr("_key");
-				thismeta=resolveMeta(key,meta);
-				console.log(thismeta);
-
-				var addedElement;
-
-				
-			//	$(this).empty();
-				if (thismeta==null)
-				{
-					if (!key)
-						console.error("autoMeta: _key not specified in ",this);
-					else if (!thismeta)
-						console.error("autoMeta: _key not found in metadata: ",key ,meta);
-
-					addedElement=$("<span>")
-						.addClass("autoProgramError")
-						.text("unknown _key:"+key);
-					$(this).append(addedElement);
-
-				}
+			//traverse the specified meta data
+			$.each(meta, function(key, thismeta){
+				var keyStr;
+				if (parentKey)
+					keyStr=parentKey+"."+key;
 				else
+					keyStr=key;
+				
+				var selector='.autoMeta[_key="'+keyStr+'"]';
+							
+				//traverse the autoMeta elements that reference this key
+				$(selector, context).each(function()
 				{
-
+					
 					//just fill in the value of the specified metadata-field as plain text?
 					if ($(this).attr("_meta"))
-					{
 						$(this).text(thismeta[$(this).attr("_meta")]);
-					}
-					else if (thismeta.type=='hash')
+					//convert metadata to input element:
+					else
 					{
-						;//dont have to do anything?
-						
-					}
-					else if (thismeta.type=='array')
-					{
-//						logDebug("autoMeta recursing into array or hash:", key);
-						
-//						var recurseSettings={};
-//						$.extend( recurseSettings, settings );
-//						
-//						//make sure all the recursed subitems will be readonly as well!
-//						if (thismeta.readonly)
-//						{
-//							recurseSettings.readonly=true;
-//						}
-//						
-//						$("."+settings.autoMetaClass, this).autoMeta(thismeta.meta, recurseSettings);
-
-						if (!thismeta.readonly)
+						var addedElement=dataConv[thismeta.type].input(this, thismeta, keyStr);
+						if (addedElement)
 						{
-							$(this).addClass(settings.autoGetClass);
-
-	//						//give the autoListsources a autoGet if its not readonly (only used to determine readonly status in autoClick handlers )
-	//						$("."+settings.autoListSourceClass, this).addClass(settings.autoGetClass);
-
-						}
-
-						//give all the list sources the autoListItem, so we can recognize all the list items.
-		//				$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
-			
-						$(this).addClass(settings.autoPutClass);
-						$(this).addClass(settings.autoListSourceClass);
-						$(this).addClass(settings.autoListClass);
-
-						
-						//				$("."+settings.autoListSourceClass, this).addClass(settings.autoListClass);
-
-		//				logDebug("autoMeta returned from recursion:", key);
-					}
-
-					
-					else if (thismeta.type=='string')
-					{
-						if (thismeta['max']==null || thismeta['max']>100)
-						{
-							addedElement=$("<textarea>");
-							$(this).append(addedElement);							
-						}
-						else
-						{
-							addedElement=$("<input>")
-								.attr("type","text");
-									
-							$(this).append(addedElement);
-						}
-						$(addedElement).val(thismeta.default);
-					}
-
-					else if (thismeta.type=='password')
-					{
-						addedElement=$("<input>")
-							.attr("type","password");
-						$(this).append(addedElement);
-						$(addedElement).val(thismeta.default);
-					}
-
-					else if (thismeta.type=='float' || thismeta.type=='integer')
-					{
-						addedElement=$("<input>")
-							.attr("type","text");
-						$(this).append(addedElement);
-						$(this).val(thismeta.default);
-					}
-					
-					else if (thismeta.type=='select')
-					{
-						//create select element
-						addedElement=$("<select>");
-						
-						//add choices
-						$.each(thismeta['choices'], function(choice, desc){
-							var optionElement=$("<option>")
-								.attr("value",choice)
-								.text(desc);
+							addedElement.addClass("autoPut")
+								.attr("_key",key)
+								.attr("title",thismeta.desc);
 							
-							//we use this instead of addedElement.val(thismeta.default) because clone wont work with this.
-							if (choice==thismeta.default)
-								optionElement.attr("selected","selected");
-							addedElement.append(optionElement);
-						});
-						
-						//add results to div
-						$(this).append(addedElement);
-					}
-					
-					else if (thismeta.type=='multiselect')
-					{
-						var parent=$(this);
-						//add choices
-						$.each(thismeta['choices'], function(choice, desc){
-							//add checkbox
-							var checkbox=$("<input>")
-									.addClass(settings.autoPutClass)
-									.attr("value",choice)
-									.attr("type","checkbox")
-									.attr("_key",key)
-									.attr("id",key+"."+choice)
-									.attr("title",thismeta['desc'])
-									
 							if (!thismeta.readonly)
 							{
-								checkbox.addClass(settings.autoGetClass);
+								addedElement.addClass("autoGet")
 							}
-
-							checkbox.attr("checked", thismeta.default.indexOf(choice) != -1);
-							parent.append(checkbox);
-							
-							//add description
-							parent.append(
-								$("<label>")
-									.attr("for",key+"."+choice)
-									.attr("_errorHighlight",key)
-									.text(desc)
-							);
-							
-							//add break
-							parent.append($("<br>"));
-
-						});
-					}
-					
-					else if (thismeta.type=='bool')
-					{
-						addedElement=$("<input>")
-							.attr("type","checkbox")
-							.attr("value","")
-						$(this).append(addedElement);
-						addedElement.attr("checked", thismeta.default);
-					}
-
-					else if (thismeta.type=='date')
-					{
-						addedElement=$("<input>")
-							.attr("type","text");
-						$(this).append(addedElement);
-						$(this).val(thismeta.default);
-						addedElement.datepicker({
-							dateFormat:'dd-mm-yy',
-//							altFormat:'yy-mm-dd'
-						});
-					}
-
-
-					if (addedElement)
-					{
-						addedElement.addClass(settings.autoPutClass)
-							.attr("_key",key)
-							.attr("title",thismeta.desc);
+							else
+							{
+								addedElement.attr('disabled',true);
+							}
+							//now add the new element to the DOM:
+							$(this).empty();
+							$(this).append(addedElement);
+						}
 						
-						if (!thismeta.readonly && !settings.readonly)
-						{
-							addedElement.addClass(settings.autoGetClass)
-						}
-						else
-						{
-							addedElement.attr('disabled',true);
-						}
 					}
-				}
-//			}
-//			else
-//			{
-//				logDebug("skipped auto creating ", this, " with ",meta,settings);
-//			}
-		});
+				}); //key
+			}); //meta
+		}); //elements
+		
 	};
-
 
 	/*** Auto fills elements with specified data array
 	*  Uses _key attribute to determine which data to fill.
@@ -761,138 +589,58 @@
 	}
 
 
-	/*** Auto gets data from the elements and stores it in the data array
+	/*** Auto gets data from the elements and stores it in the value array
 	*  Uses _key attribute as hash key
-	*  Automaticly recognises element-types and uses the correct way to 'get the value'.
-	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
-	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datepicker )
 	*/
-	$.fn.autoGet = function( meta, data , options ) {  
+	$.fn.autoGet = function( meta, value, parentKey ) {  
 
-		var settings = {
-			autoGetClass:'autoGet',
-			autoGotClass:'autoGot',
-			autoListClass: 'autoListItem',
-			autoListSourceClass: 'autoListSource',
-		};
-		
-		if ( options ) { 
-			$.extend( settings, options );
-		}
+//		var settings = {
+//			autoGetClass:'autoGet',
+//			autoGotClass:'autoGot',
+//			autoListClass: 'autoListItem',
+//			autoListSourceClass: 'autoListSource',
+//		};
+//		
+//		if ( options ) { 
+//			$.extend( settings, options );
+//		}
 		
 		//logDebug("autogegt", $("[key]", settings.context));
 		
 		//we need to remember which nodes we processed (because of recursion)
-		if (!settings.recursed)
-		{
-			//remove previous autoget-reminders
-			$("."+settings.autoGotClass, settings.context).removeClass(settings.autoGotClass);
-			settings.recursed=true;
-		}
+//		if (!settings.recursed)
+//		{
+//			//remove previous autoget-reminders
+//			$("."+settings.autoGotClass, settings.context).removeClass(settings.autoGotClass);
+//			settings.recursed=true;
+//		}
+		logDebug("autoGet called with ", meta, value , parentKey);
+		if (!meta)
+			return;
+		
 
-		//traverse all the elements
+		//traverse all specified elements (usually its just one)
 		return this.each(function() {
-			
-			//check if we didnt process it yet because of recursion
-			if (!$(this).hasClass(settings.autoGotClass))
-			{
-				//make sure we process it only once.
-				$(this).addClass(settings.autoGotClass);
+			var context=this;
 
-				var key=$(this).attr("_key");
-				var strippedKey=stripKey(settings.parentKey, key);
-				var thismeta=resolveMeta(strippedKey, meta);
-				var value=resolveData(strippedKey, data);
-
-				var elementType=this.nodeName.toLowerCase();
-
-				logDebug("autoGetting ", this, " with ", key, thismeta);
-
-				//recurse into hash array
-				if (thismeta.type=="hash")
-				{
-//					//make sure the array exists
-//					if (typeof data[key] != 'array')
-//					{
-//						data[key]=new Object();
-//					}
-//					logDebug("autoget recursing into hash");
-//					$("."+settings.autoGetClass, this).autoGet(meta[key].meta, data[key], settings);
-					; //ignore?
-				}
-				//recurse into array list
-				else if (thismeta.type=="array")
-				{
-					//make sure the array exists
-					if (typeof value != 'array')
-						value=new Array();
-	
-					var parent=$(this).parent();
-					
-					//make sure we skip the source item + subitems
-					$("."+settings.autoListSourceClass, parent).addClass(settings.autoGotClass);
-					$("."+settings.autoListSourceClass+" ."+settings.autoGetClass, parent).addClass(settings.autoGotClass);
-					
-					//traverse all the list items
-					logDebug("autoget traversing list");
-					$("."+settings.autoListClass, parent).each(function () {
-						if (!$(this).hasClass(settings.autoGotClass))
-						{
-							var itemData={};
-							var itemSettings={};
-							$.extend( itemSettings, settings );
-							itemSettings.parentKey=key;
-
-							$(this).addClass(settings.autoGotClass);
-
-							$("."+settings.autoGetClass, this).autoGet(thismeta.meta, itemData, settings);
-							value.push(itemData);
-						}
+			//traverse the specified meta data
+			$.each(meta, function(key, thismeta){
+				var keyStr;
+				if (parentKey)
+					keyStr=parentKey+"."+key;
+				else
+					keyStr=key;
+				
+				
+				//find the element that belongs to this key 
+				//there SHOULD be only one or zero. we still use the jquery each.
+				var selector='.autoGet[_key="'+keyStr+'"]';
+				$(selector, context).each(function() {
+					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
 					});
-					
-//					//make sure we skip the 'source' list item and other crap
-//					$("."+settings.autoGetClass, this).addClass(settings.autoGotClass);
-				}
-				//date (use datepicker)
-				else if (thismeta.type=="date")
-				{
-					var date=new Date($(this).datepicker("getDate"));
-					value=date.getTime()/1000;
-				}
-				else if (elementType=="input")
-				{
-					if ($(this).attr("type")=="checkbox")
-					{
-						//value checkbox. add all the selected values to an array
-						if ($(this).attr("value"))
-						{
-							if (typeof value != 'array')
-								value=new Array();
-							
-							if ($(this).attr("checked"))
-								value.push($(this).attr("value"));
-						}
-						//simple boolean 0/1 checkbox:
-						else
-						{
-							if ($(this).attr("checked"))
-								value=1;
-							else
-								value=0;
-						}
-					}
-					else
-					{
-						//all other inputs can use val:
-						value=$(this).val();
-					}
-				}
-				else if (elementType=="select" || elementType=="textarea")
-				{
-					value=$(this).val();
-				}
-			}
-		});
+				
+			}); //meta
+		}); //elements
 	}
 
 	/**
