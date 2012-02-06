@@ -179,17 +179,6 @@
 	*/
 	$.fn.autoMeta = function( meta , parentKey ) {  
 
-//		var settings = {
-//			autoPutClass: 'autoPut',
-////			autoMetaClass: 'autoMeta',
-//			autoGetClass: 'autoGet',
-//			autoListClass: 'autoListItem',
-//			autoListSourceClass: 'autoListSource'
-//		};
-//		
-//		if ( options ) { 
-//			$.extend( settings, options );
-//		}
 		
 		if (!meta)
 			return;
@@ -594,30 +583,9 @@
 	*/
 	$.fn.autoGet = function( meta, value, parentKey ) {  
 
-//		var settings = {
-//			autoGetClass:'autoGet',
-//			autoGotClass:'autoGot',
-//			autoListClass: 'autoListItem',
-//			autoListSourceClass: 'autoListSource',
-//		};
-//		
-//		if ( options ) { 
-//			$.extend( settings, options );
-//		}
-		
-		//logDebug("autogegt", $("[key]", settings.context));
-		
-		//we need to remember which nodes we processed (because of recursion)
-//		if (!settings.recursed)
-//		{
-//			//remove previous autoget-reminders
-//			$("."+settings.autoGotClass, settings.context).removeClass(settings.autoGotClass);
-//			settings.recursed=true;
-//		}
 		logDebug("autoGet called with ", meta, value , parentKey);
 		if (!meta)
 			return;
-		
 
 		//traverse all specified elements (usually its just one)
 		return this.each(function() {
@@ -631,13 +599,12 @@
 				else
 					keyStr=key;
 				
-				
 				//find the element that belongs to this key 
-				//there SHOULD be only one or zero. we still use the jquery each.
+				//there SHOULD be only one or zero. 
 				var selector='.autoGet[_key="'+keyStr+'"]';
 				$(selector, context).each(function() {
 					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
-					});
+				});
 				
 			}); //meta
 		}); //elements
