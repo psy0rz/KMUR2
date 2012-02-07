@@ -241,7 +241,7 @@
 	*  (e.g. checkboxes, text-inputs and other html elements are all treated differently)
 	*  Some meta-types like dates and times are treated specially with datepickers. (conversion from and to timestamps is done by the datpicker )
 	*/
-	$.fn.autoPut = function( meta , data,  options ) {  
+	$.fn.autoPutOud = function( meta , data,  keyStr ) {  
 
 		var settings = {
 			showChanges:false,
@@ -606,6 +606,55 @@
 					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
 				});
 				
+			}); //meta
+		}); //elements
+	}
+
+	/*** Auto puts data from to elements
+	*  Uses _key attribute as hash key
+	*/
+	$.fn.autoPut = function( meta, value, parentKey ) {  
+
+		logDebug("autoPut called with ", meta, value , parentKey);
+		if (!meta)
+			return;
+
+		//traverse all specified elements (usually its just one)
+		return this.each(function() {
+			var context=this;
+
+			//traverse the specified meta data
+			$.each(meta, function(key, thismeta){
+				var keyStr;
+				if (parentKey)
+					keyStr=parentKey+"."+key;
+				else
+					keyStr=key;
+				
+				//find the element that belongs to this key 
+				//there SHOULD be only one or zero. 
+				var selector='.autoPut[_key="'+keyStr+'"]';
+				$(selector, context).each(function() {
+					//html only
+					if ($(this).attr("_html"))
+					{
+						var newElement=dataConv[thismeta.type].html(this, thismeta, keyStr, value[key]);
+						if (newElement.text()!=$(this).text())
+						{
+							$(this).effect('highlight', 2000);
+							this=newElement;
+						}
+					}
+					//put input field
+					else
+					{
+						if (dataConv[thismeta.type].get(this, thismeta, keyStr)!=value[key])
+						{
+							dataConv[thismeta.type].put(this, thismeta, keyStr, value[key]);
+							$(this).effect('highlight', 2000);
+						}
+					}
+				});
 			}); //meta
 		}); //elements
 	}

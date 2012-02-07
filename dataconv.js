@@ -246,7 +246,7 @@ var dataConv=
 						.addClass("autoHtml_"+meta.type)
 						.addClass("autoHtml_"+meta.type+"_"+value[valueI])
 						.addClass("autoHtml_"+keyStr+"_"+value[valueI])
-						.text(meta.choices[value[valueI]]);
+						.text(meta.choices[value[valueI]])
 				);
 			}
 			return(newElement);

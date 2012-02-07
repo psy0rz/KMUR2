@@ -105,9 +105,7 @@ function templateForm(params)
 
 						if (result.data)
 						{
-							$(".autoPut", context).autoPut(meta, result.data, {
-								context: context
-							});
+							$(context).autoPut(meta, result.data);
 						}
 						
 
@@ -327,7 +325,7 @@ function templateList(params)
 
 			meta=result['data'];
 			//add real input to autoMeta divs. 
-			$(".autoMeta", context).autoMeta(meta);
+			$(context).autoMeta(meta);
 			
 			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
 			$(".autoListSource:first", context).addClass("autoListItem");
