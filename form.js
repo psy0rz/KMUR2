@@ -613,9 +613,19 @@
 	/*** Auto puts data from to elements
 	*  Uses _key attribute as hash key
 	*/
-	$.fn.autoPut = function( meta, value, parentKey ) {  
+	$.fn.autoPut = function( meta, value, parentKey, options ) {  
+		logDebug("autoPut called with ", meta, value , parentKey, options);
+		
+		var settings = {
+			update:false,
+			showChanges:false
+		};
+			
+		if ( options ) 
+		{ 
+			$.extend( settings, options );
+		}
 
-		logDebug("autoPut called with ", meta, value , parentKey);
 		if (!meta)
 			return;
 
@@ -623,8 +633,8 @@
 		return this.each(function() {
 			var context=this;
 
-			//traverse the specified meta data
-			$.each(meta, function(key, thismeta){
+			//traverse the specified data
+			$.each(value, function(key, thisvalue){
 				var keyStr;
 				if (parentKey)
 					keyStr=parentKey+"."+key;
@@ -636,22 +646,24 @@
 				var selector='.autoPut[_key="'+keyStr+'"]';
 				$(selector, context).each(function() {
 					//html only
-					if ($(this).attr("_html"))
+					if ($(this).attr("_html")!=null)
 					{
-						var newElement=dataConv[thismeta.type].html(this, thismeta, keyStr, value[key]);
+						var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
 						if (newElement.text()!=$(this).text())
 						{
-							$(this).effect('highlight', 2000);
-							this=newElement;
+							$(this).append(newElement);
+							if (settings.showChanges)
+								$(this).effect('highlight', 2000);
 						}
 					}
 					//put input field
 					else
 					{
-						if (dataConv[thismeta.type].get(this, thismeta, keyStr)!=value[key])
+						if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=value)
 						{
-							dataConv[thismeta.type].put(this, thismeta, keyStr, value[key]);
-							$(this).effect('highlight', 2000);
+							dataConv[meta[key].type].put(this, meta[key], keyStr, value, settings);
+							if (settings.showChanges)
+								$(this).effect('highlight', 2000);
 						}
 					}
 				});
@@ -731,7 +743,7 @@
 
 						recurseFields.shift();
 
-						//no items left, then return the listItem
+						//no items left, then return the listItem	
 						if (recurseFields.length==0)
 						{
 							result=listItem;

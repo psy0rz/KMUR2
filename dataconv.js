@@ -1,6 +1,19 @@
 //Convert metadata and normal data from and to the dom-tree
 
 
+function autoListClone(source)
+{
+	var clone=source.clone(true);
+	clone.removeClass("autoGet");
+	clone.removeClass("autoPut");
+	clone.removeClass("autoMeta");
+	clone.removeClass("autoListSource");
+	clone.removeClass("autoListHide");
+	clone.addClass("autoListItem");
+	return(clone);
+}
+
+
 /** Dataconversion functions:
  * First key is the meta-type.
  * Second is the conversion function:
@@ -19,6 +32,10 @@ var dataConv=
 
 			return (null);
 		},
+		html:function(element, meta, keyStr, value)
+		{
+			return($("<span style='error'>not implemented!</span>"));
+		},
 		get:function(element, meta, keyStr)
 		{
 			value=new Object();
@@ -33,15 +50,21 @@ var dataConv=
 	array:{
 		/**
 		 * Array is a bit of a special case: 
-		 * The original element we call the 'source-element', and it is never filled by autoPut.
-		 * Instead for every item this original is cloned and then autoPut is called on the cloned item.  
-		 * Every cloned item gets a class autoListItem added, but the autoGet/autoPut/autoMeta classes are removed.
+		 * The original element we call the 'source-element', it should have a autoListSource class.
+		 * For every item this original is cloned and then autoPut is called on the cloned item.  
+		 * Every cloned item gets a class autoListItem added, but the other auto-classes are removed.
+		 * Add a autoListHide class to the source element to hide it. (e.g. user doesnt see a dummy-item)
+		 * Use the autoListClone() function to correctly clone the source element and fix the classes.
 		 */
 		input:function(element, meta, keyStr)
 		{
 			//recurse into sub:
 			$(element).autoMeta(meta.meta, keyStr);
 			return (null);
+		},
+		html:function(element, meta, keyStr, value)
+		{
+			return($("<span style='error'>not implemented!</span>"));
 		},
 		get:function(element, meta, keyStr)
 		{
@@ -56,22 +79,53 @@ var dataConv=
 			});
 			return(value);
 		},
-		put:function(element, meta, keyStr, value)
+		put:function(element, meta, keyStr, value, settings)
 		{
 			var parent=$(element).parent();
+			var index=$(element).attr("_index");
+			
+			if ($(element).attr("_key")==null)
+			{
+				$(element).attr("_key","");
+			}
+			
+			//not in update mode, so clear any existing items
+			if (!settings.update)
+			{
+				$('.autoListItem[_key="'+keyStr+'"]', parent).remove();
+			}
+
+			//for performance, prepare a listitem one time and clone that.
+			var clone=autoListClone(element);
 			
 			//traverse all the list items
-			$.each(value, function (index, subvalue) {
-				//deep clone it and fix classes
-				var clone=element.clone(true);
-				clone.removeClass("autoGet");
-				clone.removeClass("autoPut");
-				clone.removeClass("autoMeta");
-				clone.addClass("autoListItem");
-				//now put in the data of the subvalue
-				$(clone).autoPut(meta.meta, subvalue, keyStr);
-				//finally add it to parent element.
-				parent.append(clone);
+			$.each(value, function (indexNr, subvalue) {
+				
+				var updateElement={};
+				
+				//update mode?
+				if (settings.update && index)
+				{
+					//try to find existing element
+					//the _key and _id should both match
+					updateElement=$('.autoListItem[_key="'+keyStr+'"][_id="'+subvalue[index]+'"]', parent);
+					logDebug("update element:",updateElement);
+				}
+				
+				//not found, clone new element?
+				if (!updateElement.length)
+				{
+					//deep clone it and fix classes
+					updateElement=clone.clone(true);
+					if (index)
+						$(updateElement).attr("_id", subvalue[index]);
+					//we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
+					//can we improve performance a lot by appending after the autoPut?
+					parent.append(updateElement);
+				}
+				
+				//put data into it
+				$(updateElement).autoPut(meta.meta, subvalue, keyStr, settings);
 			});			
 		}
 	},

@@ -53,13 +53,13 @@ $(document).ready(function()
 	<td>
 </tr>
 
-<tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut autoClickEdit' _key='active'>
-	<td class='autoPut autoClickEdit' _key='username'>
-	<td class='autoPut autoClickEdit' _key='name'>
-	<td class='autoPut autoClickEdit' _key='company'>
-	<td class='autoPut autoClickEdit' _key='rights'>
-	<td class='autoClickDel ui-icon ui-icon-trash'>
+<tr class='colorRows autoList ui-widget-content autoPut' _index='_id'>
+	<td class='autoPut autoClickEdit' _key='active' _html>
+	<td class='autoPut autoClickEdit' _key='username' _html>
+	<td class='autoPut autoClickEdit' _key='name' _html>
+	<td class='autoPut autoClickEdit' _key='company' _html>
+	<td class='autoPut autoClickEdit' _key='rights' _html>
+	<td class='autoClickDel ui-icon ui-icon-trash' _html>
 </tr>
 </table>
 

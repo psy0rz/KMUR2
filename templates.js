@@ -275,27 +275,38 @@ function templateList(params)
 			{
 				viewShowError(result, context, meta);
 
-				if (update)
-				{
-					//since its an update, dont get confused with the other autoput-list items
-					$(".autoListSource:first", context).autoList(meta, result['data'], {
-						indexKey:params.id,
-						context: context,
-						update:true,
-						showChanges:true
-					});
-				}
-				else
-				{
-					//delete old list contents
-					$(".autoListItem",context).not(".autoListSource").remove();
-					$(".autoListSource:first", context).autoList(meta, result['data'], {
-						indexKey:params.id,
-						updateOn:params.id,
-						context: context
-					});
-				}
-					
+//				if (update)
+//				{
+//					//since its an update, dont get confused with the other autoput-list items
+//					$(".autoListSource:first", context).autoList(meta, result['data'], {
+//						indexKey:params.id,
+//						context: context,
+//						update:true,
+//						showChanges:true
+//					});
+//				}
+//				else
+//				{
+//					//delete old list contents
+//					$(".autoListItem",context).not(".autoListSource").remove();
+//					$(".autoListSource:first", context).autoList(meta, result['data'], {
+//						indexKey:params.id,
+//						updateOn:params.id,
+//						context: context
+//					});
+//				}
+				
+				HIER: alle template dingen veranderen in templateAdd, templateSort etc.
+				zorgen dat template en auto-dingen volledig los van elkaar staan.
+				
+				dataConv.array.put(
+						$(".autoListSource",context), //element
+						{ meta: meta },  		//meta
+						'',						//keyStr
+						result.data,			//value	
+						{update: update}		//settings
+				);
+				
 				$(".autoClickDel", context).unbind('click');
 				$(".autoClickDel", context).click( del);
 				$(".autoClickEdit", context).unbind( 'click');

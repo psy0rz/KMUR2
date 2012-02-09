@@ -54,17 +54,17 @@ $(document).ready(function()
 	<td>
 </tr>
 
-<tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut autoClickEdit' _key='active'>
-	<td class='autoPut autoClickEdit' _key='username'>
-	<td class='autoPut autoClickEdit' _key='hash.username'>
-	<td class='autoPut autoClickEdit' _key='hash.bla'>
-	<td class='autoPut autoClickEdit' _key='rights'>
-	<td class='autoMeta autoOrder' _key='array'>
+<tr class='colorRows autoListSource ui-widget-content' _index='_id' _key=''>
+	<td class='autoPut autoClickEdit' _key='active' _html>
+	<td class='autoPut autoClickEdit' _key='username' _html>
+	<td class='autoPut autoClickEdit' _key='hash.username' _html>
+	<td class='autoPut autoClickEdit' _key='hash.bla' _html>
+	<td class='autoPut autoClickEdit' _key='rights' _html>
+	<td>
 		<table >
 			<tr class='autoPut' _key='array'>
-				<td class='autoPut' _key='array.username'>			
-				<td class='autoPut' _key='array.foo'>
+				<td class='autoPut' _key='array.username' _html>			
+				<td class='autoPut' _key='array.foo' _html>
 			</tr>			
 		</table>
 	<td class='autoClickDel ui-icon ui-icon-trash'>
