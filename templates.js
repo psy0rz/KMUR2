@@ -22,23 +22,14 @@ function templateForm(params)
 			//create an add-handler to add items to lists
 			$(".templateOnClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
-				var clickedElement=$(this, context).closest(".autoListItem");
+				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource");
 				
-				//readonly?
-				if (!clickedElement.hasClass("autoGet"))
+				if (clickedElement.length==0)
 					return;
 				
 				var sourceElement=clickedElement.parent().children(".autoListSource");
-				var addElement=$(sourceElement).clone(true,true);
-				addElement.removeClass("autoListSource");
-
-				//workaround for bug http://stackoverflow.com/questions/742810/clone-isnt-cloning-select-values
-				//http://bugs.jquery.com/ticket/1294
-//				var selects = $(sourceElement).find("select");
-	//	        $(selects).each(function(i) {
-		//                var select = this;
-		  //              $(addElement).find("select").eq(i).val($(select).val());
-		    //    });
+				
+				var addElement=autoListClone(sourceElement);
 
 		        if (clickedElement.hasClass("autoListSource"))
 					addElement.insertBefore(clickedElement);
@@ -49,18 +40,21 @@ function templateForm(params)
 			
 			//create an auto-add handler if the source-element is focussed
 			$(".templateOnFocusAdd :input", context).focus(function(){
-				var changedElement=$(this, context).closest(".autoListSource");
-				var addElement=autoListClone(changedElement);
-				addElement.insertBefore(changedElement);
-				$('.autoGet[_key="'+$(this).attr("_key")+'"]', addElement).focus();
+				var changedElement=$(this, context).closest(".autoListSource, .autoListItem");
+		        if (changedElement.hasClass("autoListSource"))
+		        {
+					var addElement=autoListClone(changedElement);
+					addElement.insertBefore(changedElement);
+					$('.autoGet[_key="'+$(this).attr("_key")+'"]', addElement).focus();
+		        }
 			});
 			
 
-			//add delete handlers for lists
+			//delete handlers for lists
 			$(".templateOnClickDel", context).click(function()
 			{		
-				var clickedElement=$(this, context).closest(".autoListItem");
-				if (!clickedElement.hasClass("autoListSource") && clickedElement.hasClass("autoGet"))
+				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource");
+		        if (clickedElement.hasClass("autoListItem"))
 				{
 					$(this).confirm(function()
 					{
@@ -77,7 +71,7 @@ function templateForm(params)
 				placeholder: ".tempateSortPlaceholder",
 				handle: ".templateOnDragSort",
 				cancel: ".autoListSource",
-				items:".autoGet",
+				items:"> .autoListItem",
 				forceHelperSize: true,
 				forcePlaceholderSize: true
 			});
@@ -90,7 +84,6 @@ function templateForm(params)
 	
 			//elements that have templateSetFocus always overrule the focus:
 			$(".templateSetFocus", context).focus();
-
 
 			if (params['getData'])
 			{

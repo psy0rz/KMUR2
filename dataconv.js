@@ -84,8 +84,9 @@ var dataConv=
 			
 			//traverse all the list items
 			$('.autoListItem[_key="'+keyStr+'"]', parent).each(function () {
-				var subvalue;
-				$(element).autoGet(meta.meta, subvalue, keyStr);
+				var subvalue=new Object();
+				console.log("array autolistitem...");
+				$(this).autoGet(meta.meta, subvalue, keyStr);
 				value.push(subvalue);
 			});
 			return(value);
@@ -132,7 +133,7 @@ var dataConv=
 						$(updateElement).attr("_id", subvalue[index]);
 					//we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
 					//can we improve performance a lot by appending after the autoPut?
-					parent.append(updateElement);
+					updateElement.insertBefore(element);
 				}
 				
 				//put data into it

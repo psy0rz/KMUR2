@@ -82,14 +82,20 @@ $(this).ready(function()
 	<table>
 		<thead>
 			<tr class='ui-widget-header autoMeta' _key='array'>
+				<th>
 				<th class='autoMeta' _key='array.username' _meta='desc'>
 				<th class='autoMeta' _key='array.foo' _meta='desc'>
+				<th>
+				<th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody class='templateSortable'>
 			<tr class='autoMeta autoListSource templateOnFocusAdd colorRows ui-widget-content' _key='array'>
+				<td><span class='templateOnDragSort ui-icon ui-icon-arrowthick-2-n-s'/> 
 				<td class='autoMeta' _key='array.username'>
 				<td class='autoMeta' _key='array.foo'>
+				<td><span class='templateOnClickDel ui-icon ui-icon-trash'/>
+				<td><span class='templateOnClickAdd ui-icon ui-icon-plus'/>
 			</tr>
 		</tbody>
 	</table>

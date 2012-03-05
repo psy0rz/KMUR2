@@ -593,6 +593,9 @@
 
 			//traverse the specified meta data
 			$.each(meta, function(key, thismeta){
+				if (thismeta.readonly)
+					return;
+				
 				var keyStr;
 				if (parentKey)
 					keyStr=parentKey+"."+key;

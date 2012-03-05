@@ -4,11 +4,15 @@
 {
 }
 
-.templateOnClickEdit, .templateOnClickDel
+.templateOnClickEdit, .templateOnClickDel, .templateOnClickAdd
 {
 	cursor:pointer;
 }
 
+.templateOnDragSort
+{
+	cursor:row-resize;
+}
 
 .templateOnClickOrder
 {
