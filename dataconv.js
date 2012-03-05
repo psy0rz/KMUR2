@@ -3,7 +3,7 @@
 
 function autoListClone(source)
 {
-	var clone=source.clone(true);
+	var clone=$(source).clone(true);
 	clone.removeClass("autoGet");
 	clone.removeClass("autoPut");
 	clone.removeClass("autoMeta");
@@ -29,7 +29,6 @@ var dataConv=
 		{
 			//recurse into sub:
 			$(element).autoMeta(meta.meta, keyStr);
-
 			return (null);
 		},
 		html:function(element, meta, keyStr, value)
@@ -55,9 +54,21 @@ var dataConv=
 		 * Every cloned item gets a class autoListItem added, but the other auto-classes are removed.
 		 * Add a autoListHide class to the source element to hide it. (e.g. user doesnt see a dummy-item)
 		 * Use the autoListClone() function to correctly clone the source element and fix the classes.
+		 * 
+		 * When the data is put, the _id attribute of every cloned list item is set to the value of field
+		 * that is specified in _index in the list source.
 		 */
 		input:function(element, meta, keyStr)
 		{
+			//if it is a autoListSource, add autoGet and autoPut for convienience
+			if ($(element).hasClass("autoListSource"))
+			{
+				if (!meta.readonly)
+				{
+					$(element).addClass("autoGet");
+				}
+				$(element).addClass("autoPut");
+			}
 			//recurse into sub:
 			$(element).autoMeta(meta.meta, keyStr);
 			return (null);
@@ -115,7 +126,7 @@ var dataConv=
 				//not found, clone new element?
 				if (!updateElement.length)
 				{
-					//deep clone it and fix classes
+					//deep clone the prepared clone
 					updateElement=clone.clone(true);
 					if (index)
 						$(updateElement).attr("_id", subvalue[index]);

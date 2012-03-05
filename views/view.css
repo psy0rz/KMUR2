@@ -1,16 +1,16 @@
 
 
-.autoClickEdit:hover, .autoClickDel:hover
+.templateOnClickEdit:hover, .templateOnClickDel:hover
 {
 }
 
-.autoClickEdit, .autoClickDel
+.templateOnClickEdit, .templateOnClickDel
 {
 	cursor:pointer;
 }
 
 
-.autoOrder
+.templateOnClickOrder
 {
 	cursor:pointer;
 	background-image: url("../icons/order.png");
@@ -21,15 +21,21 @@
 	
 }
 
-.autoOrderAsc
+.templateOrderAsc
 {
 	background-image: url("../icons/orderAsc.png");
 }
 
-.autoOrderDesc
+.templateOrderDesc
 {
 	background-image: url("../icons/orderDesc.png");
 }
+
+.templateSortPlaceholder 
+{
+	height: 4em;
+}
+
 
 .autoHtml_multiselect
 {
@@ -52,11 +58,6 @@
 {
 	color:red;
 	
-}
-
-.autoSortPlaceholder 
-{
-	height: 4em;
 }
 
 .autoListSource

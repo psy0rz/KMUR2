@@ -126,13 +126,13 @@ $(this).ready(function()
 				</tr>
 			</thead>
 			<tbody class='autoSort'>
-				<tr class='colorRows autoFocusAdd ui-widget-content autoMeta' _key='items'>
+				<tr class='colorRows templateOnFocusAdd ui-widget-content autoMeta' _key='items'>
 					<td class='autoClickSort ui-icon ui-icon-arrowthick-2-n-s'> 
 					<td class='autoMeta' _key='items.amount' >
 					<td class='autoMeta' _key='items.desc' >
 					<td class='autoMeta' _key='items.price' >
 					<td class='autoMeta' _key='items.tax'>					
-					<td class='autoClickDel ui-icon ui-icon-trash'>
+					<td class='templateOnClickDel ui-icon ui-icon-trash'>
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
 				<tr>
@@ -147,7 +147,7 @@ $(this).ready(function()
 </fieldset>
 
 
-<span class='autoError'></span>
-<button class='autoClickSave' style='display:block'>Opslaan</button>
-<button class='autoClickSave' style='display:block'>Opslaan en versturen</button>
+<span class='viewError'></span>
+<button class='templateOnClickSave' style='display:block'>Opslaan</button>
+<button class='templateOnClickSave' style='display:block'>Opslaan en versturen</button>
 

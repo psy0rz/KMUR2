@@ -37,29 +37,29 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta autoOrder' _key='active' _meta='desc'>
-	<th class='autoMeta autoOrder autoOrderAsc' _key='username' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='hash.username' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='hash.bla' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='rights' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='array' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='active' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder templateOrderAsc' _key='username' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='hash.username' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='hash.bla' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='rights' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='array' _meta='desc'>
 	<th>
 </tr>
 
 <tr>
 	<td>
-	<td><input type='text' class='autoFilter autoFilterFocus' _key='username'>
-	<td><input type='text' class='autoFilter' _key='hash.username'>
-	<td><input type='text' class='autoFilter' _key='hash.bla'>
+	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='username'>
+	<td><input type='text' class='templateOnChangeFilter' _key='hash.username'>
+	<td><input type='text' class='templateOnChangeFilter' _key='hash.bla'>
 	<td>
 </tr>
 
-<tr class='colorRows autoListSource ui-widget-content' _index='_id' _key=''>
-	<td class='autoPut autoClickEdit' _key='active' _html>
-	<td class='autoPut autoClickEdit' _key='username' _html>
-	<td class='autoPut autoClickEdit' _key='hash.username' _html>
-	<td class='autoPut autoClickEdit' _key='hash.bla' _html>
-	<td class='autoPut autoClickEdit' _key='rights' _html>
+<tr class='colorRows autoListSource ui-widget-content' _index='_id' >
+	<td class='autoPut templateOnClickEdit' _key='active' _html>
+	<td class='autoPut templateOnClickEdit' _key='username' _html>
+	<td class='autoPut templateOnClickEdit' _key='hash.username' _html>
+	<td class='autoPut templateOnClickEdit' _key='hash.bla' _html>
+	<td class='autoPut templateOnClickEdit' _key='rights' _html>
 	<td>
 		<table >
 			<tr class='autoPut' _key='array'>
@@ -67,7 +67,7 @@ $(document).ready(function()
 				<td class='autoPut' _key='array.foo' _html>
 			</tr>			
 		</table>
-	<td class='autoClickDel ui-icon ui-icon-trash'>
+	<td class='templateOnClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
 

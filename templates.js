@@ -5,7 +5,7 @@ function templateForm(params)
 	var context=$("#"+params.view.id);
 	
 	//disable submit button while loading
-	$(".autoClickSave", context).prop("disabled", true);
+	$(".templateOnClickSave", context).prop("disabled", true);
 	
 	//get meta data
 	rpc(
@@ -20,7 +20,7 @@ function templateForm(params)
 			$(context).autoMeta(meta);
 			
 			//create an add-handler to add items to lists
-			$(".autoClickAdd", context).click(function(){
+			$(".templateOnClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
 				var clickedElement=$(this, context).closest(".autoListItem");
 				
@@ -48,21 +48,16 @@ function templateForm(params)
 			});
 			
 			//create an auto-add handler if the source-element is focussed
-			$(".autoFocusAdd :input", context).focus(function(){
-				var changedElement=$(this, context).closest(".autoListItem");
-				//is this the source element?
-				if (changedElement.hasClass("autoListSource"))
-				{
-					//clone the listSource
-					var addElement=$(changedElement).clone(true);
-					changedElement.removeClass("autoListSource");
-					addElement.insertAfter(changedElement);
-				}
+			$(".templateOnFocusAdd :input", context).focus(function(){
+				var changedElement=$(this, context).closest(".autoListSource");
+				var addElement=autoListClone(changedElement);
+				addElement.insertBefore(changedElement);
+				$('.autoGet[_key="'+$(this).attr("_key")+'"]', addElement).focus();
 			});
 			
 
 			//add delete handlers for lists
-			$(".autoClickDel", context).click(function()
+			$(".templateOnClickDel", context).click(function()
 			{		
 				var clickedElement=$(this, context).closest(".autoListItem");
 				if (!clickedElement.hasClass("autoListSource") && clickedElement.hasClass("autoGet"))
@@ -78,9 +73,9 @@ function templateForm(params)
 			});
 			
 			//make stuff sortable
-			$(".autoSort", context).sortable({
-				placeholder: "autoSortPlaceholder",
-				handle: ".autoClickSort",
+			$(".templateSortable", context).sortable({
+				placeholder: ".tempateSortPlaceholder",
+				handle: ".templateOnDragSort",
 				cancel: ".autoListSource",
 				items:".autoGet",
 				forceHelperSize: true,
@@ -92,6 +87,10 @@ function templateForm(params)
 				$(".autoGet", context).autoFindField(meta, params.view.params.focus).focus();
 			else if (params.defaultFocus)
 				$(".autoGet", context).autoFindField(meta, params.defaultFocus).focus();
+	
+			//elements that have templateSetFocus always overrule the focus:
+			$(".templateSetFocus", context).focus();
+
 
 			if (params['getData'])
 			{
@@ -101,7 +100,7 @@ function templateForm(params)
 					params.getDataParams,
 					function(result)
 					{
-						$(".autoClickSave", context).prop("disabled", false);
+						$(".templateOnClickSave", context).prop("disabled", false);
 
 						if (result.data)
 						{
@@ -125,7 +124,7 @@ function templateForm(params)
 			//when not loading data, dont forget to call the loadCallback:
 			else
 			{
-				$(".autoClickSave", context).prop("disabled", false);
+				$(".templateOnClickSave", context).prop("disabled", false);
 
 				if (params['loadCallback'])
 					params['loadCallback'](result);
@@ -136,7 +135,7 @@ function templateForm(params)
 	//save 
 	var save=function()
 	{
-		$(".autoClickSave", context).prop("disabled", true);
+		$(".templateOnClickSave", context).prop("disabled", true);
 
 		//are there putParams that we should COPY to putData
 		var putParams={};
@@ -152,7 +151,7 @@ function templateForm(params)
 			putParams,
 			function(result)
 			{
-				$(".autoClickSave", context).prop("disabled", false);
+				$(".templateOnClickSave", context).prop("disabled", false);
 				
 				viewShowError(result, context, meta);
 
@@ -182,7 +181,9 @@ function templateForm(params)
 	};
 
 	
-	$(".autoClickSave", context).click(save);
+	$(".templateOnClickSave", context).click(save);
+
+	//pressing enter will also save:
 	$(context).bind('keypress', function(e) {
 		
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
@@ -209,7 +210,7 @@ function templateList(params)
 	{
 		var listParent=$(this).closest(".autoListItem");
 		var element=$(this);
-		var id=listParent.attr("_value");
+		var id=listParent.attr("_id");
 		element.addClass("ui-state-highlight");
 		
 		//determine the focus fields path
@@ -219,6 +220,7 @@ function templateList(params)
 		
 		$(this).parents("[_key]", listParent).each(function(index,element)
 		{
+			//TODO: waarom checken op _id??
 			if ($(element).attr("_key")!="_id")
 				fields.unshift($(element).attr("_key"));
 		});
@@ -241,8 +243,9 @@ function templateList(params)
 
 	var del=function(event)
 	{
-		var rowElement=$(this).parent(".autoListItem");
-		var id=rowElement.attr("_value");
+		var listParent=$(this).closest(".autoListItem");
+		var id=listParent.attr("_id");
+
 		if (!rowElement.hasClass("autoListSource"))
 		{
 			$(this).confirm(function()
@@ -254,7 +257,7 @@ function templateList(params)
 					rpcParams,
 					function(result)
 					{
-						if (!viewShowError(result, rowElement, meta))
+						if (!viewShowError(result, listParent, meta))
 						{
 							viewRefresh();
 						}
@@ -295,22 +298,19 @@ function templateList(params)
 //						context: context
 //					});
 //				}
-				
-				HIER: alle template dingen veranderen in templateAdd, templateSort etc.
-				zorgen dat template en auto-dingen volledig los van elkaar staan.
-				
+								
 				dataConv.array.put(
-						$(".autoListSource",context), //element
+						$(".autoListSource:first",context), //element
 						{ meta: meta },  		//meta
 						'',						//keyStr
 						result.data,			//value	
 						{update: update}		//settings
 				);
 				
-				$(".autoClickDel", context).unbind('click');
-				$(".autoClickDel", context).click( del);
-				$(".autoClickEdit", context).unbind( 'click');
-				$(".autoClickEdit", context).click( edit);
+				$(".templateOnClickDel", context).unbind('click');
+				$(".templateOnClickDel", context).click( del);
+				$(".templateOnClickEdit", context).unbind( 'click');
+				$(".templateOnClickEdit", context).click( edit);
 
 				if (!update)
 				{
@@ -339,44 +339,44 @@ function templateList(params)
 			$(context).autoMeta(meta);
 			
 			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
-			$(".autoListSource:first", context).addClass("autoListItem");
+//			$(".autoListSource:first", context).addClass("autoListItem");
 			
 			getData(false);
 		}
 	)
 
 	
-	/// SORT STUFF
+	/// ORDER STUFF
 	
 	//what is the current selected sorting column?
-	if ($(".autoOrderAsc",context).length !=0)
+	if ($(".templateOrderAsc",context).length !=0)
 	{
 		getParams.sort={};
-		getParams.sort[$(".autoOrderAsc").attr("_key")]=1;
+		getParams.sort[$(".templateOrderAsc").attr("_key")]=1;
 	}
-	else if ($(".autoOrderDesc",context).length !=0)
+	else if ($(".templateOrderDesc",context).length !=0)
 	{
 		getParams.sort={};
-		getParams.sort[$(".autoOrderDesc").attr("_key")]=-1;
+		getParams.sort[$(".templateOrderDesc").attr("_key")]=-1;
 	}
 
-	$(".autoOrder", context).click(function()
+	$(".templateOnClickOrder", context).click(function()
 	{
 		getParams.sort={};
 		
-		if ($(this).hasClass("autoOrderAsc"))
+		if ($(this).hasClass("templateOrderAsc"))
 		{
-			$(".autoOrderAsc",context).removeClass("autoOrderAsc");
-			$(".autoOrderDesc",context).removeClass("autoOrderDesc");
+			$(".templateOrderAsc",context).removeClass("templateOrderAsc");
+			$(".templateOrderDesc",context).removeClass("templateOrderDesc");
 			getParams.sort[$(this).attr("_key")]=-1;
-			$(this).addClass("autoOrderDesc");
+			$(this).addClass("templateOrderDesc");
 		}
 		else
 		{
-			$(".autoOrderAsc",context).removeClass("autoOrderAsc");
-			$(".autoOrderDesc",context).removeClass("autoOrderDesc");
+			$(".templateOrderAsc",context).removeClass("templateOrderAsc");
+			$(".templateOrderDesc",context).removeClass("templateOrderDesc");
 			getParams.sort[$(this).attr("_key")]=1;
-			$(this).addClass("autoOrderAsc");
+			$(this).addClass("templateOrderAsc");
 		}
 		
 		getData(false);
@@ -385,9 +385,7 @@ function templateList(params)
 
 	/// FILTER STUFF
 	//handle filtering 
-	$(".autoFilterFocus", context).focus();
-
-	$(".autoFilter", context).keyup(function()
+	$(".templateOnChangeFilter", context).keyup(function()
 	{
 		if (!getParams.filter)
 			getParams.filter={};
@@ -399,5 +397,8 @@ function templateList(params)
 		getData(false);
 	});
 	
+	//set default focus
+	$(".templateSetFocus", context).focus();
+
 }
 

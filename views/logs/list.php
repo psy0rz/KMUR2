@@ -36,17 +36,17 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta autoOrder autoOrderDesc' _key='time' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='username' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='logType' _meta='desc'>
-	<th class='autoMeta autoOrder' _key='text' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder templateOrderDesc' _key='time' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='username' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='logType' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='text' _meta='desc'>
 
 </tr>
 <tr>
 	<td>
-	<td><input type='text' class='autoFilter' _key='username'>
+	<td><input type='text' class='templateOnChangeFilter' _key='username'>
 	<td>
-	<td><input type='text' class='autoFilter autoFilterFocus' _key='text'>
+	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='text'>
 </tr>
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
 	<td class='autoPut' _key='time'>

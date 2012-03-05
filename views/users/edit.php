@@ -151,6 +151,6 @@ $(this).ready(function()
 	</table>
 </fieldset>
 
-<button class='autoClickSave' style='display:block'>Opslaan</button>
-<span class='autoError'></span>
+<button class='templateOnClickSave' style='display:block'>Opslaan</button>
+<span class='viewError'></span>
 

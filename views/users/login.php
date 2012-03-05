@@ -20,7 +20,8 @@ $(this).ready(function()
 		'saveCallback' : function()
 		{
 			menuReload();
-		}
+		},
+		'closeAfterSave': true
 	});
 
 });
@@ -42,6 +43,6 @@ $(this).ready(function()
 
 
 
-<button class='autoClickSave'>Login</button>
-<span class='autoError'></span>
+<button class='templateOnClickSave'>Login</button>
+<span class='viewError'></span>
 

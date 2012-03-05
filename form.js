@@ -211,7 +211,7 @@
 						if (addedElement)
 						{
 							addedElement.addClass("autoPut")
-								.attr("_key",key)
+								.attr("_key",keyStr)
 								.attr("title",thismeta.desc);
 							
 							if (!thismeta.readonly)
@@ -460,7 +460,7 @@
 	 * The source item should have the autoListSourceClass
 	 * All the listitems get the autoListClass. (even the source item)
 	 */
-	$.fn.autoList = function( meta, data , options ) {
+	$.fn.autoListOud = function( meta, data , options ) {
 
 		var settings = {
 			autoGetClass: 'autoGet',
@@ -603,6 +603,7 @@
 				//there SHOULD be only one or zero. 
 				var selector='.autoGet[_key="'+keyStr+'"]';
 				$(selector, context).each(function() {
+					console.log("autogetting", selector, value);
 					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
 				});
 				
@@ -651,6 +652,7 @@
 						var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
 						if (newElement.text()!=$(this).text())
 						{
+							$(this).empty();
 							$(this).append(newElement);
 							if (settings.showChanges)
 								$(this).effect('highlight', 2000);
@@ -659,9 +661,9 @@
 					//put input field
 					else
 					{
-						if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=value)
+						if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
 						{
-							dataConv[meta[key].type].put(this, meta[key], keyStr, value, settings);
+							dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
 							if (settings.showChanges)
 								$(this).effect('highlight', 2000);
 						}
@@ -675,7 +677,8 @@
 	 * Looks up all the fields recursively and returns the element that matches
 	 */
 	$.fn.autoFindField = function( meta, fields, options ) {  
-		
+		return($());
+		return(true); //FIXME: aanpassen aan refactoring
 		
 		var settings = {
 			autoListClass: 'autoListItem',

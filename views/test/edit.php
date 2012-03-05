@@ -13,7 +13,7 @@ $(this).ready(function()
 		putData			: 'test.put',
 		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: [ "username" ],
-		closeAfterSave	: true,
+		closeAfterSave	: false,
 		loadCallback	: function(result) {
 			if (view.params._id)
 			{
@@ -63,7 +63,7 @@ $(this).ready(function()
 	</table>
 </fieldset>
 
-<fieldset style='display:inline-block;'>
+<fieldset style='display:inline-block;' class='autoMeta' _key='hash'>
 	<legend>hash test</legend>
 	<table>
 		<tr>
@@ -77,21 +77,24 @@ $(this).ready(function()
 	</table>
 </fieldset>
 
-<fieldset  style='display:inline-block;'>
+<fieldset  style='display:inline-block;' >
 	<legend>Array test</legend>
 	<table>
-		<tr>
-			<th class='autoMeta' _key='array.username' _meta='desc'>
-			<th class='autoMeta' _key='array.foo' _meta='desc'>
-		</tr>
-			
-		<tr class='autoMeta autoFocusAdd' _key='array'>
-			<td class='autoMeta' _key='array.username'>
-			<td class='autoMeta' _key='array.foo'>
-		</tr>
-		</table>
+		<thead>
+			<tr class='ui-widget-header autoMeta' _key='array'>
+				<th class='autoMeta' _key='array.username' _meta='desc'>
+				<th class='autoMeta' _key='array.foo' _meta='desc'>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class='autoMeta autoListSource templateOnFocusAdd colorRows ui-widget-content' _key='array'>
+				<td class='autoMeta' _key='array.username'>
+				<td class='autoMeta' _key='array.foo'>
+			</tr>
+		</tbody>
+	</table>
 </fieldset>
 
-<button class='autoClickSave' style='display:block'>Opslaan</button>
-<span class='autoError'></span>
+<button class='templateOnClickSave' style='display:block'>Opslaan</button>
+<span class='viewError'></span>
 
