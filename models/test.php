@@ -68,7 +68,7 @@ class test extends model_Mongo
 						"foo"=>array(
 							"desc"=>"array foo",
 							"type"=>"string",
-							"max"=>20,
+							"max"=>5,
 						),
 					)
 			),

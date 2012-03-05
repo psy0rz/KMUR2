@@ -583,7 +583,7 @@
 	*/
 	$.fn.autoGet = function( meta, value, parentKey ) {  
 
-		logDebug("autoGet called with ", meta, value , parentKey);
+		console.log("autoGet called with ", meta, value , parentKey, this);
 		if (!meta)
 			return;
 
@@ -606,7 +606,7 @@
 				//there SHOULD be only one or zero. 
 				var selector='.autoGet[_key="'+keyStr+'"]';
 				$(selector, context).each(function() {
-					console.log("autogetting", selector, value);
+					console.log("autogetting", selector, value, this);
 					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
 				});
 				
@@ -677,108 +677,51 @@
 	}
 
 	/**
-	 * Looks up all the fields recursively and returns the element that matches
+	 * Looks up the element that matches the fields array.
+	 * array items are noted by a number.
+	 * example: [ "test", 5, "bla" ]
+	 * This selects the bla field in the 5th element of the test array.
+	 * This notation is also used by errors that are returned from the server.
 	 */
-	$.fn.autoFindField = function( meta, fields, options ) {  
-		return($());
-		return(true); //FIXME: aanpassen aan refactoring
+	$.fn.autoFindField = function( meta, fields) {  
+		logDebug("autofind called with ", meta, fields);
 		
-		var settings = {
-			autoListClass: 'autoListItem',
-			autoFindClass: 'autoFindClass'
-		};
-		
-		if ( options ) { 
-			$.extend( settings, options );
-		}
-		
-		
-		//we need to remember which nodes we processed (because of recursion)
-		if (!settings.recursed)
+		var elements=this;
+		var keyStr='';
+		var thismeta=meta;
+		$.each(fields, function(index, field)
 		{
-			this.addClass(settings.autoFindClass);
-			settings.recursed=true;
-		}
-
-		var result=$();
-		
-		//traverse all the elements
-		this.each(function() {
-			
-			//skip if we already processed it
-			if ($(this).hasClass(settings.autoFindClass))
+			if (typeof field == "string")
 			{
-				logDebug("auto finding ", fields, " in ", this);
-
-				//prevent us from processing it again (for recursion)
-				$(this).removeClass(settings.autoFindClass);
-								
-				var key=$(this).attr("_key");
-				
-				//key matches?
-				if (key==fields[0])
-				{
-					//copy array, but without first element
-					var recurseFields=fields.slice();
-					recurseFields.shift();
-
-					//this was the last field?
-					if (recurseFields.length==0)
-					{
-						result=$(this);
-						return (false);
-					}
-					
-					//recurse into hash?
-					if (meta[key].type=="hash")
-					{
-						result=$("."+settings.autoFindClass, this).autoFindField(
-							meta[key].meta, recurseFields, settings
-						);
-						if (result.length)
-							return (false);
-					}
-					
-					//recurse into array?
-					else if (meta[key].type=="array")
-					{
-						logDebug("array");
-						//get the correct list item
-						var itemIndex=(recurseFields[0]+1);
-						var listItem=$('.'+settings.autoListClass+':nth-child('+itemIndex+')', this);
-
-						recurseFields.shift();
-
-						//no items left, then return the listItem	
-						if (recurseFields.length==0)
-						{
-							result=listItem;
-							return (false);
-						}
-						
-						//recurse into listelement
-						result=$("."+settings.autoFindClass, listItem).autoFindField(
-							meta[key].meta, recurseFields, settings
-						);
-						logDebug("recursion result", result);
-
-						if (result.length)
-							return (false);						
-						
-					}
-				}
-				//key does not match
+				if (keyStr!='')
+					keyStr+='.'+field;
 				else
+					keyStr=field;
+				
+				if (!(field in thismeta))
 				{
-					//make sure we dont process any subitems inside it (arrays/hash)
-					$("."+settings.autoFindClass, this).removeClass(settings.autoFindClass);
+					console.error("autofind: Fields not found in metadata ", meta, fields);
+					return false;
 				}
+				
+				//TODO: hack - this logic probably belongs in dataconv as well:
+				if (thismeta[field].type=="array")
+					elements=$('.autoListItem[_key="'+keyStr+'"]', elements);
+				else
+					elements=$('.autoGet[_key="'+keyStr+'"]', elements);
+				
+				//does the field have submeta-data (in case array or hash )
+				if (thismeta[field].meta)
+					thismeta=thismeta[field].meta;
+				
 			}
-			
-			//not found
-			return(true);
+			else if (typeof field == "number")
+			{
+				elements=elements.eq(field);
+			}
+			console.log("autofind ", field, elements);
 		});
-		return (result);
+		return (elements);
 	};
 
 })( jQuery );

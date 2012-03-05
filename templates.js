@@ -78,9 +78,9 @@ function templateForm(params)
 			
 			//focus the correct input field
 			if (params.view.params && params.view.params.focus)
-				$(".autoGet", context).autoFindField(meta, params.view.params.focus).focus();
+				$(context).autoFindField(meta, params.view.params.focus).focus();
 			else if (params.defaultFocus)
-				$(".autoGet", context).autoFindField(meta, params.defaultFocus).focus();
+				$(context).autoFindField(meta, params.defaultFocus).focus();
 	
 			//elements that have templateSetFocus always overrule the focus:
 			$(".templateSetFocus", context).focus();
@@ -214,8 +214,8 @@ function templateList(params)
 		$(this).parents("[_key]", listParent).each(function(index,element)
 		{
 			//TODO: waarom checken op _id??
-			if ($(element).attr("_key")!="_id")
-				fields.unshift($(element).attr("_key"));
+			//if ($(element).attr("_key")!="_id")
+			fields.unshift($(element).attr("_key"));
 		});
 
 		//create the view to edit the clicked item

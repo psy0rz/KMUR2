@@ -62,9 +62,9 @@ $(document).ready(function()
 	<td class='autoPut templateOnClickEdit' _key='rights' _html>
 	<td>
 		<table >
-			<tr class='autoPut' _key='array'>
-				<td class='autoPut' _key='array.username' _html>			
-				<td class='autoPut' _key='array.foo' _html>
+			<tr class='autoMeta autoListSource' _key='array'>
+				<td class='autoPut templateOnClickEdit' _key='array.username' _html>			
+				<td class='autoPut templateOnClickEdit' _key='array.foo' _html>
 			</tr>			
 		</table>
 	<td class='templateOnClickDel ui-icon ui-icon-trash'>
