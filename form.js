@@ -697,22 +697,13 @@
 					keyStr+='.'+field;
 				else
 					keyStr=field;
-				
-				if (!(field in thismeta))
-				{
-					console.error("autofind: Fields not found in metadata ", meta, fields);
-					return false;
-				}
-				
-				//TODO: hack - this logic probably belongs in dataconv as well:
-				if (thismeta[field].type=="array")
+								
+				//NOTE: hack - this logic probably belongs in dataconv as well?
+				var nextelement=$('.autoGet[_key="'+keyStr+'"]', elements);
+				if (nextelement.hasClass("autoListSource"))
 					elements=$('.autoListItem[_key="'+keyStr+'"]', elements);
 				else
-					elements=$('.autoGet[_key="'+keyStr+'"]', elements);
-				
-				//does the field have submeta-data (in case array or hash )
-				if (thismeta[field].meta)
-					thismeta=thismeta[field].meta;
+					elements=nextelement;
 				
 			}
 			else if (typeof field == "number")
