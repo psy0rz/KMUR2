@@ -78,9 +78,9 @@ function templateForm(params)
 			
 			//focus the correct input field
 			if (params.view.params && params.view.params.focus)
-				$(context).autoFindField(meta, params.view.params.focus).focus();
+				$(context).autoFindElement(meta, params.view.params.focus).focus();
 			else if (params.defaultFocus)
-				$(context).autoFindField(meta, params.defaultFocus).focus();
+				$(context).autoFindElement(meta, params.defaultFocus).focus();
 	
 			//elements that have templateSetFocus always overrule the focus:
 			$(".templateSetFocus", context).focus();

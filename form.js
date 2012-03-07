@@ -683,7 +683,7 @@
 	 * This selects the bla field in the 5th element of the test array.
 	 * This notation is also used by errors that are returned from the server.
 	 */
-	$.fn.autoFindField = function( meta, fields) {  
+	$.fn.autoFindElement = function( meta, fields) {  
 		logDebug("autofind called with ", meta, fields);
 		
 		var elements=this;

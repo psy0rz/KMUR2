@@ -200,7 +200,7 @@ function viewShowError(result, parent, meta)
 			
 			if ('fields' in result.error)
 			{
-				$(parent).autoFindField(meta, result.error.fields)
+				$(parent).autoFindElement(meta, result.error.fields)
 					.addClass("ui-state-error").focus();
 			}
 			return(true);
