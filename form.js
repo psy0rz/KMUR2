@@ -677,26 +677,26 @@
 	}
 
 	/**
-	 * Looks up the element that matches the fields array.
+	 * Looks up the element that matches the keys array within the specified context
 	 * array items are noted by a number.
 	 * example: [ "test", 5, "bla" ]
-	 * This selects the bla field in the 5th element of the test array.
+	 * This selects the bla key in the 5th element of the test array.
 	 * This notation is also used by errors that are returned from the server.
 	 */
-	$.fn.autoFindElement = function( meta, fields) {  
-		logDebug("autofind called with ", meta, fields);
+	$.fn.autoFindElement = function( meta, keys) {  
+		logDebug("autofind called with ", meta, keys);
 		
 		var elements=this;
 		var keyStr='';
 		var thismeta=meta;
-		$.each(fields, function(index, field)
+		$.each(keys, function(index, key)
 		{
-			if (typeof field == "string")
+			if (typeof key == "string")
 			{
 				if (keyStr!='')
-					keyStr+='.'+field;
+					keyStr+='.'+key;
 				else
-					keyStr=field;
+					keyStr=key;
 								
 				//NOTE: hack - this logic probably belongs in dataconv as well?
 				var nextelement=$('.autoGet[_key="'+keyStr+'"]', elements);
@@ -706,15 +706,24 @@
 					elements=nextelement;
 				
 			}
-			else if (typeof field == "number")
+			else if (typeof key == "number")
 			{
-				elements=elements.eq(field);
+				elements=elements.eq(key);
 			}
-			console.log("autofind ", field, elements);
+			console.log("autofind ", key, elements);
 		});
 		return (elements);
-	};
+	}; 
+	
+	/**
+	 * Looks up the keys that belong to the specified element 
+	 * array items are noted by a number.
+	 * example: [ "test", 5, "bla" ]
+	 *//*
+	$.fn.autoFindKeys = function( meta, fields) {  
 
+	};*/
+	
 })( jQuery );
 
 
