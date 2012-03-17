@@ -27,6 +27,13 @@ var dataConv=
 	hash:{
 		input:function (element, meta, keyStr)
 		{
+			//add autoGet and autoPut for convienience
+			if (!meta.readonly)
+			{
+				$(element).addClass("autoGet");
+			}
+			$(element).addClass("autoPut");
+
 			//recurse into sub:
 			$(element).autoMeta(meta.meta, keyStr);
 			return (null);

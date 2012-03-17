@@ -719,10 +719,10 @@
 	 * Looks up the keys that belong to the specified element 
 	 * array items are noted by a number.
 	 * example: [ "test", 5, "bla" ]
-	 *//*
+	 */
 	$.fn.autoFindKeys = function( meta, fields) {  
-
-	};*/
+		
+	};
 	
 })( jQuery );
 
