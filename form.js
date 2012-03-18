@@ -720,8 +720,46 @@
 	 * array items are noted by a number.
 	 * example: [ "test", 5, "bla" ]
 	 */
-	$.fn.autoFindKeys = function( meta, fields) {  
+	$.fn.autoFindKeys = function( meta) {  
+		var element=this;
+		var count=$(element).attr("_key").split('.').length;
 		
+		
+		var fields=[];
+		
+		while(count)
+		{
+			console.log("element ", element, "count ", count);
+
+			//its a listitem..determine the itemnumber.
+			if (element.hasClass("autoListItem"))
+			{
+				var listIndex=0;
+				//NOTE: hack - this logic probably belongs in dataconv as well?
+				$(element).parent().children('.autoListItem[_key="'+$(element).attr("_key")+'"]').each(function(index, listitem)
+						{
+//							console.log("compare1 ",listitem);
+//							console.log("compare2 ",element);
+							if (listitem===element[0])
+							{
+//								console.log("w00t");
+								listIndex=index;
+								return(false);
+							}
+							listIndex++;
+						});
+				fields.unshift(listIndex);
+			}
+
+			//add last field of keystring to the beginning of the fields array:
+			fields.unshift($(element).attr("_key").split('.').pop());
+		
+			//goto next closest parent element
+			element=$(element).parent().closest("[_key]");
+			count--;
+		}
+//		console.log("fields",fields);
+		return(fields);
 	};
 	
 })( jQuery );

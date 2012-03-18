@@ -57,8 +57,8 @@ $(document).ready(function()
 <tr class='colorRows autoListSource ui-widget-content' _index='_id' >
 	<td class='autoPut templateOnClickEdit' _key='active' _html>
 	<td class='autoPut templateOnClickEdit' _key='username' _html>
-	<td class='autoPut templateOnClickEdit' _key='hash.username' _html>
-	<td class='autoPut templateOnClickEdit' _key='hash.bla' _html>
+	<td class='autoPut' _key='hash'><span class='autoPut templateOnClickEdit' _key='hash.username' _html>
+	<td class='autoPut' _key='hash'><span class='autoPut templateOnClickEdit' _key='hash.bla' _html>
 	<td class='autoPut templateOnClickEdit' _key='rights' _html>
 	<td>
 		<table >

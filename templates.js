@@ -52,7 +52,7 @@ function templateForm(params)
 
 			//delete handlers for lists
 			$(".templateOnClickDel", context).click(function()
-			{		
+			{
 				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource");
 		        if (clickedElement.hasClass("autoListItem"))
 				{
@@ -76,14 +76,6 @@ function templateForm(params)
 				forcePlaceholderSize: true
 			});
 			
-			//focus the correct input field
-			if (params.view.params && params.view.params.focus)
-				$(context).autoFindElement(meta, params.view.params.focus).focus();
-			else if (params.defaultFocus)
-				$(context).autoFindElement(meta, params.defaultFocus).focus();
-	
-			//elements that have templateSetFocus always overrule the focus:
-			$(".templateSetFocus", context).focus();
 
 			if (params['getData'])
 			{
@@ -111,6 +103,16 @@ function templateForm(params)
 							if (params['loadCallback'])
 								params['loadCallback'](result);
 						}
+						
+						//focus the correct input field
+						if (params.view.params && params.view.params.focus)
+							$(context).autoFindElement(meta, params.view.params.focus).focus();
+						else if (params.defaultFocus)
+							$(context).autoFindElement(meta, params.defaultFocus).focus();
+				
+						//elements that have templateSetFocus always overrule the focus:
+						$(".templateSetFocus", context).focus();
+
 					}
 				);
 			}
@@ -201,23 +203,24 @@ function templateList(params)
 	
 	var edit=function(event)
 	{
-		var listParent=$(this).closest(".autoListItem");
+		var listParent=$(this).closest(".autoListItem[_id]")	;
 		var element=$(this);
 		var id=listParent.attr("_id");
 		element.addClass("ui-state-highlight");
 		
-		//determine the focus fields path
-		var fields=[];
-		if ($(this).attr("_key"))
-			fields.unshift($(this).attr("_key"));
+//		//determine the focus fields path
+//		var fields=[];
+//		if ($(this).attr("_key"))
+//			fields.unshift($(this).attr("_key"));
+//		
+//		$(this).parents("[_key]", listParent).each(function(index,element)
+//		{
+//			//TODO: waarom checken op _id??
+//			//if ($(element).attr("_key")!="_id")
+//			fields.unshift($(element).attr("_key"));
+//		});
+		var fields=$(element).autoFindKeys(meta);
 		
-		$(this).parents("[_key]", listParent).each(function(index,element)
-		{
-			//TODO: waarom checken op _id??
-			//if ($(element).attr("_key")!="_id")
-			fields.unshift($(element).attr("_key"));
-		});
-
 		//create the view to edit the clicked item
 		var editView={};
 		$.extend( editView, params.editView );
