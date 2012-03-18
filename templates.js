@@ -206,19 +206,10 @@ function templateList(params)
 		var listParent=$(this).closest(".autoListItem[_id]")	;
 		var element=$(this);
 		var id=listParent.attr("_id");
+		if (typeof id == "undefined")
+			id='';
 		element.addClass("ui-state-highlight");
 		
-//		//determine the focus fields path
-//		var fields=[];
-//		if ($(this).attr("_key"))
-//			fields.unshift($(this).attr("_key"));
-//		
-//		$(this).parents("[_key]", listParent).each(function(index,element)
-//		{
-//			//TODO: waarom checken op _id??
-//			//if ($(element).attr("_key")!="_id")
-//			fields.unshift($(element).attr("_key"));
-//		});
 		var fields=$(element).autoFindKeys(meta);
 		
 		//create the view to edit the clicked item
@@ -303,7 +294,7 @@ function templateList(params)
 						{update: update}		//settings
 				);
 				
-				$(".templateOnClickDel", context).unbind('click');
+	  			$(".templateOnClickDel", context).unbind('click');
 				$(".templateOnClickDel", context).click( del);
 				$(".templateOnClickEdit", context).unbind( 'click');
 				$(".templateOnClickEdit", context).click( edit);

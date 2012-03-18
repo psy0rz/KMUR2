@@ -6,75 +6,79 @@ class test extends model_Mongo
 
 	function getMeta()
 	{	
-		return(array(
+		$primitiveTypes=array(
+			"stringTest"=>array(
+				"desc"=>"String test",
+				"type"=>"string",
+				"max"=>20,
+			),
+			"multiselectTest"=>array(
+				"desc"=>"Multi select test",
+				"type"=>"multiselect",
+				"default"=>array("second"),
+				"choices"=>array(
+					"first"=>"First choice",
+					"second"=>"Second choice",
+					3=>"Third choice (a number)",
+					4=>"Forth choice (a number)",
+				)
+			),
+			"passwordTest"=>array(
+				"desc"=>"Password test",
+				"type"=>"password",
+			),
+			"booleanTest"=>array(
+				"desc"=>"Boolean test",
+				"default"=>true,
+				"type"=>"bool",
+			),
+			"floatTest"=>array(
+				"desc"=>"Float test",
+				"type"=>"float"
+			),
+			"integerTest"=>array(
+				"desc"=>"Integer test",
+				"type"=>"integer"
+			),
+			"selectTest"=>array(
+				"desc"=>"Select test",
+				"type"=>"select",
+				"default"=>array("second"),
+				"choices"=>array(
+					"first"=>"First choice",
+					"second"=>"Second choice",
+					3=>"Third choice (a number)",
+					4=>"Forth choice (a number)",
+				)
+			),
+			"dateTest"=>array(
+				"desc"=>"Date test",
+				"type"=>"date"
+			),
+		
+		);
+		
+		
+		$meta=array(
 			"_id"=>array(
 				"type"=>"mongoId"
 			),
 
-			/// Authentication stuff
-			"username"=>array(
-				"desc"=>"Inlog naam",
-				"type"=>"string",
-				"max"=>20,
+			"hashTest"=>array(
+				"desc"=>"Hash test",
+				"type"=>"hash",
+				"meta"=>$primitiveTypes,
 			),
-			"rights"=>array(
-				"desc"=>"Gebruikers rechten",
-				"type"=>"multiselect",
-				"default"=>array("customer"),
-				//Note: anonymous users have the 'anonymous' right
-				//logged in users have the 'anonymous' AND 'user' right, in addition to the rights defined below:
-				"choices"=>array(
-					"admin"=>"Administrator",
-					"employee"=>"Medewerker",
-					"customer"=>"Klant",
-					"finance"=>"Financieel",
-				)
+			"arrayTest"=>array(
+				"desc"=>"array test",
+				"type"=>"array",
+				"meta"=>$primitiveTypes,
 			),
-			"password"=>array(
-				"desc"=>"Wachtwoord",
-				"type"=>"password",
-			),
-			"active"=>array(
-				"desc"=>"User mag inloggen",
-				"default"=>true,
-				"type"=>"bool",
-			),
-			"hash"=>array(
-					"desc"=>"hash test",
-					"type"=>"hash",
-					"meta"=>array(
-						"username"=>array(
-							"desc"=>"hash inlognaam",
-							"type"=>"string",
-							"max"=>20,
-						),
-						"bla"=>array(
-							"desc"=>"hash bla",
-							"type"=>"string",
-							"max"=>20,
-							),
+		);
+
+		$meta+=$primitiveTypes;
 		
-					)
-			),
-			"array"=>array(
-					"desc"=>"array test",
-					"type"=>"array",
-					"meta"=>array(
-						"username"=>array(
-							"desc"=>"array inlognaam",
-							"type"=>"string",
-							"max"=>20,
-						),
-						"foo"=>array(
-							"desc"=>"array foo",
-							"type"=>"string",
-							"max"=>5,
-						),
-					)
-			),
-		));
-
-
+		return($meta);
 	}
 
 

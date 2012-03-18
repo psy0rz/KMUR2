@@ -37,37 +37,44 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta templateOnClickOrder' _key='active' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder templateOrderAsc' _key='username' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='hash.username' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='hash.bla' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='rights' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='array' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='stringTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='multiselectTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='passwordTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='booleanTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='floatTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='integerTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='selectTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='dateTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='arrayTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='hashTest' _meta='desc'>
 	<th>
 </tr>
 
 <tr>
-	<td>
-	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='username'>
-	<td><input type='text' class='templateOnChangeFilter' _key='hash.username'>
-	<td><input type='text' class='templateOnChangeFilter' _key='hash.bla'>
-	<td>
+	<td><input type='text' class='templateOnChangeFilter' _key='stringTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='multiselectTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='passwordTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='booleanTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='floatTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='integerTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='selectTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='dateTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='arrayTest'>
+	<td><input type='text' class='templateOnChangeFilter' _key='hashTest'>
 </tr>
 
 <tr class='colorRows autoListSource ui-widget-content' _index='_id' >
-	<td class='autoPut templateOnClickEdit' _key='active' _html>
-	<td class='autoPut templateOnClickEdit' _key='username' _html>
-	<td class='autoPut' _key='hash'><span class='autoPut templateOnClickEdit' _key='hash.username' _html>
-	<td class='autoPut' _key='hash'><span class='autoPut templateOnClickEdit' _key='hash.bla' _html>
-	<td class='autoPut templateOnClickEdit' _key='rights' _html>
+	<td class='autoPut' _key='stringTest' _html>
+	<td class='autoPut' _key='multiselectTest' _html>
+	<td class='autoPut' _key='passwordTest' _html>
+	<td class='autoPut' _key='booleanTest' _html>
+	<td class='autoPut' _key='floatTest' _html>
+	<td class='autoPut' _key='integerTest' _html>
+	<td class='autoPut' _key='selectTest' _html>
+	<td class='autoPut' _key='dateTest' _html>
+	<td class='autoPut' _key='arrayTest' _html>
+	<td class='autoPut' _key='hashTest' _html>
 	<td>
-		<table >
-			<tr class='autoMeta autoListSource' _key='array'>
-				<td class='autoPut templateOnClickEdit' _key='array.username' _html>			
-				<td class='autoPut templateOnClickEdit' _key='array.foo' _html>
-			</tr>			
-		</table>
-	<td class='templateOnClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
 
