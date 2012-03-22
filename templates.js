@@ -53,7 +53,7 @@ function templateForm(params)
 			//delete handlers for lists
 			$(".templateOnClickDel", context).click(function()
 			{
-				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource");
+				var clickedElement=$(this, context).closest(".autoListItem");
 		        if (clickedElement.hasClass("autoListItem"))
 				{
 					$(this).confirm(function()
@@ -233,7 +233,7 @@ function templateList(params)
 		var listParent=$(this).closest(".autoListItem");
 		var id=listParent.attr("_id");
 
-		if (!rowElement.hasClass("autoListSource"))
+//		if (!rowElement.hasClass("autoListSource"))
 		{
 			$(this).confirm(function()
 			{
