@@ -285,7 +285,8 @@ function templateList(params)
 //						context: context
 //					});
 //				}
-								
+
+				//TODO: make the selected element configurable?
 				dataConv.array.put(
 						$(".autoListSource:first",context), //element
 						{ meta: meta },  		//meta

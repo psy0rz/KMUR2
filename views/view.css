@@ -69,6 +69,11 @@
 	background: #DDD  !important;
 }
 
+.autoListHide
+{
+	display: none;
+}
+
 
 
 .autoHtml_logType_info

@@ -72,8 +72,28 @@ $(document).ready(function()
 	<td class='templateOnClickEdit autoPut' _key='integerTest' _html>
 	<td class='templateOnClickEdit autoPut' _key='selectTest' _html>
 	<td class='templateOnClickEdit autoPut' _key='dateTest' _html>
-	<td class='templateOnClickEdit autoPut' _key='arrayTest' _html>
-	<td class='templateOnClickEdit autoPut' _key='hashTest' _html>
+	<td class='autoPut' _key='hashTest'>
+		<ul>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.stringTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.multiselectTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.passwordTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.booleanTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.floatTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.integerTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.selectTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.dateTest' _html>
+		</ul>
+	<td>
+		<table class='autoPut autoListSource autoListHide' _key='arrayTest'>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.stringTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.multiselectTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.passwordTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.booleanTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.floatTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.integerTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.selectTest' _html>
+			<td class='templateOnClickEdit autoPut' _key='arrayTest.dateTest' _html>
+		</table>
 	<td class='templateOnClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
