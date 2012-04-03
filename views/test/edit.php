@@ -139,13 +139,13 @@ $(this).ready(function()
 			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='arrayTest'  _index='_id'>
 				<td class='templateOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 
 				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.stringTest'>
-				<td class='autoMeta' _key='arrayTest.multiselectTest'>
-				<td class='autoMeta' _key='arrayTest.passwordTest'>
-				<td class='autoMeta' _key='arrayTest.booleanTest'>
-				<td class='autoMeta' _key='arrayTest.floatTest'>
-				<td class='autoMeta' _key='arrayTest.integerTest'>
-				<td class='autoMeta' _key='arrayTest.selectTest'>
-				<td class='autoMeta' _key='arrayTest.dateTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.multiselectTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.passwordTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.booleanTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.floatTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.integerTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.selectTest'>
+				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.dateTest'>
 				<td class='templateOnClickDel ui-icon ui-icon-trash'>
 				<td class='templateOnClickAdd ui-icon ui-icon-plus'>
 			</tr>

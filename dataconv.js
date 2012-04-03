@@ -10,6 +10,8 @@ function autoListClone(source)
 	clone.removeClass("autoListSource");
 	clone.removeClass("autoListHide");
 	clone.addClass("autoListItem");
+	
+	
 	return(clone);
 }
 
@@ -389,26 +391,42 @@ var dataConv=
 		{
 			var	addedElement=$("<input>")
 				.attr("type","text");
-			$(addedElement).val(meta.default);
-			addedElement.datepicker({
-				dateFormat:'dd-mm-yy',
-	//			altFormat:'yy-mm-dd'
+			if ('default' in meta)
+				$(addedElement).val($.datepicker.formatDate( 'dd-mm-yy', new Date(meta.default*1000) ));
+			
+			//create datepicker on demand, to make it clonable:
+			//(its probably more efficient as well on long lists)
+			addedElement.focus(function(){
+				if ($(this).closest(".autoListSource").length != 0)
+					return;
+				
+				$(this).datepicker({
+					dateFormat:'dd-mm-yy',
+					onClose: function(dateText, inst) 
+					{
+						$(this).datepicker("destroy");
+						$(this).attr("id",null);
+					}
+				}).datepicker("show");
+				
 			});
 			return(addedElement);
 		},
 		html:function(element, meta, keyStr, value)
 		{
-			//FIXME
-			return($("<span>").text(value));
+			return($("<span>").text(
+				$.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) )
+			));
 		},
 		get:function(element, meta, keyStr)
 		{
-			var date=new Date($(element).datepicker("getDate"));
-			return(date.getTime()/1000);
+			//var date=new Date($(element).datepicker("getDate"));
+			return($.datepicker.parseDate('dd-mm-yy', $(element).val())/1000);
 		},
 		put:function(element, meta, keyStr, value)
 		{
-			$(element).datepicker("setDate", new Date(value*1000));
+			//$(element).datepicker("setDate", new Date(value*1000));
+			$(element).val($.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) ));
 		}
 	}
 }
