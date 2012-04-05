@@ -42,12 +42,13 @@
 	<div id='viewMenu'>
 	</div>
 
-	<div id='viewLog'>
+
+	<div id='viewPath'>
 	</div>
 </div>
-
-<div id='viewPath'>
+<div id='viewLog'>
 </div>
+
 
 <div id='views' class='ui-widget'>
 </div>

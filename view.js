@@ -250,7 +250,7 @@ function viewDOMadd(view)
 		titleDiv.addClass("viewTitle");
 		titleDiv.attr("id",view.id+"Title");
 		titleDiv.attr("viewId",view.id);
-		titleDiv.text("(loading...)");
+		titleDiv.text("...");
 		$("#viewPath").append(titleDiv);
 		
 		var viewDiv=$("<div>");
@@ -280,7 +280,7 @@ function viewDOMadd(view)
 			width: 'auto',
 	//		autoResize: true,
 	//		autoOpen: false,
-			title: 'loading...',
+			title: '...',
 			position: [ 
 				view.x,
 				view.y 

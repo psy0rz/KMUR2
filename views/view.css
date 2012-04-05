@@ -1,4 +1,4 @@
-
+<!-- View specific CSS stuff. Stuff that happens INSIDE a view -->
 
 .templateOnClickEdit:hover, .templateOnClickDel:hover
 {
@@ -111,3 +111,13 @@
 	color: #ffffff;
 	
 }
+
+.floatingBar
+{
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	bottom:0em;
+	background: gray;
+}
+
