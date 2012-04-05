@@ -242,7 +242,7 @@
 	*/
 	$.fn.autoGet = function( meta, value, parentKey ) {  
 
-		console.log("autoGet called with ", meta, value , parentKey, this);
+//		console.log("autoGet called with ", meta, value , parentKey, this);
 		if (!meta)
 			return;
 
@@ -265,7 +265,7 @@
 				//there SHOULD be only one or zero. 
 				var selector='.autoGet[_key="'+keyStr+'"]';
 				$(selector, context).each(function() {
-					console.log("autogetting", selector, value, this);
+	//				console.log("autogetting", selector, value, this);
 					value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
 				});
 				
@@ -311,10 +311,10 @@
 					//there SHOULD be only one or zero. 
 					var selector='.autoPut[_key="'+keyStr+'"]';
 					$(selector, context).each(function() {
-						//html only
+						//generate html
 						if ($(this).attr("_html")!=null)
 						{
-							console.log("check", meta, key);
+//							console.log("check", meta, key);
 							var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
 							if (newElement.text()!=$(this).text())
 							{
@@ -324,14 +324,14 @@
 									$(this).effect('highlight', 2000);
 							}
 						}
-						//put input field
+						//put data into existing input fields (or arrays or hashes)
 						else
 						{
 							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
 							{
 								dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
-								if (settings.showChanges)
-									$(this).effect('highlight', 2000);
+								//FIXME: (werkt niet met array in test/list) if (settings.showChanges)
+								//	$(this).effect('highlight', 2000);
 							}
 						}
 					});
@@ -374,7 +374,7 @@
 			{
 				elements=elements.eq(key);
 			}
-			console.log("autofind ", key, elements);
+//			console.log("autofind ", key, elements);
 		});
 		return (elements);
 	}; 
@@ -393,7 +393,7 @@
 		
 		while(count)
 		{
-			console.log("element ", element, "count ", count);
+//			console.log("element ", element, "count ", count);
 
 			//its a listitem..determine the itemnumber.
 			if (element.hasClass("autoListItem"))

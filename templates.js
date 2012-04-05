@@ -286,13 +286,16 @@ function templateList(params)
 //					});
 //				}
 
-				//TODO: make the selected element configurable?
+				
 				dataConv.array.put(
-						$(".autoListSource:first",context), //element
+						$(".templateListSource",context), //element
 						{ meta: meta },  		//meta
 						'',						//keyStr
 						result.data,			//value	
-						{update: update}		//settings
+						{						//settings
+							update: update,
+							showChanges: update
+						}		
 				);
 				
 	  			$(".templateOnClickDel", context).unbind('click');

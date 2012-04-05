@@ -13,7 +13,7 @@ $(this).ready(function()
 		putData			: 'test.put',
 		putDataParams		: { "_id": view.params._id },
 		defaultFocus	: [ "username" ],
-		closeAfterSave	: false,
+		closeAfterSave	: true,
 		loadCallback	: function(result) {
 			if (view.params._id)
 			{
