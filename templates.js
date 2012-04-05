@@ -193,6 +193,7 @@ function templateList(params)
 {
 	var meta={};
 	var context=$("#"+params.view.id);
+	var autoListSourceElement=$(".autoListSource:first",context);
 
 	////// GENERIC LIST STUFF
 	
@@ -288,7 +289,7 @@ function templateList(params)
 
 				
 				dataConv.array.put(
-						$(".templateListSource",context), //element
+						autoListSourceElement, //element
 						{ meta: meta },  		//meta
 						'',						//keyStr
 						result.data,			//value	

@@ -94,7 +94,6 @@ var dataConv=
 			//traverse all the list items
 			$('.autoListItem[_key="'+keyStr+'"]', parent).each(function () {
 				var subvalue=new Object();
-				console.log("array autolistitem...");
 				$(this).autoGet(meta.meta, subvalue, keyStr);
 				value.push(subvalue);
 			});
@@ -104,8 +103,8 @@ var dataConv=
 		{
 			var parent=$(element).parent();
 			var index=$(element).attr("_index");
+			var listItems;
 
-			console.error("PUT" , element);
 			
 			if ($(element).attr("_key")==null)
 			{
@@ -117,22 +116,39 @@ var dataConv=
 			{
 				$('.autoListItem[_key="'+keyStr+'"]', parent).remove();
 			}
-
+			//in update mode, add a marker to remember which stuff can be deleted
+			else
+			{
+				$('.autoListItem[_key="'+keyStr+'"]', parent).addClass("autoListDelete");
+				if (!index)
+				{
+					//we dont have a index, so create a array of all items to use plain array adressing mode
+					listItems=$('.autoListItem[_key="'+keyStr+'"]', parent);
+				}
+			}
+			
 			//for performance, prepare a listitem one time and clone that.
 			var clone=autoListClone(element);
 			
 			//traverse all the list items
-			$.each(value, function (indexNr, subvalue) {
+			$.each(value, function (itemNr, subvalue) {
 				
 				var updateElement={};
 				
-				//update mode?
-				if (settings.update && index)
+				//update mode, with index:
+				if (settings.update)
 				{
-					//try to find existing element
-					//the _key and _id should both match
-					updateElement=$('.autoListItem[_key="'+keyStr+'"][_id="'+subvalue[index]+'"]', parent);
-					logDebug("update element:",updateElement);
+					if (index)
+					{
+						//try to find existing element
+						//the _key and _id should both match
+						updateElement=$('.autoListItem[_key="'+keyStr+'"][_id="'+subvalue[index]+'"]', parent);
+					}
+					else
+					{
+						//just use plain itemNr array adressing:
+						updateElement=$(listItems[itemNr]);
+					}
 				}
 				
 				//not found, clone new element?
@@ -146,10 +162,22 @@ var dataConv=
 					//can we improve performance a lot by appending after the autoPut?
 					updateElement.insertBefore(element);
 				}
+				//found, make sure its not deleted
+				else
+				{
+					if (settings.update)
+						updateElement.removeClass("autoListDelete");
+				}
 				
 				//put data into it
 				$(updateElement).autoPut(meta.meta, subvalue, keyStr, settings);
 			});			
+			
+			//delete stuff that still has the delete-marker in it:
+			$('.autoListDelete[_key="'+keyStr+'"]', parent).hide(1000, function()
+					{
+						$(this).remove();
+					});				
 		}
 	},
 	string:{
@@ -416,9 +444,12 @@ var dataConv=
 		},
 		html:function(element, meta, keyStr, value)
 		{
-			return($("<span>").text(
-				$.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) )
-			));
+			if (value!="")
+				return($("<span>").text(
+						$.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) )
+				));
+			else
+				return($("<span>"));
 		},
 		get:function(element, meta, keyStr)
 		{
@@ -428,7 +459,10 @@ var dataConv=
 		put:function(element, meta, keyStr, value)
 		{
 			//$(element).datepicker("setDate", new Date(value*1000));
-			$(element).val($.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) ));
+			if (value!='')
+				$(element).val($.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) ));
+			else
+				$(element).val("");
 		}
 	}
 }

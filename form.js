@@ -327,12 +327,12 @@
 						//put data into existing input fields (or arrays or hashes)
 						else
 						{
-							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
-							{
+//							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
+//							{
 								dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
 								//FIXME: (werkt niet met array in test/list) if (settings.showChanges)
 								//	$(this).effect('highlight', 2000);
-							}
+//							}
 						}
 					});
 				}
