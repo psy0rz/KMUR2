@@ -42,10 +42,6 @@ $(this).ready(function()
 </script>
 
 
-<div class='floatingBar'>
-	<button class='templateOnClickSave' style='display:block'>Opslaan</button>
-	<span class='viewError'></span>
-</div>
 
 <fieldset style='display:inline-block;'>
 	<legend>Basic data structures</legend>
@@ -160,3 +156,7 @@ $(this).ready(function()
 </fieldset>
 
 
+<div class='floatingBar'>
+	<button class='templateOnClickSave' >Opslaan</button>
+	<span class='viewError'></span>
+</div>

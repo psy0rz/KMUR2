@@ -33,25 +33,48 @@
 </head> 
 <body class='ui-widget'> 
 
-<?
 
 
-?>
+<div id='views' class='ui-widget' style='
+	margin-left:8em;
+	margin-top:2em;
+	margin-bottom:3em;
+'>
+</div>
 
-<div id='menuHolder'>
+
+
+<div id='viewPath' style='
+	position:fixed;
+	top:0em;
+	left:8em;
+	right:0em;
+	padding-left:1em;
+	padding-bottom:0.5em;
+	background:white;
+'>
+</div>
+
+
+<div id='menuHolder' style='
+	padding-top: 1em;
+	position: fixed;
+	top:0em;
+	left: 0em;
+	bottom:0em;
+	width:8em;
+	background: #eeeeee;
+	border-right-width:2px;
+	border-right-style:solid;
+'>
 	<div id='viewMenu'>
 	</div>
-
-
-	<div id='viewPath'>
+	
+	<div id='viewLog' style='
+	'>
 	</div>
 </div>
-<div id='viewLog'>
-</div>
 
-
-<div id='views' class='ui-widget'>
-</div>
 
 <div id='viewDebug'>
 </div>

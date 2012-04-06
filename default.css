@@ -14,15 +14,6 @@ Do not put view specific stuff in here, use view.css instead.
 }
 
 
-#menuHolder
-{
-	position: fixed;
-	left: 0px;
-	right: 0px;
-	top:0px;
-	background: #eeeeee;
-	border-bottom-style: solid;
-}
 
 #viewMenu
 {
@@ -32,7 +23,7 @@ Do not put view specific stuff in here, use view.css instead.
 
 .menuMain
 {
-	display:inline-block;
+	display:block;
 	cursor: pointer;
 	
 }
@@ -59,7 +50,7 @@ Do not put view specific stuff in here, use view.css instead.
 	border-color: #bbbbbb;
 	padding-left: .5em;
 	padding-right: .5em;
-	margin-left: 1em;
+	margin-left: 5em;
 	background: #eeeeee;
 	cursor: pointer;
 	position: fixed;
@@ -79,15 +70,6 @@ Do not put view specific stuff in here, use view.css instead.
 	
 }
 
-#viewPath
-{
-	margin-left:2em;
-}
-
-#views
-{
-	margin-top:3em;
-}
 
 .viewTitle
 {
@@ -112,9 +94,7 @@ Do not put view specific stuff in here, use view.css instead.
 	
 }
 
-#viewLog
-{
-}
+
 
 
 .log
@@ -134,4 +114,22 @@ Do not put view specific stuff in here, use view.css instead.
 }
 
 
-.
+.floatingBar
+{
+	position: fixed;
+	left: 8em;
+	right: 0em;
+	bottom:0em;
+	background: #ffffff;
+	padding-top:0.5em;
+	padding-left:1em;
+	border-width:2px;
+	border-top-color:white;
+	border-top-style:solid;
+	padding-right:1em;
+}
+
+.floatingBar *
+{
+	float:right;
+}
