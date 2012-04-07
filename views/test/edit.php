@@ -156,7 +156,7 @@ $(this).ready(function()
 </fieldset>
 
 
-<div class='floatingBar'>
+<div class='floatingBar viewErrorClass'>
 	<button class='templateOnClickSave' >Opslaan</button>
-	<span class='viewError'></span>
+	<span class='viewErrorText'></span>
 </div>

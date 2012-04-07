@@ -173,18 +173,18 @@ function viewClose(view)
  */
 function viewShowError(result, parent, meta)
 {
-	$(".viewError", parent).text("");
-	$(".ui-state-error", parent).removeClass("ui-state-error");
+	$(".viewErrorText", parent).text("");
+	$(".viewErrorClass", parent).removeClass("ui-state-error");
 
 	if (result!=null)
 	{
 		if ('error' in result)
 		{
 			//show in html element?
-			if ($(".viewError", parent).size()!=0)
+			if ($(".viewErrorText", parent).size()!=0)
 			{
-				$(".viewError", parent).text(result.error.message);
-				$(".viewError", parent).addClass("ui-state-error");
+				$(".viewErrorText", parent).text(result.error.message);
+				$(".viewErrorClass", parent).addClass("ui-state-error");
 
 			}
 			//create popup box
