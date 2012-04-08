@@ -20,7 +20,13 @@
 
 		$(document).ready(function()
 		{
-			menuReload();
+			//menuReload();
+			viewLoad({
+				name: 'menu.main',
+				mode: 'existing',
+				id: 'viewMenu'				
+			});
+			
 //			$("#themeswitcher").themeswitcher();
 			$("#viewLog").click(function(){
 				$(this).empty();
@@ -52,6 +58,7 @@
 	padding-left:1em;
 	padding-bottom:0.5em;
 	background:white;
+	opacity: 0.9;
 '>
 </div>
 

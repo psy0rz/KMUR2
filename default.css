@@ -127,6 +127,7 @@ Do not put view specific stuff in here, use view.css instead.
 	border-top-color:white;
 	border-top-style:solid;
 	padding-right:1em;
+	opacity: .80	;
 }
 
 .floatingBar *

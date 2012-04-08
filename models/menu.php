@@ -6,37 +6,48 @@ class menu extends model_Mongo
 	private $tree;
 	
 	private $meta=array(
-		"_id"=>array(
-			"type"=>"mongoId"
-		),
-		"menu"=>array(
-			"desc"=>"Menu naam",
-			"type"=>"string",
-			"max"=>20,
-			"min"=>1
-		),
-		"view"=>array(
-			"desc"=>"View naam",
-			"type"=>"string",
-			"max"=>20,
-			"min"=>1
-		),
-		"mode"=>array(
-			"desc"=>"Modus",
-			"type"=>"string",
-			"max"=>20,
-			"min"=>1
-		),
-		"params"=>array(
-			"desc"=>"View parameters",
-			"type"=>"*",
-		),
-		"desc"=>array(
-			"desc"=>"Menu titel",
-			"type"=>"string",
-			"max"=>40,
-			"min"=>1
-		),
+		"main"=>array(
+			"desc"=>"Main menu items",
+			"type"=>"array",
+			"meta"=>array(
+				"name"=>array(
+					"desc"=>"Main menu name",
+					"type"=>"string",
+				),
+				"title"=>array(
+					"desc"=>"Main menu title",
+					"type"=>"string",
+				),
+				"items"=>array(
+					"desc"=>"Sub menu items",
+					"type"=>"array",
+					"meta"=>array(
+						"title"=>array(
+							"desc"=>"Sub menu title",
+							"type"=>"string",
+						),
+						"view"=>array(
+							"desc"=>"View data",
+							"type"=>"*"
+						)
+					)
+				),
+				"favorites"=>array(
+					"desc"=>"Favorites",
+					"type"=>"array",
+					"meta"=>array(
+						"title"=>array(
+							"desc"=>"Favorite title",
+							"type"=>"string",
+						),
+						"view"=>array(
+							"desc"=>"View data",
+							"type"=>"*"
+						)
+					)
+				)
+			)
+		)
 	);
 	
 	function __construct()
