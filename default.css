@@ -1,7 +1,8 @@
-<!-- Global CSS stuff. Stuff that specifies how the screen and menu layouts look.
-Do not put view specific stuff in here, use view.css instead.
+/*
+	Global CSS stuff. Stuff that specifies how the screen and menu layouts look.
+	Do not put view specific stuff in here, use view.css instead.
 
- -->
+*/
 
 .colorRows 
 {
@@ -21,6 +22,7 @@ Do not put view specific stuff in here, use view.css instead.
 
 
 
+/* A main menu item */
 .menuMain
 {
 	display:block;
@@ -28,6 +30,7 @@ Do not put view specific stuff in here, use view.css instead.
 	
 }
 
+/* Title of a main menu item */
 .menuMainTitle
 {
 	padding-left: 1em;
@@ -35,7 +38,6 @@ Do not put view specific stuff in here, use view.css instead.
 	border-width:1px;
 	border-style:solid;
 	border-color:#eeeeee;
-	
 }
 
 .menuMainTitle:hover
@@ -43,6 +45,7 @@ Do not put view specific stuff in here, use view.css instead.
 	background: #dddddd;
 }
 
+/* Contains submenu items that belong to the main menu */
 .menuMainSubs
 {
 	border-width: 2px;
@@ -50,10 +53,15 @@ Do not put view specific stuff in here, use view.css instead.
 	border-color: #bbbbbb;
 	padding-left: .5em;
 	padding-right: .5em;
-	margin-left: 5em;
+	margin-left: 1em;
 	background: #eeeeee;
 	cursor: pointer;
-	position: fixed;
+}
+
+/* A sub menu item */
+.menuSub
+{
+	
 }
 
 .menuSub:hover
@@ -61,6 +69,7 @@ Do not put view specific stuff in here, use view.css instead.
 	background: #dddddd;
 }
 
+/* A menu seperator */
 .menuSeperator
 {
 	border-width:1px;
@@ -83,10 +92,7 @@ Do not put view specific stuff in here, use view.css instead.
 {
 	cursor: pointer;
 	color: blue;
-	font-weight: normal;
-	
-	
-	
+	font-weight: normal;	
 }
 
 .viewMain

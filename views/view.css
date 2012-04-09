@@ -1,4 +1,6 @@
-<!-- View specific CSS stuff. Stuff that happens INSIDE a view -->
+/* 
+	View specific CSS stuff. Stuff that happens INSIDE a view 
+*/
 
 .templateOnClickEdit:hover, .templateOnClickDel:hover
 {

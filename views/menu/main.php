@@ -4,6 +4,7 @@
 $(this).ready(function()
 {
 	var view=<?=viewGet()?>;
+	var context=$("#"+view.id);
 
 	var meta;
 
@@ -15,6 +16,7 @@ $(this).ready(function()
 			{},
 			function (result)
 			{
+				$(context).autoPut(meta, result.data);
 			});
 	}
 
@@ -24,7 +26,7 @@ $(this).ready(function()
 		{},
 		function (result)
 		{
-			meta=result;
+			meta=result.data;
 			menuReload();
 		});
 		
@@ -32,7 +34,13 @@ $(this).ready(function()
 
 </script>
 
-
-
-<h1>meanuu</h1>
-
+<div>
+	<div class='autoPut menuMain' _key='main'>
+		<div class='autoPut menuMainTitle' _key='main.title' _html></div>
+		<div class='menuMainSubs'>
+			<div class='autoPut menuSub' _key='main.items'>
+				<div class='autoPut' _key='main.items.title' _html></div>
+			</div>
+		</div>
+	</div>
+</div>

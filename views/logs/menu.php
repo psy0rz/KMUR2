@@ -1,11 +1,11 @@
 <?
 
 $this->addMain("system",array(
-	"desc"=>"Systeem",
+	"title"=>"Systeem",
 ));
 
-$this->addSub("system","logs",array(
-	"desc"=>"Logs",
+$this->addSub("system",array(
+	"title"=>"Logs",
 	"view"=>array(
 		"name"=>"logs.list",
 		"mode"=>"main"

@@ -4,51 +4,50 @@
 class menu extends model_Mongo
 {
 	private $tree;
-	
-	private $meta=array(
-		"main"=>array(
-			"desc"=>"Main menu items",
-			"type"=>"array",
-			"meta"=>array(
-				"name"=>array(
-					"desc"=>"Main menu name",
-					"type"=>"string",
-				),
-				"title"=>array(
-					"desc"=>"Main menu title",
-					"type"=>"string",
-				),
-				"items"=>array(
-					"desc"=>"Sub menu items",
-					"type"=>"array",
-					"meta"=>array(
-						"title"=>array(
-							"desc"=>"Sub menu title",
-							"type"=>"string",
-						),
-						"view"=>array(
-							"desc"=>"View data",
-							"type"=>"*"
+
+	function getMeta()
+	{
+		return(array(
+			"main"=>array(
+				"desc"=>"Main menu items",
+				"type"=>"array",
+				"meta"=>array(
+					"title"=>array(
+						"desc"=>"Main menu title",
+						"type"=>"string",
+					),
+					"items"=>array(
+						"desc"=>"Sub menu items",
+						"type"=>"array",
+						"meta"=>array(
+							"title"=>array(
+								"desc"=>"Sub menu title",
+								"type"=>"string",
+							),
+							"view"=>array(
+								"desc"=>"View data",
+								"type"=>"*"
+							)
 						)
-					)
-				),
-				"favorites"=>array(
-					"desc"=>"Favorites",
-					"type"=>"array",
-					"meta"=>array(
-						"title"=>array(
-							"desc"=>"Favorite title",
-							"type"=>"string",
-						),
-						"view"=>array(
-							"desc"=>"View data",
-							"type"=>"*"
+					),
+					"favorites"=>array(
+						"desc"=>"Favorites",
+						"type"=>"array",
+						"meta"=>array(
+							"title"=>array(
+								"desc"=>"Favorite title",
+								"type"=>"string",
+							),
+							"view"=>array(
+								"desc"=>"View data",
+								"type"=>"*"
+							)
 						)
 					)
 				)
 			)
-		)
-	);
+		));
+	}
 	
 	function __construct()
 	{
@@ -74,9 +73,9 @@ class menu extends model_Mongo
 			$this->tree["$main"]=$params;
 	}
 	
-	function addSub($main, $sub, $params)
+	function addSub($main, $params)
 	{
-		$this->tree["$main"]["subs"][$sub]=$params;
+		$this->tree["$main"]["items"][]=$params;
 	}
 	
 	function getAcl()
@@ -84,6 +83,7 @@ class menu extends model_Mongo
 		return(array(
 			"default"=>array("admin"),
 			"get"=>array("anonymous"),
+			"getMeta"=>array("anonymous"),
 			"addFavorite"=>array("employee", "admin", "customer"),
 			"getFavorites"=>array("employee", "admin", "customer")
 		));
@@ -92,10 +92,10 @@ class menu extends model_Mongo
 
 	function get()
 	{
-		//get the tree
-		$ret=$this->tree;
+		//transform the tree into a format that works better in our javascript framework
+		$ret["main"]=array_values($this->tree);
 		
-		
+		/**
 		//get all the favorite items for this user
 		$cursor=$this->db->menu->find(array(
 			'user' => $this->context->getUser(),
@@ -110,7 +110,7 @@ class menu extends model_Mongo
 				$ret[$item["menu"]]["favorites"][]=$item;
 			}
 		}
-		
+		*/
 		return($ret);
 	}
 

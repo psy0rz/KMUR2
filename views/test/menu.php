@@ -1,11 +1,11 @@
 <?
 
 $this->addMain("test",array(
-	"desc"=>"Test",
+	"title"=>"Test",
 ));
 
-$this->addSub("test","list",array(
-	"desc"=>"Overzicht",
+$this->addSub("test",array(
+	"title"=>"Overzicht",
 	"view"=>array(
 		"name"=>"test.list",
 		"mode"=>"main"

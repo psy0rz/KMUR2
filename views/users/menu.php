@@ -1,11 +1,11 @@
 <?
 
 $this->addMain("users",array(
-	"desc"=>"Gebruikers",
+	"title"=>"Gebruikers",
 ));
 
-$this->addSub("users","list",array(
-	"desc"=>"Overzicht",
+$this->addSub("users",array(
+	"title"=>"Overzicht",
 	"view"=>array(
 		"name"=>"users.list",
 		"mode"=>"main"
@@ -14,8 +14,8 @@ $this->addSub("users","list",array(
 ));
 
 
-$this->addSub("users","new",array(
-	"desc"=>"Nieuw",
+$this->addSub("users",array(
+	"title"=>"Nieuw",
 	"view"=>array(
 		"name"=>"users.edit",
 		"mode"=>"main",
@@ -25,8 +25,8 @@ $this->addSub("users","new",array(
 	)
 ));
 
-$this->addSub("users","login",array(
-	"desc"=>"Inloggen",
+$this->addSub("users",array(
+	"title"=>"Inloggen",
 	"view"=>array(
 		"name"=>"users.login",
 		"mode"=>"popup",

@@ -1,19 +1,19 @@
 <?
 
 $this->addMain("invoices",array(
-	"desc"=>"Facturatie",
+	"title"=>"Facturatie",
 ));
 
-$this->addSub("invoices","list",array(
-	"desc"=>"Overzicht",
+$this->addSub("invoices",array(
+	"title"=>"Overzicht",
 	"view"=>array(
 		"name"=>"invoices.list",
 		"mode"=>"main"
 	)
 ));
 
-$this->addSub("invoices","new",array(
-	"desc"=>"Nieuw",
+$this->addSub("invoices",array(
+	"title"=>"Nieuw",
 	"view"=>array(
 		"name"=>"invoices.edit",
 		"mode"=>"main",
