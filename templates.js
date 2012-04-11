@@ -75,7 +75,20 @@ function templateForm(params)
 				forceHelperSize: true,
 				forcePlaceholderSize: true
 			});
+
 			
+			function templateFormFocus()
+			{
+				//focus the correct input field
+				if (params.view.params && params.view.params.focus)
+					$(context).autoFindElement(meta, params.view.params.focus).focus();
+				else if (params.defaultFocus)
+					$(context).autoFindElement(meta, params.defaultFocus).focus();
+		
+				//elements that have templateSetFocus always overrule the focus:
+				$(".templateSetFocus", context).focus();
+				
+			}
 
 			if (params['getData'])
 			{
@@ -92,6 +105,7 @@ function templateForm(params)
 							$(context).autoPut(meta, result.data);
 						}
 						
+						templateFormFocus();
 
 						if (viewShowError(result, context, meta))
 						{
@@ -104,14 +118,6 @@ function templateForm(params)
 								params['loadCallback'](result);
 						}
 						
-						//focus the correct input field
-						if (params.view.params && params.view.params.focus)
-							$(context).autoFindElement(meta, params.view.params.focus).focus();
-						else if (params.defaultFocus)
-							$(context).autoFindElement(meta, params.defaultFocus).focus();
-				
-						//elements that have templateSetFocus always overrule the focus:
-						$(".templateSetFocus", context).focus();
 
 					}
 				);
@@ -121,8 +127,12 @@ function templateForm(params)
 			{
 				$(".templateOnClickSave", context).prop("disabled", false);
 
+				templateFormFocus();
+
 				if (params['loadCallback'])
 					params['loadCallback'](result);
+				
+
 			}
 		}
 	);
@@ -316,6 +326,7 @@ function templateList(params)
 	{
 		//console.log("reresh!!");
 		getData(true);
+
 	});
 
 	//get meta

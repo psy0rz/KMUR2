@@ -51,7 +51,7 @@ $(document).ready(function()
 </tr>
 
 <tr>
-	<td><input type='text' class='templateOnChangeFilter' _key='stringTest'>
+	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='stringTest'>
 	<td>
 	<td>
 	<td>

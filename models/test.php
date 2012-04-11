@@ -107,9 +107,9 @@ class test extends model_Mongo
 		$ret=$this->setById("test", $params["_id"], $params);
 
 		if ($params["_id"])
-			logger("info", "test gewijzigd.");
+			logger("info", "test ".$params['stringTest']." gewijzigd.");
 		else
-			logger("info", "test toegevoegd.");
+			logger("info", "test ".$params['stringTest']." toegevoegd.");
 		
 		return($ret);
 
@@ -119,7 +119,7 @@ class test extends model_Mongo
 	{
 		$this->verifyMeta($params);
 		$this->delById("test", $params["_id"]);
-		logger("info", "test verwijderd.");
+		logger("info", "test ".$params['stringTest']." verwijderd.");
 	}
 
 	function getAcl()

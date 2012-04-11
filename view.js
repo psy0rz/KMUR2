@@ -175,16 +175,19 @@ function viewShowError(result, parent, meta)
 {
 	$(".viewErrorText", parent).text("");
 	$(".viewErrorClass", parent).removeClass("ui-state-error");
+	$(".viewError", parent).text("").removeClass("ui-state-error");
 
 	if (result!=null)
 	{
 		if ('error' in result)
 		{
+			
 			//show in html element?
-			if ($(".viewErrorText", parent).size()!=0)
+			if ($(".viewErrorText", parent).size()!=0 || $(".viewError", parent).size()!=0)
 			{
 				$(".viewErrorText", parent).text(result.error.message);
 				$(".viewErrorClass", parent).addClass("ui-state-error");
+				$(".viewError", parent).text(result.error.message).addClass("ui-state-error");
 
 			}
 			//create popup box
@@ -406,7 +409,7 @@ function viewLoad(view)
 //send a refresh event to all .autoRefresh classes.
 function viewRefresh()
 {
-	console.debug("Triggering refresh");
+	//console.debug("Triggering refresh");
 	$(".autoRefresh").trigger('refresh');
 
 }

@@ -314,36 +314,41 @@
 
 				if (key in meta)
 				{
-						
 					//find the element that belongs to this key 
 					//there SHOULD be only one or zero. 
 					var selector='.autoPut[_key="'+keyStr+'"]';
 					$(selector, context).each(function() {
-	
-						//generate html
-						if ($(this).attr("_html")!=null)
+						if (meta[key].type in dataConv)
 						{
-//							console.log("check", meta, key);
-							var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
-							if (newElement.text()!=$(this).text())
+							//generate html
+							if ($(this).attr("_html")!=null)
 							{
-								$(this).empty();
-								$(this).append(newElement);
-								if (settings.showChanges)
-									$(this).effect('highlight', 2000);
+	//							console.log("check", meta, key);
+								var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
+								if (newElement.text()!=$(this).text())
+								{
+									$(this).empty();
+									$(this).append(newElement);
+									if (settings.showChanges)
+										$(this).effect('highlight', 2000);
+								}
+							}
+							//put data into existing input fields (or arrays or hashes)
+							else
+							{
+	//							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
+	//							{
+									dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
+									//FIXME: (werkt niet met array in test/list) if (settings.showChanges)
+									//	$(this).effect('highlight', 2000);
+	//							}
 							}
 						}
-						//put data into existing input fields (or arrays or hashes)
 						else
 						{
-//							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
-//							{
-								dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
-								//FIXME: (werkt niet met array in test/list) if (settings.showChanges)
-								//	$(this).effect('highlight', 2000);
-//							}
+							console.error("Metadata has unknown type: ", meta[key]);
+							return false;
 						}
-						
 					});
 				}
 			}); //meta

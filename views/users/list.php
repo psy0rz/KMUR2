@@ -53,7 +53,7 @@ $(document).ready(function()
 	<td>
 </tr>
 
-<tr class='colorRows autoList ui-widget-content autoPut' _index='_id'>
+<tr class='colorRows autoListSource ui-widget-content' _index='_id'>
 	<td class='autoPut templateOnClickEdit' _key='active' _html>
 	<td class='autoPut templateOnClickEdit' _key='username' _html>
 	<td class='autoPut templateOnClickEdit' _key='name' _html>

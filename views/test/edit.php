@@ -28,7 +28,6 @@ $(this).ready(function()
 		},
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) {
-			title="Test "+result.data.stringTest;
 			$(document).trigger("menu.addFavorite",{
 				menu:		"test",
 				desc:		"Wijzig "+result.data.stringTest,

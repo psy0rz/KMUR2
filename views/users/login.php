@@ -19,7 +19,7 @@ $(this).ready(function()
 		},
 		'saveCallback' : function()
 		{
-			menuReload();
+			$(document).trigger("menu.reload");
 		},
 		'closeAfterSave': true
 	});

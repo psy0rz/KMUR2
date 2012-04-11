@@ -63,6 +63,7 @@ class model_Mongo extends model
 	//if id is set, updates data in collection. throws exception when not found
 	//if id is not set, add data to collection
 	//on success returns created or updated data and id
+	//it WONT fetch the complete object from the database, to prevent unexpected information leaking.
 	protected function setById($collection, $id, $data, $meta='')
 	{
 		//always ignore the _id (its not a MongoId object anyway)

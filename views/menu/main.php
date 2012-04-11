@@ -9,7 +9,7 @@ $(this).ready(function()
 	var meta;
 
 	//(re)load the menu
-	function menuReload()
+	$(document).on("menu.reload", function(event, params)
 	{
 		rpc(
 			"menu.get",
@@ -18,7 +18,7 @@ $(this).ready(function()
 			{
 				$(context).autoPut(meta, result.data);
 			});
-	}
+	});
 
 	/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
 	parameters:
@@ -34,7 +34,7 @@ $(this).ready(function()
 					params,
 					function(result)
 					{
-						menuReload();
+						$(document).trigger("menu.reload");
 					}
 				);
 			
@@ -67,7 +67,7 @@ $(this).ready(function()
 		function (result)
 		{
 			meta=result.data;
-			menuReload();
+			$(document).trigger("menu.reload");
 		});
 		
 });

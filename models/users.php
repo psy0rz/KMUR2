@@ -178,14 +178,16 @@ class users extends model_Mongo
 		if ($existing && $existing["_id"]!=$params["_id"])
 			throw new FieldException("Gebruiker bestaat al!", "username");
 
-		$id=$this->setById("users", $params["_id"], $params);
+		$ret=$this->setById("users", $params["_id"], $params);
 
 		//do logging
-		$data=$this->getById("users",$id);
+		//$data=$this->getById("users",$id);
 		if ($params["_id"])
-			logger("info", "Gebruiker ".$data["username"]." gewijzigd.");
+			logger("info", "Gebruiker ".$params["username"]." gewijzigd.");
 		else
-			logger("info", "Gebruiker ".$data["username"]." toegevoegd.");
+			logger("info", "Gebruiker ".$params["username"]." toegevoegd.");
+		
+		return($ret);
 
 	}
 
@@ -199,7 +201,8 @@ class users extends model_Mongo
 
 	function authenticate($params)
 	{
-//HACK		
+//FIXME: way to init db with a admin user?
+//HACK so we can init the db	
 //$this->context->change("psy", array("anonymous","admin")	);
 	
 		//verify if input is ok

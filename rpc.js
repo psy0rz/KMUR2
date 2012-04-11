@@ -30,6 +30,9 @@ function rpc(classMethod, params, callback)
 				
 				console.debug("rpc result "+classMethod+": ", result);
 
+				if ('error' in result)
+					console.error("rpc result has error message:", result.error.message, result);
+
 				//print debug info
 				if (result.debug)
 				{

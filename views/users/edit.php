@@ -15,15 +15,8 @@ $(this).ready(function()
 		defaultFocus	: [ "username" ],
 		closeAfterSave	: true,
 		loadCallback	: function(result) {
-			if (view.params._id)
-			{
+			if (result.data)
 				title="Wijzigen gebruiker "+result.data.username;
-				menuAddFavorite({
-					menu:		"users",
-					desc:		"Wijzig "+result.data.username,
-					view:		view
-				});
-			}
 			else
 				title="Nieuwe gebruiker";
 				
@@ -34,7 +27,13 @@ $(this).ready(function()
 			
 		},
 		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
+		saveCallback	: function(result) {
+			$(document).trigger("menu.addFavorite",{
+				menu:		"users",
+				desc:		"Wijzig "+result.data.username,
+				view:		view
+			});
+		}
 	});
 
 });
@@ -151,6 +150,8 @@ $(this).ready(function()
 	</table>
 </fieldset>
 
-<button class='templateOnClickSave' style='display:block'>Opslaan</button>
-<span class='viewError'></span>
 
+<div class='floatingBar viewErrorClass'>
+	<button class='templateOnClickSave' >Opslaan</button>
+	<span class='viewErrorText'></span>
+</div>

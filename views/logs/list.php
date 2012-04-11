@@ -48,11 +48,11 @@ $(document).ready(function()
 	<td>
 	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='text'>
 </tr>
-<tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut' _key='time'>
-	<td class='autoPut' _key='username'>
-	<td class='autoPut' _key='logType'>
-	<td class='autoPut' _key='text'>
+<tr class='colorRows autoListSource ui-widget-content'>
+	<td class='autoPut' _key='time' _html>
+	<td class='autoPut' _key='username' _html>
+	<td class='autoPut' _key='logType' _html>
+	<td class='autoPut' _key='text' _html>
 </tr>
 </table>
 

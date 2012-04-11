@@ -41,7 +41,7 @@ class logs extends model_Mongo
 			),
 			"time"=>array(
 				"desc"=>"Tijd",
-				"type"=>"time",
+				"type"=>"date",
 			)
 		));
 	}
