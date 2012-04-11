@@ -30,7 +30,7 @@ $(this).ready(function()
 		saveCallback	: function(result) {
 			$(document).trigger("menu.addFavorite",{
 				menu:		"users",
-				desc:		"Wijzig "+result.data.username,
+				title:		"Wijzig "+result.data.username,
 				view:		view
 			});
 		}

@@ -30,7 +30,7 @@ $(this).ready(function()
 		saveCallback	: function(result) {
 			$(document).trigger("menu.addFavorite",{
 				menu:		"test",
-				desc:		"Wijzig "+result.data.stringTest,
+				title: 		"Wijzig "+result.data.stringTest,
 				view:		view
 			});
 		}

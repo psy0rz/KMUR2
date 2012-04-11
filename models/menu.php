@@ -92,31 +92,29 @@ class menu extends model_Mongo
 
 	function get()
 	{
-		//transform the tree into a format that works better in our javascript framework
-		$ret["main"]=array_values($this->tree);
-		
-		/**
 		//get all the favorite items for this user
 		$cursor=$this->db->menu->find(array(
 			'user' => $this->context->getUser(),
 		));
 		$cursor->sort(array("timestamp"=>-1));
 	
+		//group items by menu
+		$menu=$this->tree;
 		foreach ($cursor as $item)
 		{
-			//group items by menu
-			if (!isset($ret[$item["menu"]]) || count($ret[$item["menu"]])<10)
+			if (!isset($menu[$item["menu"]]["favorites"]) || count($menu[$item["menu"]]["favorites"])<10)
 			{
-				$ret[$item["menu"]]["favorites"][]=$item;
+				$menu[$item["menu"]]["favorites"][]=$item;
 			}
 		}
-		*/
-		return($ret);
+		
+		//transform the tree into a format that works better in our javascript framework
+		return(array("main"=>array_values($menu)));
 	}
 
 	/*
 		'menu':		"users",
-		'desc':		"Wijzig "+result.data.username,
+		'title':		"Wijzig "+result.data.username,
 		'view':		(same parameters as viewCreate() in view.js)
 	*/
 	function addFavorite($params)
@@ -127,14 +125,14 @@ class menu extends model_Mongo
 			array(
 				'user' => $this->context->getUser(),
 				'menu' => $params["menu"],
-				'desc' => $params["desc"],
+				'title' => $params["title"],
 			), 
 			array(
 				'$set' => array(
 					'user' => $this->context->getUser(),
 					'menu' => $params["menu"],
 					'view' => $params["view"],
-					'desc' => $params["desc"],
+					'title' => $params["title"],
 					'timestamp' => time(),
 				),
 //				'$inc' => array(
