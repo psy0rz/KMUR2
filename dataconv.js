@@ -16,6 +16,27 @@ function autoListClone(source)
 }
 
 
+var defaultDateFormat='dd-mm-yy';
+var defaultTimeFormat='hh:mm';
+
+
+function formatDateTime(timestamp, allowTime)
+{
+	var date=new Date(timestamp*1000);
+	var dateStr=$.datepicker.formatDate( defaultDateFormat, date );
+
+	if (allowTime)
+		dateStr+=" "+$.datepicker.formatTime( defaultTimeFormat, 
+				{
+					hour:	date.getHours(),
+					minute:	date.getMinutes(),
+					second: date.getSeconds()
+			 	});
+	
+	return(dateStr);
+}
+
+
 /** Dataconversion functions:
  * First key is the meta-type.
  * Second is the conversion function:
@@ -419,10 +440,19 @@ var dataConv=
 	date:{
 		input:function(element, meta)
 		{
+			var allowTime=false;
+
 			var	addedElement=$("<input>")
-				.attr("type","text");
+			.attr("type","text");
+			
+			if ($(element).attr("_allowTime")!=null)
+			{
+				allowTime=true;
+				addedElement.attr("_allowTime","");
+			}
+			
 			if ('default' in meta)
-				$(addedElement).val($.datepicker.formatDate( 'dd-mm-yy', new Date(meta.default*1000) ));
+				$(addedElement).val(formatDateTime(meta.default, allowTime));
 			
 			//create datepicker on demand, to make it clonable:
 			//(its probably more efficient as well on long lists)
@@ -430,14 +460,31 @@ var dataConv=
 				if ($(this).closest(".autoListSource").length != 0)
 					return;
 				
-				$(this).datepicker({
-					dateFormat:'dd-mm-yy',
-					onClose: function(dateText, inst) 
-					{
-						$(this).datepicker("destroy");
-						$(this).attr("id",null);
-					}
-				}).datepicker("show");
+				if (allowTime)
+				{
+					//date AND time picker:
+					$(this).datetimepicker({
+						dateFormat:defaultDateFormat,
+						timeFormat:defaultTimeFormat,
+						onClose: function(dateText, inst) 
+						{
+							$(this).datetimepicker("destroy");
+							$(this).attr("id",null);
+						}
+					}).datetimepicker("show");
+				}
+				else
+				{
+					//date picker only:
+					$(this).datepicker({
+						dateFormat:defaultDateFormat,
+						onClose: function(dateText, inst) 
+						{
+							$(this).datepicker("destroy");
+							$(this).attr("id",null);
+						}
+					}).datepicker("show");
+				}
 				
 			});
 			return(addedElement);
@@ -445,22 +492,29 @@ var dataConv=
 		html:function(element, meta, keyStr, value)
 		{
 			if (value!="")
-				return($("<span>").text(
-						$.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) )
-				));
+			{
+				return($("<span>").text(formatDateTime(value, ($(element).attr("_allowTime")!=null))));
+			}
 			else
 				return($("<span>"));
 		},
 		get:function(element, meta, keyStr)
 		{
+			//var dateStr=$(element).val().split()
 			//var date=new Date($(element).datepicker("getDate"));
-			return($.datepicker.parseDate('dd-mm-yy', $(element).val())/1000);
+			//return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);
+			//return(Date.parse()/1000);
+			return(Date.parse(
+					$.datepicker.parseDateTime(defaultDateFormat, defaultTimeFormat, $(element).val())
+				)/1000);
 		},
 		put:function(element, meta, keyStr, value)
 		{
-			//$(element).datepicker("setDate", new Date(value*1000));
 			if (value!='')
-				$(element).val($.datepicker.formatDate( 'dd-mm-yy', new Date(value*1000) ));
+			{
+
+				$(element).val(formatDateTime(value, ($(element).attr("_allowTime")!=null)));
+			}
 			else
 				$(element).val("");
 		}

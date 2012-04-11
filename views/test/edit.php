@@ -75,7 +75,7 @@ $(this).ready(function()
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='dateTest' _meta='desc'>
-			<td class='autoMeta' _key='dateTest'>
+			<td class='autoMeta' _key='dateTest' _timeFormat=''>
 		</tr>
 	</table>
 </fieldset>
@@ -113,7 +113,7 @@ $(this).ready(function()
 		</tr>
 		<tr>
 			<td class='autoMeta' _key='hashTest.dateTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.dateTest'>
+			<td class='autoMeta' _key='hashTest.dateTest' _allowTime>
 		</tr>
 	</table>
 </fieldset>

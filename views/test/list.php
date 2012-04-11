@@ -81,7 +81,7 @@ $(document).ready(function()
 			<li class='templateOnClickEdit autoPut' _key='hashTest.floatTest' _html>
 			<li class='templateOnClickEdit autoPut' _key='hashTest.integerTest' _html>
 			<li class='templateOnClickEdit autoPut' _key='hashTest.selectTest' _html>
-			<li class='templateOnClickEdit autoPut' _key='hashTest.dateTest' _html>
+			<li class='templateOnClickEdit autoPut' _key='hashTest.dateTest' _html _allowTime>
 		</ul>
 	<td>
 		<table class='autoPut autoListSource autoListHide' _key='arrayTest'>

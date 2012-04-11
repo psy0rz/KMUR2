@@ -53,7 +53,8 @@ class test extends model_Mongo
 			),
 			"dateTest"=>array(
 				"desc"=>"Date test",
-				"type"=>"date"
+				"type"=>"date",
+						
 			),
 		
 		);

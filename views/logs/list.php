@@ -49,7 +49,7 @@ $(document).ready(function()
 	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='text'>
 </tr>
 <tr class='colorRows autoListSource ui-widget-content'>
-	<td class='autoPut' _key='time' _html>
+	<td class='autoPut' _key='time' _allowTime _html>
 	<td class='autoPut' _key='username' _html>
 	<td class='autoPut' _key='logType' _html>
 	<td class='autoPut' _key='text' _html>

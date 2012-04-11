@@ -23,6 +23,7 @@ function viewPrintHtmlIncludes()
 	<script type="text/javascript" src="lib/jquery.cooquery.js"></script>
 	<script type="text/javascript" src="lib/jquery.url.js"></script>
 	<script type="text/javascript" src="lib/jquery.history.js"></script>
+	<script type="text/javascript" src="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="lib/rison.js"></script>
 	<script type="text/javascript" src="common.js"></script>
 	<script type="text/javascript" src="rpc.js"></script>
@@ -30,6 +31,7 @@ function viewPrintHtmlIncludes()
 	<script type="text/javascript" src="dataconv.js"></script>
 	<script type="text/javascript" src="view.js"></script>
 	<script type="text/javascript" src="templates.js"></script>
+	<link href="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css"/>
 	<link href="default.css" rel="stylesheet" type="text/css"/>
 	<link href="views/view.css" rel="stylesheet" type="text/css"/>
 	';

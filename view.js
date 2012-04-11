@@ -174,8 +174,8 @@ function viewClose(view)
 function viewShowError(result, parent, meta)
 {
 	$(".viewErrorText", parent).text("");
-	$(".viewErrorClass", parent).removeClass("ui-state-error");
-	$(".viewError", parent).text("").removeClass("ui-state-error");
+	$(".viewError", parent).text("")
+	$(".ui-state-error", parent).removeClass("ui-state-error");
 
 	if (result!=null)
 	{
