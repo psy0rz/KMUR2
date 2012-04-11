@@ -304,6 +304,13 @@
 				else
 					keyStr=key;
 
+				//attach raw data to the object
+				if ($(this).attr("_data")!=null)
+				{
+					console.log("trap in data",this, thisvalue);
+					$(this).data($(this).attr("_data"),thisvalue);
+				}
+
 				if (key in meta)
 				{
 						
@@ -311,6 +318,7 @@
 					//there SHOULD be only one or zero. 
 					var selector='.autoPut[_key="'+keyStr+'"]';
 					$(selector, context).each(function() {
+	
 						//generate html
 						if ($(this).attr("_html")!=null)
 						{
@@ -334,6 +342,7 @@
 								//	$(this).effect('highlight', 2000);
 //							}
 						}
+						
 					});
 				}
 			}); //meta

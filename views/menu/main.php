@@ -20,6 +20,14 @@ $(this).ready(function()
 			});
 	}
 
+
+//	$(".menuSub", context).click(function()
+	$('[_data="test"', context).click(function()
+	{
+
+		console.log("data ",this, $(this).data($(this).attr("_data")));
+	});
+
 	//get menu metadata
 	rpc(
 		"menu.getMeta",
@@ -38,8 +46,8 @@ $(this).ready(function()
 	<div class='autoPut menuMain' _key='main'>
 		<div class='autoPut menuMainTitle' _key='main.title' _html></div>
 		<div class='menuMainSubs'>
-			<div class='autoPut menuSub' _key='main.items'>
-				<div class='autoPut' _key='main.items.title' _html></div>
+			<div class='autoPut menuSub' _key='main.items' >
+				<div class='autoPut' _key='main.items.title' _html _data="test" ></div>
 			</div>
 		</div>
 	</div>
