@@ -71,9 +71,9 @@ var dataConv=
 			$(element).autoGet(meta.meta, value, keyStr);
 			return (value);
 		},
-		put:function(element, meta, keyStr,value)
+		put:function(element, meta, keyStr, value, settings)
 		{
-			$(element).autoPut(meta.meta, value, keyStr);
+			$(element).autoPut(meta.meta, value, keyStr, settings);
 		}
 	},
 	array:{
