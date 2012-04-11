@@ -41,6 +41,8 @@ class model_Mongo extends model
 		$ret=$this->db->$collection->findOne(array('_id'=>new MongoId($id)));
 		if ($ret==null)
 			throw new Exception("Item $id niet gevonden in collectie $collection");
+		
+		$ret["_id"]=(string)$ret["_id"];
 		return ($ret);
 	}
 
@@ -60,7 +62,7 @@ class model_Mongo extends model
 	//verifys if data is compatible with getMeta() rules
 	//if id is set, updates data in collection. throws exception when not found
 	//if id is not set, add data to collection
-	//always returns created or updated mongo id object
+	//on success returns created or updated data and id
 	protected function setById($collection, $id, $data, $meta='')
 	{
 		//always ignore the _id (its not a MongoId object anyway)
@@ -83,17 +85,19 @@ class model_Mongo extends model
 			if (!$status["updatedExisting"])
 				throw new Exception("Opgegeven id $id niet gevonden in collectie $collection.");
 				
-			return($mongoId);
+			$data["_id"]=$id;
+			return($data);
 		}
 		else
 		{
 			$status=$this->db->$collection->insert(
 				$data,
 				array(
-					"safe"=>true
+ 					"safe"=>true
 				)
 			);
-			return($data["_id"]);
+			$data["_id"]=(string)$data["_id"];
+			return($data);
 		}
 	}
 	

@@ -15,15 +15,8 @@ $(this).ready(function()
 		defaultFocus	: [ "username" ],
 		closeAfterSave	: true,
 		loadCallback	: function(result) {
-			if (view.params._id)
-			{
-				title="Wijzigen test "+result.data.username;
-				menuAddFavorite({
-					menu:		"test",
-					desc:		"Wijzig "+result.data.username,
-					view:		view
-				});
-			}
+			if (result.data)
+				title="Wijzigen test "+result.data.stringTest;
 			else
 				title="Nieuwe test";
 				
@@ -34,7 +27,14 @@ $(this).ready(function()
 			
 		},
 		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
+		saveCallback	: function(result) {
+			title="Test "+result.data.stringTest;
+			$(document).trigger("menu.addFavorite",{
+				menu:		"test",
+				desc:		"Wijzig "+result.data.stringTest,
+				view:		view
+			});
+		}
 	});
 
 });

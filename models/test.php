@@ -100,17 +100,18 @@ class test extends model_Mongo
 		return ($test);
 	}
 
-	//update/add user
 	function put($params)
 	{
 		$this->verifyMeta($params);
 	
-		$id=$this->setById("test", $params["_id"], $params);
+		$ret=$this->setById("test", $params["_id"], $params);
 
 		if ($params["_id"])
 			logger("info", "test gewijzigd.");
 		else
 			logger("info", "test toegevoegd.");
+		
+		return($ret);
 
 	}
 

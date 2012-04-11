@@ -296,6 +296,13 @@
 		return this.each(function() {
 			var context=this;
 
+			//attach raw data to the object
+			//(particulary usefull with arrays and hashes)
+			if ($(this).attr("_data")!=null)
+			{
+				$(this).data("_data",value);
+			}
+
 			//traverse the specified data
 			$.each(value, function(key, thisvalue){
 				var keyStr;
@@ -304,12 +311,6 @@
 				else
 					keyStr=key;
 
-				//attach raw data to the object
-				if ($(this).attr("_data")!=null)
-				{
-					console.log("trap in data",this, thisvalue);
-					$(this).data($(this).attr("_data"),thisvalue);
-				}
 
 				if (key in meta)
 				{

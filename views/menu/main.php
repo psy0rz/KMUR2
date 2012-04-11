@@ -20,12 +20,44 @@ $(this).ready(function()
 			});
 	}
 
-
-//	$(".menuSub", context).click(function()
-	$('[_data="test"', context).click(function()
+	/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
+	parameters:
 	{
+		'menu':		"users",
+		'desc':		"Wijzig "+result.data.username,
+		'view':		(view parameters, look at viewCreate in view.js)}
+	*/
+	$(document).on("menu.addFavorite", function(event, params)
+			{
+				rpc(
+					"menu.addFavorite",
+					params,
+					function(result)
+					{
+						menuReload();
+					}
+				);
+			
+			});
 
-		console.log("data ",this, $(this).data($(this).attr("_data")));
+	//a menu item was clicked:
+	$('[_data]', context).click(function()
+	{
+//		console.log("data ",this, $(this).data("_data"));
+
+		//create the view
+		var view={};
+		$.extend( view, $(this).data("_data").view);
+		view.x=event.clientX;
+		view.y=event.clientY;
+		if (view.highlight)
+			delete view.highlight;
+
+		if (view.mode=='main')
+			viewCreate({creator:$(this), clear:true},view);
+		else
+			viewCreate({creator:$(this), clear:false},view);
+			
 	});
 
 	//get menu metadata
@@ -46,8 +78,8 @@ $(this).ready(function()
 	<div class='autoPut menuMain' _key='main'>
 		<div class='autoPut menuMainTitle' _key='main.title' _html></div>
 		<div class='menuMainSubs'>
-			<div class='autoPut menuSub' _key='main.items' >
-				<div class='autoPut' _key='main.items.title' _html _data="test" ></div>
+			<div class='autoPut menuSub' _key='main.items' _data>
+				<div class='autoPut' _key='main.items.title' _html  ></div>
 			</div>
 		</div>
 	</div>

@@ -29,7 +29,6 @@ function viewPrintHtmlIncludes()
 	<script type="text/javascript" src="form.js"></script>
 	<script type="text/javascript" src="dataconv.js"></script>
 	<script type="text/javascript" src="view.js"></script>
-	<script type="text/javascript" src="menu.js"></script>
 	<script type="text/javascript" src="templates.js"></script>
 	<link href="default.css" rel="stylesheet" type="text/css"/>
 	<link href="views/view.css" rel="stylesheet" type="text/css"/>
