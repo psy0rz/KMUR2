@@ -28,8 +28,9 @@ $(this).ready(function()
 		},
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) {
+			view.params._id=result.data._id;
 			$(document).trigger("menu.addFavorite",{
-				menu:		"test",
+				menu:		"test",	
 				title: 		"Wijzig "+result.data.stringTest,
 				view:		view
 			});

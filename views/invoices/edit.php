@@ -17,15 +17,8 @@ $(this).ready(function()
 		defaultFocus	: '',
 		closeAfterSave	: false,
 		loadCallback	: function(result) {
-			if (view.params._id)
-			{
+			if (result.data)
 				title="Wijzigen factuur "+result.data.number;
-				menuAddFavorite({
-					menu:	"invoices",
-					desc:	"Wijzig factuur "+result.data.number,
-					view:	view
-				});
-			}
 			else
 				title="Nieuwe factuur";
 				
@@ -38,6 +31,13 @@ $(this).ready(function()
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) 
 		{ 
+			view.params._id=result.data._id;
+			$(document).trigger("menu.addFavorite",{
+				menu:	"invoices",
+				title:	"Wijzig factuur "+result.data.number,
+				view:	view
+			});
+
 			//reload view
 			viewLoad(view);
 		}
