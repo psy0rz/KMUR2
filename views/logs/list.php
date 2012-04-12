@@ -27,7 +27,8 @@ $(document).ready(function()
 			});
 		},
 		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
+		saveCallback	: function(result) { },
+		endlessScrolling: true
 	});
 });
 

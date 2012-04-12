@@ -395,42 +395,46 @@ function templateList(params)
 	//set default focus
 	$(".templateSetFocus", context).focus();
 
-	
-	var endlessUpdating=false;
-	$(context).on("view.scrolledBottom",function()
+	//enable endless scrolling?
+	if (params.endlessScrolling && ('limit' in getParams))
 	{
-		if (endlessUpdating)
-			return;
-		
-		endlessUpdating=true;
-		
-		var endlessParams={};
-		$.extend( endlessParams, getParams );
-		
-		
-		endlessParams.offset+=$(autoListSourceElement).parent().children().length-beginLength;
-		
-		console.log("offset is ",endlessParams.offset);
+		var endlessUpdating=false;
+		$(context).on("view.scrolledBottom",function()
+		{
+			if (endlessUpdating)
+				return;
+			
+			endlessUpdating=true;
+			
+			var endlessParams={};
+			$.extend( endlessParams, getParams );
+			
+			if (!('offset' in endlessParams))
+				endlessParams.offset=0;
+			
+			endlessParams.offset+=$(autoListSourceElement).parent().children().length-beginLength;
+			
+			logDebug("endless scroll offset is ",endlessParams.offset);
 
-		
-		rpc(
-			params.getData,
-			endlessParams,
-			function(result)
-			{
-				dataConv.array.put(
-						autoListSourceElement, //element
-						{ meta: meta },  		//meta
-						'',						//keyStr
-						result.data,			//value	
-						{						//settings
-							noRemove: true
-						}		
-				);
-				endlessUpdating=false;
-			}
-		);
-	});
+			rpc(
+				params.getData,
+				endlessParams,
+				function(result)
+				{
+					dataConv.array.put(
+							autoListSourceElement, //element
+							{ meta: meta },  		//meta
+							'',						//keyStr
+							result.data,			//value	
+							{						//settings
+								noRemove: true
+							}		
+					);
+					endlessUpdating=false;
+				}
+			);
+		});
+	}
 			
 }
 
