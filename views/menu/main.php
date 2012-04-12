@@ -40,8 +40,9 @@ $(this).ready(function()
 			
 			});
 
+
 	//a menu item was clicked:
-	$('[_data]', context).click(function()
+	$('[_data]', context).click(function(event)
 	{
 //		console.log("data ",this, $(this).data("_data"));
 
