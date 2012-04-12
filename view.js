@@ -15,8 +15,8 @@ $(document).ready(function()
 			hash="('count':0,'views':())";
 
 		// hash changed, update views:
-		console.log("view detected new url hash:", hash);
-		console.log("view comparing to current viewstatus:", JSON.stringify(gViewStatus));
+		logDebug("view detected new url hash:", hash);
+		logDebug("view comparing to current viewstatus:", JSON.stringify(gViewStatus));
 		
 		var oldViewStatus={};
 		$.extend(true, oldViewStatus, gViewStatus);
@@ -43,7 +43,6 @@ $(document).ready(function()
 		//traverse the new views, and compare to old
 		$.each(newViewStatus.views, function(viewId, view)
 		{
-//			console.log(gViewStatus[viewId], view);
 			//new or changed
 			if (
 				(! (viewId in oldViewStatus.views)) || //new
@@ -57,8 +56,6 @@ $(document).ready(function()
 					viewDOMadd(view);
 				}
 
-				console.log("view loading: "+viewId);
-
 				//(re)load the view
 				viewLoad(view);
 			}
@@ -66,6 +63,20 @@ $(document).ready(function()
 	},
 	{ 'unescape': true } //dont urlencode 	
 	);
+
+	//endless scrolling stuff.
+	//send an event to the last mainview (e.g. the one that is visble and on the foreground
+	var prevHeight=0;
+	$(window).scroll(function()
+	{
+		var height=$(document).height();
+		if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
+		{
+			prevHeight=$(document).height();
+			$("#views .viewMain:last").trigger("view.scrolledBottom");
+		}
+	});
+
 });
 
 
@@ -316,7 +327,7 @@ function viewDOMdel(view)
 		$("#"+view.id+"Title").remove();
 		viewPathUpdate();
 	}
-	else //mode existing or main
+	else //mode existing 
 	{
 		//just clear it
 		$("#"+view.id).unbind();
@@ -375,7 +386,7 @@ function viewReady(params)
 //( use viewCreate instead, if you want to update browser history and create popups etc)
 function viewLoad(view)
 {
-	console.debug("viewLoad", view);
+	logDebug("viewLoad", view);
 	var uriParams=encodeURIComponent(JSON.stringify(view));
 	
 	$.ajax({

@@ -115,8 +115,6 @@ class logs extends model_Mongo
 			}
 		}
 
-		
-
 		//normal users only see their own logs
 		if (!$this->context->hasRight("admin"))
 		{
@@ -135,9 +133,9 @@ class logs extends model_Mongo
 				$cursor->sort($params['sort']);
 		}
 
-		//skipping/limiting
-		if (isset($params["skip"]))
-			$cursor->skip($params["skip"]);
+		//offset and limiting
+		if (isset($params["offset"]))
+			$cursor->skip($params["offset"]);
 
 		if (isset($params["limit"]))
 			$cursor->limit($params["limit"]);

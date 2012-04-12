@@ -204,6 +204,7 @@ function templateList(params)
 	var meta={};
 	var context=$("#"+params.view.id);
 	var autoListSourceElement=$(".autoListSource:first",context);
+	var beginLength=autoListSourceElement.parent().children().length;
 
 	////// GENERIC LIST STUFF
 	
@@ -275,28 +276,6 @@ function templateList(params)
 			function(result)
 			{
 				viewShowError(result, context, meta);
-
-//				if (update)
-//				{
-//					//since its an update, dont get confused with the other autoput-list items
-//					$(".autoListSource:first", context).autoList(meta, result['data'], {
-//						indexKey:params.id,
-//						context: context,
-//						update:true,
-//						showChanges:true
-//					});
-//				}
-//				else
-//				{
-//					//delete old list contents
-//					$(".autoListItem",context).not(".autoListSource").remove();
-//					$(".autoListSource:first", context).autoList(meta, result['data'], {
-//						indexKey:params.id,
-//						updateOn:params.id,
-//						context: context
-//					});
-//				}
-
 				
 				dataConv.array.put(
 						autoListSourceElement, //element
@@ -416,5 +395,42 @@ function templateList(params)
 	//set default focus
 	$(".templateSetFocus", context).focus();
 
+	
+	var endlessUpdating=false;
+	$(context).on("view.scrolledBottom",function()
+	{
+		if (endlessUpdating)
+			return;
+		
+		endlessUpdating=true;
+		
+		var endlessParams={};
+		$.extend( endlessParams, getParams );
+		
+		
+		endlessParams.offset+=$(autoListSourceElement).parent().children().length-beginLength;
+		
+		console.log("offset is ",endlessParams.offset);
+
+		
+		rpc(
+			params.getData,
+			endlessParams,
+			function(result)
+			{
+				dataConv.array.put(
+						autoListSourceElement, //element
+						{ meta: meta },  		//meta
+						'',						//keyStr
+						result.data,			//value	
+						{						//settings
+							noRemove: true
+						}		
+				);
+				endlessUpdating=false;
+			}
+		);
+	});
+			
 }
 

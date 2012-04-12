@@ -1,6 +1,7 @@
 
 
 var gLogTime=0;
+var gActiveRpcs=0;
 
 function rpc(classMethod, params, callback)
 {
@@ -10,12 +11,26 @@ function rpc(classMethod, params, callback)
 	method=classMethod.substr(classMethod.indexOf(".")+1);
 	
 	//(add extra info to the url for easier debugging in webserver logs)
+	gActiveRpcs++;
+	$(".viewLoading").show();
+	//$("body").css('cursor','progress');
+	function rpcEnd()
+	{
+		gActiveRpcs--;
+		if (gActiveRpcs!=0)
+			return;
+		
+		$(".viewLoading").hide();
+		//$("body").css('cursor','');
+	}
+	
 	$.ajax({
 		"dataType":		"json",
 		"url":			"rpc.php/"+classname+"."+method,
 		"error":
 			function (request, status, e)
 			{
+	
 				console.error("Error while doing rpc ajax request: ",request.responseText,status,e);
 				error={
 					"error":{
@@ -23,6 +38,8 @@ function rpc(classMethod, params, callback)
 					}
 				};
 				callback(error);
+
+				rpcEnd();
 			},
 		"success":	
 			function (result, status, XMLHttpRequest)
@@ -76,6 +93,8 @@ function rpc(classMethod, params, callback)
 				}
 				
 				callback(result);
+
+				rpcEnd();
 			},
 		"type": "post",
 		"data": {

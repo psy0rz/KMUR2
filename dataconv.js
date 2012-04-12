@@ -132,10 +132,11 @@ var dataConv=
 				$(element).attr("_key","");
 			}
 			
-			//not in update mode, so clear any existing items
+			//not in update mode
 			if (!settings.update)
 			{
-				$('.autoListItem[_key="'+keyStr+'"]', parent).remove();
+				if (!settings.noRemove)
+					$('.autoListItem[_key="'+keyStr+'"]', parent).remove();
 			}
 			//in update mode, add a marker to remember which stuff can be deleted
 			else
@@ -195,10 +196,13 @@ var dataConv=
 			});			
 			
 			//delete stuff that still has the delete-marker in it:
-			$('.autoListDelete[_key="'+keyStr+'"]', parent).hide(1000, function()
-					{
-						$(this).remove();
-					});				
+			if (settings.update)
+			{
+				$('.autoListDelete[_key="'+keyStr+'"]', parent).hide(1000, function()
+						{
+							$(this).remove();
+						});
+			}
 		}
 	},
 	string:{

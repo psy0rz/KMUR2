@@ -82,9 +82,22 @@
 	</div>
 </div>
 
+<div class='viewLoading' style='
+	position:fixed;
+	right:0em;
+	top:0em;
+	padding-left:1em;
+	padding-right:1em;
+	border-style:solid;
+'>
+	processing...
+</div>
+
 
 <div id='viewDebug'>
 </div>
+
+
 
 </body> 
 </html> 

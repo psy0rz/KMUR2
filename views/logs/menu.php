@@ -9,9 +9,10 @@ $this->addSub("system",array(
 	"view"=>array(
 		"name"=>"logs.list",
 		"mode"=>"main",
-// 		"params"=>array(
-// 			"limit"=>100
-// 		)
+		"params"=>array(
+			"limit"=>75,
+			"offset"=>0
+		)
 	)
 ));
 
