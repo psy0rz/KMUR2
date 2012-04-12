@@ -390,14 +390,27 @@ function templateList(params)
 	//handle filtering 
 	$(".templateOnChangeFilter", context).keyup(function()
 	{
+		filterPrevious=$(this).val();
+		
 		if (!getParams.filter)
 			getParams.filter={};
 		
 		if ($(this).val()!="")
+		{
+			if (getParams.filter[$(this).attr("_key")]==$(this).val())
+				return;
+			
 			getParams.filter[$(this).attr("_key")]=$(this).val();
+			getData(false);
+		}
 		else
+		{
+			if (!($(this).attr("_key") in getParams.filter))
+				return;
+			
 			delete getParams.filter[$(this).attr("_key")];
-		getData(false);
+			getData(false);
+		}
 	});
 	
 	//set default focus
