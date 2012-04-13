@@ -9,7 +9,6 @@ $(document).ready(function()
 	
 	templateList({
 		view		: view,
-		id		: '_id',
 		getMeta		: 'test.getMeta',
 		getMetaParams	: view.params,
 		getData		: 'test.getAll',

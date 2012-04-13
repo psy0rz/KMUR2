@@ -12,6 +12,7 @@ $(this).ready(function()
 		getDataParams		: view.params,
 		putData			: 'test.put',
 		putDataParams		: { "_id": view.params._id },
+		delData			: 'test.del',	
 		defaultFocus	: [ "username" ],
 		closeAfterSave	: true,
 		loadCallback	: function(result) {
@@ -158,5 +159,6 @@ $(this).ready(function()
 
 <div class='floatingBar viewErrorClass'>
 	<button class='templateOnClickSave' >Opslaan</button>
+	<button class='templateOnClickDel' >Verwijderen</button>
 	<span class='viewErrorText'></span>
 </div>

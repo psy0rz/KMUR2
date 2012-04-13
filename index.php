@@ -89,7 +89,7 @@
 
 <div id='viewDebug' style='
 	position:absolute;
-	right:0em;
+	left:0em;
 	top:0em;
 	opacity:0.8;
 '>

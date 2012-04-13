@@ -22,7 +22,7 @@ function templateForm(params)
 			//create an add-handler to add items to lists
 			$(".templateOnClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
-				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource");
+				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource",context);
 				
 				if (clickedElement.length==0)
 					return;
@@ -40,7 +40,7 @@ function templateForm(params)
 			
 			//create an auto-add handler if the source-element is focussed
 			$(".templateOnFocusAdd :input", context).focus(function(){
-				var changedElement=$(this, context).closest(".autoListSource, .autoListItem");
+				var changedElement=$(this, context).closest(".autoListSource, .autoListItem", context);
 		        if (changedElement.hasClass("autoListSource"))
 		        {
 					var addElement=autoListClone(changedElement);
@@ -53,7 +53,7 @@ function templateForm(params)
 			//delete handlers for lists
 			$(".templateOnClickDel", context).click(function()
 			{
-				var clickedElement=$(this, context).closest(".autoListItem");
+				var clickedElement=$(this, context).closest(".autoListItem",context);
 		        if (clickedElement.hasClass("autoListItem"))
 				{
 					$(this).confirm(function()
@@ -185,6 +185,24 @@ function templateForm(params)
 		);
 	};
 
+	var del=function()
+	{
+		$(this).confirm(function()
+		{
+			rpc(
+				params.delData, 
+				params.getDataParams,
+				function(result)
+				{
+					if (!viewShowError(result, this, meta))
+					{
+						viewRefresh();
+					}
+				}
+			);
+		});
+	}
+	
 	
 	$(".templateOnClickSave", context).click(save);
 
@@ -196,6 +214,8 @@ function templateForm(params)
 			save();
 		}
 	});
+	
+	$(".templateOnClickDel", context).click(del);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -215,9 +235,11 @@ function templateList(params)
 	
 	var edit=function(event)
 	{
-		var listParent=$(this).closest(".autoListItem[_id]")	;
+		var listParent=$(this).closest(".autoListItem[_index], .autoListSource[_index]",context)	;
+		
 		var element=$(this);
 		var id=listParent.attr("_id");
+		var index=listParent.attr("_index");
 		if (typeof id == "undefined")
 			id='';
 		element.addClass("ui-state-highlight");
@@ -230,7 +252,7 @@ function templateList(params)
 		if (! editView.params)
 			editView.params={};
 		editView.params.focus=fields;
-		editView.params._id=id;
+		editView.params[index]=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;
 		viewCreate(
@@ -242,15 +264,16 @@ function templateList(params)
 
 	var del=function(event)
 	{
-		var listParent=$(this).closest(".autoListItem");
+		var listParent=$(this).closest(".autoListItem",context);
 		var id=listParent.attr("_id");
+		var index=listParent.attr("_index");
 
 //		if (!rowElement.hasClass("autoListSource"))
 		{
 			$(this).confirm(function()
 			{
 				var rpcParams={};
-				rpcParams[params.id]=id;
+				rpcParams[index]=id;
 				rpc(
 					params.delData,
 					rpcParams,
