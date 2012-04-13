@@ -60,6 +60,8 @@ $(document).ready(function()
 				viewLoad(view);
 			}
 		});
+		
+
 	},
 	{ 'unescape': true } //dont urlencode 	
 	);
@@ -379,6 +381,10 @@ function viewReady(params)
 		var viewTitleDiv=$("#"+params.view.id+"Title");
 		viewTitleDiv.text(params.title+" » ");
 	}
+
+	if ('title' in params)
+		document.title=params.title;
+
 }
 
 

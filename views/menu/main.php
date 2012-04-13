@@ -57,9 +57,9 @@ $(this).ready(function()
 			delete view.highlight;
 
 		if (view.mode=='main')
-			viewCreate({creator:$(this), clear:true},view);
+			viewCreate({clear:true},view);
 		else
-			viewCreate({creator:$(this), clear:false},view);
+			viewCreate({clear:false},view);
 			
 	});
 

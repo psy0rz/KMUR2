@@ -4,7 +4,7 @@
 	
 <head> 
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
-	<title>w0000t</title> 
+	<title>Datux ticket tracking and invoice</title> 
 
 	<?
 		require_once("core.php");
@@ -42,9 +42,9 @@
 
 
 <div id='views' class='ui-widget' style='
-	margin-left:10em;
-	margin-top:2em;
-	margin-bottom:3em;
+	padding-left:10em;
+	padding-top:2em;
+	padding-bottom:3em;
 '>
 </div>
 
