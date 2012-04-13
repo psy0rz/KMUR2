@@ -277,7 +277,7 @@
 	*  Uses _key attribute as hash key
 	*/
 	$.fn.autoPut = function( meta, value, parentKey, options ) {  
-		logDebug("autoPut called with ", meta, value , parentKey, options);
+//		logDebug("autoPut called with ", meta, value , parentKey, options);
 		
 		var settings = {
 			update:false,

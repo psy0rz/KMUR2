@@ -46,6 +46,12 @@ try
 	if (!$object->canCall($method))
 		throw new Exception("U heeft niet genoeg rechten voor deze functie");
 
+	if (isset($_REQUEST["debuggingEnabled"]))
+	{
+		global $globalLog;
+		$globalLog->debuggingEnabled=$_REQUEST["debuggingEnabled"];
+	}
+		
 	//call it
 	$result=array(
 		"data"=>$object->$method($params)

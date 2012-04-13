@@ -8,6 +8,7 @@ class logs extends model_Mongo
 
 	//debug buffer: debugging messages during this session are stored here
 	protected $debugBuffer;
+	public $debuggingEnabled=false;
 
 	function __construct($userContext="")
 	{
@@ -92,6 +93,8 @@ class logs extends model_Mongo
 
 	function debug($object)
 	{
+		if (!$this->debuggingEnabled)
+			return;
 		$debug["object"]=$object;
 		$bt=debug_backtrace();
 		$debug["line"]=$bt[1]["line"];

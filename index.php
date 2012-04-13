@@ -82,6 +82,16 @@
 	</div>
 </div>
 
+
+
+<div id='viewDebug' style='
+	position:absolute;
+	right:0em;
+	top:0em;
+	opacity:0.8;
+'>
+</div>
+
 <div class='viewLoading' style='
 	position:fixed;
 	right:0em;
@@ -92,11 +102,6 @@
 '>
 	processing...
 </div>
-
-
-<div id='viewDebug'>
-</div>
-
 
 
 </body> 

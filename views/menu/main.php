@@ -82,7 +82,7 @@ $(this).ready(function()
 			<div class='autoPut menuSub' _key='main.items' _data>
 				<div class='autoPut' _key='main.items.title' _html  ></div>
 			</div>
-			<div class='autoPut menuSub' _key='main.favorites' _data>
+			<div class='autoPut menuFavorite' _key='main.favorites' _data>
 				<div class='autoPut' _key='main.favorites.title' _html  ></div>
 			</div>
 		</div>

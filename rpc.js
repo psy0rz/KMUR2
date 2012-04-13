@@ -26,7 +26,7 @@ function rpc(classMethod, params, callback)
 	
 	$.ajax({
 		"dataType":		"json",
-		"url":			"rpc.php/"+classname+"."+method,
+		"url":			"rpc.php",
 		"error":
 			function (request, status, e)
 			{
@@ -48,7 +48,14 @@ function rpc(classMethod, params, callback)
 				console.debug("rpc result "+classMethod+": ", result);
 
 				if ('error' in result)
-					console.error("rpc result has error message:", result.error.message, result);
+				{
+					var errorTxt="rpc result contains error message: "+result.error.message;
+					console.error(errorTxt, result);
+					var debugDiv=$("<div class='debug'>");
+					debugDiv.append(errorTxt);
+					//debugDiv.append("Request: <pre>"+JSON.stringify(result, null, ' ')+"</pre>");
+					$('#viewDebug').prepend(debugDiv);
+				}
 
 				//print debug info
 				if (result.debug)
@@ -63,7 +70,7 @@ function rpc(classMethod, params, callback)
 				}
 				
 				//print log info
-			        var currentTime=new Date().getTime();
+		        var currentTime=new Date().getTime();
 
 				if (currentTime-gLogTime>5000)
 					$('#viewLog').empty();
@@ -100,6 +107,7 @@ function rpc(classMethod, params, callback)
 		"data": {
 				"class":classname,
 				"method":method,
+				"debuggingEnabled":debuggingEnabled,
 				"params":JSON.stringify(params)
 			},
 		"processData":	true,
@@ -107,22 +115,13 @@ function rpc(classMethod, params, callback)
 	});
 }
 
+$(document).ready(function(){
+	$("#viewDebug").click(function()
+			{
+				$(this).empty();
+			});
+});
 
-
-
-
-
-
-
-//$(document).ready(function(){
-	
-	
-//	rpc_debug=(window.location.search.indexOf('rpc.debug') != -1);
-
-	//if (rpc_debug)
-		//console.debug("rpc: debugging enabled");
-
-//});
 
 
 

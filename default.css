@@ -64,6 +64,12 @@
 	
 }
 
+/* A favorite item in a submenu */
+.menuFavorite
+{
+	font-size: small;	
+}
+
 .menuSub:hover
 {
 	background: #dddddd;

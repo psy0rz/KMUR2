@@ -119,14 +119,17 @@ class menu extends model_Mongo
 	*/
 	function addFavorite($params)
 	{
+		//santitize view parameters
+		debug($params);
 		
 		//update the favorite count in the database
 		$this->db->menu->update(
 			array(
 				'user' => $this->context->getUser(),
 				'menu' => $params["menu"],
-				'title' => $params["title"],
-			), 
+//				'title' => $params["title"],
+				'view' => $params["view"],
+		), 
 			array(
 				'$set' => array(
 					'user' => $this->context->getUser(),
@@ -154,7 +157,7 @@ class menu extends model_Mongo
 		
 		//too much items?
 		$count=$cursor->count();
-		while ($count>10)
+		while ($count>5)
 		{
 			//delete the oldest first
 			$delete=$cursor->getNext();
