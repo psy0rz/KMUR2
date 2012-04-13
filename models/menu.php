@@ -116,12 +116,11 @@ class menu extends model_Mongo
 		'menu':		"users",
 		'title':		"Wijzig "+result.data.username,
 		'view':		(same parameters as viewCreate() in view.js)
+		'favoriteId': unique id to determine which favorite needs to be replaced. (optional, otherwise tries to use view.params._id)
 	*/
 	function addFavorite($params)
 	{
-		//santitize view parameters
-		debug($params);
-
+		
 		if (isset($params["favoriteId"]))
 			$favoriteId=$params["favoriteId"];
 		else if (isset($params["view"]["params"]["_id"]))
@@ -145,7 +144,7 @@ class menu extends model_Mongo
 					'menu' => $params["menu"],
 					'view' => $params["view"],
 					'title' => $params["title"],
-					'favoriteId'=> $favoriteId;
+					'favoriteId'=> $favoriteId,
 					'timestamp' => time(),
 				),
 //				'$inc' => array(
