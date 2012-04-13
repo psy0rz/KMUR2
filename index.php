@@ -73,11 +73,14 @@
 	background: #eeeeee;
 	border-right-width:2px;
 	border-right-style:solid;
+	padding-top:3em;
 '>
 	<div id='viewMenu'>
 	</div>
 	
 	<div id='viewLog' style='
+		position:absolute;
+		bottom:1em;
 	'>
 	</div>
 </div>
@@ -94,11 +97,12 @@
 
 <div class='viewLoading' style='
 	position:fixed;
-	right:0em;
-	top:0em;
+	left:1em;
+	top:1em;
 	padding-left:1em;
 	padding-right:1em;
 	border-style:solid;
+	color: #666666;
 '>
 	processing...
 </div>

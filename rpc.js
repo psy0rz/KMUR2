@@ -85,14 +85,14 @@ function rpc(classMethod, params, callback)
 				//print log info
 		        var currentTime=new Date().getTime();
 
-				if (currentTime-gLogTime>5000)
-					$('#viewLog').empty();
+//				if (currentTime-gLogTime>5000)
+//					$('#viewLog').empty();
 
 				if (result.log)
 				{
 					$('#viewLog').empty();
 					gLogTime=currentTime;
-						$.each(result.log, function(i,logLine)
+					$.each(result.log, function(i,logLine)
 					{
 						var logDiv;
 						if (logLine.logType=='info')

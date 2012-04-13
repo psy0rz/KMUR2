@@ -166,7 +166,7 @@ class menu extends model_Mongo
 		
 		//too much items?
 		$count=$cursor->count();
-		while ($count>5)
+		while ($count>10)
 		{
 			//delete the oldest first
 			$delete=$cursor->getNext();
