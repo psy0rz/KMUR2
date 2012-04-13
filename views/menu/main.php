@@ -16,7 +16,9 @@ $(this).ready(function()
 			{},
 			function (result)
 			{
-				$(context).autoPut(meta, result.data);
+				$(context).autoPut(meta, result.data, null, { 
+					'update':true 
+				} );
 			});
 	});
 
@@ -70,19 +72,44 @@ $(this).ready(function()
 			meta=result.data;
 			$(document).trigger("menu.reload");
 		});
+
+
+	//////////////////// visual design stuff:
+	
+	//a main menu was clicked:
+	$('.menuMain', context).click(function(event)
+	{
+		if ($(this).hasClass("menuMain_Active"))
+			return;
+
+		$(".menuMain",context).removeClass("menuMain_Active");
+		$(".menuMain",context).addClass("menuMain_Passive");
+
+		$(this).addClass("menuMain_Active");
+		$(this).removeClass("menuMain_Passive");
 		
+		$(".menuMainSubs",context).hide(100);
+		$(".menuMainSubs",this).show(100);
+	});
+	$(".menuMainSubs",context).hide();
+	
 });
 
 </script>
 
+
 <div>
-	<div class='autoPut menuMain' _key='main'>
-		<div class='autoPut menuMainTitle' _key='main.title' _html></div>
+	<div class='autoPut autoListHide menuMain menuMain_Passive' _key='main'>
+		<div class='menuMainTitle' >
+			<span class='ui-icon ui-icon-triangle-1-e menuMain_ActiveHide' style='float:left'></span>
+			<span class='ui-icon ui-icon-triangle-1-s menuMain_PassiveHide' style='float:left'></span>
+			<span class='autoPut' _key='main.title' _html></span>
+		</div>
 		<div class='menuMainSubs'>
-			<div class='autoPut menuSub' _key='main.items' _data>
+			<div class='autoPut menuSub autoListHide ' _key='main.items' _data>
 				<div class='autoPut' _key='main.items.title' _html  ></div>
 			</div>
-			<div class='autoPut menuFavorite' _key='main.favorites' _data>
+			<div class='autoPut menuFavorite autoListHide ' _key='main.favorites' _data>
 				<div class='autoPut' _key='main.favorites.title' _html  ></div>
 			</div>
 		</div>

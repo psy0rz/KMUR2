@@ -33,11 +33,7 @@
 /* Title of a main menu item */
 .menuMainTitle
 {
-	padding-left: 1em;
-	padding-right: 1em;
-	border-width:1px;
-	border-style:solid;
-	border-color:#eeeeee;
+	padding: 0em;
 }
 
 .menuMainTitle:hover
@@ -45,15 +41,25 @@
 	background: #dddddd;
 }
 
+.menuMain_Active .menuMainTitle
+{
+	border-style:solid;
+	border-color:white;
+	border-width:1px;
+	background: #dddddd;
+
+}
+
+
 /* Contains submenu items that belong to the main menu */
 .menuMainSubs
 {
-	border-width: 2px;
-	border-style: solid;
-	border-color: #bbbbbb;
-	padding-left: .5em;
-	padding-right: .5em;
-	margin-left: 1em;
+	border-width: 1px;
+	border-bottom-style: solid;
+	border-top-style: solid;
+border-color: #bbbbbb;
+	padding: 0em;
+	padding-left:1.5em;
 	background: #eeeeee;
 	cursor: pointer;
 }
@@ -64,16 +70,22 @@
 	
 }
 
+.menuSub:hover
+{
+	background: #dddddd;
+}
+
 /* A favorite item in a submenu */
 .menuFavorite
 {
 	font-size: small;	
 }
 
-.menuSub:hover
+.menuFavorite:hover
 {
 	background: #dddddd;
 }
+
 
 /* A menu seperator */
 .menuSeperator
@@ -85,6 +97,29 @@
 	
 }
 
+/* An active main menu */
+.menuMain_Active
+{
+	
+}
+
+/* An passive main menu */
+.menuMain_Passive
+{
+	
+}
+
+/* Stuff with the class .menuMain_AcitiveHide is hidden when it becomes active */
+.menuMain_Active .menuMain_ActiveHide
+{
+	display:none;
+}
+
+/* Stuff with the class .menuMain_PassiveHide is hidden when it becomes passive */
+.menuMain_Passive .menuMain_PassiveHide
+{
+	display:none;
+}
 
 .viewTitle
 {

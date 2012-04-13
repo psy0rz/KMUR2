@@ -42,7 +42,7 @@
 
 
 <div id='views' class='ui-widget' style='
-	margin-left:8em;
+	margin-left:10em;
 	margin-top:2em;
 	margin-bottom:3em;
 '>
@@ -53,7 +53,7 @@
 <div id='viewPath' style='
 	position:fixed;
 	top:0em;
-	left:8em;
+	left:10em;
 	right:0em;
 	padding-left:1em;
 	padding-bottom:0.5em;
@@ -63,13 +63,13 @@
 </div>
 
 
-<div id='menuHolder' style='
+<div  style='
 	padding-top: 1em;
 	position: fixed;
 	top:0em;
 	left: 0em;
 	bottom:0em;
-	width:8em;
+	width:10em;
 	background: #eeeeee;
 	border-right-width:2px;
 	border-right-style:solid;
