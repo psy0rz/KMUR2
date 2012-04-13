@@ -62,6 +62,7 @@ function rpc(classMethod, params, callback)
 				{
 					$.each(result.debug, function(i,debugLine)
 					{
+						console.debug("php debugging output from "+debugLine.file+" line "+debugLine.line+":",debugLine.object);
 						var debugDiv=$("<div class='debug'>");
 						debugDiv.append(debugLine.file+" line "+debugLine.line+":");
 						debugDiv.append("<pre>"+JSON.stringify(debugLine.object, null, ' ')+"</pre>");
