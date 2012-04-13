@@ -32,6 +32,18 @@ function rpc(classMethod, params, callback)
 			{
 	
 				console.error("Error while doing rpc ajax request: ",request.responseText,status,e);
+				
+//				if (debuggingEnabled)
+//should always show these kind of errors?
+				{
+					var debugDiv=$("<div class='debug'>");
+					debugDiv.append("RPC request failed:");
+					debugDiv.append("<pre>"+request.responseText+"</pre>");
+					debugDiv.append("<pre>"+JSON.stringify(status, null, ' ')+"</pre>");
+					debugDiv.append("<pre>"+JSON.stringify(e, null, ' ')+"</pre>");
+					$('#viewDebug').prepend(debugDiv);
+				}
+					
 				error={
 					"error":{
 						"message":"Error while contacting server: "+request.responseText
@@ -47,7 +59,7 @@ function rpc(classMethod, params, callback)
 				
 				console.debug("rpc result "+classMethod+": ", result);
 
-				if ('error' in result)
+				if (debuggingEnabled && ('error' in result))
 				{
 					var errorTxt="rpc result contains error message: "+result.error.message;
 					console.error(errorTxt, result);

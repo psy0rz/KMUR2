@@ -121,8 +121,9 @@
 .debug
 {
 	border-width:1px;
-	border-top-style:solid;
-	background:#ddddff;
+	border-style:solid;
+	background:#ffeeee;
+	margin:2px;
 }
 
 

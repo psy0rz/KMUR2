@@ -121,6 +121,15 @@ class menu extends model_Mongo
 	{
 		//santitize view parameters
 		debug($params);
+
+		if (isset($params["favoriteId"]))
+			$favoriteId=$params["favoriteId"];
+		else if (isset($params["view"]["params"]["_id"]))
+			$favoriteId=$params["view"]["params"]["_id"];
+		else
+		{
+			debug("Cannot deterine favorite id, favorite ignored");
+		}
 		
 		//update the favorite count in the database
 		$this->db->menu->update(
@@ -128,7 +137,7 @@ class menu extends model_Mongo
 				'user' => $this->context->getUser(),
 				'menu' => $params["menu"],
 //				'title' => $params["title"],
-				'view' => $params["view"],
+				'favoriteId' => $favoriteId,
 		), 
 			array(
 				'$set' => array(
@@ -136,6 +145,7 @@ class menu extends model_Mongo
 					'menu' => $params["menu"],
 					'view' => $params["view"],
 					'title' => $params["title"],
+					'favoriteId'=> $favoriteId;
 					'timestamp' => time(),
 				),
 //				'$inc' => array(
