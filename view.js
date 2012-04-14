@@ -113,6 +113,7 @@ function viewUpdateUrl(id, viewData)
 	viewSetUrl(viewStatus);	
 }
 
+
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
 	params:
 		clear: set to true to delete all other main-windows before adding the new one.
@@ -179,6 +180,17 @@ function viewClose(view)
 {
 	//no data deletes view from url
 	viewUpdateUrl(view.id);
+}
+
+/* Close all views
+ * 
+ */
+function viewCloseAll()
+{
+	viewSetUrl({
+		count:0,
+		views:{}
+	});	
 }
 
 /*** Shows error and highlights field

@@ -50,8 +50,8 @@ function rpc(classMethod, params, callback)
 					}
 				};
 				callback(error);
-
 				rpcEnd();
+
 			},
 		"success":	
 			function (result, status, XMLHttpRequest)
@@ -113,8 +113,8 @@ function rpc(classMethod, params, callback)
 				}
 				
 				callback(result);
-
 				rpcEnd();
+
 			},
 		"type": "post",
 		"data": {

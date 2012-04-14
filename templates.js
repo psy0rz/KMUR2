@@ -14,7 +14,8 @@ function templateForm(params)
 		function(result)
 		{
 			
-			viewShowError(result, context, meta);
+			if (viewShowError(result, context, meta))
+				return;
 
 			meta=result['data'];
 			$(context).autoMeta(meta);
@@ -100,7 +101,7 @@ function templateForm(params)
 					{
 						$(".templateOnClickSave", context).prop("disabled", false);
 
-						if (result.data)
+						if ('data' in result)
 						{
 							$(context).autoPut(meta, result.data);
 						}
@@ -299,17 +300,20 @@ function templateList(params)
 			function(result)
 			{
 				viewShowError(result, context, meta);
-				
-				dataConv.array.put(
-						autoListSourceElement, //element
-						{ meta: meta },  		//meta
-						'',						//keyStr
-						result.data,			//value	
-						{						//settings
-							update: update,
-							showChanges: update
-						}		
-				);
+			
+				if ('data' in result)
+				{
+					dataConv.array.put(
+							autoListSourceElement, //element
+							{ meta: meta },  		//meta
+							'',						//keyStr
+							result.data,			//value	
+							{						//settings
+								update: update,
+								showChanges: update
+							}		
+					);
+				}
 				
 	  			$(".templateOnClickDel", context).unbind('click');
 				$(".templateOnClickDel", context).click( del);
@@ -337,16 +341,17 @@ function templateList(params)
 		params.getMetaParams,
 		function(result)
 		{
-			viewShowError(result, context, meta);
-
-			meta=result['data'];
-			//add real input to autoMeta divs. 
-			$(context).autoMeta(meta);
-			
-			//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
-//			$(".autoListSource:first", context).addClass("autoListItem");
-			
-			getData(false);
+			if (!viewShowError(result, context, meta))
+			{
+				meta=result['data'];
+				//add real input to autoMeta divs. 
+				$(context).autoMeta(meta);
+				
+				//make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
+	//			$(".autoListSource:first", context).addClass("autoListItem");
+				
+				getData(false);
+			}
 		}
 	)
 

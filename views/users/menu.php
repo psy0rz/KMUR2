@@ -33,5 +33,12 @@ $this->addSub("users",array(
 	)
 ));
 
+$this->addSub("users",array(
+	"title"=>"Uitloggen",
+	"view"=>array(
+		"name"=>"users.logout",
+		"mode"=>"popup",
+)
+));
 
 

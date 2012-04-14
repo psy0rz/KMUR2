@@ -3,11 +3,23 @@
 class userContext
 {
 
-	private $context=array(
-		"user"		=>"anonymous",
-		"rights"	=>array("anonymous"),
-		"userId"	=>null
-	);
+	private $context;
+	
+	function __construct()
+	{
+		$this->reset();
+	}
+	
+	
+	//clears the context, effectively logging the user out
+	function reset()
+	{
+		$this->context=array(
+			"user"		=>"anonymous",
+			"rights"	=>array("anonymous"),
+			"userId"	=>null
+		);
+	}
 	
 	//check if the user has any of the rights (one is enough)
 	function hasRights($rights)

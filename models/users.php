@@ -112,7 +112,8 @@ class users extends model_Mongo
 		return(array(
 			"default"=>array("admin"),
 			"authenticate"=>array("anonymous"),
-			"getMeta"=>array("anonymous")
+			"logout"=>array("anonymous"),
+		"getMeta"=>array("anonymous")
 
 		));
 	}
@@ -234,6 +235,11 @@ class users extends model_Mongo
 		logger("info", "Ingelogd");
 	}
 
+	function logout()
+	{
+		logger("info", "Uitgelogd");
+		$this->context->reset();
+	}
 }
 
 
