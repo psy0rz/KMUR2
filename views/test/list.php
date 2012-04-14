@@ -44,8 +44,8 @@ $(document).ready(function()
 	<th class='autoMeta templateOnClickOrder' _key='integerTest' _meta='desc'>
 	<th class='autoMeta templateOnClickOrder' _key='selectTest' _meta='desc'>
 	<th class='autoMeta templateOnClickOrder' _key='dateTest' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='arrayTest' _meta='desc'>
 	<th class='autoMeta templateOnClickOrder' _key='hashTest' _meta='desc'>
+	<th class='autoMeta templateOnClickOrder' _key='arrayTest' _meta='desc'>
 	<th>
 </tr>
 
