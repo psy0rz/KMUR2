@@ -84,8 +84,8 @@ function controlForm(params)
 			function controlFormFocus()
 			{
 				//focus the correct input field
-				if (params.view.params && params.view.params.focus)
-					$(context).autoFindElement(meta, params.view.params.focus).focus();
+				if (params.view.params && params.view.focus)
+					$(context).autoFindElement(meta, params.view.focus).focus();
 				else if (params.defaultFocus)
 					$(context).autoFindElement(meta, params.defaultFocus).focus();
 		
@@ -248,14 +248,13 @@ function controlList(params)
 			id='';
 		element.addClass("ui-state-highlight");
 		
-		var fields=$(element).autoFindKeys(meta);
 		
 		//create the view to edit the clicked item
 		var editView={};
 		$.extend( editView, params.editView );
 		if (! editView.params)
 			editView.params={};
-		editView.params.focus=fields;
+		editView.focus=$(element).autoFindKeys(meta);
 		editView.params[index]=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;
