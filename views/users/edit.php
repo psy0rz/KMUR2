@@ -4,7 +4,7 @@
 $(this).ready(function()
 {
 	var view=<?=viewGet()?>;
-	templateForm({
+	controlForm({
 		view			: view,
 		getMeta			: 'users.getMeta',
 		getMetaParams		: view.params,
@@ -153,6 +153,6 @@ $(this).ready(function()
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='templateOnClickSave' >Opslaan</button>
+	<button class='controlOnClickSave' >Opslaan</button>
 	<span class='viewErrorText'></span>
 </div>

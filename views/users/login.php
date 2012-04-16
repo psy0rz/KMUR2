@@ -5,7 +5,7 @@ $(this).ready(function()
 {
 	var view=<?=viewGet()?>;
 
-	templateForm({
+	controlForm({
 		'view'			: view,
 		'getMeta'		: 'users.getMeta',
 		'putData'		: 'users.authenticate',
@@ -43,6 +43,6 @@ $(this).ready(function()
 
 
 
-<button class='templateOnClickSave'>Login</button>
+<button class='controlOnClickSave'>Login</button>
 <span class='viewError'></span>
 

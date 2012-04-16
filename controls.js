@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////
-function templateForm(params)
+function controlForm(params)
 {
 	var meta;
 	var context=$("#"+params.view.id);
 	
 	//disable submit button while loading
-	$(".templateOnClickSave", context).prop("disabled", true);
+	$(".controlOnClickSave", context).prop("disabled", true);
 	
 	//get meta data
 	rpc(
@@ -21,7 +21,7 @@ function templateForm(params)
 			$(context).autoMeta(meta);
 			
 			//create an add-handler to add items to lists
-			$(".templateOnClickAdd", context).click(function(){
+			$(".controlOnClickAdd", context).click(function(){
 				//find the clicked list element, and the source element of the list
 				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource",context);
 				
@@ -40,7 +40,7 @@ function templateForm(params)
 			});
 			
 			//create an auto-add handler if the source-element is focussed
-			$(".templateOnFocusAdd :input", context).focus(function(){
+			$(".controlOnFocusAdd :input", context).focus(function(){
 				var changedElement=$(this, context).closest(".autoListSource, .autoListItem", context);
 		        if (changedElement.hasClass("autoListSource"))
 		        {
@@ -52,7 +52,7 @@ function templateForm(params)
 			
 
 			//delete handlers for lists
-			$(".templateOnClickDel", context).click(function()
+			$(".controlOnClickDel", context).click(function()
 			{
 				var clickedElement=$(this, context).closest(".autoListItem",context);
 		        if (clickedElement.hasClass("autoListItem"))
@@ -68,9 +68,9 @@ function templateForm(params)
 			});
 			
 			//make stuff sortable
-			$(".templateSortable", context).sortable({
+			$(".controlSortable", context).sortable({
 				placeholder: ".tempateSortPlaceholder",
-				handle: ".templateOnDragSort",
+				handle: ".controlOnDragSort",
 				cancel: ".autoListSource",
 				items:"> .autoListItem",
 				forceHelperSize: true,
@@ -78,7 +78,7 @@ function templateForm(params)
 			});
 
 			
-			function templateFormFocus()
+			function controlFormFocus()
 			{
 				//focus the correct input field
 				if (params.view.params && params.view.params.focus)
@@ -86,8 +86,8 @@ function templateForm(params)
 				else if (params.defaultFocus)
 					$(context).autoFindElement(meta, params.defaultFocus).focus();
 		
-				//elements that have templateSetFocus always overrule the focus:
-				$(".templateSetFocus", context).focus();
+				//elements that have controlSetFocus always overrule the focus:
+				$(".controlSetFocus", context).focus();
 				
 			}
 
@@ -99,14 +99,14 @@ function templateForm(params)
 					params.getDataParams,
 					function(result)
 					{
-						$(".templateOnClickSave", context).prop("disabled", false);
+						$(".controlOnClickSave", context).prop("disabled", false);
 
 						if ('data' in result)
 						{
 							$(context).autoPut(meta, result.data);
 						}
 						
-						templateFormFocus();
+						controlFormFocus();
 
 						if (viewShowError(result, context, meta))
 						{
@@ -126,9 +126,9 @@ function templateForm(params)
 			//when not loading data, dont forget to call the loadCallback:
 			else
 			{
-				$(".templateOnClickSave", context).prop("disabled", false);
+				$(".controlOnClickSave", context).prop("disabled", false);
 
-				templateFormFocus();
+				controlFormFocus();
 
 				if (params['loadCallback'])
 					params['loadCallback'](result);
@@ -141,7 +141,7 @@ function templateForm(params)
 	//save 
 	var save=function()
 	{
-		$(".templateOnClickSave", context).prop("disabled", true);
+		$(".controlOnClickSave", context).prop("disabled", true);
 
 		//are there putParams that we should COPY to putData
 		var putParams={};
@@ -157,7 +157,7 @@ function templateForm(params)
 			putParams,
 			function(result)
 			{
-				$(".templateOnClickSave", context).prop("disabled", false);
+				$(".controlOnClickSave", context).prop("disabled", false);
 				
 				viewShowError(result, context, meta);
 
@@ -205,7 +205,7 @@ function templateForm(params)
 	}
 	
 	
-	$(".templateOnClickSave", context).click(save);
+	$(".controlOnClickSave", context).click(save);
 
 	//pressing enter will also save:
 	$(context).bind('keypress', function(e) {
@@ -216,11 +216,11 @@ function templateForm(params)
 		}
 	});
 	
-	$(".templateOnClickDel", context).click(del);
+	$(".controlOnClickDel", context).click(del);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-function templateList(params)
+function controlList(params)
 {
 	var meta={};
 	var context=$("#"+params.view.id);
@@ -315,10 +315,10 @@ function templateList(params)
 					);
 				}
 				
-	  			$(".templateOnClickDel", context).unbind('click');
-				$(".templateOnClickDel", context).click( del);
-				$(".templateOnClickEdit", context).unbind( 'click');
-				$(".templateOnClickEdit", context).click( edit);
+	  			$(".controlOnClickDel", context).unbind('click');
+				$(".controlOnClickDel", context).click( del);
+				$(".controlOnClickEdit", context).unbind( 'click');
+				$(".controlOnClickEdit", context).click( edit);
 
 				if (!update)
 				{
@@ -359,34 +359,34 @@ function templateList(params)
 	/// ORDER STUFF
 	
 	//what is the current selected sorting column?
-	if ($(".templateOrderAsc",context).length !=0)
+	if ($(".controlOrderAsc",context).length !=0)
 	{
 		getParams.sort={};
-		getParams.sort[$(".templateOrderAsc").attr("_key")]=1;
+		getParams.sort[$(".controlOrderAsc").attr("_key")]=1;
 	}
-	else if ($(".templateOrderDesc",context).length !=0)
+	else if ($(".controlOrderDesc",context).length !=0)
 	{
 		getParams.sort={};
-		getParams.sort[$(".templateOrderDesc").attr("_key")]=-1;
+		getParams.sort[$(".controlOrderDesc").attr("_key")]=-1;
 	}
 
-	$(".templateOnClickOrder", context).click(function()
+	$(".controlOnClickOrder", context).click(function()
 	{
 		getParams.sort={};
 		
-		if ($(this).hasClass("templateOrderAsc"))
+		if ($(this).hasClass("controlOrderAsc"))
 		{
-			$(".templateOrderAsc",context).removeClass("templateOrderAsc");
-			$(".templateOrderDesc",context).removeClass("templateOrderDesc");
+			$(".controlOrderAsc",context).removeClass("controlOrderAsc");
+			$(".controlOrderDesc",context).removeClass("controlOrderDesc");
 			getParams.sort[$(this).attr("_key")]=-1;
-			$(this).addClass("templateOrderDesc");
+			$(this).addClass("controlOrderDesc");
 		}
 		else
 		{
-			$(".templateOrderAsc",context).removeClass("templateOrderAsc");
-			$(".templateOrderDesc",context).removeClass("templateOrderDesc");
+			$(".controlOrderAsc",context).removeClass("controlOrderAsc");
+			$(".controlOrderDesc",context).removeClass("controlOrderDesc");
 			getParams.sort[$(this).attr("_key")]=1;
-			$(this).addClass("templateOrderAsc");
+			$(this).addClass("controlOrderAsc");
 		}
 		
 		getData(false);
@@ -395,7 +395,7 @@ function templateList(params)
 
 	/// FILTER STUFF
 	//handle filtering 
-	$(".templateOnChangeFilter", context).keyup(function()
+	$(".controlOnChangeFilter", context).keyup(function()
 	{
 		filterPrevious=$(this).val();
 		
@@ -421,7 +421,7 @@ function templateList(params)
 	});
 	
 	//set default focus
-	$(".templateSetFocus", context).focus();
+	$(".controlSetFocus", context).focus();
 
 	//enable endless scrolling?
 	if (params.endlessScrolling && ('limit' in getParams))

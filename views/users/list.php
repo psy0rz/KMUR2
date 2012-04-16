@@ -7,7 +7,7 @@ $(document).ready(function()
 {
 	var view=<?=viewGet()?>;
 	
-	templateList({
+	controlList({
 		view		: view,
 		id		: '_id',
 		getMeta		: 'users.getMeta',
@@ -37,29 +37,29 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta templateOnClickOrder' _key='active' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder templateOrderAsc' _key='username' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='name' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='company' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='rights' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='active' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder controlOrderAsc' _key='username' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='name' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='company' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='rights' _meta='desc'>
 	<th>
 </tr>
 
 <tr>
 	<td>
-	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='username'>
-	<td><input type='text' class='templateOnChangeFilter' _key='name'>
-	<td><input type='text' class='templateOnChangeFilter' _key='company'>
+	<td><input type='text' class='controlOnChangeFilter controlSetFocus' _key='username'>
+	<td><input type='text' class='controlOnChangeFilter' _key='name'>
+	<td><input type='text' class='controlOnChangeFilter' _key='company'>
 	<td>
 </tr>
 
 <tr class='colorRows autoListSource ui-widget-content' _index='_id'>
-	<td class='autoPut templateOnClickEdit' _key='active' _html>
-	<td class='autoPut templateOnClickEdit' _key='username' _html>
-	<td class='autoPut templateOnClickEdit' _key='name' _html>
-	<td class='autoPut templateOnClickEdit' _key='company' _html>
-	<td class='autoPut templateOnClickEdit' _key='rights' _html>
-	<td class='templateOnClickDel ui-icon ui-icon-trash' _html>
+	<td class='autoPut controlOnClickEdit' _key='active' _html>
+	<td class='autoPut controlOnClickEdit' _key='username' _html>
+	<td class='autoPut controlOnClickEdit' _key='name' _html>
+	<td class='autoPut controlOnClickEdit' _key='company' _html>
+	<td class='autoPut controlOnClickEdit' _key='rights' _html>
+	<td class='controlOnClickDel ui-icon ui-icon-trash' _html>
 </tr>
 </table>
 

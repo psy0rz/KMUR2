@@ -7,7 +7,7 @@ $(document).ready(function()
 {
 	var view=<?=viewGet()?>;
 	
-	templateList({
+	controlList({
 		view		: view,
 		id		: '_id',
 		getMeta		: 'invoices.getMeta',		
@@ -35,25 +35,25 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta templateOnClickOrder templateOrderDesc' _key='number' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='company' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='desc' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='status' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder controlOrderDesc' _key='number' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='company' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='desc' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='status' _meta='desc'>
 	<th>
 </tr>
 <tr>
-	<td><input type='text' class='tempalteOnChangeFilter templateSetFocus' _key='number'>
+	<td><input type='text' class='tempalteOnChangeFilter controlSetFocus' _key='number'>
 	<td><input type='text' class='tempalteOnChangeFilter' _key='company'>
 	<td><input type='text' class='tempalteOnChangeFilter' _key='desc'>
 	<td>
 </tr>
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut templateOnClickEdit' _key='number'>
-	<td class='autoPut templateOnClickEdit' _key='company'>
-	<td class='autoPut templateOnClickEdit' _key='desc'>
-	<td class='autoPut templateOnClickEdit' _key='status'>
-	<td class='templateOnClickDel ui-icon ui-icon-trash'>
+	<td class='autoPut controlOnClickEdit' _key='number'>
+	<td class='autoPut controlOnClickEdit' _key='company'>
+	<td class='autoPut controlOnClickEdit' _key='desc'>
+	<td class='autoPut controlOnClickEdit' _key='status'>
+	<td class='controlOnClickDel ui-icon ui-icon-trash'>
 </tr>
 </table>
 

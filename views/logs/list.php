@@ -7,7 +7,7 @@ $(document).ready(function()
 {
 	var view=<?=viewGet()?>;
 	
-	templateList({
+	controlList({
 		view		: view,
 		id		: '_id',
 		getMeta		: 'logs.getMeta',
@@ -37,17 +37,17 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta templateOnClickOrder templateOrderDesc' _key='time' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='username' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='logType' _meta='desc'>
-	<th class='autoMeta templateOnClickOrder' _key='text' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder controlOrderDesc' _key='time' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='username' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='logType' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder' _key='text' _meta='desc'>
 
 </tr>
 <tr>
 	<td>
-	<td><input type='text' class='templateOnChangeFilter' _key='username'>
+	<td><input type='text' class='controlOnChangeFilter' _key='username'>
 	<td>
-	<td><input type='text' class='templateOnChangeFilter templateSetFocus' _key='text'>
+	<td><input type='text' class='controlOnChangeFilter controlSetFocus' _key='text'>
 </tr>
 <tr class='colorRows autoListSource ui-widget-content'>
 	<td class='autoPut' _key='time' _allowTime _html>

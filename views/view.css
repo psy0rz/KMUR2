@@ -2,21 +2,21 @@
 	View specific CSS stuff. Stuff that happens INSIDE a view 
 */
 
-.templateOnClickEdit:hover, .templateOnClickDel:hover
+.controlOnClickEdit:hover, .controlOnClickDel:hover
 {
 }
 
-.templateOnClickEdit, .templateOnClickDel, .templateOnClickAdd
+.controlOnClickEdit, .controlOnClickDel, .controlOnClickAdd
 {
 	cursor:pointer;
 }
 
-.templateOnDragSort
+.controlOnDragSort
 {
 	cursor:row-resize;
 }
 
-.templateOnClickOrder
+.controlOnClickOrder
 {
 	cursor:pointer;
 	background-image: url("../icons/order.png");
@@ -27,17 +27,17 @@
 	
 }
 
-.templateOrderAsc
+.controlOrderAsc
 {
 	background-image: url("../icons/orderAsc.png");
 }
 
-.templateOrderDesc
+.controlOrderDesc
 {
 	background-image: url("../icons/orderDesc.png");
 }
 
-.templateSortPlaceholder 
+.controlSortPlaceholder 
 {
 	height: 4em;
 }

@@ -4,7 +4,7 @@
 $(this).ready(function()
 {
 	var view=<?=viewGet()?>;
-	templateForm({
+	controlForm({
 		view			: view,
 		getMeta			: 'test.getMeta',
 		getMetaParams		: view.params,
@@ -138,19 +138,19 @@ $(this).ready(function()
 				<td>
 			</tr>
 		</thead>		
-		<tbody class='templateSortable'>
+		<tbody class='controlSortable'>
 			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='arrayTest'  _index='_id'>
-				<td class='templateOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.stringTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.multiselectTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.passwordTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.booleanTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.floatTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.integerTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.selectTest'>
-				<td class='autoMeta templateOnFocusAdd' _key='arrayTest.dateTest'>
-				<td class='templateOnClickDel ui-icon ui-icon-trash'>
-				<td class='templateOnClickAdd ui-icon ui-icon-plus'>
+				<td class='controlOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.stringTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.multiselectTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.passwordTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.booleanTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.floatTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.integerTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.selectTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.dateTest'>
+				<td class='controlOnClickDel ui-icon ui-icon-trash'>
+				<td class='controlOnClickAdd ui-icon ui-icon-plus'>
 			</tr>
 		</tbody>
 	</table>
@@ -158,7 +158,7 @@ $(this).ready(function()
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='templateOnClickSave' >Opslaan</button>
-	<button class='templateOnClickDel' >Verwijderen</button>
+	<button class='controlOnClickSave' >Opslaan</button>
+	<button class='controlOnClickDel' >Verwijderen</button>
 	<span class='viewErrorText'></span>
 </div>
