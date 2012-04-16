@@ -16,6 +16,9 @@ function controlForm(params)
 			
 			if (viewShowError(result, context, meta))
 				return;
+			
+			if (!('data' in result))
+				return;
 
 			meta=result['data'];
 			$(context).autoMeta(meta);
@@ -101,7 +104,7 @@ function controlForm(params)
 					{
 						$(".controlOnClickSave", context).prop("disabled", false);
 
-						if ('data' in result)
+						if (('data' in result) && (result.data != null) )
 						{
 							$(context).autoPut(meta, result.data);
 						}
