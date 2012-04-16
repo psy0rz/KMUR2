@@ -84,7 +84,7 @@ function controlForm(params)
 			function controlFormFocus()
 			{
 				//focus the correct input field
-				if (params.view.params && params.view.focus)
+				if (params.view && params.view.focus)
 					$(context).autoFindElement(meta, params.view.focus).focus();
 				else if (params.defaultFocus)
 					$(context).autoFindElement(meta, params.defaultFocus).focus();
@@ -201,6 +201,8 @@ function controlForm(params)
 					if (!viewShowError(result, this, meta))
 					{
 						viewRefresh();
+						if (params.closeAfterSave)
+							viewClose(params.view);
 					}
 				}
 			);
@@ -220,6 +222,12 @@ function controlForm(params)
 	});
 	
 	$(".controlOnClickDel", context).click(del);
+
+
+	$(".controlOnClickCancel", context).click(function()
+			{
+				viewClose(params.view);
+			});
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

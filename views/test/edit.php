@@ -13,7 +13,7 @@ $(this).ready(function()
 		putData			: 'test.put',
 		putDataParams		: { "_id": view.params._id },
 		delData			: 'test.del',	
-		defaultFocus	: [ "username" ],
+		defaultFocus	: [ "stringTest" ],
 		closeAfterSave	: true,
 		loadCallback	: function(result) {
 			if (result.data)
@@ -160,5 +160,6 @@ $(this).ready(function()
 <div class='floatingBar viewErrorClass'>
 	<button class='controlOnClickSave' >Opslaan</button>
 	<button class='controlOnClickDel' >Verwijderen</button>
+	<button class='controlOnClickCancel' >Annuleren</button>
 	<span class='viewErrorText'></span>
 </div>
