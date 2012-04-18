@@ -16,6 +16,9 @@ function controlForm(params)
 			
 			if (viewShowError(result, context, meta))
 				return;
+			
+			if (!('data' in result))
+				return;
 
 			meta=result['data'];
 			$(context).autoMeta(meta);
@@ -81,8 +84,8 @@ function controlForm(params)
 			function controlFormFocus()
 			{
 				//focus the correct input field
-				if (params.view.params && params.view.params.focus)
-					$(context).autoFindElement(meta, params.view.params.focus).focus();
+				if (params.view && params.view.focus)
+					$(context).autoFindElement(meta, params.view.focus).focus();
 				else if (params.defaultFocus)
 					$(context).autoFindElement(meta, params.defaultFocus).focus();
 		
@@ -101,7 +104,7 @@ function controlForm(params)
 					{
 						$(".controlOnClickSave", context).prop("disabled", false);
 
-						if ('data' in result)
+						if (('data' in result) && (result.data != null) )
 						{
 							$(context).autoPut(meta, result.data);
 						}
@@ -198,6 +201,8 @@ function controlForm(params)
 					if (!viewShowError(result, this, meta))
 					{
 						viewRefresh();
+						if (params.closeAfterSave)
+							viewClose(params.view);
 					}
 				}
 			);
@@ -217,6 +222,12 @@ function controlForm(params)
 	});
 	
 	$(".controlOnClickDel", context).click(del);
+
+
+	$(".controlOnClickCancel", context).click(function()
+			{
+				viewClose(params.view);
+			});
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -245,14 +256,13 @@ function controlList(params)
 			id='';
 		element.addClass("ui-state-highlight");
 		
-		var fields=$(element).autoFindKeys(meta);
 		
 		//create the view to edit the clicked item
 		var editView={};
 		$.extend( editView, params.editView );
 		if (! editView.params)
 			editView.params={};
-		editView.params.focus=fields;
+		editView.focus=$(element).autoFindKeys(meta);
 		editView.params[index]=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;

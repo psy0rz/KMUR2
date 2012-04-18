@@ -121,7 +121,7 @@ function viewUpdateUrl(id, viewData)
 
 	view:
 		name: name of	 the view. e.g. 'users.list' (will load views/users/list.php)
-		params: view specific parameters, used inside the view. (passed along without changing)
+		params: model specific parameters, used inside the view when asking data from the model (passed along without changing)
 		mode:
 			'main': add the view in the mainwindow and update viewPath.
 			'popup': create a new popup window to load the view. 
@@ -129,6 +129,7 @@ function viewUpdateUrl(id, viewData)
 		x,y: (for mode 'popup') coordinates for popup
 		id: id of the element to load the view in (auto set in case of main and popup)
 		highlight: a field to highlight during open and scroll-to after close
+		focus: which field to focus after view is openend. (its the view's responsibility to actually focus the field)
 
 Loading views this way also ensures correct browser url and history updating.
 
