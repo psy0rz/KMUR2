@@ -10,11 +10,17 @@ def rpc():
 	s = bottle.request.environ.get('beaker.session')
 	return "rpc"
 
-#serve static content from the static dir
+#serve other urls from the static dir
 #(in production the webserver should do this)
-@bottle.route('/static/<filename:path>')
+@bottle.route('/<filename:path>')
 def send_static(filename):
     return bottle.static_file(filename, root='static')
+
+#map default url to index.html
+@bottle.route('/')
+def send_default():
+    return bottle.static_file("index.html", root='static')
+
 
 session_opts = {
     'session.type': 'file',
