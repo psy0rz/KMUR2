@@ -2,13 +2,19 @@
 
 import beaker.middleware
 import bottle
+import re
 
 
 #rpc calls to models:
-@bottle.route('/rpc')
+@bottle.post('/rpc')
 def rpc():
 	s = bottle.request.environ.get('beaker.session')
-	return "rpc"
+	#print bottle.request.json
+	data=bottle.request.json
+	if re.search("[^a-zA-Z0-9_]", data['class']):
+		raise "kut"
+	
+	return "rpc\n"
 
 #serve other urls from the static dir
 #(in production the webserver should do this)
