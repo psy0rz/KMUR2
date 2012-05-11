@@ -17,10 +17,11 @@ $(this).ready(function()
 		closeAfterSave	: true,
 		loadCallback	: function(result) {
 			if (result.data)
-				title="Wijzigen test "+result.data.stringTest;
+				title="<?=_('Wijzigen test %1')?>";
 			else
-				title="Nieuwe test";
-				
+				title="<?=_('Nieuwe test')?>";
+	//, result.data.stringTest);
+			
 			viewReady({
 				view: view,
 				title:title
@@ -158,8 +159,8 @@ $(this).ready(function()
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='controlOnClickSave' >Opslaan</button>
-	<button class='controlOnClickDel' >Verwijderen</button>
-	<button class='controlOnClickCancel' >Annuleren</button>
+	<button class='controlOnClickSave' ><?=_("Save")?></button>
+	<button class='controlOnClickDel' ><?=_("Delete")?></button>
+	<button class='controlOnClickDel' ><?=_("Cancel")?></button>
 	<span class='viewErrorText'></span>
 </div>
