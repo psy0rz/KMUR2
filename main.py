@@ -4,16 +4,61 @@ import beaker.middleware
 import bottle
 import re
 
-
+#curl -d '{ "class": "geert" }' -H 'Content-Type: application/json' http://localhost:8080/rpc
 #rpc calls to models:
 @bottle.post('/rpc')
 def rpc():
 	s = bottle.request.environ.get('beaker.session')
-	#print bottle.request.json
-	data=bottle.request.json
-	if re.search("[^a-zA-Z0-9_]", data['class']):
-		raise "kut"
-	
+
+	try:
+		#print bottle.request.json
+		data=bottle.request.json
+
+		if not "module" in data:
+			raise Exception("Module not specified")
+		
+		if re.search("[^a-zA-Z0-9_]", data['module']):
+			raise Exception("Illegal module name")
+		
+		if not "class" in data:
+			raise Exception("Class not specified")
+		
+		if re.search("[^a-zA-Z0-9_]", data['class']):
+			raise Exception("Illegal class name")
+		
+		if not "method" in data:
+			raise Exception("Method not specified")
+		
+		if re.search("[^a-zA-Z0-9_]", data['method']):
+			raise Exception("Illegal method name")
+
+		if not "params" in data:
+			raise Exception("Params not specified")
+
+#		import models.core.users
+#		u=models.core.users.users()
+#		u.test()
+#
+		#load module and resolve class
+		rpc_models=__import__('models.'+data['module']+'.'+data['class'])
+		rpc_module=getattr( rpc_models, data['module'])
+		rpc_package=getattr(rpc_module, data['class'])
+		rpc_class=getattr(rpc_package, data['class'])
+		
+		#instantiate class and resolve method
+		rpc_class_instance=rpc_class()
+		rpc_method=getattr(rpc_class_instance, data['method'])
+		
+		#XXX access control
+		
+		return(rpc_method(data['params']))
+		
+		
+	except Exception as e:
+		return {
+			'error': str(e)
+		}
+		
 	return "rpc\n"
 
 #serve other urls from the static dir
