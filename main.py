@@ -3,6 +3,7 @@
 import beaker.middleware
 import bottle
 import re
+import traceback
 
 #curl -d '{ "class": "geert" }' -H 'Content-Type: application/json' http://localhost:8080/rpc
 #rpc calls to models:
@@ -49,14 +50,18 @@ def rpc():
 		rpc_class_instance=rpc_class()
 		rpc_method=getattr(rpc_class_instance, data['method'])
 		
-		#XXX access control
-		
+		#make sure that it has an acl
+		if not hasattr(rpc_method, 'has_acl_decorator'):
+			raise Exception("This method cannot be called because it has no @acl decorator")
+				
 		return(rpc_method(data['params']))
 		
 		
 	except Exception as e:
+		traceback.print_exc()
 		return {
-			'error': str(e)
+			'error': str(e),
+			#'traceback': traceback.format_exc()
 		}
 		
 	return "rpc\n"
