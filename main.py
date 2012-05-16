@@ -48,8 +48,9 @@ def rpc():
 		rpc_package=getattr(rpc_module, data['class'])
 		rpc_class=getattr(rpc_package, data['class'])
 
-		#load or create context
-		context=models.common.Context()
+		#create context if its non existant for this session
+		if not context in session:
+			session['context']=models.common.Context()
 		
 		#instantiate class
 		rpc_class_instance=rpc_class(context)
@@ -58,7 +59,7 @@ def rpc():
 
 		#resolve method
 		rpc_method=getattr(rpc_class_instance, data['method'])
-				
+
 		#make sure that it has an acl
 		if not hasattr(rpc_method, 'has_acl_decorator'):
 			raise Exception("This method cannot be called because it has no @acl decorator")
@@ -69,6 +70,8 @@ def rpc():
 	except Exception as e:
 		traceback.print_exc()
 		ret['error']=str(e)
+		
+	session.save()
 
 	return(ret)
 
