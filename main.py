@@ -4,12 +4,15 @@ import beaker.middleware
 import bottle
 import re
 import traceback
+import models.common 
 
 #curl -d '{ "class": "geert" }' -H 'Content-Type: application/json' http://localhost:8080/rpc
 #rpc calls to models:
 @bottle.post('/rpc')
 def rpc():
-	s = bottle.request.environ.get('beaker.session')
+	session = bottle.request.environ.get('beaker.session')
+
+	ret={}
 
 	try:
 		#print bottle.request.json
@@ -24,7 +27,7 @@ def rpc():
 		if not "class" in data:
 			raise Exception("Class not specified")
 		
-		if re.search("[^a-zA-Z0-9_]", data['class']):
+		if re.search("[^a-zA-Z0-9]", data['class']):
 			raise Exception("Illegal class name")
 		
 		if not "method" in data:
@@ -32,39 +35,42 @@ def rpc():
 		
 		if re.search("[^a-zA-Z0-9_]", data['method']):
 			raise Exception("Illegal method name")
+		
+		if re.search("^_", data['method']):
+			raise Exception("Methodname may not begin with _")
 
 		if not "params" in data:
 			raise Exception("Params not specified")
 
-#		import models.core.users
-#		u=models.core.users.users()
-#		u.test()
-#
 		#load module and resolve class
 		rpc_models=__import__('models.'+data['module']+'.'+data['class'])
 		rpc_module=getattr( rpc_models, data['module'])
 		rpc_package=getattr(rpc_module, data['class'])
 		rpc_class=getattr(rpc_package, data['class'])
+
+		#load or create context
+		context=models.common.Context()
 		
-		#instantiate class and resolve method
-		rpc_class_instance=rpc_class()
+		#instantiate class
+		rpc_class_instance=rpc_class(context)
+		if not isinstance(rpc_class_instance, models.common.Base):
+			raise Exception("Class is not a model")
+
+		#resolve method
 		rpc_method=getattr(rpc_class_instance, data['method'])
-		
+				
 		#make sure that it has an acl
 		if not hasattr(rpc_method, 'has_acl_decorator'):
 			raise Exception("This method cannot be called because it has no @acl decorator")
-				
-		return(rpc_method(data['params']))
 		
+		#call method with specified parameters
+		ret['result']=rpc_method(data['params'])
 		
 	except Exception as e:
 		traceback.print_exc()
-		return {
-			'error': str(e),
-			#'traceback': traceback.format_exc()
-		}
-		
-	return "rpc\n"
+		ret['error']=str(e)
+
+	return(ret)
 
 #serve other urls from the static dir
 #(in production the webserver should do this)
