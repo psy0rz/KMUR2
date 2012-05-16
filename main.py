@@ -49,11 +49,11 @@ def rpc():
 		rpc_class=getattr(rpc_package, data['class'])
 
 		#create context if its non existant for this session
-		if not context in session:
+		if not 'context' in session:
 			session['context']=models.common.Context()
 		
 		#instantiate class
-		rpc_class_instance=rpc_class(context)
+		rpc_class_instance=rpc_class(session['context'])
 		if not isinstance(rpc_class_instance, models.common.Base):
 			raise Exception("Class is not a model")
 

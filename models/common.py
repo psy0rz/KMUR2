@@ -1,4 +1,5 @@
 """common stuff for all models"""
+from lib2to3.fixer_util import is_list
 
 
 class Acl():
@@ -7,12 +8,12 @@ class Acl():
     Use this on functions to provide access control to certain groups.
     This is mandatory for functions you want to be able to call via rpc.
     """ 
-    def __init__(self, groups=["admin"]):
+    def __init__(self, groups="admin"):
         self.groups = groups
     
     def __call__(self, f):
         def wrapped_f(wrapped_instance, *args, **kwargs):
-            #XXX...controleer ACL
+            wrapped_instance.context.needGroups(self.groups)
             return(f(wrapped_instance, *args, **kwargs))
     
         #we want to be able to verify if the outer wrapper is an acl_wrapper            
@@ -29,15 +30,29 @@ class Context:
     """
     
     def reset(self):
-        """Reset user and group to default value
-        """
-        self.user="anonymous"
-        self.groups=["everyone"]
+        '''Reset user and group to default value
+        '''
+        self.user='anonymous'
+        self.groups=['everyone']
             
     def __init__(self):
         self.reset()
+
+    def hasGroups(self, groups):
+        '''Check if the user has any of the rights (one is enough)
         
-            
+            groups can be iterable or a string
+        '''
+        if isinstance(groups,str):
+            return (groups in self.groups)
+        else:
+            return (len([group for group in groups if group in self.groups]) != 0)
+
+    def needGroups(self, groups):
+        '''raises exception if the user isnt member of any of the groups
+        '''
+        if not self.hasGroups(groups):
+            raise Exception('You need to be member of any of these groups: {}'.format(groups))
 
 class Base:
     """Base class for all models
