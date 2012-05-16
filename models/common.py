@@ -1,5 +1,4 @@
 """common stuff for all models"""
-from lib2to3.fixer_util import is_list
 
 
 class Acl():
