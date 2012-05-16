@@ -21,7 +21,7 @@ class Users(Base):
     def admin2(self, params):
         return("ADMIN")
     
-    @Acl(groups=["admin","geert","test"])
+    @Acl(groups=("everyone","admin","geert","test"))
     def geert(self, params):
         return("geert")
 

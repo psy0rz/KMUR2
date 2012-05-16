@@ -12,6 +12,7 @@ import models.common
 def rpc():
 	session = bottle.request.environ.get('beaker.session')
 
+	#return object will be stored here:
 	ret={}
 
 	try:
@@ -62,7 +63,7 @@ def rpc():
 
 		#make sure that it has an acl
 		if not hasattr(rpc_method, 'has_acl_decorator'):
-			raise Exception("This method cannot be called because it has no @acl decorator")
+			raise Exception("This method cannot be called because it has no @Acl decorator")
 		
 		#call method with specified parameters
 		ret['result']=rpc_method(data['params'])
