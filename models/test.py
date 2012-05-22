@@ -6,6 +6,18 @@ t=type.Dict({
             'tijd':type.Timestamp(desc='hoe loat ist'),
             'user':type.String(min=0, max=12),
             'pass':type.Password(min=5, max=11),
+            'sel':type.Select({
+                               'eerste': 'eerste keus',
+                               'tweede': 'tweede keus',
+                               'derde': 'derde keus'
+                               },
+                              desc='select ding'),
+            'msel':type.MultiSelect({
+                               'eerste': 'eerste keus',
+                               'tweede': 'tweede keus',
+                               'derde': 'derde keus'
+                               },
+                              desc='multi select ding'),
             'subje':type.Dict({
                                   'subuser':type.String(min=0, max=13),
                                   'subpass':type.String(min=0, max=14)
@@ -36,6 +48,8 @@ d={
             'subuser':"ffffdddd"
             },
    'listje':["string1", "telangesgg", "string2"],
+   'sel':'eerste',
+   'msel':['eerste','tweede','derde','tweede'],
    'listmetdicts':[
                    {'subuser':"eerste", 'subpass':'eerstepass'},
                    {'subuser':"tweede", 'subpass':'twwffedepass'},

@@ -67,7 +67,7 @@ class Dict(Base):
 
     def __init__(self, meta=None, required=None, type='hash', **kwargs):
         
-        super(Dict,self).__init__(**kwargs)
+        super(Dict,self).__init__(type=type, **kwargs)
 
         if not isinstance(meta, dict): 
             raise TypeException("Metadata should be a dict")
@@ -121,7 +121,7 @@ class List(Base):
     """Data that contains a list of other type-objects (type-string is 'array')"""
 
     def __init__(self, meta=None, type='array', **kwargs):
-        super(List,self).__init__(**kwargs)
+        super(List,self).__init__(type=type, **kwargs)
 
         if not isinstance(meta, Base): 
             raise TypeException("Metadata should be a an instance of Base")
@@ -149,7 +149,7 @@ class String(Base):
     """A regular string, with optional min and max value"""
     
     def __init__(self, min=None, max=None, type='string', **kwargs):
-        super(String,self).__init__(**kwargs)
+        super(String,self).__init__(type=type, **kwargs)
 
         if min!=None and max!=None and max<=min:
             raise TypeException("Max cant be smaller than min")
@@ -183,14 +183,14 @@ class Password(String):
     """Same as String, but with other GUI stuff"""
     
     def __init__(self, type='password', **kwargs):
-        super(Password, self).__init__(**kwargs)
+        super(Password, self).__init__(type=type, **kwargs)
             
 
 class Number(Base):
     """A number, with optional min and max value"""
     
     def __init__(self, min=None, max=None, decimals=0,type='number', **kwargs):
-        super(Number, self).__init__(**kwargs)
+        super(Number, self).__init__(type=type, **kwargs)
 
         if min!=None and max!=None and max<=min:
             raise TypeException("Max cant be smaller than min")
@@ -223,7 +223,7 @@ class Timestamp(Base):
     """A unix timestamp"""    
 
     def __init__(self,type='timestamp', **kwargs):
-        super(Timestamp, self).__init__(**kwargs)
+        super(Timestamp, self).__init__(type=type, **kwargs)
 
     def check(self,data):
   
@@ -237,9 +237,10 @@ class Timestamp(Base):
 
 
 class Bool(Base):
+    """Boolean, only real boolean types allowed"""
     
     def __init__(self,type='bool', **kwargs):
-        super(Bool, self).__init__(**kwargs)
+        super(Bool, self).__init__(type=type, **kwargs)
 
     def check(self,data):
 
@@ -250,22 +251,67 @@ class Bool(Base):
         
 
 class Select(Base):
+    '''Select list. User can select one item from choices'''
     
-    def __init__(self,type='select', **kwargs):
-        super(Select, self).__init__(**kwargs)
+    def __init__(self, choices, type='select', **kwargs):
+
+        super(Select, self).__init__(type=type, **kwargs)
+        
+        if not isinstance(choices, dict):
+            raise TypeException("choices should be a dict")
+        
+        self.meta['choices']=choices
 
     def check(self,data):
         
         super(Select,self).check(data)
 
-        if not isinstance(data, (bool)):
-            raise TypeException("This should be a boolean value (e.g. true or false)")
+        if not data in self.meta['choices']:
+            raise TypeException("This is an invalid choice")
 
+
+class MultiSelect(Base):
+    '''Multi select list. User can select multiple choices from a list'''
     
-#        Possible types:
-#         "select": A select list that allows user to select one option.
-#          choices: A hasharray with the allowed options. option=>description.
-#         "multiselect": A select list that allows user to select multiple options.
-#          choices: A hasharray with the allowed options. option=>description.
+    def __init__(self, choices, type='multiselect', **kwargs):
+
+        super(MultiSelect, self).__init__(type=type, **kwargs)
+        
+        if not isinstance(choices, dict):
+            raise TypeException("choices should be a dict")
+        
+        self.meta['choices']=choices
+
+    def check(self,data):
+        
+        super(MultiSelect,self).check(data)
+
+        if not isinstance(data, list):
+            raise TypeException("choices should be a list")
+
+        illegal=[i for i in data if i not in self.meta['choices']]
+        if illegal:
+            raise TypeException("This field contains illegal choices")
+
+        if len(set(data))!=len(data):
+            raise TypeException("List contains duplicate choices")
+        
+class Anything(Base):
+    """Allow anything.
+    
+    Doesnt do any checks so use with caution!"""
+    
+    def __init__(self, choices, type='anything', **kwargs):
+
+        super(Select, self).__init__(type=type, **kwargs)
+        
+
+    def check(self,data):
+        
+        super(Select,self).check(data)
+    
+    
 #         "id": A mongoDB identifier.
-#         "*": Allow anything and dont check it. dont forget to check it yourself!
+
+
+
