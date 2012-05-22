@@ -2,13 +2,15 @@ import type
 import json
 
 t=type.Dict({
-            'poep':type.Number(min=0, max=100,decimals=2),
+            'poep':type.Number(min=0, max=100,decimals=2,desc='jojojo'),
+            'tijd':type.Timestamp(desc='hoe loat ist'),
             'user':type.String(min=0, max=12),
-            'pass':type.String(min=5, max=11),
+            'pass':type.Password(min=5, max=11),
             'subje':type.Dict({
-                              'subuser':type.String(min=0, max=13),
-                              'subpass':type.String(min=0, max=14)
-                              }),
+                                  'subuser':type.String(min=0, max=13),
+                                  'subpass':type.String(min=0, max=14)
+                              },
+                              ),
             'listje':type.List(type.String(min=0, max=13)),
             'listmetdicts':type.List(type.Dict({
                                                   'subuser':type.String(min=0, max=13),
@@ -16,22 +18,20 @@ t=type.Dict({
                             
                                               })),
             
-            })
+            },
+            desc="blaaTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTt",
+            required=[]
+            )
 
-class TypeEncoder(json.JSONEncoder):
-    def default(self, o):
-       if isinstance(o, type.Base):
-           return(o.meta)
-       else:
-           return super().default(o)
     
 
-print json.dumps(t, cls=TypeEncoder, indent=1)
+print json.dumps(t, cls=type.JSONEncoder, indent=1)
 
 d={
-   'poep': 12.4,
+   'poep': 12.44,
    'user':"psff",
-   'pass':"pffff",
+   'tijd': 32,
+   'pass':"pffffffff",
    'subje':{
             'subuser':"ffffdddd"
             },
@@ -49,4 +49,5 @@ except type.TypeException as e:
     print e.message
     print e.fields
     
+
 

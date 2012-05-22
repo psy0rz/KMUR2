@@ -88,10 +88,6 @@ def send_static(filename):
 def send_default():
     return bottle.static_file("index.html", root='static')
 
-@bottle.route('/peertens')
-def moii():
-	print "maii"
-	return ("chea")
 
 session_opts = {
     'session.type': 'file',
