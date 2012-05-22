@@ -2,6 +2,7 @@ import type
 import json
 
 t=type.Dict({
+            'poep':type.Number(min=0, max=100,decimals=2),
             'user':type.String(min=0, max=12),
             'pass':type.String(min=5, max=11),
             'subje':type.Dict({
@@ -28,6 +29,7 @@ class TypeEncoder(json.JSONEncoder):
 print json.dumps(t, cls=TypeEncoder, indent=1)
 
 d={
+   'poep': 12.4,
    'user':"psff",
    'pass':"pffff",
    'subje':{
@@ -36,7 +38,7 @@ d={
    'listje':["string1", "telangesgg", "string2"],
    'listmetdicts':[
                    {'subuser':"eerste", 'subpass':'eerstepass'},
-                   {'subuser':"tweede", 'subpass':'twwffffffffffffedepass'},
+                   {'subuser':"tweede", 'subpass':'twwffedepass'},
                    {'subuser':"derder", 'subpass':'eerstepass'},
                    ]
    }

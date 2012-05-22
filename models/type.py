@@ -126,8 +126,38 @@ class String(Base):
         if (('max' in self.meta) and (len(data)>self.meta['max'])):
             raise TypeException("Data should be at most {} characters long".format(self.meta['max']))
             
+class Number(Base):
+    """A number, with optional min and max value"""
+    
+    def __init__(self, min=None, max=None, decimals=0):
+        if min!=None and max!=None and max<=min:
+            raise TypeException("Max cant be smaller than min")
+        
+        self.meta={
+                   'type':'number',
+                   'decimals':decimals
 
+        }
+        
+        if (min!=None):
+            self.meta['min']=min
 
+        if (max!=None):
+            self.meta['max']=max
+        
+
+    def check(self,data):
+        if not isinstance(data, (float,int)):
+            raise TypeException("This should be a number")
+        
+        if (('min' in self.meta) and (data<self.meta['min'])):
+            raise TypeException("Number should be at least {}".format(self.meta['min']))
+
+        if (('max' in self.meta) and (data>self.meta['max'])):
+            raise TypeException("Number should be at most {}".format(self.meta['max']))
+
+        if round(data, self.meta['decimals'])!=data:
+            raise TypeException("Number should no more than {} decimals".format(self.meta['decimals']))
 
 
 
