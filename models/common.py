@@ -26,6 +26,9 @@ class Context:
     This contains things like a username or a list of groups a user belongs to.
     Its also used to keep track of a logged in user used by @Acl to do access checks.
     The content of the context is preserved between requests. (magically by the rpc-code via sessions and cookies)
+    
+    Anything that shouldnt be or cant be preserved between requests should be stored in the dict self.cache. 
+    (usefull for things like database connection instances)
     """
     
     def reset(self):
@@ -36,6 +39,7 @@ class Context:
             
     def __init__(self):
         self.reset()
+        self.cache={}
 
     def hasGroups(self, groups):
         '''Check if the user has any of the rights (one is enough)

@@ -1,15 +1,15 @@
 import json
 
 
-class TypeException(Exception):
-    """Type exception. This is thrown when verifying if data is correct. 
+class FieldException(Exception):
+    """Field exception. This is thrown when verifying if data is correct. 
     
     The fields list indicates which field of an object failed.
     This recursive, so its will contain a 'path' to the field involved. (in case of Hash and Array) 
     """
     def __init__(self, message, field=None):
 
-        super(TypeException,self).__init__(message)
+        super(FieldException,self).__init__(message)
 
         self.fields=[]
         
@@ -18,7 +18,7 @@ class TypeException(Exception):
 
 
 class JSONEncoder(json.JSONEncoder):
-    """JSON encoder that can also encode stuff thats inherited from type.Base"""
+    """JSON encoder that can also encode stuff thats inherited from field.Base"""
     def default(self, o):
        if isinstance(o, Base):
            return(o.meta)
@@ -27,9 +27,9 @@ class JSONEncoder(json.JSONEncoder):
             
 
 class Base(object):
-    """Base class of all types
+    """Base class of all fields
     
-    We should be able to convert a Type to a builtin-type, so we can convert it to JSON for example.
+    We should be able to convert a Field to a builtin-type, so we can convert it to JSON for example.
     All data that should be convertable to a builtin should be stored in self.meta.
     """
     
@@ -38,7 +38,7 @@ class Base(object):
         
         if type!=None:
             if not isinstance(type,str):
-                raise TypeException("type should be a string")
+                raise FieldException("type should be a string")
             self.meta['type']=type
 
         if default!=None:
@@ -46,12 +46,12 @@ class Base(object):
 
         if desc!=None:
             if not isinstance(desc,str):
-                raise TypeException("desc should be a string")
+                raise FieldException("desc should be a string")
             self.meta['desc']=desc
 
         if readonly!=None:
             if not isinstance(readonly,bool):
-                raise TypeException("readonly should be a bool")
+                raise FieldException("readonly should be a bool")
             
             self.meta['readonly']=readonly
             
@@ -59,30 +59,30 @@ class Base(object):
     def check(self, data):
         
         if 'readonly' in self.meta and self.meta['readonly']:
-            raise TypeException("This field is readonly")
+            raise FieldException("This field is readonly")
     
 
 class Dict(Base):
-    """Data that contains a dict with other type-objects in it (type-string is 'hash')"""
+    """Data that contains a dict with other field-objects in it (type-string is 'hash')"""
 
     def __init__(self, meta=None, required=None, type='hash', **kwargs):
         
         super(Dict,self).__init__(type=type, **kwargs)
 
         if not isinstance(meta, dict): 
-            raise TypeException("Metadata should be a dict")
+            raise FieldException("Metadata should be a dict")
         
         for key, submeta in meta.iteritems():
             if not isinstance(submeta, Base):
-                raise TypeException("Metadata {} should be an instance of Base".format(key), key)
+                raise FieldException("Metadata {} should be an instance of Base".format(key), key)
             
         if required!=None:
             if not isinstance(required, list): 
-                raise TypeException("required-parameter should be a list")
+                raise FieldException("required-parameter should be a list")
 
             missing=[key for key in required if key not in meta]
             if missing:
-                raise TypeException("key '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
+                raise FieldException("key '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
             
             self.meta['required']=required
 
@@ -94,17 +94,17 @@ class Dict(Base):
         super(Dict,self).check(data)
         
         if not isinstance(data, dict): 
-            raise TypeException("Data should be a dict")
+            raise FieldException("Data should be a dict")
         
         for key, value in data.iteritems():
 
             if not key in self.meta['meta']:
-                raise TypeException("Key {} not found in metadata".format(key), key)
+                raise FieldException("Key {} not found in metadata".format(key), key)
             
             try:
                 #recurse into sub data
                 self.meta['meta'][key].check(value)
-            except TypeException as e:
+            except FieldException as e:
                 #record the key that throwed the exception:
                 e.fields.insert(0,key)
                 raise
@@ -113,18 +113,18 @@ class Dict(Base):
         if 'required' in self.meta:
             missing=[key for key in self.meta['required'] if key not in data]
             if missing:
-                raise TypeException("Required key {} is missing".format(missing[0]), missing[0])
+                raise FieldException("Required key {} is missing".format(missing[0]), missing[0])
             
 
 
 class List(Base):
-    """Data that contains a list of other type-objects (type-string is 'array')"""
+    """Data that contains a list of other field-objects (type-string is 'array')"""
 
     def __init__(self, meta=None, type='array', **kwargs):
         super(List,self).__init__(type=type, **kwargs)
 
         if not isinstance(meta, Base): 
-            raise TypeException("Metadata should be a an instance of Base")
+            raise FieldException("Metadata should be a an instance of Base")
         
         self.meta['meta']=meta
 
@@ -133,13 +133,13 @@ class List(Base):
         super(List,self).check(data)
         
         if not isinstance(data, list): 
-            raise TypeException("Data should be a list")
+            raise FieldException("Data should be a list")
         
         for index, value in enumerate(data):
             try:
                 #recurse into sub data
                 self.meta['meta'].check(value)
-            except TypeException as e:
+            except FieldException as e:
                 #record the key that throwed the exception:
                 e.fields.insert(0,index)
                 raise
@@ -152,16 +152,16 @@ class String(Base):
         super(String,self).__init__(type=type, **kwargs)
 
         if min!=None and max!=None and max<=min:
-            raise TypeException("Max cant be smaller than min")
+            raise FieldException("Max cant be smaller than min")
         
         if (min!=None):
             if (min<0):
-                raise TypeException("Min cant be smaller than 0")
+                raise FieldException("Min cant be smaller than 0")
             self.meta['min']=min
 
         if (max!=None):
             if (max<0):
-                raise TypeException("Max cant be smaller than 0")
+                raise FieldException("Max cant be smaller than 0")
             self.meta['max']=max
         
 
@@ -170,13 +170,13 @@ class String(Base):
         super(String,self).check(data)
 
         if not isinstance(data, str):
-            raise TypeException("This should be a string")
+            raise FieldException("This should be a string")
         
         if (('min' in self.meta) and (len(data)<self.meta['min'])):
-            raise TypeException("Data should be at least {} characters long".format(self.meta['min']))
+            raise FieldException("Data should be at least {} characters long".format(self.meta['min']))
 
         if (('max' in self.meta) and (len(data)>self.meta['max'])):
-            raise TypeException("Data should be at most {} characters long".format(self.meta['max']))
+            raise FieldException("Data should be at most {} characters long".format(self.meta['max']))
 
 
 class Password(String):
@@ -193,7 +193,7 @@ class Number(Base):
         super(Number, self).__init__(type=type, **kwargs)
 
         if min!=None and max!=None and max<=min:
-            raise TypeException("Max cant be smaller than min")
+            raise FieldException("Max cant be smaller than min")
         
         self.meta['decimals']=decimals
       
@@ -207,16 +207,16 @@ class Number(Base):
         super(Number,self).check(data)
 
         if not isinstance(data, (float,int)):
-            raise TypeException("This should be a number")
+            raise FieldException("This should be a number")
         
         if (('min' in self.meta) and (data<self.meta['min'])):
-            raise TypeException("Number should be at least {}".format(self.meta['min']))
+            raise FieldException("Number should be at least {}".format(self.meta['min']))
 
         if (('max' in self.meta) and (data>self.meta['max'])):
-            raise TypeException("Number should be at most {}".format(self.meta['max']))
+            raise FieldException("Number should be at most {}".format(self.meta['max']))
 
         if round(data, self.meta['decimals'])!=data:
-            raise TypeException("Number should no more than {} decimals".format(self.meta['decimals']))
+            raise FieldException("Number should no more than {} decimals".format(self.meta['decimals']))
 
 
 class Timestamp(Base):
@@ -230,10 +230,10 @@ class Timestamp(Base):
         super(Timestamp,self).check(data)
 
         if not isinstance(data, (int)):
-            raise TypeException("A timestamp should be an integer")
+            raise FieldException("A timestamp should be an integer")
         
         if (data<0):
-            raise TypeException("Timestamp can not be negative")
+            raise FieldException("Timestamp can not be negative")
 
 
 class Bool(Base):
@@ -247,7 +247,7 @@ class Bool(Base):
         super(Bool,self).check(data)
         
         if not isinstance(data, (bool)):
-            raise TypeException("This should be a boolean value (e.g. true or false)")
+            raise FieldException("This should be a boolean value (e.g. true or false)")
         
 
 class Select(Base):
@@ -258,7 +258,7 @@ class Select(Base):
         super(Select, self).__init__(type=type, **kwargs)
         
         if not isinstance(choices, dict):
-            raise TypeException("choices should be a dict")
+            raise FieldException("choices should be a dict")
         
         self.meta['choices']=choices
 
@@ -267,7 +267,7 @@ class Select(Base):
         super(Select,self).check(data)
 
         if not data in self.meta['choices']:
-            raise TypeException("This is an invalid choice")
+            raise FieldException("This is an invalid choice")
 
 
 class MultiSelect(Base):
@@ -278,7 +278,7 @@ class MultiSelect(Base):
         super(MultiSelect, self).__init__(type=type, **kwargs)
         
         if not isinstance(choices, dict):
-            raise TypeException("choices should be a dict")
+            raise FieldException("choices should be a dict")
         
         self.meta['choices']=choices
 
@@ -287,14 +287,14 @@ class MultiSelect(Base):
         super(MultiSelect,self).check(data)
 
         if not isinstance(data, list):
-            raise TypeException("choices should be a list")
+            raise FieldException("choices should be a list")
 
         illegal=[i for i in data if i not in self.meta['choices']]
         if illegal:
-            raise TypeException("This field contains illegal choices")
+            raise FieldException("This field contains illegal choices")
 
         if len(set(data))!=len(data):
-            raise TypeException("List contains duplicate choices")
+            raise FieldException("List contains duplicate choices")
         
 class Anything(Base):
     """Allow anything.
@@ -311,7 +311,6 @@ class Anything(Base):
         super(Select,self).check(data)
     
     
-#         "id": A mongoDB identifier.
 
 
 

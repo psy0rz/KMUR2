@@ -1,32 +1,32 @@
-import type
+import field
 import json
 
-t=type.Dict({
-            'poep':type.Number(min=0, max=100,decimals=2,desc='jojojo'),
-            'tijd':type.Timestamp(desc='hoe loat ist'),
-            'user':type.String(min=0, max=12),
-            'pass':type.Password(min=5, max=11),
-            'sel':type.Select({
+t=field.Dict({
+            'poep':field.Number(min=0, max=100,decimals=2,desc='jojojo'),
+            'tijd':field.Timestamp(desc='hoe loat ist'),
+            'user':field.String(min=0, max=12),
+            'pass':field.Password(min=5, max=11),
+            'sel':field.Select({
                                'eerste': 'eerste keus',
                                'tweede': 'tweede keus',
                                'derde': 'derde keus'
                                },
                               desc='select ding'),
-            'msel':type.MultiSelect({
+            'msel':field.MultiSelect({
                                'eerste': 'eerste keus',
                                'tweede': 'tweede keus',
                                'derde': 'derde keus'
                                },
                               desc='multi select ding'),
-            'subje':type.Dict({
-                                  'subuser':type.String(min=0, max=13),
-                                  'subpass':type.String(min=0, max=14)
+            'subje':field.Dict({
+                                  'subuser':field.String(min=0, max=13),
+                                  'subpass':field.String(min=0, max=14)
                               },
                               ),
-            'listje':type.List(type.String(min=0, max=13)),
-            'listmetdicts':type.List(type.Dict({
-                                                  'subuser':type.String(min=0, max=13),
-                                                  'subpass':type.String(min=0, max=14)
+            'listje':field.List(field.String(min=0, max=13)),
+            'listmetdicts':field.List(field.Dict({
+                                                  'subuser':field.String(min=0, max=13),
+                                                  'subpass':field.String(min=0, max=14)
                             
                                               })),
             
@@ -37,7 +37,7 @@ t=type.Dict({
 
     
 
-print json.dumps(t, cls=type.JSONEncoder, indent=1)
+print json.dumps(t, cls=field.JSONEncoder, indent=1)
 
 d={
    'poep': 12.44,
@@ -49,7 +49,7 @@ d={
             },
    'listje':["string1", "telangesgg", "string2"],
    'sel':'eerste',
-   'msel':['eerste','tweede','derde','tweede'],
+   'msel':['eerste','tweede','derde'],
    'listmetdicts':[
                    {'subuser':"eerste", 'subpass':'eerstepass'},
                    {'subuser':"tweede", 'subpass':'twwffedepass'},
@@ -59,7 +59,7 @@ d={
 
 try:
     t.check(d)
-except type.TypeException as e:
+except field.FieldException as e:
     print e.message
     print e.fields
     
