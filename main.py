@@ -5,6 +5,11 @@ import bottle
 import re
 import traceback
 import models.common 
+import models.field
+import json
+
+
+
 
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 
@@ -68,14 +73,20 @@ def rpc():
 		
 		#call method with specified parameters
 		ret['result']=rpc_method(data['params'])
+
 		
 	except Exception as e:
 		traceback.print_exc()
 		ret['error']=str(e)
 		
+	#import: clear context cache before saving!
+	if 'context' in session and isinstance(session['context'], models.common.Context):
+		session['context'].clear()
+	
 	session.save()
 
-	return(ret)
+	#return JSON string;
+	return(json.dumps(ret, cls=models.field.JSONEncoder, indent=1))
 
 #serve other urls from the static dir
 #(in production the webserver should do this)

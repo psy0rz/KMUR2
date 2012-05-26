@@ -1,7 +1,7 @@
 """common stuff for all models"""
 
 
-class Acl():
+class Acl(object):
     """access control decorator.
     
     Use this on functions to provide access control to certain groups.
@@ -20,7 +20,7 @@ class Acl():
         return wrapped_f
         
 
-class Context:
+class Context(object):
     """Stores the context a model operates in.
     
     This contains things like a username or a list of groups a user belongs to.
@@ -31,14 +31,19 @@ class Context:
     (usefull for things like database connection instances)
     """
     
-    def reset(self):
-        '''Reset user and group to default value
-        '''
-        self.user='anonymous'
-        self.groups=['everyone']
             
     def __init__(self):
-        self.reset()
+        self.clear()
+        
+        self.user='anonymous'
+        self.groups=['everyone']
+        
+        #make user configurable. should be database independent?
+        self.db_name="kmurtest"
+        self.db_host="localhost"
+
+    #clears cache
+    def clear(self):
         self.cache={}
 
     def hasGroups(self, groups):
@@ -57,7 +62,7 @@ class Context:
         if not self.hasGroups(groups):
             raise Exception('You need to be member of any of these groups: {}'.format(groups))
 
-class Base:
+class Base(object):
     """Base class for all models
     """
     def __init__(self, context=None):

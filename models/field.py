@@ -1,5 +1,6 @@
 import json
-
+import bson.objectid
+import pymongo.cursor
 
 class FieldException(Exception):
     """Field exception. This is thrown when verifying if data is correct. 
@@ -18,13 +19,25 @@ class FieldException(Exception):
 
 
 class JSONEncoder(json.JSONEncoder):
-    """JSON encoder that can also encode stuff thats inherited from field.Base"""
+    """JSON encoder that can also encode stuff thats inherited from field.Base
+    
+    Currently this stuff also can encode other things, like mongodb IDs and iterators 
+    """
     def default(self, o):
+        
+       #TODO: This mongodb stuff shouldnt be here but in models.mongodb.
+       #Create some kind of hooking meganism that registers to this class or something.
+       
        if isinstance(o, Base):
            return(o.meta)
+       elif isinstance(o, bson.objectid.ObjectId):
+           return(str(o))
+       elif isinstance(o, pymongo.cursor.Cursor):
+           #we dont require model-functions to do this by themself because models can call other models and still use the iterators.
+           return(list(o))
        else:
-           return super().default(o)
-            
+           return json.JSONEncoder.default(self,o)
+       
 
 class Base(object):
     """Base class of all fields
@@ -303,12 +316,12 @@ class Anything(Base):
     
     def __init__(self, choices, type='anything', **kwargs):
 
-        super(Select, self).__init__(type=type, **kwargs)
+        super(Anything, self).__init__(type=type, **kwargs)
         
 
     def check(self,data):
         
-        super(Select,self).check(data)
+        super(Anything,self).check(data)
     
     
 
