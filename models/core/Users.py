@@ -1,9 +1,14 @@
 from models.common import *
+import fields
 import models.mongodb
-from random import random
 
 class Users(models.mongodb.MongoDB):
 
+    @Acl(groups=["everyone"])
+    def get_meta(self, doc):
+        return(fields.Dict({
+                            'username': fields.String()
+                            }))
 
         
     @Acl(groups=["everyone"])
@@ -16,9 +21,15 @@ class Users(models.mongodb.MongoDB):
         return ("de test nummer {}".format(self.context.bla))
 
     @Acl(groups=["everyone"])
-    def add(self, params):
-        self.db.User.insert(params)
-        return(params)
+    def add(self, **user):
+        
+        self.db.User.insert(user)
+        return(user)
+
+    @Acl(groups=["everyone"])
+    def put(self, **user):
+        self._put("users",user)
+
 
     @Acl(groups=["everyone"])
     def get_all(self, params):

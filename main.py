@@ -5,7 +5,7 @@ import bottle
 import re
 import traceback
 import models.common 
-import models.field
+import fields
 import json
 
 
@@ -69,24 +69,27 @@ def rpc():
 
 		#make sure that it has an acl
 		if not hasattr(rpc_method, 'has_acl_decorator'):
-			raise Exception("This method cannot be called because it has no @Acl decorator")
+			raise Exception("This method is protected from outside access because it has no @Acl decorator")
 		
 		#call method with specified parameters
-		ret['result']=rpc_method(data['params'])
+		ret['result']=rpc_method(**data['params'])
 
 		
-	except Exception as e:
+	except (fields.FieldException, Exception) as e:
 		traceback.print_exc()
 		ret['error']=str(e)
 		
-	#import: clear context cache before saving!
+		if isinstance(e, fields.FieldException):
+			ret['fields']=e.fields
+		
+	#important: clear context cache before saving!
 	if 'context' in session and isinstance(session['context'], models.common.Context):
 		session['context'].clear()
 	
 	session.save()
 
 	#return JSON string;
-	return(json.dumps(ret, cls=models.field.JSONEncoder, indent=1))
+	return(json.dumps(ret, cls=fields.JSONEncoder, indent=1, ensure_ascii=False))
 
 #serve other urls from the static dir
 #(in production the webserver should do this)

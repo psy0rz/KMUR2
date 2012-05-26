@@ -6,16 +6,17 @@ class FieldException(Exception):
     """Field exception. This is thrown when verifying if data is correct. 
     
     The fields list indicates which field of an object failed.
-    This recursive, so its will contain a 'path' to the field involved. (in case of Hash and Array) 
+    This is sometimes used in recursion, so it will contain a 'path' to the field involved. (in case of Hash and Array) 
     """
     def __init__(self, message, field=None):
 
         super(FieldException,self).__init__(message)
 
-        self.fields=[]
+        if field:
+            self.fields=[field]
+        else:
+            self.fields=[]
         
-        if field!=None:
-            self.fields.append(field)
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -58,7 +59,7 @@ class Base(object):
             self.meta['default']=default
 
         if desc!=None:
-            if not isinstance(desc,str):
+            if not isinstance(desc,(unicode,str)):
                 raise FieldException("desc should be a string")
             self.meta['desc']=desc
 
@@ -74,6 +75,15 @@ class Base(object):
         if 'readonly' in self.meta and self.meta['readonly']:
             raise FieldException("This field is readonly")
     
+
+class Nothing(Base):
+    '''Special type that allows nothing.''' 
+    def __init__(self, type='nothing', **kwargs):
+        super(Nothing,self).__init__(type=type, **kwargs)
+    
+    def check(self, data):
+        raise FieldException("This field cant be set")
+
 
 class Dict(Base):
     """Data that contains a dict with other field-objects in it (type-string is 'hash')"""
@@ -112,7 +122,7 @@ class Dict(Base):
         for key, value in data.iteritems():
 
             if not key in self.meta['meta']:
-                raise FieldException("Key {} not found in metadata".format(key), key)
+                raise FieldException("Key '{}' not found in metadata".format(key), key)
             
             try:
                 #recurse into sub data
@@ -181,8 +191,9 @@ class String(Base):
     def check(self,data):
         
         super(String,self).check(data)
+        
 
-        if not isinstance(data, str):
+        if not isinstance(data, (str,unicode)):
             raise FieldException("This should be a string")
         
         if (('min' in self.meta) and (len(data)<self.meta['min'])):

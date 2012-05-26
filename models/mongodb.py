@@ -1,15 +1,15 @@
 import models.common
-import models.field
+import fields
 import pymongo
 import bson.objectid
 
 
-class FieldId(models.field.Base):
+class FieldId(fields.Base):
     '''A mongodb ObjectId field. Respresented in string form'''
     
     def __init__(self, type='mongodb.id', **kwargs):
 
-        super(Field, self).__init__(type=type, **kwargs)
+        super(FieldId, self).__init__(type=type, **kwargs)
         
 
     def check(self,data):
@@ -17,10 +17,10 @@ class FieldId(models.field.Base):
         super(FieldId,self).check(data)
 
         if not isinstance(data, str):
-            raise FieldException("id should be a string")
+            raise fields.FieldException("id should be a string")
        
         if str(bson.objectid.ObjectId(data))!=data:
-            raise FieldException("invalid id")
+            raise fields.FieldException("invalid id")
         
 
 class MongoDB(models.common.Base):
@@ -32,6 +32,8 @@ class MongoDB(models.common.Base):
     
     self.db is also stored in the context.cache so that multiple models can use the same database instance.
     """
+
+
     def __init__(self, context=None):
         super(MongoDB, self).__init__(context=context)
 
@@ -40,5 +42,59 @@ class MongoDB(models.common.Base):
 
         self.db=context.cache['mongodb_connection'][context.db_name]
         
+
+    def get_meta(self, doc):
+        """Return the metadata for this model
+        
+        Implement this function in your own subclass.
+        
+        Usually this is a mandatory function thats used by the views as well to get the metadata.
+
+        Fields may also be dynamic and returns different fields for different parameters. 
+        Usually the document will be passed as params, so you can for example use the _id field to find the document and change the metadata according 
+        to the state of the document.
+
+        You can also specify different fields when you call _put
+        """
+        return(fields.Nothing())
         
 
+        
+    def _put(self, collection, doc, meta=None, replace=False):
+        """Checks document with field and replaces, updates or inserts it into collection
+
+        If meta is set, the check function of that object will be used. 
+        Otherwise self.getMeta(doc) will be called to get the default meta.
+        
+        If _id is not set the document is inserted.
+        
+        If _id is set, an existing document will be updated. 
+        If the _id is a string it will be automaticly converted to a mongo ObjectId.
+        
+        If the specified document does not exist it will raise and exception.
+        
+        If replace is True then the existing document will be replaced, otherwise only the specified keys are updated.
+        
+        """
+        if meta:
+            meta.check(doc)
+        else:
+            self.get_meta(doc).check(doc)
+
+        
+        #add new
+        if not '_id' in doc:
+            self.db[collection].insert(doc, manipulate=True, safe=True, check_keys=True)
+            
+        #use existing document
+        else:
+            #convert _id to real object?
+            if not isInstance(doc['_id'], bson.objectid.ObjectId):
+                doc['_id']=bson.objectid.ObjectId(doc['_id'])
+
+            if replace:            
+                self.db[collection].update({'_id':doc['_id']}, doc, multi=False, safe=True )
+            else:
+                self.db[collection].update({'_id':doc['_id']}, {'$set': doc}, multi=False, safe=True )
+
+        return(doc)
