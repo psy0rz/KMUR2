@@ -38,7 +38,7 @@ class MongoDB(models.common.Base):
         super(MongoDB, self).__init__(context=context)
 
         if not 'mongodb_connection' in context.cache:
-            context.cache['mongodb_connection']=pymongo.Connection(host=context.db_host)
+            context.cache['mongodb_connection']=pymongo.Connection(host=context.db_host, safe=True)
 
         self.db=context.cache['mongodb_connection'][context.db_name]
         
@@ -88,9 +88,7 @@ class MongoDB(models.common.Base):
             
         #use existing document
         else:
-            #convert _id to real object?
-            if not isInstance(doc['_id'], bson.objectid.ObjectId):
-                doc['_id']=bson.objectid.ObjectId(doc['_id'])
+            doc['_id']=bson.objectid.ObjectId(doc['_id'])
 
             if replace:            
                 self.db[collection].update({'_id':doc['_id']}, doc, multi=False, safe=True )
@@ -98,3 +96,23 @@ class MongoDB(models.common.Base):
                 self.db[collection].update({'_id':doc['_id']}, {'$set': doc}, multi=False, safe=True )
 
         return(doc)
+
+    def _get(self, collection, _id):
+        '''get the specified _id from the collection.
+        
+        throws exeception if not found
+        '''
+       
+        doc=self.db[collection].find_one( bson.objectid.ObjectId(_id) )
+       
+        if not doc:
+            raise Exception("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+       
+        return doc
+
+
+    def _delete(self,collection, _id):
+        
+        return self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
+        
+        

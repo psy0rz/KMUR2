@@ -28,12 +28,19 @@ class Users(models.mongodb.MongoDB):
 
     @Acl(groups=["everyone"])
     def put(self, **user):
-        self._put("users",user)
-
+        return(self._put("users",user))
 
     @Acl(groups=["everyone"])
-    def get_all(self, params):
-        return(self.db.User.find())
+    def get(self, _id):
+        return(self._get("users",_id))
+
+    @Acl(groups=["everyone"])
+    def delete(self, _id):
+        return(self._delete("users",_id))
+
+    @Acl(groups=["everyone"])
+    def get_all(self, **params):
+        return(self.db.users.find())
 
 
     @Acl(groups=["everyone"])
