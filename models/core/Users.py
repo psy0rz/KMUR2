@@ -7,8 +7,8 @@ class Users(models.mongodb.MongoDB):
     @Acl(groups=["everyone"])
     def get_meta(self, doc):
         return(fields.Dict({
-                            'username': fields.String()
-                            }))
+                            'username': fields.String(min=5)
+                            },required=['username']))
 
         
     @Acl(groups=["everyone"])
@@ -44,11 +44,11 @@ class Users(models.mongodb.MongoDB):
 
 
     @Acl(groups=["everyone"])
-    def test(self, params):
-        from models import field
-        t=field.Dict({
-            'poep':field.Number(min=0, max=100,decimals=2,desc='jojojo'),
-            'tijd':field.Timestamp(desc='hoe loat ist')
+    def test(self, **params):
+        import fields
+        t=fields.Dict({
+            'poep':fields.Number(min=0, max=100,decimals=2,desc='jojojo'),
+            'tijd':fields.Timestamp(desc='hoe loat ist')
             })
         return(t)
 

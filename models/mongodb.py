@@ -64,7 +64,7 @@ class MongoDB(models.common.Base):
         """Checks document with field and replaces, updates or inserts it into collection
 
         If meta is set, the check function of that object will be used. 
-        Otherwise self.getMeta(doc) will be called to get the default meta.
+        Otherwise self.get_meta(doc) will be called to get the default meta.
         
         If _id is not set the document is inserted.
         
@@ -113,6 +113,8 @@ class MongoDB(models.common.Base):
 
     def _delete(self,collection, _id):
         
-        return self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
+        result=self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
+        if result['n']==0:
+            raise Exception("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
         
         

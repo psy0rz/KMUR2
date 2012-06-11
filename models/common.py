@@ -67,7 +67,7 @@ class Base(object):
     """
     def __init__(self, context=None):
         if not isinstance(context, Context):
-            raise Exception("Please provide a Context object for the model")
+            raise Exception("Please provide a Context instance for the model")
 
         self.context=context
         
