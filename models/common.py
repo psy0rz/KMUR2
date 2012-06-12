@@ -6,6 +6,8 @@ class Acl(object):
     
     Use this on functions to provide access control to certain groups.
     This is mandatory for functions you want to be able to call via rpc.
+    
+    groups can be a iterable or a string
     """ 
     def __init__(self, groups="admin"):
         self.groups = groups
@@ -34,16 +36,20 @@ class Context(object):
             
     def __init__(self):
         self.clear()
+        self.reset_user()
         
-        self.user='anonymous'
+        
+    def reset_user(self):
+        '''reset user to logged out state'''
+        self.username='anonymous'
         self.groups=['everyone']
         
         #make user configurable. should be database independent?
         self.db_name="kmurtest"
         self.db_host="localhost"
 
-    #clears cache
     def clear(self):
+        '''resets cache'''
         self.cache={}
 
     def hasGroups(self, groups):

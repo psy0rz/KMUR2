@@ -105,7 +105,7 @@ class Dict(Base):
 
             missing=[key for key in required if key not in meta]
             if missing:
-                raise FieldException("key '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
+                raise FieldException("Field '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
             
             self.meta['required']=required
 
@@ -122,7 +122,7 @@ class Dict(Base):
         for key, value in data.iteritems():
 
             if not key in self.meta['meta']:
-                raise FieldException("Key '{}' not found in metadata".format(key), key)
+                raise FieldException("'{}' is an unknown field-name".format(key), key)
             
             try:
                 #recurse into sub data
@@ -136,7 +136,7 @@ class Dict(Base):
         if 'required' in self.meta:
             missing=[key for key in self.meta['required'] if key not in data]
             if missing:
-                raise FieldException("Required key {} is missing".format(missing[0]), missing[0])
+                raise FieldException("Required field {} is missing".format(missing[0]), missing[0])
             
 
 
@@ -315,10 +315,10 @@ class MultiSelect(Base):
 
         illegal=[i for i in data if i not in self.meta['choices']]
         if illegal:
-            raise FieldException("This field contains illegal choices")
+            raise FieldException("These choice(s) are illegal: {}".format(','.join(illegal)))
 
         if len(set(data))!=len(data):
-            raise FieldException("List contains duplicate choices")
+             raise FieldException("List contains duplicate choices")
         
 class Anything(Base):
     """Allow anything.

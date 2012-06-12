@@ -2,6 +2,11 @@ import models.common
 import fields
 import pymongo
 import bson.objectid
+import re
+
+
+class NotFound(Exception):
+    pass
 
 
 class FieldId(fields.Base):
@@ -97,24 +102,70 @@ class MongoDB(models.common.Base):
 
         return(doc)
 
-    def _get(self, collection, _id):
-        '''get the specified _id from the collection.
+    def _get(self, collection, _id=None, match={}, filter={}):
+        '''get a document from the collection.
+        collection: name of the collection to perform the search on
+        _id: The id-string of the object to get (if this is specified , filter and match are ignored)
+        filter: a dict containing keys and regular expression strings.
+        match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
         
         throws exeception if not found
         '''
-       
-        doc=self.db[collection].find_one( bson.objectid.ObjectId(_id) )
-       
-        if not doc:
-            raise Exception("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+
+        regex_filters={}
+
+        if _id:       
+            doc=self.db[collection].find_one( bson.objectid.ObjectId(_id) )
+
+            if not doc:
+                raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+
+        else:
+            for key in filter:
+                regex_filters[key]=re.compile(filter[key], re.IGNORECASE)
+
+            for key in match:
+                regex_filters[key]=match[key]
+
+            doc=self.db[collection].find_one( regex_filters )
+            
+            if not doc:
+                raise NotFound("Object not found in collection '{}'".format(collection))
        
         return doc
 
+    def _get_all(self, collection, filter={}, match={}, skip=0, limit=0, sort={}):
+        '''gets one or more users according to search options
+        
+        collection: name of the collection to perform the search on
+        filter: a dict containing keys and regular expression strings.
+        match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
+        skip: number of items to skip
+        limit: number of maximum items to return
+        sort: a dect containing keys and sort directions (-1 descending, +1 ascending)
+        '''
+        
+        regex_filters={}
+        
+        for key in filter:
+            regex_filters[key]=re.compile(filter[key], re.IGNORECASE)
+                
+        for key in match:
+            regex_filters[key]=match[key]
+
+        return(self.db[collection].find(spec=regex_filters,
+                           skip=skip,
+                           limit=limit,
+                           sort=sort.items()))
 
     def _delete(self,collection, _id):
+        '''deletes _id from collection 
+
+        throws exeception if not found
+        '''
         
         result=self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
         if result['n']==0:
-            raise Exception("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+            raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
         
         

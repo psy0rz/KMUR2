@@ -5,64 +5,60 @@ import models.mongodb
 class Users(models.mongodb.MongoDB):
 
     @Acl(groups=["everyone"])
-    def get_meta(self, doc):
+    def get_meta(self, doc=None):
         return(fields.Dict({
-                            'username': fields.String(min=5)
-                            },required=['username']))
+                            'username': fields.String(min=3),
+                            'password': fields.String(min=5),
+                            'active': fields.Bool(),
+                            'groups': fields.MultiSelect(choices={
+                                                                  "admin":"Administrator",
+                                                                  "employee":"Employee",
+                                                                  "customer":"Customer",
+                                                                  "finance":"Finance"
+                                                                })
+                            }))
 
-        
-    @Acl(groups=["everyone"])
-    def test(self, params):
-        if hasattr(self.context,"bla"):
-            self.context.bla=self.context.bla+1
-        else:
-            self.context.bla=1
-            
-        return ("de test nummer {}".format(self.context.bla))
-
-    @Acl(groups=["everyone"])
-    def add(self, **user):
-        
-        self.db.User.insert(user)
-        return(user)
-
-    @Acl(groups=["everyone"])
+    @Acl(groups="admin")
     def put(self, **user):
         return(self._put("users",user))
 
-    @Acl(groups=["everyone"])
+    @Acl(groups="admin")
     def get(self, _id):
         return(self._get("users",_id))
 
-    @Acl(groups=["everyone"])
+    @Acl(groups="admin")
     def delete(self, _id):
         return(self._delete("users",_id))
 
-    @Acl(groups=["everyone"])
-    def get_all(self, **params):
-        return(self.db.users.find())
-
-
-    @Acl(groups=["everyone"])
-    def test(self, **params):
-        import fields
-        t=fields.Dict({
-            'poep':fields.Number(min=0, max=100,decimals=2,desc='jojojo'),
-            'tijd':fields.Timestamp(desc='hoe loat ist')
-            })
-        return(t)
-
-
     @Acl(groups="admin")
-    def admin(self, params):
-        return("ADMIN")
+    def get_all(self, **params):
+        return(self._get_all("users",**params))
 
-    @Acl("admin")
-    def admin2(self, params):
-        return("ADMIN")
+    @Acl(groups=["everyone"])
+    def authenticate(self, username ,password):
+        '''authenticate the with the specified username and password. 
+        
+        if its ok, it doesnt throw an exception and returns nothing'''
+        try:
+            user=self._get("users", match={
+                                  'username':username,
+                                  'password':password
+                                  })
+        except models.mongodb.NotFound:
+            raise fields.FieldException("Username or password incorrect", "password")
+
+        if not user['active']:
+            raise fields.FieldException("This user is deactivated", "username")
+        
+        self.context.username=user['username']
+        self.context.groups=user['groups']
+
+        #everyone MUST to be member over everyone
+        self.context.groups.append('everyone')
+            
+
+    @Acl(groups=["everyone"])
+    def logout(self):
+        self.context.reset_user()
+        
     
-    @Acl(groups=("everyone","admin","geert","test"))
-    def geert(self, params):
-        return("geert")
-
-
