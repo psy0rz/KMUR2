@@ -4,7 +4,7 @@ if [ "$1" == "" ]; then
     exit 1
 fi
 
-curl -b ./.cookies -c ./.cookies --data-binary "{ \"module\":\"$1\",\"class\":\"$2\", \"method\":\"$3\", \"params\":$4}" -H "Content-Type: application/json"  http://localhost:8080/rpc
+curl -b ./.cookies -c ./.cookies --data-binary "{ \"help\":true, \"module\":\"$1\",\"class\":\"$2\", \"method\":\"$3\", \"params\":$4}" -H "Content-Type: application/json"  http://localhost:8080/rpc
 echo
 
 

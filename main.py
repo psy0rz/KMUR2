@@ -22,8 +22,13 @@ def rpc():
 	ret={}
 
 	try:
-		#print bottle.request.json
 		data=bottle.request.json
+
+		if "help" in data and data["help"]:
+			help=True
+			ret['help']={}
+		else:
+			help=False
 
 		if not "module" in data:
 			raise Exception("Module not specified")
@@ -51,9 +56,15 @@ def rpc():
 
 		#load module and resolve class
 		rpc_models=__import__('models.'+data['module']+'.'+data['class'])
+
 		rpc_module=getattr( rpc_models, data['module'])
+		if help:
+			ret['help']['module']=rpc_module.__doc__
+				
 		rpc_package=getattr(rpc_module, data['class'])
 		rpc_class=getattr(rpc_package, data['class'])
+		if help:
+			ret['help']['class']=rpc_class.__doc__
 
 		#create context if its non existant for this session
 		if not 'context' in session:
@@ -70,6 +81,9 @@ def rpc():
 		#make sure that it has an acl
 		if not hasattr(rpc_method, 'has_acl_decorator'):
 			raise Exception("This method is protected from outside access because it has no @Acl decorator")
+
+		if help:
+			ret['help']['method']=rpc_method.__doc__
 		
 		#call method with specified parameters
 		ret['result']=rpc_method(**data['params'])

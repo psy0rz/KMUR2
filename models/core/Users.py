@@ -3,6 +3,7 @@ import fields
 import models.mongodb
 
 class Users(models.mongodb.MongoDB):
+    '''user management'''
 
     @Acl(groups=["everyone"])
     def get_meta(self, doc=None):

@@ -19,6 +19,7 @@ class Acl(object):
     
         #we want to be able to verify if the outer wrapper is an acl_wrapper            
         wrapped_f.has_acl_decorator=1
+        wrapped_f.__doc__=f.__doc__
         return wrapped_f
         
 
