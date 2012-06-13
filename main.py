@@ -68,6 +68,8 @@ def rpc():
         if not 'context' in session:
             session['context'] = models.common.Context()
 
+        session['context'].reinit()
+
         #instantiate class
         rpc_class_instance = rpc_class(session['context'])
         if not isinstance(rpc_class_instance, models.common.Base):

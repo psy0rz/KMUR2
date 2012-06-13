@@ -22,7 +22,7 @@ class Logs(models.mongodb.MongoDB):
                             'time': fields.Timestamp(desc='Time')
                             }))
 
-    def _add(self, log_type, text):
+    def __call__(self, log_type, text):
         '''add log text with specified type and text to logger
         '''
         self._put("logs", {
