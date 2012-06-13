@@ -16,10 +16,11 @@ class Users(models.mongodb.MongoDB):
                                                                   "employee":"Employee",
                                                                   "customer":"Customer",
                                                                   "finance":"Finance"
-                                                                })
+                                                                }),
                             }))
 
     @Acl(groups="admin")
+#    @Acl(groups="everyone")
     def put(self, **user):
         return(self._put("users",user))
 
@@ -53,13 +54,17 @@ class Users(models.mongodb.MongoDB):
         
         self.context.username=user['username']
         self.context.groups=user['groups']
+        self.context.user_id=str(user['_id'])
 
-        #everyone MUST to be member over everyone
+        #every user MUST to be member over everyone and user
         self.context.groups.append('everyone')
+        self.context.groups.append('user')
             
 
     @Acl(groups=["everyone"])
     def logout(self):
+        '''logout the user. username become anonymous, groups becomes everyone.
+        '''
         self.context.reset_user()
         
     

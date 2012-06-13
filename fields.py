@@ -97,7 +97,7 @@ class Dict(Base):
         
         for key, submeta in meta.iteritems():
             if not isinstance(submeta, Base):
-                raise FieldException("Metadata {} should be an instance of Base".format(key), key)
+                raise FieldException("Metadata {} should be an instance of fields.Base".format(key), key)
             
         if required!=None:
             if not isinstance(required, list): 
@@ -147,7 +147,7 @@ class List(Base):
         super(List,self).__init__(type=type, **kwargs)
 
         if not isinstance(meta, Base): 
-            raise FieldException("Metadata should be a an instance of Base")
+            raise FieldException("Metadata should be a an instance of fields.Base")
         
         self.meta['meta']=meta
 
