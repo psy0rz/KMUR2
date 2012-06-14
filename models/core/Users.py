@@ -2,23 +2,26 @@ from models.common import *
 import fields
 import models.mongodb
 
+
 class Users(models.mongodb.MongoDB):
     '''user management'''
+
+    meta = fields.Dict({
+                        'username': fields.String(min=3),
+                        'password': fields.String(min=5),
+                        'active': fields.Bool(),
+                        'groups': fields.MultiSelect(choices={
+                                                              "admin": "Administrator",
+                                                              "employee": "Employee",
+                                                              "customer": "Customer",
+                                                              "finance": "Finance"
+                                                            }),
+                            })
 
     @Acl(groups=["everyone"])
     def get_meta(self, doc=None):
         self.context.log("info", "moinnnn")
-        return(fields.Dict({
-                            'username': fields.String(min=3),
-                            'password': fields.String(min=5),
-                            'active': fields.Bool(),
-                            'groups': fields.MultiSelect(choices={
-                                                                  "admin":"Administrator",
-                                                                  "employee":"Employee",
-                                                                  "customer":"Customer",
-                                                                  "finance":"Finance"
-                                                                }),
-                            }))
+        return (self.meta)
 
     @Acl(groups="admin")
 #    @Acl(groups="everyone")

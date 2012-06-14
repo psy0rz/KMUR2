@@ -23,9 +23,6 @@ class Acl(object):
         return wrapped_f
 
 
-import models.core.Logs
-
-
 class Context(object):
     """Stores the context a model operates in.
 
@@ -47,15 +44,14 @@ class Context(object):
     #first time initaisation of a new context.
     #this is not called when the context is restored from a session.
     def __init__(self):
-        print "INIT CONTEXT"
         self.reset_user()
 
-
-    #this is called on every request. 
+    #this is called on every request.
     #(the first time the context is created, but also after restoring the context from a session)
     #usefull to reinstate things like logging
-    def request_init(self):
-        self.log = models.core.Logs(self)
+    def reinit(self):
+        import models.core.Logs
+        self.log = models.core.Logs.Logs(self)
 
     def __getstate__(self):
         '''define the items that should be preserved in a session here'''
@@ -92,7 +88,7 @@ class Context(object):
         '''raises exception if the user isnt member of any of the groups
         '''
         if not self.has_groups(groups):
-            raise Exception('You need to be member of any of these groups: {}'.format(groups))
+            raise Exception('Access denied - You need to be member of any of these groups: {}'.format(groups))
 
 
 class Base(object):

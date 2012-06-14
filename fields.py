@@ -47,9 +47,14 @@ class Base(object):
     We should be able to convert a Field to a builtin-type, so we can convert it to JSON for example.
     All data that should be convertable to a builtin should be stored in self.meta.
 
+    @param default: Default value for the data
+    @param desc: Description of the field
+    @param readonly: Field is readonly an can not be changed
+    @param required: Set this to false to allow the field to be None
+
     """
 
-    def __init__(self, default=None, desc=None, readonly=None):
+    def __init__(self, default=None, desc=None, readonly=None, required=None):
         self.meta = {}
 
         self.meta['type'] = self.__class__.__name__
@@ -68,10 +73,24 @@ class Base(object):
 
             self.meta['readonly'] = readonly
 
+        if required != None:
+            if not isinstance(required, bool):
+                raise FieldException("required should be a bool")
+            self.meta['required'] = required
+
     def check(self, data):
+        '''does basic checking.
+
+        returns false if there shouldn't be any more checks done by subclasses.
+        (usually in case required is set to  False and the data is set to None)'''
 
         if 'readonly' in self.meta and self.meta['readonly']:
             raise FieldException("This field is readonly")
+
+        if 'required' in self.meta and not self.meta['required'] and data == None:
+            return False
+
+        return True
 
 
 class Nothing(Base):
@@ -86,7 +105,7 @@ class Nothing(Base):
 class Dict(Base):
     """Data that contains a dict with other field-objects in it (type-string is 'hash')"""
 
-    def __init__(self, meta=None, required=None, **kwargs):
+    def __init__(self, meta=None, required_fields=None, **kwargs):
 
         super(Dict, self).__init__(**kwargs)
 
@@ -97,21 +116,22 @@ class Dict(Base):
             if not isinstance(submeta, Base):
                 raise FieldException("Metadata {} should be an instance of fields.Base".format(key), key)
 
-        if required != None:
-            if not isinstance(required, list):
+        if required_fields != None:
+            if not isinstance(required_fields, list):
                 raise FieldException("required-parameter should be a list")
 
-            missing = [key for key in required if key not in meta]
+            missing = [key for key in required_fields if key not in meta]
             if missing:
                 raise FieldException("Field '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
 
-            self.meta['required'] = required
+            self.meta['required'] = required_fields
 
         self.meta['meta'] = meta
 
     def check(self, data):
 
-        super(Dict, self).check(data)
+        if not super(Dict, self).check(data):
+            return
 
         if not isinstance(data, dict):
             raise FieldException("Data should be a dict")
@@ -149,7 +169,8 @@ class List(Base):
 
     def check(self, data):
 
-        super(List, self).check(data)
+        if not super(List, self).check(data):
+            return
 
         if not isinstance(data, list):
             raise FieldException("Data should be a list")
@@ -185,7 +206,8 @@ class String(Base):
 
     def check(self, data):
 
-        super(String, self).check(data)
+        if not super(String, self).check(data):
+            return
 
         if not isinstance(data, (str, unicode)):
             raise FieldException("This should be a string")
@@ -222,7 +244,8 @@ class Number(Base):
             self.meta['max'] = max
 
     def check(self, data):
-        super(Number, self).check(data)
+        if not super(Number, self).check(data):
+            return
 
         if not isinstance(data, (float, int)):
             raise FieldException("This should be a number")
@@ -245,9 +268,10 @@ class Timestamp(Base):
 
     def check(self, data):
 
-        super(Timestamp, self).check(data)
+        if not super(Timestamp, self).check(data):
+            return
 
-        if not isinstance(data, (int)):
+        if not isinstance(data, (int)) and not isinstance(data, (float)):
             raise FieldException("A timestamp should be an integer")
 
         if (data < 0):
@@ -262,7 +286,8 @@ class Bool(Base):
 
     def check(self, data):
 
-        super(Bool, self).check(data)
+        if not super(Bool, self).check(data):
+            return
 
         if not isinstance(data, (bool)):
             raise FieldException("This should be a boolean value (e.g. true or false)")
@@ -282,7 +307,8 @@ class Select(Base):
 
     def check(self, data):
 
-        super(Select, self).check(data)
+        if not super(Select, self).check(data):
+            return
 
         if not data in self.meta['choices']:
             raise FieldException("This is an invalid choice")
@@ -302,7 +328,8 @@ class MultiSelect(Base):
 
     def check(self, data):
 
-        super(MultiSelect, self).check(data)
+        if not super(MultiSelect, self).check(data):
+            return
 
         if not isinstance(data, list):
             raise FieldException("choices should be a list")
@@ -326,4 +353,5 @@ class Anything(Base):
 
     def check(self, data):
 
-        super(Anything, self).check(data)
+        if not super(Anything, self).check(data):
+            return

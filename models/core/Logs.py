@@ -12,7 +12,7 @@ class Logs(models.mongodb.MongoDB):
     def get_meta(self, doc=None):
         return(fields.Dict({
                             'username': fields.String(desc='Username'),
-                            'user_id': models.mongodb.FieldId(desc='User ID'),
+                            'user_id': models.mongodb.FieldId(desc='User ID', required=False),
                             'type': fields.Select(desc='Type', choices={
                                                               'info': 'Info',
                                                               'warning': 'Warning',

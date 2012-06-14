@@ -10,18 +10,19 @@ class NotFound(Exception):
 
 
 class FieldId(fields.Base):
-    '''A mongodb ObjectId field. Respresented in string form'''
+    '''A mongodb ObjectId field. May be respresented in string form or as real ObjectId'''
 
-    def __init__(self, type='mongodb.id', **kwargs):
+    def __init__(self, **kwargs):
 
-        super(FieldId, self).__init__(type=type, **kwargs)
+        super(FieldId, self).__init__(**kwargs)
 
     def check(self, data):
 
-        super(FieldId, self).check(data)
+        if not super(FieldId, self).check(data):
+            return
 
-        if not isinstance(data, str):
-            raise fields.FieldException("id should be a string")
+        if not isinstance(data, str) and not isinstance(data, bson.objectid.ObjectId):
+            raise fields.FieldException("id should be a string or bson.ObjectId")
 
         if str(bson.objectid.ObjectId(data)) != data:
             raise fields.FieldException("invalid id")
@@ -117,16 +118,16 @@ class MongoDB(models.common.Base):
 
         else:
             for key in filter:
-                regex_filters[key]=re.compile(filter[key], re.IGNORECASE)
+                regex_filters[key] = re.compile(filter[key], re.IGNORECASE)
 
             for key in match:
-                regex_filters[key]=match[key]
+                regex_filters[key] = match[key]
 
-            doc=self.db[collection].find_one( regex_filters )
-            
+            doc = self.db[collection].find_one(regex_filters)
+
             if not doc:
                 raise NotFound("Object not found in collection '{}'".format(collection))
-       
+
         return doc
 
     def _get_all(self, collection, filter={}, match={}, skip=0, limit=0, sort={}):
@@ -139,28 +140,27 @@ class MongoDB(models.common.Base):
         limit: number of maximum items to return
         sort: a dect containing keys and sort directions (-1 descending, +1 ascending)
         '''
-        
-        regex_filters={}
-        
+
+        regex_filters = {}
+
         for key in filter:
-            regex_filters[key]=re.compile(filter[key], re.IGNORECASE)
-                
+            regex_filters[key] = re.compile(filter[key], re.IGNORECASE)
+
         for key in match:
-            regex_filters[key]=match[key]
+            regex_filters[key] = match[key]
 
         return(self.db[collection].find(spec=regex_filters,
                            skip=skip,
                            limit=limit,
                            sort=sort.items()))
 
-    def _delete(self,collection, _id):
+    def _delete(self, collection, _id):
         '''deletes _id from collection 
 
         throws exeception if not found
         '''
-        
-        result=self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
-        if result['n']==0:
+
+        result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
+        if result['n'] == 0:
             raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
-        
-        
+
