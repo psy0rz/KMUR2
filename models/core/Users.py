@@ -18,11 +18,6 @@ class Users(models.mongodb.MongoDB):
                                                             }),
                             })
 
-    @Acl(groups=["everyone"])
-    def get_meta(self, doc=None):
-        self.context.log("info", "moinnnn")
-        return (self.meta)
-
     @Acl(groups="admin")
 #    @Acl(groups="everyone")
     def put(self, **user):
@@ -41,14 +36,14 @@ class Users(models.mongodb.MongoDB):
         return(self._get_all("users", **params))
 
     @Acl(groups=["everyone"])
-    def authenticate(self, username , password):
-        '''authenticate the with the specified username and password. 
-        
+    def authenticate(self, username, password):
+        '''authenticate the with the specified username and password.
+
         if its ok, it doesnt throw an exception and returns nothing'''
         try:
             user = self._get("users", match={
-                                  'username':username,
-                                  'password':password
+                                  'username': username,
+                                  'password': password
                                   })
         except models.mongodb.NotFound:
             raise fields.FieldException("Username or password incorrect", "password")
@@ -63,7 +58,6 @@ class Users(models.mongodb.MongoDB):
         #every user MUST to be member over everyone and user
         self.context.groups.append('everyone')
         self.context.groups.append('user')
-
 
     @Acl(groups=["everyone"])
     def logout(self):

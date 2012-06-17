@@ -8,21 +8,20 @@ import time
 class Logs(models.mongodb.MongoDB):
     '''logging functionality'''
 
-    @Acl(groups=["everyone"])
-    def get_meta(self, doc=None):
-        return(fields.Dict({
-                            'username': fields.String(desc='Username'),
-                            'user_id': models.mongodb.FieldId(desc='User ID', required=False),
-                            'type': fields.Select(desc='Type', choices={
-                                                              'info': 'Info',
-                                                              'warning': 'Warning',
-                                                              'error': 'Error'
-                                                              }),
-                            'text': fields.String(desc='Log text'),
-                            'time': fields.Timestamp(desc='Time')
-                            }))
+    meta = fields.Dict({
+                        'username': fields.String(desc='Username'),
+                        'user_id': models.mongodb.FieldId(desc='User ID', required=False),
+                        'type': fields.Select(desc='Type', choices={
+                                                          'info': 'Info',
+                                                          'warning': 'Warning',
+                                                          'error': 'Error'
+                                                          }),
+                        'text': fields.String(desc='Log text'),
+                        'module_name': fields.String(desc='Module name'),
+                        'time': fields.Timestamp(desc='Time')
+                        })
 
-    def __call__(self, log_type, text):
+    def __call__(self, log_type, text, module_name):
         '''add log text with specified type and text to logger
         '''
         self._put("logs", {
@@ -30,7 +29,8 @@ class Logs(models.mongodb.MongoDB):
                           'user_id': self.context.user_id,
                           'type': log_type,
                           'text': text,
-                          'time': time.time()
+                          'time': time.time(),
+                          'module_name': module_name
                           })
 
     @Acl(groups="user")

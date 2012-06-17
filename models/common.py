@@ -99,3 +99,25 @@ class Base(object):
             raise Exception("Please provide a Context instance for the model")
 
         self.context = context
+
+    def info(self, text):
+        self.context.log("info", text, self.__class__.__name__)
+
+    def warning(self, text):
+        self.context.log("warning", text, self.__class__.__name__)
+
+    def error(self, text):
+        self.context.log("error", text, self.__class__.__name__)
+
+    @Acl(groups=["everyone"])
+    def get_meta(self, doc=None):
+        """Return the metadata for this model
+
+        Usually this is a mandatory function thats used by the views as well to get the metadata.
+
+        Fields may also be dynamic and returns different fields for different parameters.
+        Usually the relevant document will be passed, so you can for example use the _id field to find the document and
+        change the metadata according to the state of the document.
+
+        """
+        return (self.meta)

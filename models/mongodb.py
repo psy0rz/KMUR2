@@ -47,21 +47,6 @@ class MongoDB(models.common.Base):
 
         self.db = context.mongodb_connection[context.db_name]
 
-    def get_meta(self, doc):
-        """Return the metadata for this model
-
-        Implement this function in your own subclass.
-
-        Usually this is a mandatory function thats used by the views as well to get the metadata.
-
-        Fields may also be dynamic and returns different fields for different parameters.
-        Usually the document will be passed as params, so you can for example use the _id field to find the document and change the metadata according
-        to the state of the document.
-
-        You can also specify different fields when you call _put
-        """
-        return(fields.Nothing())
-
     def _put(self, collection, doc, meta=None, replace=False):
         """Checks document with field and replaces, updates or inserts it into collection
 
