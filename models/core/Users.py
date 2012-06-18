@@ -19,7 +19,6 @@ class Users(models.mongodb.MongoDB):
                             })
 
     @Acl(groups="admin")
-#    @Acl(groups="everyone")
     def put(self, **user):
         return(self._put("users", user))
 
@@ -45,11 +44,16 @@ class Users(models.mongodb.MongoDB):
                                   'username': username,
                                   'password': password
                                   })
+
         except models.mongodb.NotFound:
+            self.warning("User logged in did not exist or used wrong password: {}".format(username))
             raise fields.FieldException("Username or password incorrect", "password")
 
         if not user['active']:
+            self.warning("Deactivated user tried to log in: {}".format(username))
             raise fields.FieldException("This user is deactivated", "username")
+
+        self.info("User {} logged in.".format(username))
 
         self.context.username = user['username']
         self.context.groups = user['groups']
@@ -58,6 +62,8 @@ class Users(models.mongodb.MongoDB):
         #every user MUST to be member over everyone and user
         self.context.groups.append('everyone')
         self.context.groups.append('user')
+
+
 
     @Acl(groups=["everyone"])
     def logout(self):

@@ -106,7 +106,6 @@ class Dict(Base):
     """Data that contains a dict with other field-objects in it (type-string is 'hash')"""
 
     def __init__(self, meta=None, required_fields=None, **kwargs):
-
         super(Dict, self).__init__(**kwargs)
 
         if not isinstance(meta, dict):
