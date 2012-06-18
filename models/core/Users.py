@@ -46,7 +46,7 @@ class Users(models.mongodb.MongoDB):
                                   })
 
         except models.mongodb.NotFound:
-            self.warning("User logged in did not exist or used wrong password: {}".format(username))
+            self.warning("User {} does not exist or used wrong password".format(username))
             raise fields.FieldException("Username or password incorrect", "password")
 
         if not user['active']:
