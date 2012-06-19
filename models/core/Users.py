@@ -50,10 +50,8 @@ class Users(models.mongodb.MongoDB):
             raise fields.FieldException("Username or password incorrect", "password")
 
         if not user['active']:
-            self.warning("Deactivated user tried to log in: {}".format(username))
+            self.warning("User {} cannot log in because its deactivated".format(username))
             raise fields.FieldException("This user is deactivated", "username")
-
-        self.info("User {} logged in.".format(username))
 
         self.context.username = user['username']
         self.context.groups = user['groups']
@@ -63,12 +61,14 @@ class Users(models.mongodb.MongoDB):
         self.context.groups.append('everyone')
         self.context.groups.append('user')
 
-
+        self.info("Logged in.".format(username))
 
     @Acl(groups=["everyone"])
     def logout(self):
         '''logout the user. username become anonymous, groups becomes everyone.
         '''
+        if self.context.user_id == None:
+            raise fields.FieldException("You're not logged in")
+
+        self.info("Logged out")
         self.context.reset_user()
-
-

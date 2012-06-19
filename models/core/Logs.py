@@ -21,17 +21,25 @@ class Logs(models.mongodb.MongoDB):
                         'time': fields.Timestamp(desc='Time')
                         })
 
+    def __init__(self, *args, **kwargs):
+        self.last_logs = []
+        super(Logs, self).__init__(*args, **kwargs)
+
     def __call__(self, log_type, text, module_name):
         '''add log text with specified type and text to logger
         '''
-        self._put("logs", {
-                          'username': self.context.username,
-                          'user_id': self.context.user_id,
-                          'type': log_type,
-                          'text': text,
-                          'time': time.time(),
-                          'module_name': module_name
-                          })
+        log_entry = {
+                      'username': self.context.username,
+                      'user_id': self.context.user_id,
+                      'type': log_type,
+                      'text': text,
+                      'time': time.time(),
+                      'module_name': module_name
+                    }
+
+        self._put("logs", log_entry)
+
+        self.last_logs.append(log_entry)
 
     @Acl(groups="user")
     def get_all(self, **params):

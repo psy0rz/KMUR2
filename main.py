@@ -69,6 +69,7 @@ def rpc():
             session['context'] = models.common.Context()
 
         session['context'].reinit()
+        ret['log'] = session['context'].log.last_logs
 
         #instantiate class
         rpc_class_instance = rpc_class(session['context'])
