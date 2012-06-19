@@ -1,6 +1,19 @@
 """common stuff for all models"""
 
 
+import traceback
+
+last_debugs = []
+
+
+def debug(data):
+
+    last_debugs.append({
+                        'fb': traceback.extract_stack(f=None, limit=3),
+                        'data': data
+                        })
+
+
 class Acl(object):
     """access control decorator.
 
