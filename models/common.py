@@ -1,19 +1,6 @@
 """common stuff for all models"""
 
 
-import traceback
-
-last_debugs = []
-
-
-def debug(data):
-
-    last_debugs.append({
-                        'fb': traceback.extract_stack(f=None, limit=3),
-                        'data': data
-                        })
-
-
 class Acl(object):
     """access control decorator.
 
@@ -56,15 +43,20 @@ class Context(object):
 
     #first time initaisation of a new context.
     #this is not called when the context is restored from a session.
-    def __init__(self):
+    def __init__(self, debug=False):
         self.reset_user()
 
     #this is called on every request.
     #(the first time the context is created, but also after restoring the context from a session)
     #usefull to reinstate things like logging
-    def reinit(self):
+    def reinit(self, debug=False):
         import models.core.Logs
         self.log = models.core.Logs.Logs(self)
+
+        if debug:
+            self._debug = []
+        else:
+            self._debug = None
 
     def __getstate__(self):
         '''define the items that should be preserved in a session here'''
@@ -75,7 +67,6 @@ class Context(object):
                 'db_name': self.db_name,
                 'db_host': self.db_host
                 })
-
 
     def reset_user(self):
         '''reset user to logged out state'''
@@ -103,6 +94,41 @@ class Context(object):
         if not self.has_groups(groups):
             raise Exception('Access denied - You need to be member of any of these groups: {}'.format(groups))
 
+    def get_results(self):
+        '''gets the "results" of what was done during the context.
+
+        These include things like logging and debugging data'''
+
+        ret = {}
+
+        if hasattr(self, 'log'):
+            ret['logs'] = self.log.last_logs
+
+        if hasattr(self, '_debug') and self._debug != None:
+            ret['debug'] = self._debug
+
+        return ret
+
+    def debug(self, debug_object, level=1):
+        '''call this to add data to the debug buffer
+
+        use level to specify a different 'level' on the call stack to get the filename, linenumber etc from.
+
+        you can also just specify a debug text as debug_object
+        '''
+
+        if self._debug == None:
+            return
+
+        import traceback
+        tb = traceback.extract_stack(limit=level + 1)
+        self._debug.append({
+                                'object': debug_object,
+                                  'file': tb[0][0],
+                              'function': tb[0][2],
+                                  'line': tb[0][1]
+                            })
+
 
 class Base(object):
     """Base class for all models
@@ -121,6 +147,9 @@ class Base(object):
 
     def error(self, text):
         self.context.log("error", text, self.__class__.__name__)
+
+    def debug(self, debug_object):
+        self.context.debug(debug_object, level=2)
 
     @Acl(groups=["everyone"])
     def get_meta(self, doc=None):

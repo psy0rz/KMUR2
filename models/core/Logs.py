@@ -1,5 +1,5 @@
 
-from models.common import Acl, debug
+from models.common import Acl
 import fields
 import models.mongodb
 import time

@@ -68,8 +68,7 @@ def rpc():
         if not 'context' in session:
             session['context'] = models.common.Context()
 
-        session['context'].reinit()
-        ret['log'] = session['context'].log.last_logs
+        session['context'].reinit(debug=('debug' in data and data['debug']))
 
         #instantiate class
         rpc_class_instance = rpc_class(session['context'])
@@ -97,6 +96,9 @@ def rpc():
             ret['fields'] = e.fields
 
     session.save()
+
+    if 'context' in session:
+        ret.update(session['context'].get_results())
 
     #return JSON string;
     return(json.dumps(ret, cls=fields.JSONEncoder, indent=1, ensure_ascii=False))

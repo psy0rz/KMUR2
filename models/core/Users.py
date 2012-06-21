@@ -35,7 +35,7 @@ class Users(models.mongodb.MongoDB):
         return(self._get_all("users", **params))
 
     @Acl(groups=["everyone"])
-    def authenticate(self, username, password):
+    def login(self, username, password):
         '''authenticate the with the specified username and password.
 
         if its ok, it doesnt throw an exception and returns nothing'''
