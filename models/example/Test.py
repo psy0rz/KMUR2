@@ -26,7 +26,7 @@ class Test(models.mongodb.MongoDB):
                                                               2: "Number 2 choice",
                                                               None:"Null/None choice"
                                                             }),
-                        'passwordTest': fields.String(desc="Password test"),
+                        'passwordTest': fields.Password(desc="Password test"),
                         'booleanTest': fields.Bool(desc='Boolean test'),
                         'numberTest': fields.Number(desc='Whole number test'),
                         'decimalTest': fields.Number(desc='Number with 2 decimals', decimals=2),
