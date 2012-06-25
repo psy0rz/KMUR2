@@ -103,7 +103,12 @@ class Nothing(Base):
 
 
 class Dict(Base):
-    """Data that contains a dict with other field-objects in it (type-string is 'hash')"""
+    """Data that contains a dict with other field-objects in it
+
+    Usually the root-metadata is a Dict, since this is most usefull in practice.
+
+    Dicts and Lists may be nested without problems.
+    """
 
     def __init__(self, meta=None, required_fields=None, **kwargs):
         super(Dict, self).__init__(**kwargs)
@@ -156,7 +161,12 @@ class Dict(Base):
 
 
 class List(Base):
-    """Data that contains a list of other field-objects (type-string is 'array')"""
+    """Data that contains a list of other field-objects
+
+    Usually a list contains a dict, since this is most usefull in practice (escpecially with our javascript gui framework)
+
+    Dicts and Lists may be nested without problems.
+    """
 
     def __init__(self, meta=None, **kwargs):
         super(List, self).__init__(**kwargs)
@@ -226,7 +236,9 @@ class Password(String):
 
 
 class Number(Base):
-    """A number, with optional min and max value"""
+    """A number, with optional min and max value. 
+
+    By default allows 0 decimals. (use decimals=.. to change)"""
 
     def __init__(self, min=None, max=None, decimals=0, **kwargs):
         super(Number, self).__init__(**kwargs)
