@@ -1,3 +1,6 @@
+'''This module contains data-field definitions that are used in models.
+
+'''
 import json
 import bson.objectid
 import pymongo.cursor

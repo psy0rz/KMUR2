@@ -3,8 +3,8 @@ import fields
 import models.mongodb
 
 
-class Test(models.mongodb.MongoDB):
-    '''example class to test all data types'''
+class FieldDemo(models.mongodb.MongoDB):
+    '''example class to demonstrate and test all data types'''
 
     primitiveFields = {
                         'stringTest': fields.String(desc="String test"),
@@ -50,22 +50,22 @@ class Test(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def put(self, **doc):
-        '''put document in the test database
+        '''put document in the field_demo database
 
         call get_meta to see which fields you can set'''
-        return(self._put("test", doc))
+        return(self._put("field_demo", doc))
 
     @Acl(groups="admin")
     def get(self, _id):
         '''get _id from test database'''
-        return(self._get("test", _id))
+        return(self._get("field_demo", _id))
 
     @Acl(groups="admin")
     def delete(self, _id):
         '''delete _id from test database'''
-        return(self._delete("test", _id))
+        return(self._delete("field_demo", _id))
 
     @Acl(groups="admin")
     def get_all(self, **params):
         '''get all test documents from database'''
-        return(self._get_all("test", **params))
+        return(self._get_all("field_demo", **params))

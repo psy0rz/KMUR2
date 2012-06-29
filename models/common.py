@@ -1,4 +1,4 @@
-"""common stuff for all models"""
+"""Base classes and decorators for all models"""
 
 
 class Acl(object):

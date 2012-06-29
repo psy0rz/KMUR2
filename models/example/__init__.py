@@ -1,1 +1,4 @@
-'''example module with various examples'''
+'''Example module
+
+These contain various example to demonstrate what the rpc-server and models can do.
+'''
