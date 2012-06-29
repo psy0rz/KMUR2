@@ -3,12 +3,11 @@
 var gLogTime=0;
 var gActiveRpcs=0;
 
-function rpc(classMethod, params, callback)
+function rpc(moduleClassMethod, params, callback)
 {
-	console.debug("rpc call "+classMethod+": ", params);
+	console.debug("rpc call "+moduleClassMethod+": ", params);
 
-	classname=classMethod.substr(0,classMethod.indexOf("."));
-	method=classMethod.substr(classMethod.indexOf(".")+1);
+	var moduleClassMethodArray=moduleClassMethod.split(".");
 	
 	//(add extra info to the url for easier debugging in webserver logs)
 	gActiveRpcs++;
@@ -21,20 +20,17 @@ function rpc(classMethod, params, callback)
 			return;
 		
 		$(".viewLoading").hide();
-		//$("body").css('cursor','');
 	}
 	
 	$.ajax({
 		"dataType":		"json",
-		"url":			"rpc.php",
+		"url":			"rpc",
 		"error":
 			function (request, status, e)
 			{
 	
 				console.error("Error while doing rpc ajax request: ",request.responseText,status,e);
 				
-//				if (debuggingEnabled)
-//should always show these kind of errors?
 				{
 					var debugDiv=$("<div class='debug'>");
 					debugDiv.append("RPC request failed:");
@@ -57,9 +53,9 @@ function rpc(classMethod, params, callback)
 			function (result, status, XMLHttpRequest)
 			{
 				
-				console.debug("rpc result "+classMethod+": ", result);
+				console.debug("rpc result "+moduleClassMethod+": ", result);
 
-				if (debuggingEnabled && ('error' in result))
+				if (gDebuggingEnabled && ('error' in result))
 				{
 					var errorTxt="rpc result contains error message: "+result.error.message;
 					console.error(errorTxt, result);
@@ -74,7 +70,7 @@ function rpc(classMethod, params, callback)
 				{
 					$.each(result.debug, function(i,debugLine)
 					{
-						console.debug("php debugging output from "+debugLine.file+" line "+debugLine.line+":",debugLine.object);
+						console.debug("server debugging output from "+debugLine.file+" line "+debugLine.line+":",debugLine.object);
 						var debugDiv=$("<div class='debug'>");
 						debugDiv.append(debugLine.file+" line "+debugLine.line+":");
 						debugDiv.append("<pre>"+JSON.stringify(debugLine.object, null, ' ')+"</pre>");
@@ -117,13 +113,16 @@ function rpc(classMethod, params, callback)
 
 			},
 		"type": "post",
-		"data": {
-				"class":classname,
-				"method":method,
-				"debuggingEnabled":debuggingEnabled,
-				"params":JSON.stringify(params)
-			},
-		"processData":	true,
+		"data": JSON.stringify({
+				"module":moduleClassMethodArray[0],
+				"class":moduleClassMethodArray[1],
+				"method":moduleClassMethodArray[2],
+				"debug":gDebuggingEnabled,
+				"help":gDebuggingEnabled,
+				"params":params
+			}),
+		"contentType": "application/json",
+		"processData":	false,
 		"cache":		false
 	});
 }

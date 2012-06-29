@@ -20,7 +20,10 @@ def rpc():
     ret = {}
 
     try:
+        #to see what kind of body the server receives, for debugging purposes:
+        #print bottle.request.body.getvalue()
         data = bottle.request.json
+
 
         if "help" in data and data["help"]:
             dohelp = True

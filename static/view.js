@@ -406,23 +406,25 @@ function viewReady(params)
 function viewLoad(view)
 {
 	logDebug("viewLoad", view);
-	var uriParams=encodeURIComponent(JSON.stringify(view));
 	
 	$.ajax({
 		"dataType":		"html",
-		"url":			"views/"+view.name.replace(".","/")+".php?"+uriParams,
+		"url":			"views/"+view.name.replace(".","/")+".html",
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{
 				console.debug("viewLoad success ",view);
-
+				
 				//clear/unbind old stuff
 				$("#"+view.id).unbind();
 				$("#"+view.id).empty();
+								
+				//just set innerHTML, without having jquery executing the scripts:
+				document.getElementById(view.id).innerHTML=result;				
+				//eval the scripts in the current context. 
+				//the scripts should use the our view-variable as well:
+				eval($("#"+view.id+" script").text());
 				
-				//FIXME: better debugging of javascript inside html
-				$("#"+view.id).html(result);
-
 			},
 		"error":
 			function (request, status, e)
