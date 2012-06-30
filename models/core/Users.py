@@ -1,12 +1,14 @@
 from models.common import *
 import fields
 import models.mongodb
+from models import mongodb
 
 
 class Users(models.mongodb.MongoDB):
     '''user management'''
 
     meta = fields.Dict({
+                        '_id': models.mongodb.FieldId(),
                         'username': fields.String(min=3),
                         'password': fields.String(min=5),
                         'active': fields.Bool(),
