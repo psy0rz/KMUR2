@@ -37,7 +37,7 @@ class Logs(models.mongodb.MongoDB):
                       'module_name': module_name
                     }
 
-        self._put("logs", log_entry)
+        self._put(log_entry)
 
         self.last_logs.append(log_entry)
 
@@ -48,4 +48,6 @@ class Logs(models.mongodb.MongoDB):
         if not self.context.has_groups("admin"):
             params['match'] = {'user_id': self.context.user_id}
 
-        return(self._get_all("logs", **params))
+        #NOTE: dont forget to explicitly set collection to None!
+        #otherwise the user can look in every collection!
+        return(self._get_all(collection=None, **params))

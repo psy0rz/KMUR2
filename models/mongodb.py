@@ -47,15 +47,17 @@ class MongoDB(models.common.Base):
 
         self.db = context.mongodb_connection[context.db_name]
 
-    def _put(self, collection, doc, meta=None, replace=False):
+    def _put(self, doc, collection=None, meta=None, replace=False):
         """Checks document with field and replaces, updates or inserts it into collection
 
-        If meta is set, the check function of that object will be used. 
+        If collection is not set, the classname will be used.
+
+        If meta is set, the check function of that object will be used.
         Otherwise self.get_meta(doc) will be called to get the default meta.
 
         If _id is not set the document is inserted.
 
-        If _id is set, an existing document will be updated. 
+        If _id is set, an existing document will be updated.
         If the _id is a string it will be automaticly converted to a mongo ObjectId.
 
         If the specified document does not exist it will raise and exception.
@@ -63,6 +65,10 @@ class MongoDB(models.common.Base):
         If replace is True then the existing document will be replaced, otherwise only the specified keys are updated.
 
         """
+
+        if not collection:
+            collection = self.__class__.__name__
+
         if meta:
             meta.check(doc)
         else:
@@ -83,15 +89,18 @@ class MongoDB(models.common.Base):
 
         return(doc)
 
-    def _get(self, collection, _id=None, match={}, filter={}):
+    def _get(self, _id=None, match={}, filter={}, collection=None):
         '''get a document from the collection.
-        collection: name of the collection to perform the search on
+        collection: name of the collection to perform the search on. If not set, the classname is used.
         _id: The id-string of the object to get (if this is specified , filter and match are ignored)
         filter: a dict containing keys and regular expression strings.
         match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
 
         throws exeception if not found
         '''
+
+        if not collection:
+            collection = self.__class__.__name__
 
         regex_filters = {}
 
@@ -115,16 +124,19 @@ class MongoDB(models.common.Base):
 
         return doc
 
-    def _get_all(self, collection, filter={}, match={}, skip=0, limit=0, sort={}):
+    def _get_all(self, collection=None, filter={}, match={}, skip=0, limit=0, sort={}):
         '''gets one or more users according to search options
-        
-        collection: name of the collection to perform the search on
+
+        collection: name of the collection to perform the search on. If not set, the classname is used.
         filter: a dict containing keys and regular expression strings.
         match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
         skip: number of items to skip
         limit: number of maximum items to return
         sort: a dect containing keys and sort directions (-1 descending, +1 ascending)
         '''
+
+        if not collection:
+            collection = self.__class__.__name__
 
         regex_filters = {}
 
@@ -139,13 +151,17 @@ class MongoDB(models.common.Base):
                            limit=limit,
                            sort=sort.items()))
 
-    def _delete(self, collection, _id):
-        '''deletes _id from collection 
+    def _delete(self, _id, collection=None):
+        '''deletes _id from collection
+
+        if collection is not set, the classname will be used.
 
         throws exeception if not found
         '''
 
+        if not collection:
+            collection = self.__class__.__name__
+
         result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
         if result['n'] == 0:
             raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
-

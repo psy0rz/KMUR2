@@ -20,19 +20,21 @@ class Users(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def put(self, **user):
-        return(self._put("users", user))
+        return(self._put(user))
 
     @Acl(groups="admin")
     def get(self, _id):
-        return(self._get("users", _id))
+        return(self._get(_id))
 
     @Acl(groups="admin")
     def delete(self, _id):
-        return(self._delete("users", _id))
+        return(self._delete(_id))
 
     @Acl(groups="admin")
     def get_all(self, **params):
-        return(self._get_all("users", **params))
+        #NOTE: dont forget to explicitly set collection to None!
+        #otherwise the user can look in every collection!
+        return(self._get_all(collection=None, **params))
 
     @Acl(groups=["everyone"])
     def login(self, username, password):
@@ -40,7 +42,7 @@ class Users(models.mongodb.MongoDB):
 
         if its ok, it doesnt throw an exception and returns nothing'''
         try:
-            user = self._get("users", match={
+            user = self._get(match={
                                   'username': username,
                                   'password': password
                                   })
