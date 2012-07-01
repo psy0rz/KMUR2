@@ -35,12 +35,13 @@ class FieldDemo(models.mongodb.MongoDB):
 
     allFields = {
               '_id': models.mongodb.FieldId(desc='Document ID'),
-              'listTest': fields.List(desc="List containing a Dict with the primitive fields",
-                                      meta=fields.Dict(primitiveFields)
-                                      ),
+             'listTest': fields.ListDict(desc="List containing a Dict with the primitive fields",
+                                         meta=primitiveFields),
               'dictTest': fields.Dict(desc="A sub-Dict containing the primitive fields again",
                                       meta=primitiveFields),
               }
+
+    print allFields['listTest']
 
     #add primitive fields to allFields as well
     allFields.update(primitiveFields)

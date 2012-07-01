@@ -197,6 +197,18 @@ class List(Base):
                 raise
 
 
+class ListDict(object):
+    '''Easier way to create a List containing Dicts
+
+    This is a shorthand for List(Dict(...))
+
+    This is just to make the definition of metadata simpeller and more readable by humans.
+    '''
+
+    def __new__(cls, meta, **kwargs):
+        return(List(Dict(meta, **kwargs)))
+
+
 class String(Base):
     """A regular string, with optional min and max value"""
 
