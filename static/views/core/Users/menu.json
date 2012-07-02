@@ -1,0 +1,39 @@
+{
+	"users":{
+		"title":"User management",
+		"items":[
+			{
+				"title":"New",
+				"view":
+					{ 
+						"name":"core.Users.edit",
+						"mode":"main"
+						}
+			},
+			{
+				"title":"Overview",
+				"view":
+					{ 
+						"name":"core.Users.list",
+						"mode":"main"
+						}
+			},
+			{
+				"title":"Log in",
+				"view":
+					{ 
+						"name":"core.Users.login",
+						"mode":"popup"
+						}
+			},
+			{
+				"title":"Log out",
+				"view":
+					{ 
+						"name":"core.Users.logout",
+						"mode":"main"
+						}
+			}
+		]
+	}
+}
