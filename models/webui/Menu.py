@@ -120,7 +120,10 @@ class Menu(models.mongodb.MongoDB):
             if favorite['menu'] in menus:
                 if not 'favorites' in  menus[favorite['menu']]:
                     menus[favorite['menu']]['favorites'] = []
-                menus[favorite['menu']]['favorites'].append(favorite)
+                menus[favorite['menu']]['favorites'].append({
+                                                             'title': favorite['title'],
+                                                             'view': favorite['view']
+                                                             })
 
         return {
                 'main': menus.values()
