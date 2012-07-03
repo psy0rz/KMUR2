@@ -29,18 +29,20 @@ static_menus = loadmenus()
 class Menu(models.mongodb.MongoDB):
     '''Manages menu items and favorites for webui interface'''
 
-    meta = fields.ListDict({
-                            'title': fields.String(),
-                            'items': fields.ListDict({
-                                                      'title': fields.String(),
-                                                      'view': fields.Anything({'desc': 'View parameters'}),
-                                                      }),
-                            'favorites': fields.ListDict({
-                                                      'title': fields.String(),
-                                                          'view': fields.Anything({'desc': 'View parameters'}),
-                                                          }),
-                          })
-
+    meta = fields.Dict({
+                        'main':fields.ListDict({
+                                                'title': fields.String(),
+                                                'items': fields.ListDict({
+                                                                          'title': fields.String(),
+                                                                          'view': fields.Anything({'desc': 'View parameters'}),
+                                                                          }),
+                                                'favorites': fields.ListDict({
+                                                                          'title': fields.String(),
+                                                                              'view': fields.Anything({'desc': 'View parameters'}),
+                                                                              }),
+                                                })
+                        })
+                          
     @Acl(groups="user")
     def add_favorite(self, menu, title, view, favorite_id=None):
         '''add a menu item to the favorites of this user. '''

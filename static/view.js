@@ -409,7 +409,7 @@ function viewLoad(view)
 	
 	$.ajax({
 		"dataType":		"html",
-		"url":			"views/"+view.name.replace(".","/")+".html",
+		"url":			"views/"+view.name.replace(/\./g,"/")+".html",
 		"success":	
 			function (result, status, XMLHttpRequest)
 			{

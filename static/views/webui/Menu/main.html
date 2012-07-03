@@ -8,7 +8,7 @@
 	$(document).on("menu.reload", function(event, params)
 	{
 		rpc(
-			"menu.get",
+			"webui.Menu.get",
 			{},
 			function (result)
 			{
@@ -61,7 +61,7 @@
 
 	//get menu metadata
 	rpc(
-		"menu.getMeta",
+		"webui.Menu.get_meta",
 		{},
 		function (result)
 		{
