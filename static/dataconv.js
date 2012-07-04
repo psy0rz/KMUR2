@@ -47,10 +47,11 @@ function formatDateTime(timestamp, allowTime)
 */
 var dataConv=
 {
-	hash:{
+	Dict:{
 		input:function (element, meta, keyStr)
 		{
 			//add autoGet and autoPut for convienience
+			//FIXME: we should move this to autometa now
 			if (!meta.readonly)
 			{
 				$(element).addClass("autoGet");
@@ -58,7 +59,7 @@ var dataConv=
 			$(element).addClass("autoPut");
 
 			//recurse into sub:
-			$(element).autoMeta(meta.meta, keyStr);
+			$(element).autoMeta(meta, keyStr);
 			return (null);
 		},
 		html:function(element, meta, keyStr, value)
@@ -68,17 +69,17 @@ var dataConv=
 		get:function(element, meta, keyStr)
 		{
 			value=new Object();
-			$(element).autoGet(meta.meta, value, keyStr);
+			$(element).autoGet(meta, value, keyStr);
 			return (value);
 		},
 		put:function(element, meta, keyStr, value, settings)
 		{
-			$(element).autoPut(meta.meta, value, keyStr, settings);
+			$(element).autoPut(meta, value, keyStr, settings);
 		}
 	},
-	array:{
+	List:{
 		/**
-		 * Array is a bit of a special case: 
+		 * List is a bit of a special case: 
 		 * The original element we call the 'source-element', it should have a autoListSource class.
 		 * For every item this original is cloned and then autoPut is called on the cloned item.  
 		 * Every cloned item gets a class autoListItem added, but the other auto-classes are removed.
@@ -91,6 +92,7 @@ var dataConv=
 		input:function(element, meta, keyStr)
 		{
 			//if it is a autoListSource, add autoGet and autoPut for convienience
+			//FIXME: move to autometa
 			if ($(element).hasClass("autoListSource"))
 			{
 				if (!meta.readonly)
@@ -100,7 +102,7 @@ var dataConv=
 				$(element).addClass("autoPut");
 			}
 			//recurse into sub:
-			$(element).autoMeta(meta.meta, keyStr);
+			$(element).autoMeta(meta, keyStr);
 			return (null);
 		},
 		html:function(element, meta, keyStr, value)
@@ -115,7 +117,7 @@ var dataConv=
 			//traverse all the list items
 			$('.autoListItem[_key="'+keyStr+'"]', parent).each(function () {
 				var subvalue=new Object();
-				$(this).autoGet(meta.meta, subvalue, keyStr);
+				$(this).autoGet(meta, subvalue, keyStr);
 				value.push(subvalue);
 			});
 			return(value);
@@ -205,7 +207,7 @@ var dataConv=
 			}
 		}
 	},
-	string:{
+	String:{
 		input:function(element, meta)
 		{
 			var addedElement;
@@ -234,7 +236,7 @@ var dataConv=
 			$(element).val(value);
 		}		
 	},
-	password:{
+	Password:{
 		input:function(element, meta)
 		{
 			var addedElement=$("<input>")
@@ -255,7 +257,7 @@ var dataConv=
 			$(element).val(value);
 		}		
 	},
-	float:{
+	Number:{
 		input:function(element, meta)
 		{
 			var addedElement=$("<input>")
@@ -276,28 +278,7 @@ var dataConv=
 			$(element).val(value);
 		}		
 	},
-	integer:{
-		input:function(element, meta)
-		{
-			var addedElement=$("<input>")
-					.attr("type","text");
-			$(addedElement).val(meta.default);
-			return(addedElement);
-		},
-		html:function(element, meta, keyStr, value)
-		{
-			return($("<span>").text(value));
-		},
-		get:function(element, meta, keyStr)
-		{
-			return($(element).val());
-		},
-		put:function(element, meta, keyStr, value)
-		{
-			$(element).val(value);
-		}		
-	},
-	select:{
+	Select:{
 		input:function(element, meta)
 		{
 			//create select element
@@ -334,7 +315,7 @@ var dataConv=
 			$(element).val(value);
 		}
 	},
-	multiselect:{
+	Multiselect:{
 		input:function(element, meta, keyStr)
 		{
 			var addedElement=$("<span>")
@@ -402,7 +383,7 @@ var dataConv=
 			});
 		}
 	},
-	bool:{
+	Bool:{
 		input:function(element, meta)
 		{
 			var addedElement=$("<input>")
@@ -441,7 +422,7 @@ var dataConv=
 			$(element).attr("checked", value==1);
 		}
 	},
-	date:{
+	Timestamp:{
 		input:function(element, meta)
 		{
 			var allowTime=false;
