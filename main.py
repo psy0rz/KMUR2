@@ -57,7 +57,7 @@ def rpc():
 
         #load module and resolve class
         rpc_models = __import__('models.' + request['module'] + '.' + request['class'])
-
+    
         rpc_module = getattr(rpc_models, request['module'])
         if dohelp:
             result['help']['module'] = rpc_module.__doc__
