@@ -32,28 +32,28 @@ def rpc():
             dohelp = False
 
         if not "module" in request:
-            raise Exception("Module not specified")
+            raise Exception("rpc: Module not specified")
 
         if re.search("[^a-zA-Z0-9_]", request['module']):
-            raise Exception("Illegal module name")
+            raise Exception("rpc: Illegal module name")
 
         if not "class" in request:
-            raise Exception("Class not specified")
+            raise Exception("rpc: Class not specified")
 
         if re.search("[^a-zA-Z0-9]", request['class']):
-            raise Exception("Illegal class name")
+            raise Exception("rpc: Illegal class name")
 
         if not "method" in request:
-            raise Exception("Method not specified")
+            raise Exception("rpc: Method not specified")
 
         if re.search("[^a-zA-Z0-9_]", request['method']):
-            raise Exception("Illegal method name")
+            raise Exception("rpc: Illegal method name")
 
         if re.search("^_", request['method']):
-            raise Exception("Methodname may not begin with _")
+            raise Exception("rpc: Methodname may not begin with _")
 
         if not "params" in request:
-            raise Exception("Params not specified")
+            raise Exception("rpc: Params not specified")
 
         #load module and resolve class
         rpc_models = __import__('models.' + request['module'] + '.' + request['class'])
@@ -76,14 +76,14 @@ def rpc():
         #instantiate class
         rpc_class_instance = rpc_class(session['context'])
         if not isinstance(rpc_class_instance, models.common.Base):
-            raise Exception("Class is not a model")
+            raise Exception("rpc: Class is not a model")
 
         #resolve method
         rpc_method = getattr(rpc_class_instance, request['method'])
 
         #make sure that it has an acl
         if not hasattr(rpc_method, 'has_acl_decorator'):
-            raise Exception("This method is protected from outside access because it has no @Acl decorator")
+            raise Exception("rpc: This method is protected from outside access because it has no @Acl decorator")
 
         if dohelp:
             result['help']['method'] = rpc_method.__doc__
@@ -93,10 +93,10 @@ def rpc():
 
     except (fields.FieldException, Exception) as e:
         traceback.print_exc()
-        result['error'] = str(e)
+        result['error'] = { 'message': str(e) }
 
         if isinstance(e, fields.FieldException):
-            result['fields'] = e.fields
+            result['error']['fields'] = e.fields
 
     session.save()
 

@@ -1,0 +1,425 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"rand",
+				"randomStr"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "main.py",
+			"settings":
+			{
+				"buffer_size": 4201,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/views/webui/Menu/menu.json",
+			"settings":
+			{
+				"buffer_size": 2,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"sni",
+				"Snippet: Lorem ipsum"
+			],
+			[
+				"class",
+				"Snippet: New Class"
+			],
+			[
+				"diff",
+				"Git: Diff Tool"
+			],
+			[
+				"con",
+				"Convert Case: Lower Case"
+			],
+			[
+				"comm",
+				"Git: Quick Commit"
+			],
+			[
+				"commi",
+				"Git: Quick Commit"
+			],
+			[
+				"commit",
+				"Git: Quick Commit"
+			],
+			[
+				"unsta",
+				"Git: Reset (unstage) All"
+			],
+			[
+				"add",
+				"Git: Add Current File"
+			],
+			[
+				"git",
+				"Git: Diff All"
+			],
+			[
+				"find",
+				"Preferences: Settings - Default"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"dif",
+				"Git: Diff All"
+			],
+			[
+				"goto",
+				"Goto Symbol : Reset symbols"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"settings",
+				"Preferences: Settings - Default"
+			],
+			[
+				"intel",
+				"SublimeCodeIntel: Reset"
+			],
+			[
+				"javasc",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"python",
+				"Set Syntax: Regular Expressions (Python)"
+			],
+			[
+				"jquer",
+				"Snippet: jQuery.ajax"
+			],
+			[
+				"check",
+				"Git: Checkout Current File"
+			],
+			[
+				"rever",
+				"File: Revert"
+			],
+			[
+				"chec",
+				"Git: Checkout Current File"
+			],
+			[
+				"modifi",
+				"Modific: Show diff"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 602.0
+	},
+	"console":
+	{
+		"height": 488.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/psy/public_html/models/core/Users.py",
+		"/home/psy/public_html/static/dataconv.js",
+		"/usr/lib/python2.7/dist-packages/bottle.py",
+		"/usr/lib/python2.7/SocketServer.py",
+		"/usr/lib/python2.7/wsgiref/simple_server.py",
+		"/home/psy/public_html/static/index.html",
+		"/home/psy/public_html/static/views/webui/Menu/main.html",
+		"/home/psy/public_html/models/core/Logs.py",
+		"/home/psy/public_html/main.py",
+		"/home/psy/public_html/static/form.js",
+		"/home/psy/public_html/static/views/webui/Menu/menu.json",
+		"/home/psy/public_html/fields.py",
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
+		"/home/psy/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/psy/.config/sublime-text-2/Packages/Modific/Modific.sublime-settings",
+		"/home/psy/public_html/static/controls.js",
+		"/home/psy/.config/sublime-text-2/Packages/Goto Symbol/Default (Linux).sublime-keymap",
+		"/home/psy/public_html/static/rpc.js",
+		"/home/psy/.config/sublime-text-2/Packages/Goto Symbol/Goto Symbol.sublime-settings",
+		"/home/psy/public_html/models/invoices.php",
+		"/home/psy/public_html/exceptions.php",
+		"/home/psy/public_html/static/common.js",
+		"/home/psy/public_html/kmur2.sublime-project",
+		"/home/psy/.config/sublime-text-2/Packages/User/Python.sublime-settings",
+		"/home/psy/.config/sublime-text-2/Packages/User/Base File.sublime-settings",
+		"/home/psy/.config/sublime-text-2/Packages/Modific/README.md",
+		"/home/psy/public_html/models/common.py",
+		"/home/psy/.config/sublime-text-2/Packages/Modific/Default (Linux).sublime-keymap",
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Default (Linux).sublime-keymap",
+		"/home/psy/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap",
+		"/home/psy/.config/sublime-text-2/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Default (Linux).sublime-mousemap"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"include",
+			"project",
+			"array",
+			"hash",
+			"hashf",
+			"hash",
+			"meta",
+			"data",
+			"ret",
+			"ret[",
+			"data",
+			"result.data",
+			".data",
+			".date",
+			"any",
+			"autoPut",
+			"wrap"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"meta.meta",
+			"request",
+			"result",
+			"result["
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "main.py",
+					"settings":
+					{
+						"buffer_size": 4201,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4137,
+								4137
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2051.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "static/views/webui/Menu/menu.json",
+					"settings":
+					{
+						"buffer_size": 2,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 112.0
+	},
+	"output.git":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"json",
+				"static/views/webui/Menu/menu.json"
+			],
+			[
+				"data",
+				"static/dataconv.js"
+			],
+			[
+				"user",
+				"models/core/Users.py"
+			],
+			[
+				"html",
+				"static/index.html"
+			],
+			[
+				"main",
+				"main.py"
+			],
+			[
+				"fieds",
+				"fields.py"
+			],
+			[
+				"form",
+				"static/form.js"
+			],
+			[
+				"main.p",
+				"main.py"
+			],
+			[
+				"lo",
+				"models/core/Logs.py"
+			],
+			[
+				"logs",
+				"models/core/Logs.py"
+			],
+			[
+				"comm",
+				"static/common.js"
+			],
+			[
+				"js",
+				"static/common.js"
+			],
+			[
+				"users",
+				"models/core/Users.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

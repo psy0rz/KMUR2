@@ -1,37 +1,30 @@
-<? require_once("../view.php"); ?>
 
 <script>
 
-  
-$(document).ready(function()
-{
-	var view=<?=viewGet()?>;
-	
-	controlList({
-		view		: view,
-		id		: '_id',
-		getMeta		: 'users.getMeta',
-		getMetaParams	: view.params,
-		getData		: 'users.getAll',
-		getDataParams	: view.params,
-		delData		: 'users.del',
-		editView		: {
-			name: 'users.edit',
-			mode: 'main',
-			params: view.params
-		},
-		loadCallback	: function(result) {
-			viewReady({
-				view: view,
-				title: "Gebruikers overzicht"
-			});
-		},
-		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
-	});
 
-
+controlList({
+	view		: view,
+	id		: '_id',
+	getMeta		: 'users.getMeta',
+	getMetaParams	: view.params,
+	getData		: 'users.getAll',
+	getDataParams	: view.params,
+	delData		: 'users.del',
+	editView		: {
+		name: 'users.edit',
+		mode: 'main',
+		params: view.params
+	},
+	loadCallback	: function(result) {
+		viewReady({
+			view: view,
+			title: "Gebruikers overzicht"
+		});
+	},
+	errorCallback	: function(result) { },
+	saveCallback	: function(result) { }
 });
+
 
 </script>
 
