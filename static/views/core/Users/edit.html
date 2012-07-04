@@ -1,42 +1,36 @@
-<? require_once("../view.php"); ?>
 
 <script>
-$(this).ready(function()
-{
-	var view=<?=viewGet()?>;
-	controlForm({
-		view			: view,
-		getMeta			: 'users.getMeta',
-		getMetaParams		: view.params,
-		getData			: 'users.get',
-		getDataParams		: view.params,
-		putData			: 'users.put',
-		putDataParams		: { "_id": view.params._id },
-		defaultFocus	: [ "username" ],
-		closeAfterSave	: true,
-		loadCallback	: function(result) {
-			if (result.data)
-				title="Wijzigen gebruiker "+result.data.username;
-			else
-				title="Nieuwe gebruiker";
-				
-			viewReady({
-				view: view,
-				title:title
-			});
+controlForm({
+	view			: view,
+	getMeta			: 'users.getMeta',
+	getMetaParams		: view.params,
+	getData			: 'users.get',
+	getDataParams		: view.params,
+	putData			: 'users.put',
+	putDataParams		: { "_id": view.params._id },
+	defaultFocus	: [ "username" ],
+	closeAfterSave	: true,
+	loadCallback	: function(result) {
+		if (result.data)
+			title="Wijzigen gebruiker "+result.data.username;
+		else
+			title="Nieuwe gebruiker";
 			
-		},
-		errorCallback	: function(result) { },
-		saveCallback	: function(result) {
-			view.params._id=result.data._id;
-			$(document).trigger("menu.addFavorite",{
-				menu:		"users",
-				title:		"Wijzig "+result.data.username,
-				view:		view
-			});
-		}
-	});
-
+		viewReady({
+			view: view,
+			title:title
+		});
+		
+	},
+	errorCallback	: function(result) { },
+	saveCallback	: function(result) {
+		view.params._id=result.data._id;
+		$(document).trigger("menu.addFavorite",{
+			menu:		"users",
+			title:		"Wijzig "+result.data.username,
+			view:		view
+		});
+	}
 });
 
 </script>

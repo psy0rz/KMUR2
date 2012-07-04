@@ -53,7 +53,7 @@ def rpc():
             raise Exception("rpc: Methodname may not begin with _")
 
         if not "params" in request:
-            raise Exception("rpc: Params not specified")
+            request['params']={}
 
         #load module and resolve class
         rpc_models = __import__('models.' + request['module'] + '.' + request['class'])

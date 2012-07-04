@@ -84,11 +84,11 @@ function rpc(moduleClassMethod, params, callback)
 //				if (currentTime-gLogTime>5000)
 //					$('#viewLog').empty();
 
-				if (result.log)
+				if (result.logs)
 				{
 					$('#viewLog').empty();
 					gLogTime=currentTime;
-					$.each(result.log, function(i,logLine)
+					$.each(result.logs, function(i,logLine)
 					{
 						var logDiv;
 						if (logLine.logType=='info')

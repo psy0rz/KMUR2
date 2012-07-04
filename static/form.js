@@ -278,7 +278,6 @@
 	*/
 	$.fn.autoPut = function( meta, value, parentKey, options ) {  
 //		logDebug("autoPut called with ", meta, value , parentKey, options);
-		
 		var settings = {
 			update:false,
 			showChanges:false
@@ -291,6 +290,12 @@
 
 		if (!meta)
 			return;
+
+		if (meta.type!="Dict")
+		{
+			console.error("autoPut should only be called with metadata of type Dict", meta, value);
+			return;
+		}
 
 		//traverse all specified elements (usually its just one)
 		return this.each(function() {
@@ -312,19 +317,19 @@
 					keyStr=key;
 
 
-				if (key in meta)
+				if (key in meta.meta)
 				{
 					//find the element that belongs to this key 
 					//there SHOULD be only one or zero. 
 					var selector='.autoPut[_key="'+keyStr+'"]';
 					$(selector, context).each(function() {
-						if (meta[key].type in dataConv)
+						if (meta.meta[key].type in dataConv)
 						{
 							//generate html
 							if ($(this).attr("_html")!=null)
 							{
-	//							console.log("check", meta, key);
-								var newElement=dataConv[meta[key].type].html(this, meta[key], keyStr, thisvalue, settings);
+	//							console.log("check", meta.meta, key);
+								var newElement=dataConv[meta.meta[key].type].html(this, meta.meta[key], keyStr, thisvalue, settings);
 								if (newElement.text()!=$(this).text())
 								{
 									$(this).empty();
@@ -336,9 +341,9 @@
 							//put data into existing input fields (or arrays or hashes)
 							else
 							{
-	//							if (dataConv[meta[key].type].get(this, meta[key], keyStr)!=thisvalue)
+	//							if (dataConv[meta.meta[key].type].get(this, meta.meta[key], keyStr)!=thisvalue)
 	//							{
-									dataConv[meta[key].type].put(this, meta[key], keyStr, thisvalue, settings);
+									dataConv[meta.meta[key].type].put(this, meta.meta[key], keyStr, thisvalue, settings);
 									//FIXME: (werkt niet met array in test/list) if (settings.showChanges)
 									//	$(this).effect('highlight', 2000);
 	//							}
@@ -346,7 +351,7 @@
 						}
 						else
 						{
-							console.error("Metadata has unknown type: ", meta[key]);
+							console.error("Metadata has unknown type: ", meta.meta[key]);
 							return false;
 						}
 					});

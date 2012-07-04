@@ -1,29 +1,21 @@
-<? require_once("../view.php"); ?>
-
 <script>
-$(this).ready(function()
-{
-	var view=<?=viewGet()?>;
-
-	controlForm({
-		'view'			: view,
-		'getMeta'		: 'users.getMeta',
-		'putData'		: 'users.authenticate',
-		'defaultFocus'	: ['username'],
-		'loadCallback' : function(result)
-		{
-			viewReady({
-				'view': view,
-				'title': 'Inloggen'
-			});
-		},
-		'saveCallback' : function()
-		{
-			$(document).trigger("menu.reload");
-		},
-		'closeAfterSave': true
-	});
-
+controlForm({
+	'view'			: view,
+	'getMeta'		: 'core.Users.get_meta',
+	'putData'		: 'core.Users.login',
+	'defaultFocus'	: ['username'],
+	'loadCallback' : function(result)
+	{
+		viewReady({
+			'view': view,
+			'title': 'Inloggen'
+		});
+	},
+	'saveCallback' : function()
+	{
+		$(document).trigger("menu.reload");
+	},
+	'closeAfterSave': true
 });
 
 </script>

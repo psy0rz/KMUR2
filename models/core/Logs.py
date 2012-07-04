@@ -4,7 +4,7 @@ import fields
 import models.mongodb
 import time
 
-
+ 
 class Logs(models.mongodb.MongoDB):
     '''logging functionality'''
 
