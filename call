@@ -1,3 +1,8 @@
+#
+# Add initial admin mongo CLI:
+# db.models.core.Users.insert({ "username":"admin", password:"yourpassss", "groups":["admin"], "active": true})
+
+
 if [ "$1" == "" ]; then
     echo "For example:"
     echo  "./call core Users authenticate '{\"username\":\"geert\", \"password\":\"kut\"}'"

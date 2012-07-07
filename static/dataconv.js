@@ -211,7 +211,7 @@ var dataConv=
 		input:function(element, meta)
 		{
 			var addedElement;
-			if (meta['max']==null || meta.max>100)
+			if (meta.max>100)
 			{
 				addedElement=$("<textarea>");
 			}

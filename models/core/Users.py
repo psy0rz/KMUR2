@@ -65,7 +65,7 @@ class Users(models.mongodb.MongoDB):
         self.context.groups.append('everyone')
         self.context.groups.append('user')
 
-        self.info("Logged in.".format(username))
+        self.info("Logged in.")
 
     @Acl(groups=["everyone"])
     def logout(self):

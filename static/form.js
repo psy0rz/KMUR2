@@ -183,12 +183,18 @@
 		if (!meta)
 			return;
 
+		if (meta.type!="Dict")
+		{
+			console.error("autoMeta should only be called with metadata of type Dict", meta, value);
+			return;
+		}
+
 		//traverse all specified elements (usually its just one)
 		return this.each(function() {
 			var context=this;
 
 			//traverse the specified meta data
-			$.each(meta, function(key, thismeta){
+			$.each(meta.meta, function(key, thismeta){
 				var keyStr;
 				if (parentKey)
 					keyStr=parentKey+"."+key;
@@ -246,12 +252,18 @@
 		if (!meta)
 			return;
 
+		if (meta.type!="Dict")
+		{
+			console.error("autoGet should only be called with metadata of type Dict", meta, value);
+			return;
+		}
+
 		//traverse all specified elements (usually its just one)
 		return this.each(function() {
 			var context=this;
 
 			//traverse the specified meta data
-			$.each(meta, function(key, thismeta){
+			$.each(meta.meta, function(key, thismeta){
 				if (thismeta.readonly)
 					return;
 				
@@ -309,6 +321,7 @@
 			}
 
 			//traverse the specified data
+			//TODO: traverse metadata instead of normal data, like in autoGet and autoMeta?
 			$.each(value, function(key, thisvalue){
 				var keyStr;
 				if (parentKey)
