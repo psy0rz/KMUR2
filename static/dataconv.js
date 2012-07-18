@@ -102,7 +102,7 @@ var dataConv=
 				$(element).addClass("autoPut");
 			}
 			//recurse into sub:
-			$(element).autoMeta(meta, keyStr);
+			$(element).autoMeta(meta.meta, keyStr);
 			return (null);
 		},
 		html:function(element, meta, keyStr, value)
