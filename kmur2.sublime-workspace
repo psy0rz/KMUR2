@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"mo",
+				"mongodb"
+			],
+			[
 				"rand",
 				"randomStr"
 			]
@@ -12,18 +16,10 @@
 	"buffers":
 	[
 		{
-			"file": "main.py",
+			"file": "static/views/example/FieldDemo/list.html",
 			"settings":
 			{
-				"buffer_size": 4201,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "static/views/webui/Menu/menu.json",
-			"settings":
-			{
-				"buffer_size": 2,
+				"buffer_size": 3568,
 				"line_ending": "Unix"
 			}
 		}
@@ -35,6 +31,94 @@
 		"selected_items":
 		[
 			[
+				"pack",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"code",
+				"SublimeCodeIntel: Enable Plugin"
+			],
+			[
+				"intel",
+				"SublimeCodeIntel: Reset"
+			],
+			[
+				"git log",
+				"Git: Log All"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"log",
+				"Git: Log All"
+			],
+			[
+				"diff",
+				"Git: Diff All"
+			],
+			[
+				"q",
+				"Git: Quick Commit"
+			],
+			[
+				"add",
+				"Git: Add..."
+			],
+			[
+				"ad",
+				"Git: Add..."
+			],
+			[
+				"dif",
+				"Git: Diff All"
+			],
+			[
+				"quic",
+				"Git: Quick Commit"
+			],
+			[
+				"qui",
+				"Git: Quick Commit"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"...",
+				"Git: Add..."
+			],
+			[
+				"unsta",
+				"Git: Reset (unstage) All"
+			],
+			[
+				"git",
+				"Git: Open..."
+			],
+			[
+				"quick",
+				"Git: Quick Commit"
+			],
+			[
+				"commi",
+				"Git: Quick Commit"
+			],
+			[
+				"comm",
+				"Git: Commit"
+			],
+			[
+				"commit",
+				"Git: Commit"
+			],
+			[
 				"sni",
 				"Snippet: Lorem ipsum"
 			],
@@ -43,48 +127,12 @@
 				"Snippet: New Class"
 			],
 			[
-				"diff",
-				"Git: Diff Tool"
-			],
-			[
 				"con",
 				"Convert Case: Lower Case"
 			],
 			[
-				"comm",
-				"Git: Quick Commit"
-			],
-			[
-				"commi",
-				"Git: Quick Commit"
-			],
-			[
-				"commit",
-				"Git: Quick Commit"
-			],
-			[
-				"unsta",
-				"Git: Reset (unstage) All"
-			],
-			[
-				"add",
-				"Git: Add Current File"
-			],
-			[
-				"git",
-				"Git: Diff All"
-			],
-			[
 				"find",
 				"Preferences: Settings - Default"
-			],
-			[
-				"remove",
-				"Package Control: Remove Package"
-			],
-			[
-				"dif",
-				"Git: Diff All"
 			],
 			[
 				"goto",
@@ -101,10 +149,6 @@
 			[
 				"settings",
 				"Preferences: Settings - Default"
-			],
-			[
-				"intel",
-				"SublimeCodeIntel: Reset"
 			],
 			[
 				"javasc",
@@ -133,17 +177,13 @@
 			[
 				"modifi",
 				"Modific: Show diff"
-			],
-			[
-				"inst",
-				"Package Control: Install Package"
 			]
 		],
-		"width": 602.0
+		"width": 467.0
 	},
 	"console":
 	{
-		"height": 488.0
+		"height": 231.0
 	},
 	"distraction_free":
 	{
@@ -156,24 +196,39 @@
 	},
 	"file_history":
 	[
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
 		"/home/psy/public_html/models/core/Users.py",
+		"/home/psy/public_html/models/example/FieldDemo.py",
 		"/home/psy/public_html/static/dataconv.js",
+		"/home/psy/public_html/static/views/core/Users/menu.json",
+		"/home/psy/public_html/static/views/webui/Menu/menu.json",
+		"/home/psy/public_html/static/views/webui/Menu/main.html",
+		"/home/psy/public_html/static/views/example/FieldDemo/menu.json",
+		"/home/psy/public_html/static/view.js",
+		"/home/psy/public_html/models/mongodb.py",
+		"/home/psy/public_html/models/__init__.py",
+		"/home/psy/public_html/fields.py",
+		"/home/psy/public_html/static/views/example/FieldDemo/list.html",
+		"/home/psy/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/psy/public_html/static/views/test/edit.php",
+		"/home/psy/public_html/static/controls.js",
+		"/home/psy/public_html/static/form.js",
+		"/home/psy/public_html/main.py",
+		"/home/psy/public_html/static/rpc.js",
+		"/home/psy/public_html/static/index.html",
+		"/home/psy/public_html/static/views/core/Users/logout.html",
+		"/home/psy/public_html/static/views/core/Users/login.html",
+		"/home/psy/public_html/static/views/core/Users/list.html",
+		"/home/psy/public_html/static/views/core/Users/edit.html",
+		"/home/psy/public_html/static/views/core/Users/edit.php",
+		"/home/psy/public_html/static/views/core/Users/list.php",
+		"/home/psy/public_html/static/lib/jQuery-Timepicker-Addon/README.md",
+		"/home/psy/.config/sublime-text-2/Packages/Modific/Modific.sublime-settings",
 		"/usr/lib/python2.7/dist-packages/bottle.py",
 		"/usr/lib/python2.7/SocketServer.py",
 		"/usr/lib/python2.7/wsgiref/simple_server.py",
-		"/home/psy/public_html/static/index.html",
-		"/home/psy/public_html/static/views/webui/Menu/main.html",
 		"/home/psy/public_html/models/core/Logs.py",
-		"/home/psy/public_html/main.py",
-		"/home/psy/public_html/static/form.js",
-		"/home/psy/public_html/static/views/webui/Menu/menu.json",
-		"/home/psy/public_html/fields.py",
-		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
-		"/home/psy/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
-		"/home/psy/.config/sublime-text-2/Packages/Modific/Modific.sublime-settings",
-		"/home/psy/public_html/static/controls.js",
 		"/home/psy/.config/sublime-text-2/Packages/Goto Symbol/Default (Linux).sublime-keymap",
-		"/home/psy/public_html/static/rpc.js",
 		"/home/psy/.config/sublime-text-2/Packages/Goto Symbol/Goto Symbol.sublime-settings",
 		"/home/psy/public_html/models/invoices.php",
 		"/home/psy/public_html/exceptions.php",
@@ -206,6 +261,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"viewLoad",
+			"meta",
+			"trans",
+			"deldata",
+			"params",
+			".log",
+			"debug",
 			"include",
 			"project",
 			"array",
@@ -244,56 +306,30 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "main.py",
+					"file": "static/views/example/FieldDemo/list.html",
 					"settings":
 					{
-						"buffer_size": 4201,
+						"buffer_size": 3568,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4137,
-								4137
+								552,
+								552
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2051.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "static/views/webui/Menu/menu.json",
-					"settings":
-					{
-						"buffer_size": 2,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2,
-								2
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+							"codeintel": true,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -341,7 +377,7 @@
 	},
 	"output.git":
 	{
-		"height": 112.0
+		"height": 265.0
 	},
 	"replace":
 	{
@@ -354,8 +390,44 @@
 		"selected_items":
 		[
 			[
-				"json",
-				"static/views/webui/Menu/menu.json"
+				"us",
+				"models/core/Users.py"
+			],
+			[
+				"list",
+				"static/views/example/FieldDemo/list.html"
+			],
+			[
+				"men",
+				"static/views/example/FieldDemo/menu.json"
+			],
+			[
+				"",
+				"models/core/Users.py"
+			],
+			[
+				"view",
+				"static/view.js"
+			],
+			[
+				"view.js",
+				"static/view.js"
+			],
+			[
+				"main",
+				"static/views/webui/Menu/main.html"
+			],
+			[
+				"menu",
+				"static/views/example/FieldDemo/menu.json"
+			],
+			[
+				"edit",
+				"static/views/example/FieldDemo/list.html"
+			],
+			[
+				"field",
+				"models/example/FieldDemo.py"
 			],
 			[
 				"data",
@@ -366,20 +438,48 @@
 				"models/core/Users.py"
 			],
 			[
-				"html",
-				"static/index.html"
+				"login",
+				"static/views/core/Users/login.html"
 			],
 			[
-				"main",
-				"main.py"
-			],
-			[
-				"fieds",
+				"fields",
 				"fields.py"
+			],
+			[
+				"users",
+				"models/core/Users.py"
+			],
+			[
+				"cont",
+				"static/controls.js"
 			],
 			[
 				"form",
 				"static/form.js"
+			],
+			[
+				"rpc",
+				"static/rpc.js"
+			],
+			[
+				"rpc.js",
+				"static/rpc.js"
+			],
+			[
+				"inde",
+				"static/index.html"
+			],
+			[
+				"json",
+				"static/views/webui/Menu/menu.json"
+			],
+			[
+				"html",
+				"static/index.html"
+			],
+			[
+				"fieds",
+				"fields.py"
 			],
 			[
 				"main.p",
@@ -400,10 +500,6 @@
 			[
 				"js",
 				"static/common.js"
-			],
-			[
-				"users",
-				"models/core/Users.py"
 			]
 		],
 		"width": 0.0
@@ -420,6 +516,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 150.0,
+	"side_bar_width": 222.0,
 	"status_bar_visible": true
 }

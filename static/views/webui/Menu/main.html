@@ -12,6 +12,7 @@
 			{},
 			function (result)
 			{
+				viewShowError(result, context)
 				$(context).autoPut(meta, result.data, null, { 
 					'update':true 
 				} );
@@ -92,6 +93,7 @@
 </script>
 
 
+<div class='viewError'></div>
 <div>
 	<div class='autoPut autoListHide menuMain menuMain_Passive' _key='main'>
 		<div class='menuMainTitle' >

@@ -1,0 +1,15 @@
+{
+	"example":{
+		"title":"Examples",
+		"items":[
+			{
+				"title":"Field demo",
+				"view":
+					{ 
+						"name":"example.FieldDemo.list",
+						"mode":"main"
+						}
+			}
+		]
+	}
+}

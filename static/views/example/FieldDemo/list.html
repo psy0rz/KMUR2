@@ -1,21 +1,15 @@
 <? require_once("../view.php"); ?>
 
 <script>
-
-  
-$(document).ready(function()
-{
-	var view=<?=viewGet()?>;
-	
 	controlList({
 		view		: view,
-		getMeta		: 'test.getMeta',
+		getMeta		: 'example.FieldDemo.getMeta',
 		getMetaParams	: view.params,
-		getData		: 'test.getAll',
+		getData		: 'example.FieldDemo.getAll',
 		getDataParams	: view.params,
-		delData		: 'test.del',
+		delData		: 'example.FieldDemo.del',
 		editView		: {
-			name: 'test.edit',
+			name: 'example.FieldDemo.edit',
 			mode: 'main',
 			params: view.params
 		},
@@ -28,10 +22,7 @@ $(document).ready(function()
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) { }
 	});
-
-
-});
-
+viewSho
 </script>
 
 <table >

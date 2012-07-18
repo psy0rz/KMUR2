@@ -6,11 +6,11 @@ from models import mongodb
 
 class Users(models.mongodb.MongoDB):
     '''user management'''
-
+    meta.check
     meta = fields.Dict({
                         '_id': models.mongodb.FieldId(),
                         'username': fields.String(min=3),
-                        'password': fields.String(min=5),
+                        'password': fields.Password(min=5),
                         'active': fields.Bool(),
                         'groups': fields.MultiSelect(choices={
                                                               "admin": "Administrator",
