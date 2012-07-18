@@ -6,7 +6,7 @@ from models import mongodb
 
 class Users(models.mongodb.MongoDB):
     '''user management'''
-    meta.check
+    
     meta = fields.Dict({
                         '_id': models.mongodb.FieldId(),
                         'username': fields.String(min=3),

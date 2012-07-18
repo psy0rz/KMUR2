@@ -1,45 +1,39 @@
-<? require_once("../view.php"); ?>
 
 <script>
-$(this).ready(function()
-{
-	var view=<?=viewGet()?>;
-	controlForm({
-		view			: view,
-		getMeta			: 'test.getMeta',
-		getMetaParams		: view.params,
-		getData			: 'test.get',
-		getDataParams		: view.params,
-		putData			: 'test.put',
-		putDataParams		: { "_id": view.params._id },
-		delData			: 'test.del',	
-		defaultFocus	: [ "stringTest" ],
-		closeAfterSave	: true,
-		loadCallback	: function(result) {
-			if (result.data)
-				title="<?=_('Wijzigen test %1')?>";
-			else
-				title="<?=_('Nieuwe test')?>";
-	//, result.data.stringTest);
-			
-			viewReady({
-				view: view,
-				title:title
-			});
-			
-		},
-		errorCallback	: function(result) { },
-		saveCallback	: function(result) {
-			view.params._id=result.data._id;
-			$(document).trigger("menu.addFavorite",{
-				menu:		"test",	
-				title: 		"Wijzig "+result.data.stringTest,
-				view:		view
-			});
-		}
-	});
-
+controlForm({
+	view			: view,
+	getMeta			: 'test.getMeta',
+	getMetaParams		: view.params,
+	getData			: 'test.get',
+	getDataParams		: view.params,
+	putData			: 'test.put',
+	putDataParams		: { "_id": view.params._id },
+	delData			: 'test.del',	
+	defaultFocus	: [ "stringTest" ],
+	closeAfterSave	: true,
+	loadCallback	: function(result) {
+		if (result.data)
+			title="Edit field demo "+result.data.stringTest;
+		else
+			title="New field demo";
+		
+		viewReady({
+			view: view,
+			title:title
+		});
+		
+	},
+	errorCallback	: function(result) { },
+	saveCallback	: function(result) {
+		view.params._id=result.data._id;
+		$(document).trigger("menu.addFavorite",{
+			menu:		"test",	
+			title: 		"Edit "+result.data.stringTest,
+			view:		view
+		});
+	}
 });
+
 
 </script>
 
@@ -159,8 +153,8 @@ $(this).ready(function()
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='controlOnClickSave' ><?=_("Save")?></button>
-	<button class='controlOnClickDel' ><?=_("Delete")?></button>
-	<button class='controlOnClickCancel' ><?=_("Cancel")?></button>
+	<button class='controlOnClickSave' >Save</button>
+	<button class='controlOnClickDel' >Delete</button>
+	<button class='controlOnClickCancel' >Cancel</button>
 	<span class='viewErrorText'></span>
 </div>

@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"Str",
+				"stringTest"
+			],
+			[
 				"mo",
 				"mongodb"
 			],
@@ -16,10 +20,26 @@
 	"buffers":
 	[
 		{
+			"file": "static/view.js",
+			"settings":
+			{
+				"buffer_size": 11342,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/views/example/FieldDemo/edit.html",
+			"settings":
+			{
+				"buffer_size": 5006,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "static/views/example/FieldDemo/list.html",
 			"settings":
 			{
-				"buffer_size": 3568,
+				"buffer_size": 3534,
 				"line_ending": "Unix"
 			}
 		}
@@ -27,9 +47,17 @@
 	"build_system": "Packages/Python/Python.sublime-build",
 	"command_palette":
 	{
-		"height": 392.0,
+		"height": 54.0,
 		"selected_items":
 		[
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
 			[
 				"pack",
 				"Package Control: Upgrade Package"
@@ -85,10 +113,6 @@
 			[
 				"qui",
 				"Git: Quick Commit"
-			],
-			[
-				"remove",
-				"Package Control: Remove Package"
 			],
 			[
 				"...",
@@ -196,6 +220,8 @@
 	},
 	"file_history":
 	[
+		"/home/psy/public_html/static/views/example/FieldDemo/list.html",
+		"/home/psy/public_html/static/views/example/FieldDemo/edit.html",
 		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
 		"/home/psy/public_html/models/core/Users.py",
 		"/home/psy/public_html/models/example/FieldDemo.py",
@@ -208,7 +234,6 @@
 		"/home/psy/public_html/models/mongodb.py",
 		"/home/psy/public_html/models/__init__.py",
 		"/home/psy/public_html/fields.py",
-		"/home/psy/public_html/static/views/example/FieldDemo/list.html",
 		"/home/psy/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
 		"/home/psy/public_html/static/views/test/edit.php",
 		"/home/psy/public_html/static/controls.js",
@@ -306,28 +331,81 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "static/views/example/FieldDemo/list.html",
+					"file": "static/view.js",
 					"settings":
 					{
-						"buffer_size": 3568,
+						"buffer_size": 11342,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								552,
-								552
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"codeintel": true,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "static/views/example/FieldDemo/edit.html",
+					"settings":
+					{
+						"buffer_size": 5006,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1,
+								1
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "static/views/example/FieldDemo/list.html",
+					"settings":
+					{
+						"buffer_size": 3534,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								518,
+								518
+							]
+						],
+						"settings":
+						{
 							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
@@ -390,12 +468,24 @@
 		"selected_items":
 		[
 			[
-				"us",
-				"models/core/Users.py"
-			],
-			[
 				"list",
 				"static/views/example/FieldDemo/list.html"
+			],
+			[
+				"edit",
+				"static/views/example/FieldDemo/edit.html"
+			],
+			[
+				"view",
+				"static/view.js"
+			],
+			[
+				"wedit",
+				"static/views/example/FieldDemo/list.html"
+			],
+			[
+				"us",
+				"models/core/Users.py"
 			],
 			[
 				"men",
@@ -404,10 +494,6 @@
 			[
 				"",
 				"models/core/Users.py"
-			],
-			[
-				"view",
-				"static/view.js"
 			],
 			[
 				"view.js",
@@ -420,10 +506,6 @@
 			[
 				"menu",
 				"static/views/example/FieldDemo/menu.json"
-			],
-			[
-				"edit",
-				"static/views/example/FieldDemo/list.html"
 			],
 			[
 				"field",
