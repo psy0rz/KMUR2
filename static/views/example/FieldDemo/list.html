@@ -1,10 +1,10 @@
 
 <script>
-	controlList({
+		controlList({
 		view		: view,
-		getMeta		: 'example.FieldDemo.getMeta',
+		getMeta		: 'example.FieldDemo.get_meta',
 		getMetaParams	: view.params,
-		getData		: 'example.FieldDemo.getAll',
+		getData		: 'example.FieldDemo.get_all',
 		getDataParams	: view.params,
 		delData		: 'example.FieldDemo.del',
 		editView		: {
@@ -15,13 +15,12 @@
 		loadCallback	: function(result) {
 			viewReady({
 				view: view,
-				title: "test overzicht"
+				title: "field demo overview"
 			});
 		},
 		errorCallback	: function(result) { },
 		saveCallback	: function(result) { }
 	});
-viewShop
 </script>
 
 <table >

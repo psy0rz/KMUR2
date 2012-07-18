@@ -94,7 +94,7 @@ function controlForm(params)
 				
 			}
 
-			if (params['getData'])
+			if (params.getData && params.getDataParams && params.getDataParams.length)
 			{
 				//get data
 				rpc(
@@ -252,8 +252,6 @@ function controlList(params)
 		var element=$(this);
 		var id=listParent.attr("_id");
 		var index=listParent.attr("_index");
-		if (typeof id == "undefined")
-			id='';
 		element.addClass("ui-state-highlight");
 		
 		
@@ -263,7 +261,8 @@ function controlList(params)
 		if (! editView.params)
 			editView.params={};
 		editView.focus=$(element).autoFindKeys(meta);
-		editView.params[index]=id;
+		if (typeof id != "undefined")
+			editView.params[index]=id;
 		editView.x=event.clientX;
 		editView.y=event.clientY;
 		viewCreate(
@@ -313,7 +312,7 @@ function controlList(params)
 			
 				if ('data' in result)
 				{
-					dataConv.array.put(
+					dataConv.List.put(
 							autoListSourceElement, //element
 							{ meta: meta },  		//meta
 							'',						//keyStr
@@ -459,7 +458,7 @@ function controlList(params)
 				endlessParams,
 				function(result)
 				{
-					dataConv.array.put(
+					dataConv.List.put(
 							autoListSourceElement, //element
 							{ meta: meta },  		//meta
 							'',						//keyStr

@@ -315,7 +315,7 @@ var dataConv=
 			$(element).val(value);
 		}
 	},
-	Multiselect:{
+	MultiSelect:{
 		input:function(element, meta, keyStr)
 		{
 			var addedElement=$("<span>")
@@ -329,7 +329,8 @@ var dataConv=
 						.attr("type","checkbox")
 						.attr("id",keyStr+"."+choice);
 						
-				checkbox.attr("checked", meta.default.indexOf(choice) != -1);
+				if ('default' in meta)
+					checkbox.attr("checked", meta.default.indexOf(choice) != -1);
 				addedElement.append(checkbox);
 				
 				//add description

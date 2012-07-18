@@ -23,7 +23,15 @@
 			"file": "static/view.js",
 			"settings":
 			{
-				"buffer_size": 11342,
+				"buffer_size": 11618,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "models/example/FieldDemo.py",
+			"settings":
+			{
+				"buffer_size": 3510,
 				"line_ending": "Unix"
 			}
 		},
@@ -36,10 +44,26 @@
 			}
 		},
 		{
+			"file": "static/controls.js",
+			"settings":
+			{
+				"buffer_size": 10598,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "static/dataconv.js",
+			"settings":
+			{
+				"buffer_size": 12540,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "static/views/example/FieldDemo/list.html",
 			"settings":
 			{
-				"buffer_size": 3534,
+				"buffer_size": 3533,
 				"line_ending": "Unix"
 			}
 		}
@@ -47,7 +71,7 @@
 	"build_system": "Packages/Python/Python.sublime-build",
 	"command_palette":
 	{
-		"height": 54.0,
+		"height": 392.0,
 		"selected_items":
 		[
 			[
@@ -203,7 +227,7 @@
 				"Modific: Show diff"
 			]
 		],
-		"width": 467.0
+		"width": 602.0
 	},
 	"console":
 	{
@@ -221,19 +245,21 @@
 	"file_history":
 	[
 		"/home/psy/public_html/static/views/example/FieldDemo/list.html",
-		"/home/psy/public_html/static/views/example/FieldDemo/edit.html",
-		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
-		"/home/psy/public_html/models/core/Users.py",
-		"/home/psy/public_html/models/example/FieldDemo.py",
 		"/home/psy/public_html/static/dataconv.js",
+		"/home/psy/public_html/models/core/Users.py",
+		"/home/psy/public_html/static/views/example/FieldDemo/edit.html",
+		"/home/psy/public_html/static/view.js",
+		"/home/psy/public_html/models/common.py",
+		"/home/psy/public_html/fields.py",
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Default (Linux).sublime-keymap",
+		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
+		"/home/psy/public_html/models/example/FieldDemo.py",
 		"/home/psy/public_html/static/views/core/Users/menu.json",
 		"/home/psy/public_html/static/views/webui/Menu/menu.json",
 		"/home/psy/public_html/static/views/webui/Menu/main.html",
 		"/home/psy/public_html/static/views/example/FieldDemo/menu.json",
-		"/home/psy/public_html/static/view.js",
 		"/home/psy/public_html/models/mongodb.py",
 		"/home/psy/public_html/models/__init__.py",
-		"/home/psy/public_html/fields.py",
 		"/home/psy/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
 		"/home/psy/public_html/static/views/test/edit.php",
 		"/home/psy/public_html/static/controls.js",
@@ -262,9 +288,7 @@
 		"/home/psy/.config/sublime-text-2/Packages/User/Python.sublime-settings",
 		"/home/psy/.config/sublime-text-2/Packages/User/Base File.sublime-settings",
 		"/home/psy/.config/sublime-text-2/Packages/Modific/README.md",
-		"/home/psy/public_html/models/common.py",
 		"/home/psy/.config/sublime-text-2/Packages/Modific/Default (Linux).sublime-keymap",
-		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Default (Linux).sublime-keymap",
 		"/home/psy/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap",
 		"/home/psy/.config/sublime-text-2/Packages/Default/Default (Linux).sublime-keymap",
 		"/home/psy/.config/sublime-text-2/Packages/SublimeCodeIntel/Default (Linux).sublime-mousemap"
@@ -286,6 +310,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			".array",
 			"viewLoad",
 			"meta",
 			"trans",
@@ -331,7 +356,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -339,7 +364,7 @@
 					"file": "static/view.js",
 					"settings":
 					{
-						"buffer_size": 11342,
+						"buffer_size": 11618,
 						"regions":
 						{
 						},
@@ -363,6 +388,34 @@
 				},
 				{
 					"buffer": 1,
+					"file": "models/example/FieldDemo.py",
+					"settings":
+					{
+						"buffer_size": 3510,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "static/views/example/FieldDemo/edit.html",
 					"settings":
 					{
@@ -389,19 +442,73 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "static/views/example/FieldDemo/list.html",
+					"buffer": 3,
+					"file": "static/controls.js",
 					"settings":
 					{
-						"buffer_size": 3534,
+						"buffer_size": 10598,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								518,
-								518
+								10337,
+								10337
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7555.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "static/dataconv.js",
+					"settings":
+					{
+						"buffer_size": 12540,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1756,
+								1756
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 642.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "static/views/example/FieldDemo/list.html",
+					"settings":
+					{
+						"buffer_size": 3533,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
 							]
 						],
 						"settings":
@@ -472,8 +579,36 @@
 				"static/views/example/FieldDemo/list.html"
 			],
 			[
+				"data",
+				"static/dataconv.js"
+			],
+			[
+				"cont",
+				"static/controls.js"
+			],
+			[
+				"con",
+				"static/controls.js"
+			],
+			[
 				"edit",
 				"static/views/example/FieldDemo/edit.html"
+			],
+			[
+				"fie",
+				"models/example/FieldDemo.py"
+			],
+			[
+				"views",
+				"static/view.js"
+			],
+			[
+				"",
+				"models/core/Users.py"
+			],
+			[
+				"user",
+				"models/core/Users.py"
 			],
 			[
 				"view",
@@ -492,10 +627,6 @@
 				"static/views/example/FieldDemo/menu.json"
 			],
 			[
-				"",
-				"models/core/Users.py"
-			],
-			[
 				"view.js",
 				"static/view.js"
 			],
@@ -512,14 +643,6 @@
 				"models/example/FieldDemo.py"
 			],
 			[
-				"data",
-				"static/dataconv.js"
-			],
-			[
-				"user",
-				"models/core/Users.py"
-			],
-			[
 				"login",
 				"static/views/core/Users/login.html"
 			],
@@ -530,10 +653,6 @@
 			[
 				"users",
 				"models/core/Users.py"
-			],
-			[
-				"cont",
-				"static/controls.js"
 			],
 			[
 				"form",

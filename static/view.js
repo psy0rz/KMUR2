@@ -423,7 +423,18 @@ function viewLoad(view)
 				document.getElementById(view.id).innerHTML=result;				
 				//eval the scripts in the current context. 
 				//the scripts may use the our view-variable as well:
-				eval($("#"+view.id+" script").text());
+				try
+				{
+					eval($("#"+view.id+" script").text());
+				}
+				catch(e)
+				{
+					//is there anyway to give the developer more info about where it was thrown exactly??
+					console.debug("Following code throwed an exception somewhere:");
+					console.debug($("#"+view.id+" script").text());
+
+					throw(e);
+				}
 				
 			},
 		"error":

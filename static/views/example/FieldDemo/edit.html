@@ -1,14 +1,14 @@
 
 <script>
 controlForm({
-	view			: view,
-	getMeta			: 'test.getMeta',
-	getMetaParams		: view.params,
-	getData			: 'test.get',
-	getDataParams		: view.params,
-	putData			: 'test.put',
-	putDataParams		: { "_id": view.params._id },
-	delData			: 'test.del',	
+	view 			: view,
+	getMeta			: 'example.FieldDemo.get_meta',
+	getMetaParams	: undefined,
+	getData			: 'example.FieldDemo.get',
+	getDataParams	: view.params,
+	putData			: 'example.FieldDemo.put',
+	putDataParams	: view.params,
+	delData			: 'example.FieldDemo.delete',	
 	defaultFocus	: [ "stringTest" ],
 	closeAfterSave	: true,
 	loadCallback	: function(result) {
@@ -16,12 +16,12 @@ controlForm({
 			title="Edit field demo "+result.data.stringTest;
 		else
 			title="New field demo";
-		
+
 		viewReady({
 			view: view,
 			title:title
 		});
-		
+
 	},
 	errorCallback	: function(result) { },
 	saveCallback	: function(result) {
@@ -77,40 +77,40 @@ controlForm({
 	</table>
 </fieldset>
 
-<fieldset style='display:inline-block;' class='autoMeta' _key='hash'>
+<fieldset style='display:inline-block;' >
 	<legend>Basic structures in a hash</legend>
-	<table class='autoMeta' _key='hashTest'>
+	<table class='autoMeta' _key='dictTest'>
 		<tr>
-			<td class='autoMeta' _key='hashTest.stringTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.stringTest'>
+			<td class='autoMeta' _key='dictTest.stringTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.stringTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.multiselectTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.multiselectTest'>
+			<td class='autoMeta' _key='dictTest.multiselectTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.multiselectTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.passwordTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.passwordTest'>
+			<td class='autoMeta' _key='dictTest.passwordTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.passwordTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.booleanTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.booleanTest'>
+			<td class='autoMeta' _key='dictTest.booleanTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.booleanTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.floatTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.floatTest'>
+			<td class='autoMeta' _key='dictTest.floatTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.floatTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.integerTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.integerTest'>
+			<td class='autoMeta' _key='dictTest.integerTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.integerTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.selectTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.selectTest'>
+			<td class='autoMeta' _key='dictTest.selectTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.selectTest'>
 		</tr>
 		<tr>
-			<td class='autoMeta' _key='hashTest.dateTest' _meta='desc'>
-			<td class='autoMeta' _key='hashTest.dateTest' _allowTime>
+			<td class='autoMeta' _key='dictTest.dateTest' _meta='desc'>
+			<td class='autoMeta' _key='dictTest.dateTest' _allowTime>
 		</tr>
 	</table>
 </fieldset>
@@ -119,31 +119,31 @@ controlForm({
 	<legend>Basic structures in a list</legend>
 	<table >
 		<thead >
-			<tr class='autoMeta' _key='arrayTest'>
+			<tr class='autoMeta' _key='listTest'>
 				<td>
-				<td class='autoMeta' _key='arrayTest.stringTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.multiselectTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.passwordTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.booleanTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.floatTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.integerTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.selectTest' _meta='desc'>
-				<td class='autoMeta' _key='arrayTest.dateTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.stringTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.multiselectTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.passwordTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.booleanTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.floatTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.integerTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.selectTest' _meta='desc'>
+				<td class='autoMeta' _key='listTest.dateTest' _meta='desc'>
 				<td>
 				<td>
 			</tr>
 		</thead>		
 		<tbody class='controlSortable'>
-			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='arrayTest'  _index='_id'>
+			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='listTest'  _index='_id'>
 				<td class='controlOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.stringTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.multiselectTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.passwordTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.booleanTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.floatTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.integerTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.selectTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='arrayTest.dateTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.stringTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.multiselectTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.passwordTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.booleanTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.floatTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.integerTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.selectTest'>
+				<td class='autoMeta controlOnFocusAdd' _key='listTest.dateTest'>
 				<td class='controlOnClickDel ui-icon ui-icon-trash'>
 				<td class='controlOnClickAdd ui-icon ui-icon-plus'>
 			</tr>
