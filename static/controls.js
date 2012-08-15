@@ -94,8 +94,8 @@ function controlForm(params)
 				
 			}
 
-			if (params.getData && params.getDataParams && params.getDataParams.length)
-			{
+			if (params.getData && params.getDataParams && Object.keys(params.getDataParams).length)
+				{
 				//get data
 				rpc(
 					params.getData, 

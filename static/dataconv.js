@@ -401,26 +401,26 @@ var dataConv=
 			{
 				newElement.addClass("autoHtml_"+meta.type+"_True");
 				newElement.addClass("autoHtml_"+keyStr+"_True");
-				newElement.text("Ja");
+				newElement.text("Yes");
 			}
 			else
 			{
 				newElement.addClass("autoHtml_"+meta.type+"_False");
 				newElement.addClass("autoHtml_"+keyStr+"_False");
-				newElement.text("Nee");
+				newElement.text("No");
 			}
 			return (newElement);
 		},
 		get:function(element, meta, keyStr)
 		{
 			if ($(element).attr("checked"))
-				return(1);
+				return(true);
 			else
-				return(0);
+				return(false);
 		},
 		put:function(element, meta, keyStr, value)
 		{
-			$(element).attr("checked", value==1);
+			$(element).attr("checked", value);
 		}
 	},
 	Timestamp:{

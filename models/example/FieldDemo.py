@@ -12,19 +12,13 @@ class FieldDemo(models.mongodb.MongoDB):
                                                               choices={
                                                               "first": "First choice",
                                                               "second": "Second choice",
-                                                              "": "Empty string",
-                                                              1: "Number 1",
-                                                              2: "Number 2",
-                                                              None: "Null choice"
+                                                              "": "Empty choice",
                                                             }),
                         'selectTest': fields.Select(desc="Select test",
                                                               choices={
                                                               "first": "First choice",
                                                               "second": "Second choice",
-                                                              "": "Empty string choice",
-                                                              1: "Number 1 choice",
-                                                              2: "Number 2 choice",
-                                                              None:"Null/None choice"
+                                                              "": "Empty choice",
                                                             }),
                         'passwordTest': fields.Password(desc="Password test"),
                         'booleanTest': fields.Bool(desc='Boolean test'),
@@ -54,6 +48,7 @@ class FieldDemo(models.mongodb.MongoDB):
         '''put document in the field_demo database
 
         call get_meta to see which fields you can set'''
+        self.info("Changed demo row {}".format(doc['stringTest']))
         return(self._put(doc))
 
     @Acl(groups="admin")

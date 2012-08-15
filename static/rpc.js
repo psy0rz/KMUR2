@@ -58,7 +58,7 @@ function rpc(moduleClassMethod, params, callback)
 				if (gDebuggingEnabled && ('error' in result))
 				{
 					var errorTxt="rpc result contains error message: "+result.error.message;
-					console.error(errorTxt, result);
+					console.error(errorTxt, moduleClassMethod, params,result);
 					var debugDiv=$("<div class='debug'>");
 					debugDiv.append(errorTxt);
 					//debugDiv.append("Request: <pre>"+JSON.stringify(result, null, ' ')+"</pre>");
@@ -86,16 +86,16 @@ function rpc(moduleClassMethod, params, callback)
 
 				if (result.logs)
 				{
-					$('#viewLog').empty();
+//					$('#viewLog').empty();
 					gLogTime=currentTime;
 					$.each(result.logs, function(i,logLine)
 					{
 						var logDiv;
-						if (logLine.logType=='info')
+						if (logLine.type=='info')
 						{
 							logDiv=$('<div class="log ui-state-highlight ui-corner-all" ><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span><strong>Info: </strong><span class="logtxt"></span></div>');
 						}
-						else if (logLine.logType=='warning')
+						else if (logLine.type=='warning')
 						{
 							logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Let op: </strong><span class="logtxt"></span></div>');
 						}
@@ -105,6 +105,7 @@ function rpc(moduleClassMethod, params, callback)
 						}
 						$(".logtxt", logDiv).text(logLine.text);							
 						$('#viewLog').append(logDiv);
+						
 					});
 				}
 				
