@@ -59,6 +59,7 @@ var dataConv=
 			$(element).addClass("autoPut");
 
 			//recurse into sub:
+			logDebug("recursing into sub Dict", meta, keyStr);
 			$(element).autoMeta(meta, keyStr);
 			return (null);
 		},

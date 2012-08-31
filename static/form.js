@@ -202,11 +202,15 @@
 					keyStr=key;
 				
 				var selector='.autoMeta[_key="'+keyStr+'"]';
-							
+
+				logDebug("sel ", selector);
+
 				//traverse the autoMeta elements that reference this key
 				$(selector, context).each(function()
 				{
 					
+				logDebug("found ", selector);
+						logDebug(thismeta.type);
 					//just fill in the value of the specified metadata-field as plain text?
 					if ($(this).attr("_meta"))
 						$(this).text(thismeta[$(this).attr("_meta")]);
@@ -289,7 +293,7 @@
 	*  Uses _key attribute as hash key
 	*/
 	$.fn.autoPut = function( meta, value, parentKey, options ) {  
-//		logDebug("autoPut called with ", meta, value , parentKey, options);
+		logDebug("autoPut called with ", meta, value , parentKey, options);
 		var settings = {
 			update:false,
 			showChanges:false
