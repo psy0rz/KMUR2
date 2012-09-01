@@ -13,7 +13,14 @@ controlForm({
 	closeAfterSave	: true,
 	loadCallback	: function(result) {
 		if (result.data)
+		{
 			title="Edit field demo "+result.data.stringTest;
+			$(document).trigger("menu.add_favorite",{
+				menu:		"example",	
+				title: 		"Edit "+result.data.stringTest,
+				view:		view
+			});
+		}
 		else
 			title="New field demo";
 
@@ -26,8 +33,8 @@ controlForm({
 	errorCallback	: function(result) { },
 	saveCallback	: function(result) {
 		view.params._id=result.data._id;
-		$(document).trigger("menu.addFavorite",{
-			menu:		"test",	
+		$(document).trigger("menu.add_favorite",{
+			menu:		"example",	
 			title: 		"Edit "+result.data.stringTest,
 			view:		view
 		});
