@@ -406,6 +406,16 @@ function viewReady(params)
 function viewLoad(view)
 {
 	logDebug("viewLoad", view);
+
+	//clear/unbind old stuff
+	$("#"+view.id).unbind();
+	$("#"+view.id).empty();
+
+	//add nice debugging 
+	if (gDebuggingEnabled)
+	{
+		document.getElementById(view.id).innerHTML="<div class='debug'>"+JSON.stringify(view,null,' ')+"</div>";				
+	}
 	
 	$.ajax({
 		"dataType":		"html",
@@ -415,12 +425,9 @@ function viewLoad(view)
 			{
 				console.debug("viewLoad success ",view);
 				
-				//clear/unbind old stuff
-				$("#"+view.id).unbind();
-				$("#"+view.id).empty();
 								
 				//just set innerHTML, without having jquery executing the scripts:
-				document.getElementById(view.id).innerHTML=result;				
+				document.getElementById(view.id).innerHTML+=result;				
 				//eval the scripts in the current context. 
 				//the scripts may use the our view-variable as well:
 				try
@@ -441,7 +448,7 @@ function viewLoad(view)
 			function (request, status, e)
 			{
 				console.error("Error while loading view via ajax request: ",request.responseText,status,e);
-				$("#"+view.id).text("Error while loading data: "+request.responseText);
+				document.getElementById(view.id).innerHTML+="<div>Error while loading data: "+request.responseText+"<div>";	
 			},
 	});
 			
