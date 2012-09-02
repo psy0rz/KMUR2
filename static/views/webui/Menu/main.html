@@ -3,6 +3,7 @@
 
 	var meta;
 	
+	var debugTxt=view.id+" "+view.name+" ";
 
 	//(re)load the menu
 	$(document).on("menu.reload", function(event, params)
@@ -16,7 +17,9 @@
 				$(context).autoPut(meta, result.data, null, { 
 					'update':true 
 				} );
-			});
+			},
+			debugTxt+"menu reload data"
+			);
 	});
 
 	/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
@@ -26,15 +29,16 @@
 		'desc':		"Wijzig "+result.data.username,
 		'view':		(view parameters, look at viewCreate in view.js)}
 	*/
-	$(document).on("menu.addFavorite", function(event, params)
+	$(document).on("menu.add_favorite", function(event, params)
 			{
 				rpc(
-					"menu.addFavorite",
+					"webui.Menu.add_favorite",
 					params,
 					function(result)
 					{
 						$(document).trigger("menu.reload");
-					}
+					},
+					debugTxt+"menu adding favorite"
 				);
 			
 			});
@@ -68,7 +72,9 @@
 		{
 			meta=result.data;
 			$(document).trigger("menu.reload");
-		});
+		},
+		debugTxt+"menu getting meta data"
+	);
 
 
 	//////////////////// visual design stuff:
