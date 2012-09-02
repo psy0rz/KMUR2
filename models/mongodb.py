@@ -41,7 +41,7 @@ class MongoDB(models.common.Base):
     Use default_collection to specify a collection, otherwise self.__class__.__module__ is used.
 
     Usually its advised that a model operates only on its own collection(s). Expand the api of other models if you need
-    data from their collection.
+    data from their collection. (to prevent bypassing acls by accident)
     """
 
     def __init__(self, context=None, default_collection=None):

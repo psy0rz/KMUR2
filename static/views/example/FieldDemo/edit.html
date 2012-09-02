@@ -44,10 +44,20 @@ controlForm({
 
 </script>
 
+<p>If you clicked the 'gray row' in the list, you're creating a new item. Otherwise you're editting an existing item.</p>
 
+<p>Notice how the favorites in the menu will be updated in realtime. (the menu actually has its own model and view)</p>
+
+<p>Also notice how the changed fields will be highlighted in the list, once you save the form. (or delete the item)</p>
+
+<p>All input validation and error checking will be done by the model, which will throw an exception if something is wrong. This exception is presented to the user as a nice highlighted field with the corresponding message. (try to fill in a string in the number field for example)</p>
+
+<p>Logging also will be done by the model, but the rpc-system will make sure the end-user sees these log messages as well, providing valuable feedback.</p>
+
+<p>Try refreshing the page, or pressing your browsers back and forward button. This all should work as expected by the user.</p>
 
 <fieldset style='display:inline-block;'>
-	<legend>Basic data structures</legend>
+	<legend>Basic fields</legend>
 	<table>
 		<tr>
 			<td class='autoMeta' _key='stringTest' _meta='desc'>
@@ -85,7 +95,7 @@ controlForm({
 </fieldset>
 
 <fieldset style='display:inline-block;' >
-	<legend>Basic structures in a hash</legend>
+	<legend>Basic fields in a Dict</legend>
 	<table class='autoMeta' _key='dictTest'>
 		<tr>
 			<td class='autoMeta' _key='dictTest.stringTest' _meta='desc'>
@@ -123,7 +133,8 @@ controlForm({
 </fieldset>
 
 <fieldset  style='display:inline-block;' >
-	<legend>Basic structures in a list</legend>
+	<legend>Basic fields in a List</legend>
+	<p>This list is completely dynamic: the user can add, delete and move rows. New rows are added by clicking the 'gray row'. Notice this is all client side: The data will only be send to the server once the user clicks save.</p>
 	<table >
 		<thead >
 			<tr class='autoMeta' _key='listTest'>
@@ -139,7 +150,7 @@ controlForm({
 				<td>
 				<td>
 			</tr>
-		</thead>		
+		</thead>
 		<tbody class='controlSortable'>
 			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='listTest'  _index='_id'>
 				<td class='controlOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 

@@ -74,7 +74,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 				if (gDebuggingEnabled && ('error' in result))
 				{
 					var errorTxt=debugTxt+" : rpc result contains error message: "+result.error.message;
-					console.error(errorTxt, moduleClassMethod, params,result);
+					console.error(errorTxt, params,result);
 					var debugDiv=$("<div class='debug'>");
 					debugDiv.append(errorTxt);
 					//debugDiv.append("Request: <pre>"+JSON.stringify(result, null, ' ')+"</pre>");

@@ -7,7 +7,7 @@ class FieldDemo(models.mongodb.MongoDB):
     '''example class to demonstrate and test all data types'''
 
     primitiveFields = {
-                        'stringTest': fields.String(desc="String test"),
+                        'stringTest': fields.String(desc="String test",min=3),
                         'multiselectTest': fields.MultiSelect(desc="Multi select test",
                                                               choices={
                                                               "first": "First choice",
@@ -48,8 +48,17 @@ class FieldDemo(models.mongodb.MongoDB):
         '''put document in the field_demo database
 
         call get_meta to see which fields you can set'''
-        self.info("Changed demo row {}".format(doc['stringTest']))
-        return(self._put(doc))
+
+        if '_id' in doc:
+          logTxt="Changed demo row {}".format(doc['stringTest'])
+        else:
+          logTxt="Created demo row {}".format(doc['stringTest'])
+
+        ret=self._put(doc)
+
+        self.info(logTxt)
+
+        return(ret)
 
     @Acl(groups="admin")
     def get(self, _id):
@@ -59,7 +68,13 @@ class FieldDemo(models.mongodb.MongoDB):
     @Acl(groups="admin")
     def delete(self, _id):
         '''delete _id from test database'''
-        return(self._delete(_id))
+
+        #get document for better logging
+        doc=self._get(_id)
+
+        self._delete(_id)
+
+        self.info("Deleted demo row {}".format(doc['stringTest']))
 
     @Acl(groups="admin")
     def get_all(self, **params):
