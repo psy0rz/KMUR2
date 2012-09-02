@@ -3,6 +3,8 @@ function controlForm(params)
 {
 	var meta;
 	var context=$("#"+params.view.id);
+
+	var debugTxt=params.view.id+" "+params.view.name+" ";
 	
 	//disable submit button while loading
 	$(".controlOnClickSave", context).prop("disabled", true);
@@ -123,7 +125,8 @@ function controlForm(params)
 						}
 						
 
-					}
+					},
+					debugTxt+"getting form data"
 				);
 			}
 			//when not loading data, dont forget to call the loadCallback:
@@ -134,11 +137,11 @@ function controlForm(params)
 				controlFormFocus();
 
 				if (params['loadCallback'])
-					params['loadCallback'](result);
-				
+					params['loadCallback']({}); //pass an empty result
 
 			}
-		}
+		},
+		debugTxt+"form getting meta data"
 	);
 	
 	//save 
@@ -185,7 +188,8 @@ function controlForm(params)
 				//all ok, close window
 				if (params.closeAfterSave)
 					viewClose(params.view);
-			}
+			},
+			debugTxt+"form putting data"
 		);
 	};
 
@@ -204,7 +208,8 @@ function controlForm(params)
 						if (params.closeAfterSave)
 							viewClose(params.view);
 					}
-				}
+				},
+				debugTxt+"form deleting item"
 			);
 		});
 	}
@@ -237,6 +242,8 @@ function controlList(params)
 	var context=$("#"+params.view.id);
 	var autoListSourceElement=$(".autoListSource:first",context);
 	var beginLength=autoListSourceElement.parent().children().length;
+
+	var debugTxt=params.view.id+" "+params.view.name+" ";
 
 	////// GENERIC LIST STUFF
 	
@@ -293,7 +300,8 @@ function controlList(params)
 						{
 							viewRefresh();
 						}
-					}
+					},
+					debugTxt+"list deleting item"
 				);
 			});
 		}
@@ -333,7 +341,8 @@ function controlList(params)
 				{
 					params.loadCallback(result);
 				}
-			}
+			},
+			debugTxt+"list getting data, update="+update
 		);
 	}
 
@@ -361,7 +370,9 @@ function controlList(params)
 				
 				getData(false);
 			}
-		}
+		},
+		debugTxt+"list getting meta data"		
+
 	)
 
 	
@@ -468,7 +479,8 @@ function controlList(params)
 							}		
 					);
 					endlessUpdating=false;
-				}
+				},
+				debugTxt+"list getting data (scrolling)"
 			);
 		});
 	}

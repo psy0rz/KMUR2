@@ -17,6 +17,8 @@ def loadmenus():
             for (name, menudata) in menudef.items():
                 if not name in menus:
                     menus[name] = menudata
+                    #just add this for developer convienience. (otherwise its hard to figure out which menu to specify in add_favorites)
+                    menus[name]['menu']=name
                 else:
                     #update existing menu
                     menus[name]['title'] = menudata['title']
@@ -78,10 +80,10 @@ class Menu(models.mongodb.MongoDB):
                                                           sort=[('time', 1)]
                                                           )
 
-        #limit the number of items to 10
+        #limit the number of items 
         count = favorites.count()
         for favorite in favorites:
-            if count < 3:
+            if count < 10:
                 break
 
             self._delete(favorite['_id'])

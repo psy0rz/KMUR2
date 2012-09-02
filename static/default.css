@@ -151,11 +151,11 @@ border-color: #bbbbbb;
 
 .debug
 {
-	border-width:1px;
-	border-style:solid;
-	background:#ffeeee;
+	background:#000000;
+	color:#ffffff;
 	margin:2px;
 	font-size:small;
+	padding:2px;
 
 }
 

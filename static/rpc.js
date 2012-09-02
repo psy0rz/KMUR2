@@ -3,9 +3,25 @@
 var gLogTime=0;
 var gActiveRpcs=0;
 
-function rpc(moduleClassMethod, params, callback)
+/*
+	Does a remote procedure call to the server.
+
+	moduleClassMethod: specify the method-name to call in dot-notation. (module.Class.method)
+	params: specifies parameters to pass to the method.
+	callback: specifies function to be called with the result data. its always called, also in case of error.
+	debugTxt: a descriptive text for debugging (usually specifies which view did the call and why)
+
+	(this needs more documentaion about all the extra fields that are returned by the server and interpreted by this function)
+
+*/
+function rpc(moduleClassMethod, params, callback, debugTxt)
 {
-	console.debug("rpc call "+moduleClassMethod+": ", params);
+	if (!debugTxt)
+		debugTxt="rpc "+moduleClassMethod;
+	else
+		debugTxt="< "+debugTxt+" > rpc "+moduleClassMethod;
+
+	console.debug(debugTxt, "REQUEST", params);
 
 	var moduleClassMethodArray=moduleClassMethod.split(".");
 	
@@ -29,11 +45,11 @@ function rpc(moduleClassMethod, params, callback)
 			function (request, status, e)
 			{
 	
-				console.error("Error while doing rpc ajax request: ",request.responseText,status,e);
+				console.error(debugTxt, "Error while doing rpc ajax request: ",request.responseText,status,e);
 				
 				{
 					var debugDiv=$("<div class='debug'>");
-					debugDiv.append("RPC request failed:");
+					debugDiv.append(debugTxt+": RPC request failed");
 					debugDiv.append("<pre>"+request.responseText+"</pre>");
 					debugDiv.append("<pre>"+JSON.stringify(status, null, ' ')+"</pre>");
 					debugDiv.append("<pre>"+JSON.stringify(e, null, ' ')+"</pre>");
@@ -53,11 +69,11 @@ function rpc(moduleClassMethod, params, callback)
 			function (result, status, XMLHttpRequest)
 			{
 				
-				console.debug("rpc result "+moduleClassMethod+": ", result);
+				console.debug(debugTxt, "RESULT", result);
 
 				if (gDebuggingEnabled && ('error' in result))
 				{
-					var errorTxt="rpc result contains error message: "+result.error.message;
+					var errorTxt=debugTxt+" : rpc result contains error message: "+result.error.message;
 					console.error(errorTxt, moduleClassMethod, params,result);
 					var debugDiv=$("<div class='debug'>");
 					debugDiv.append(errorTxt);
@@ -70,9 +86,9 @@ function rpc(moduleClassMethod, params, callback)
 				{
 					$.each(result.debug, function(i,debugLine)
 					{
-						console.debug("server debugging output from "+debugLine.file+" line "+debugLine.line+":",debugLine.object);
+						console.debug(debugTxt, "server debugging output from "+debugLine.file+" line "+debugLine.line+":",debugLine.object);
 						var debugDiv=$("<div class='debug'>");
-						debugDiv.append(debugLine.file+" line "+debugLine.line+":");
+						debugDiv.append(debugTxt+": "+ debugLine.file+" line "+debugLine.line+":");
 						debugDiv.append("<pre>"+JSON.stringify(debugLine.object, null, ' ')+"</pre>");
 						$('#viewDebug').prepend(debugDiv);
 					});

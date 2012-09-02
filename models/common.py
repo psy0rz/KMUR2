@@ -114,7 +114,7 @@ class Context(object):
 
         use level to specify a different 'level' on the call stack to get the filename, linenumber etc from.
 
-        you can also just specify a debug text as debug_object
+        offcourse you can also just specify a text as debug_object
         '''
 
         if self._debug == None:
