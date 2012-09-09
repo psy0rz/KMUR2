@@ -35,7 +35,7 @@ class FieldDemo(models.mongodb.MongoDB):
                                       meta=primitiveFields),
               }
 
-    print allFields['listTest']
+    # print allFields['listTest']
 
     #add primitive fields to allFields as well
     allFields.update(primitiveFields)

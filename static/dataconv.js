@@ -118,7 +118,7 @@ var dataConv=
 			//traverse all the list items
 			$('.autoListItem[_key="'+keyStr+'"]', parent).each(function () {
 				var subvalue=new Object();
-				$(this).autoGet(meta, subvalue, keyStr);
+				$(this).autoGet(meta.meta, subvalue, keyStr);
 				value.push(subvalue);
 			});
 			return(value);
