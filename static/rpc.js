@@ -21,7 +21,6 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 	else
 		debugTxt="< "+debugTxt+" > rpc "+moduleClassMethod;
 
-	console.debug(debugTxt, "REQUEST", params);
 
 	var moduleClassMethodArray=moduleClassMethod.split(".");
 	
@@ -37,6 +36,17 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 		
 		$(".viewLoading").hide();
 	}
+
+	var request={
+				"module":moduleClassMethodArray[0],
+				"class":moduleClassMethodArray[1],
+				"method":moduleClassMethodArray[2],
+				"debug":gDebuggingEnabled,
+				"help":gDebuggingEnabled,
+				"params":params
+			};
+	console.debug(debugTxt, "REQUEST", request);
+
 	
 	$.ajax({
 		"dataType":		"json",
@@ -130,14 +140,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 
 			},
 		"type": "post",
-		"data": JSON.stringify({
-				"module":moduleClassMethodArray[0],
-				"class":moduleClassMethodArray[1],
-				"method":moduleClassMethodArray[2],
-				"debug":gDebuggingEnabled,
-				"help":gDebuggingEnabled,
-				"params":params
-			}),
+		"data": JSON.stringify(request),
 		"contentType": "application/json",
 		"processData":	false,
 		"cache":		false

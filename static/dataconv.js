@@ -261,6 +261,7 @@ var dataConv=
 	Number:{
 		input:function(element, meta)
 		{
+			//NOTE: we could make this nicer, by showing the decimal point and stuff.
 			var addedElement=$("<input>")
 					.attr("type","text");
 			$(addedElement).val(meta.default);
@@ -272,7 +273,11 @@ var dataConv=
 		},
 		get:function(element, meta, keyStr)
 		{
-			return($(element).val());
+			var val=$(element).val();
+			if (val=="")
+				return(null)
+			else
+				return(Number(val));
 		},
 		put:function(element, meta, keyStr, value)
 		{

@@ -52,7 +52,7 @@ class Base(object):
 
     @param default: Default value for the data
     @param desc: Description of the field
-    @param readonly: Field is readonly an can not be changed
+    @param readonly: Field is readonly and can not be changed
     @param required: Set this to false to allow the field to be None
 
     """
@@ -90,6 +90,8 @@ class Base(object):
         if 'readonly' in self.meta and self.meta['readonly']:
             raise FieldException("This field is readonly")
 
+        # If a value is not required it can be None, and further checks by the subclass are skipped.
+        # In all other cases the subclass will do the rest of the checking.
         if 'required' in self.meta and not self.meta['required'] and data == None:
             return False
 
@@ -283,7 +285,7 @@ class Number(Base):
             raise FieldException("Number should be at most {}".format(self.meta['max']))
 
         if round(data, self.meta['decimals']) != data:
-            raise FieldException("Number should no more than {} decimals".format(self.meta['decimals']))
+            raise FieldException("Number should have no more than {} decimals".format(self.meta['decimals']))
 
 
 class Timestamp(Base):

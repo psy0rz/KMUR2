@@ -22,9 +22,9 @@ class FieldDemo(models.mongodb.MongoDB):
                                                             }),
                         'passwordTest': fields.Password(desc="Password test"),
                         'booleanTest': fields.Bool(desc='Boolean test'),
-                        'numberTest': fields.Number(desc='Whole number test'),
-                        'decimalTest': fields.Number(desc='Number with 2 decimals', decimals=2),
-                        'timestampTest': fields.Number(desc='Timestamp test'),
+                        'numberIntTest': fields.Number(desc='Integer test (optional)', required=False),
+                        'numberFloatTest': fields.Number(desc='Float test (2 dec.)', decimals=2),
+                        'timestampTest': fields.Timestamp(desc='Timestamp test'),
                             }
 
     allFields = {
