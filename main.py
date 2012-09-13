@@ -1,19 +1,29 @@
 #!/usr/bin/env python2.7
 
+
 import beaker.middleware
 import bottle
 import re
 import traceback
-import models.common
-import fields
 import json
+import sys
+import os.path
+
+#add directory of this file to python searchpath:
+sys.path.append(os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__))
+
+#load basics:
+import fields
+import models.common
 
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 
 
 #rpc calls to models:
-@bottle.post('/rpc')
+@bottle.post('/')
 def rpc():
+
     session = bottle.request.environ.get('beaker.session')
 
     #result will be stored here:
@@ -123,17 +133,16 @@ def send_default():
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True,
-    'session.data_dir': '.beakersessions'
+    'session.data_dir': '/tmp/.kmur2beakersessions'
 }
 
 
-app = beaker.middleware.SessionMiddleware(
+application = beaker.middleware.SessionMiddleware(
                                           bottle.default_app(),
                                           session_opts)
 
-#debug mode
-bottle.debug(True)
-bottle.run(reloader=True, app=app, host='localhost', port=8080)
+#standaline/debug mode:
+if __name__ == '__main__':
+    bottle.debug(True)
+    bottle.run(reloader=True, app=app, host='localhost', port=8080)
 
-#production:
-#bottle.run(app=app, host='localhost', port=8080)
