@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 
 
 import beaker.middleware
@@ -21,7 +21,10 @@ import models.common
 
 
 #rpc calls to models:
+#the client always calls http;//server/rpc, but when we deploy our app with in a webserver , the /rpc part 
+#is stripped.
 @bottle.post('/')
+@bottle.post('/rpc')
 def rpc():
 
     session = bottle.request.environ.get('beaker.session')
@@ -144,5 +147,5 @@ application = beaker.middleware.SessionMiddleware(
 #standaline/debug mode:
 if __name__ == '__main__':
     bottle.debug(True)
-    bottle.run(reloader=True, app=app, host='localhost', port=8080)
+    bottle.run(reloader=True, app=application, host='localhost', port=8080)
 
