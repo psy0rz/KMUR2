@@ -1,3 +1,32 @@
+/*
+ Substitute macros found in text with data.
+
+ Example: format("your name is {name}", { 'name': 'foobs' })
+ Returns: "your name is foobs"
+*/
+function format(txt, data)
+{
+	var key;
+	var ret=txt;
+	while(matches=ret.match(/\{\w*\}/))
+	{
+		key=matches[0].substr(1,matches[0].length-2);
+		console.log("found ", key);
+		if (key in data)
+		{
+			ret=ret.replace(matches[0], data[key]);
+		}
+		else
+		{
+			ret=ret.replace(matches[0], "");
+		}
+	}
+
+	return(ret)
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 function controlForm(params)
 {

@@ -104,6 +104,7 @@
 		
 	};
 
+	//strip the "strip-part" of the beginning of the key.
 	function stripKey(strip, key)
 	{
 		//need to strip something?

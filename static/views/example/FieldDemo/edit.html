@@ -1,5 +1,11 @@
 
 <script>
+
+
+
+
+
+
 controlForm({
 	view 			: view,
 	getMeta			: 'example.FieldDemo.get_meta',
@@ -12,9 +18,14 @@ controlForm({
 	defaultFocus	: [ "stringTest" ],
 	closeAfterSave	: true,
 	loadCallback	: function(result) {
+
+		//FIXME: make this generic in controls.js and use the format() function to fill in the result data
 		if (result.data)
 		{
 			title="Edit field demo "+result.data.stringTest;
+
+
+
 			$(document).trigger("menu.add_favorite",{
 				menu:		"example",	
 				title: 		"Edit "+result.data.stringTest,
