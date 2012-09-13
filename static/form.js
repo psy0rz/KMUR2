@@ -175,7 +175,7 @@
 		return (thisdata);
 	}
 	
-	/*** 
+	/*** Generates html input fields and descriptions from metadata
 	*/
 	$.fn.autoMeta = function( meta , parentKey ) {  
 
@@ -286,7 +286,7 @@
 		}); //elements
 	}
 
-	/*** Auto puts data from to elements
+	/*** Auto puts data into elements
 	*  Uses _key attribute as hash key
 	*/
 	$.fn.autoPut = function( meta, value, parentKey, options ) {  

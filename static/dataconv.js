@@ -51,7 +51,6 @@ var dataConv=
 		input:function (element, meta, keyStr)
 		{
 			//add autoGet and autoPut for convienience
-			//FIXME: we should move this to autometa now
 			if (!meta.readonly)
 			{
 				$(element).addClass("autoGet");
@@ -93,7 +92,6 @@ var dataConv=
 		input:function(element, meta, keyStr)
 		{
 			//if it is a autoListSource, add autoGet and autoPut for convienience
-			//FIXME: move to autometa
 			if ($(element).hasClass("autoListSource"))
 			{
 				if (!meta.readonly)
