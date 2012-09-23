@@ -11,7 +11,7 @@ function format(txt, data)
 	while(matches=ret.match(/\{\w*\}/))
 	{
 		key=matches[0].substr(1,matches[0].length-2);
-		console.log("found ", key);
+		//console.log("found ", key);
 		if (key in data)
 		{
 			ret=ret.replace(matches[0], data[key]);
@@ -25,106 +25,182 @@ function format(txt, data)
 	return(ret)
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//base-class for all controllers
+//usually the constructors in the subclass do all the work.
+/* 
+params:
+	view:                view to operate on. view.id is used to determine jquery context.
+	class:               rpc-class-name to call (used to fill in default values)
+	get_meta: 	         rpc-method called to get metadata (default: class+".get_meta")
+	get_data: 	         rpc-method called to get data (default: class+".get_data")
+	put_data:            rpc-method called to put data (default: class+".del_data")
+	del_data:            rpc-method called to delete data (default: class+".del_data")
+	get_all:             rpc-method called to get all data (default: class+".get_all)
+
+Other items in params documented in the subclasses below.
+
+*/
+function ControlBase(params)
+{
+	//constructor
+	this.params=params;
+	this.context=$("#"+params.view.id);
+	this.debugTxt=params.view.id+" "+params.view.name+" ";
+
+	//fill in some paramaters automaticly with defaults?
+	if ('class' in params)
+	{
+		if (!('get_meta' in params)
+			params.get_meta=params.class+".get_meta";
+
+		if (!('get_data' in params)
+			params.get_data=params.class+".get_data";
+
+		if (!('put_data' in params)
+			params.put_data=params.class+".put_data";
+
+		if (!('del_data' in params)
+			params.del_data=params.class+".del_data";
+
+		if (!('get_all' in params)
+			params.get_all=params.class+".get_all";
+	}
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-function controlForm(params)
-{
-	var meta;
-	var context=$("#"+params.view.id);
+//form controller
+/*
+params:
+	(look in the baseclass for the basic documentation)
 
-	var debugTxt=params.view.id+" "+params.view.name+" ";
+	get_meta_params      parameters to pass to get_meta (default: undefined)
+	get_data_params      parameters to pass to get_data (default: view.params)
+	put_data_params      parameters to pass to put_data (default: view.params)
+	del_data_params      parameters to pass to put_data (default: view.params)
+
+*/
+function ControlForm(params)
+{
+	ControlBase.call(this,params);
+
+	if (!('get_meta_params' in params)
+		params.get_data_params=params.view.params;
+
+	if (!('get_data_params' in params)
+		params.get_data_params=params.view.params;
+
+	this.get_meta();
+}
+ControlForm.prototype=Object.create(ControlBase.prototype);
+
+ControlForm.prototype.attach_event_handlers=function()
+{
+	var context=this.context; 
+
+	//create an add-handler to add items to lists
+	$(".controlOnClickAdd", context).click(function(){
+		//find the clicked list element, and the source element of the list
+		var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
+		
+		if (clicked_element.length==0)
+			return;
+		
+		var source_element=clicked_element.parent().children(".autoListSource");
+		
+		var add_element=autoListClone(source_element);
+
+        if (clicked_element.hasClass("autoListSource"))
+			add_element.insertBefore(clicked_element);
+		else
+			add_element.insertAfter(clicked_element);
+		
+	});
 	
+	//create an auto-add handler if the source-element of a list is focussed
+	$(".controlOnFocusAdd :input", context).focus(function(){
+		var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
+        if (changed_element.hasClass("autoListSource"))
+        {
+			var add_element=autoListClone(changed_element);
+			add_element.insertBefore(changed_element);
+			$('.autoGet[_key="'+$(this).attr("_key")+'"]', add_element).focus();
+        }
+	});
+	
+
+	//create a handler to delete a list item
+	$(".controlOnClickDel", context).click(function()
+	{
+		var clicked_element=$(this, context).closest(".autoListItem",context);
+        if (clicked_element.hasClass("autoListItem"))
+		{
+			$(this).confirm(function()
+			{
+				clicked_element.hide('fast',function()
+				{
+					clicked_element.remove();
+				});
+			});
+		}
+	});
+	
+	//make lists sortable
+	$(".controlSortable", context).sortable({
+		placeholder: ".tempateSortPlaceholder",
+		handle: ".controlOnDragSort",
+		cancel: ".autoListSource",
+		items:"> .autoListItem",
+		forceHelperSize: true,
+		forcePlaceholderSize: true
+	});
+}
+
+//focus the correct input field
+ControlForm.prototype.focus=function()
+{
+	if (this.params.view && this.params.view.focus)
+		$(this.context).autoFindElement(this.meta, this.params.view.focus).focus();
+	else if (this.params.defaultFocus)
+		$(this.context).autoFindElement(this.meta, this.params.defaultFocus).focus();
+
+	//elements that have controlSetFocus always overrule the focus:
+	$(".controlSetFocus", this.context).focus();
+}
+
+//gets 
+ControlForm.prototype.get_data=function()
+{
+
+}
+
+//gets metadata for this form and fills in metadata in the specified context
+//if all goes well, getData is called.
+ControlForm.prototype.get_meta=function()
+{
 	//disable submit button while loading
 	$(".controlOnClickSave", context).prop("disabled", true);
 	
 	//get meta data
+	this.meta={};
 	rpc(
-		params.getMeta, 
-		params.getMetaParams,
+		this.params.get_meta, 
+		this.params.get_meta_params,
 		function(result)
 		{
 			
-			if (viewShowError(result, context, meta))
+			if (viewShowError(result, this.context, this.meta))
 				return;
 			
 			if (!('data' in result))
 				return;
 
-			meta=result['data'];
-			$(context).autoMeta(meta);
-			
-			//create an add-handler to add items to lists
-			$(".controlOnClickAdd", context).click(function(){
-				//find the clicked list element, and the source element of the list
-				var clickedElement=$(this, context).closest(".autoListItem, .autoListSource",context);
-				
-				if (clickedElement.length==0)
-					return;
-				
-				var sourceElement=clickedElement.parent().children(".autoListSource");
-				
-				var addElement=autoListClone(sourceElement);
+			this.meta=result['data'];
+			$(this.context).autoMeta(this.meta);
 
-		        if (clickedElement.hasClass("autoListSource"))
-					addElement.insertBefore(clickedElement);
-				else
-					addElement.insertAfter(clickedElement);
-				
-			});
+			this.attachEventHandlers();			
 			
-			//create an auto-add handler if the source-element is focussed
-			$(".controlOnFocusAdd :input", context).focus(function(){
-				var changedElement=$(this, context).closest(".autoListSource, .autoListItem", context);
-		        if (changedElement.hasClass("autoListSource"))
-		        {
-					var addElement=autoListClone(changedElement);
-					addElement.insertBefore(changedElement);
-					$('.autoGet[_key="'+$(this).attr("_key")+'"]', addElement).focus();
-		        }
-			});
-			
-
-			//delete handlers for lists
-			$(".controlOnClickDel", context).click(function()
-			{
-				var clickedElement=$(this, context).closest(".autoListItem",context);
-		        if (clickedElement.hasClass("autoListItem"))
-				{
-					$(this).confirm(function()
-					{
-						clickedElement.hide('fast',function()
-						{
-							clickedElement.remove();
-						});
-					});
-				}
-			});
-			
-			//make stuff sortable
-			$(".controlSortable", context).sortable({
-				placeholder: ".tempateSortPlaceholder",
-				handle: ".controlOnDragSort",
-				cancel: ".autoListSource",
-				items:"> .autoListItem",
-				forceHelperSize: true,
-				forcePlaceholderSize: true
-			});
-
-			
-			function controlFormFocus()
-			{
-				//focus the correct input field
-				if (params.view && params.view.focus)
-					$(context).autoFindElement(meta, params.view.focus).focus();
-				else if (params.defaultFocus)
-					$(context).autoFindElement(meta, params.defaultFocus).focus();
-		
-				//elements that have controlSetFocus always overrule the focus:
-				$(".controlSetFocus", context).focus();
-				
-			}
-
 			if (params.getData && params.getDataParams && Object.keys(params.getDataParams).length)
 				{
 				//get data
@@ -269,8 +345,8 @@ function controlList(params)
 {
 	var meta={};
 	var context=$("#"+params.view.id);
-	var autoListSourceElement=$(".autoListSource:first",context);
-	var beginLength=autoListSourceElement.parent().children().length;
+	var autoListsource_element=$(".autoListSource:first",context);
+	var beginLength=autoListsource_element.parent().children().length;
 
 	var debugTxt=params.view.id+" "+params.view.name+" ";
 
@@ -350,7 +426,7 @@ function controlList(params)
 				if ('data' in result)
 				{
 					dataConv.List.put(
-							autoListSourceElement, //element
+							autoListsource_element, //element
 							{ meta: meta },  		//meta
 							'',						//keyStr
 							result.data,			//value	
@@ -489,7 +565,7 @@ function controlList(params)
 			if (!('offset' in endlessParams))
 				endlessParams.offset=0;
 			
-			endlessParams.offset+=$(autoListSourceElement).parent().children().length-beginLength;
+			endlessParams.offset+=$(autoListsource_element).parent().children().length-beginLength;
 			
 			logDebug("endless scroll offset is ",endlessParams.offset);
 
@@ -499,7 +575,7 @@ function controlList(params)
 				function(result)
 				{
 					dataConv.List.put(
-							autoListSourceElement, //element
+							autoListsource_element, //element
 							{ meta: meta },  		//meta
 							'',						//keyStr
 							result.data,			//value	

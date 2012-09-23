@@ -1,4 +1,4 @@
-
+	
 
 (function( $ ){
 
@@ -323,7 +323,6 @@
 			}
 
 			//traverse the specified data
-			//TODO: traverse metadata instead of normal data, like in autoGet and autoMeta?
 			$.each(value, function(key, thisvalue){
 				var keyStr;
 				if (parentKey)
