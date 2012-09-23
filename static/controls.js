@@ -30,7 +30,7 @@ function format(txt, data)
 //usually the constructors in the subclass do all the work.
 /* 
 params:
-	view:                view to operate on. view.id is used to determine jquery context.
+	view:                view to operate on. view.id is used to determine jquery this.context.
 	class:               rpc-class-name to call (used to fill in default values)
 	get_meta: 	         rpc-method called to get metadata (default: class+".get_meta")
 	get_data: 	         rpc-method called to get data (default: class+".get_data")
@@ -51,19 +51,19 @@ function ControlBase(params)
 	//fill in some paramaters automaticly with defaults?
 	if ('class' in params)
 	{
-		if (!('get_meta' in params)
+		if (!('get_meta' in params))
 			params.get_meta=params.class+".get_meta";
 
-		if (!('get_data' in params)
+		if (!('get_data' in params))
 			params.get_data=params.class+".get_data";
 
-		if (!('put_data' in params)
+		if (!('put_data' in params))
 			params.put_data=params.class+".put_data";
 
-		if (!('del_data' in params)
+		if (!('del_data' in params))
 			params.del_data=params.class+".del_data";
 
-		if (!('get_all' in params)
+		if (!('get_all' in params))
 			params.get_all=params.class+".get_all";
 	}
 }
@@ -79,17 +79,26 @@ params:
 	get_data_params      parameters to pass to get_data (default: view.params)
 	put_data_params      parameters to pass to put_data (default: view.params)
 	del_data_params      parameters to pass to put_data (default: view.params)
+	close_after_safe     close the view after succesfully saving the data
 
 */
 function ControlForm(params)
 {
 	ControlBase.call(this,params);
 
-	if (!('get_meta_params' in params)
+	if (!('get_meta_params' in params))
+		params.get_meta_params=undefined;
+
+	if (!('get_data_params' in params))
 		params.get_data_params=params.view.params;
 
-	if (!('get_data_params' in params)
-		params.get_data_params=params.view.params;
+	if (!('put_data_params' in params))
+		params.put_data_params=params.view.params;
+
+	if (!('del_data_params' in params))
+		paramsdel_data_params=params.view.params;
+
+
 
 	this.get_meta();
 }
@@ -97,12 +106,12 @@ ControlForm.prototype=Object.create(ControlBase.prototype);
 
 ControlForm.prototype.attach_event_handlers=function()
 {
-	var context=this.context; 
+	var this_control=this;
 
 	//create an add-handler to add items to lists
-	$(".controlOnClickAdd", context).click(function(){
+	$(".controlOnClickListAdd", this.context).click(function(){
 		//find the clicked list element, and the source element of the list
-		var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
+		var clicked_element=$(this, this_control.context).closest(".autoListItem, .autoListSource",this_control.context);
 		
 		if (clicked_element.length==0)
 			return;
@@ -119,8 +128,8 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//create an auto-add handler if the source-element of a list is focussed
-	$(".controlOnFocusAdd :input", context).focus(function(){
-		var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
+	$(".controlOnFocusListAdd :input", this.context).focus(function(){
+		var changed_element=$(this, this_control.context).closest(".autoListSource, .autoListItem", this_control.context);
         if (changed_element.hasClass("autoListSource"))
         {
 			var add_element=autoListClone(changed_element);
@@ -129,11 +138,10 @@ ControlForm.prototype.attach_event_handlers=function()
         }
 	});
 	
-
 	//create a handler to delete a list item
-	$(".controlOnClickDel", context).click(function()
+	$(".controlOnClickListDel", this.context).click(function()
 	{
-		var clicked_element=$(this, context).closest(".autoListItem",context);
+		var clicked_element=$(this, this_control.context).closest(".autoListItem",this_control.context);
         if (clicked_element.hasClass("autoListItem"))
 		{
 			$(this).confirm(function()
@@ -147,13 +155,37 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//make lists sortable
-	$(".controlSortable", context).sortable({
+	$(".controlListSortable", this.context).sortable({
 		placeholder: ".tempateSortPlaceholder",
 		handle: ".controlOnDragSort",
 		cancel: ".autoListSource",
 		items:"> .autoListItem",
 		forceHelperSize: true,
 		forcePlaceholderSize: true
+	});
+
+
+	$(".controlOnClickSave", this.context).click(this.put_data);
+
+	//pressing enter will also save:
+	$(this.context).bind('keypress', function(e) 
+	{
+		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
+		{
+			this.put_data();
+		}
+	});
+	
+	$(".controlOnClickDel", this.context).click(function() 
+	{
+		$(this).confirm(function() {
+			this_control.del();
+		});
+	});
+
+	$(".controlOnClickCancel", this.context).click(function()
+	{
+		viewClose(this_control.params.view);
 	});
 }
 
@@ -169,18 +201,97 @@ ControlForm.prototype.focus=function()
 	$(".controlSetFocus", this.context).focus();
 }
 
-//gets 
+//gets data from the rpc server and fills in the form
 ControlForm.prototype.get_data=function()
 {
+	//enough parameters to get the data?
+	if (this.params.get_data && this.params.get_data_params && Object.keys(this.params.get_data_params).length)
+	{
+		//get data
+		rpc(
+			params.get_data, 
+			params.get_data_params,
+			function(result)
+			{
+				$(".controlOnClickSave", this.context).prop("disabled", false);
 
+				if (('data' in result) && (result.data != null) )
+				{
+					$(this.context).autoPut(this.meta, result.data);
+				}
+				
+				this.focus();
+
+				viewShowError(result, this.context, this.meta);				
+			},
+			debugTxt+"getting form data"
+		);
+	}
+	else
+	{
+		//not loading data
+		$(".controlOnClickSave", this.context).prop("disabled", false);
+		this.focus();
+	}
 }
 
-//gets metadata for this form and fills in metadata in the specified context
-//if all goes well, getData is called.
+//save the form data by calling the put_data rpc function
+ControlForm.prototype.put_data=function()
+{
+	$(".controlOnClickSave", this.context).prop("disabled", true);
+
+	//are there put_data_params that we should COPY?
+	var put_data_params={};
+	if (this.params.put_data_params)
+		put_data_params=jQuery.extend(true, {}, this.params.put_data_params); //COPY, and not by reference!
+
+	//get the data and store it into our local put_data_params
+	$(this.context).autoGet(this.meta, put_data_params);
+
+	//call the put_data function on the rpc server
+	rpc(
+		this.params.put_data,
+		put_data_params,
+		function(result)
+		{
+			$(".controlOnClickSave", this.context).prop("disabled", false);
+			
+			viewShowError(result, this.context, this.meta);
+
+			viewRefresh();
+			
+			//all ok, close window
+			if (params.close_after_save)
+				viewClose(this.params.view);
+		},
+		debugTxt+"form putting data"
+	);
+
+//delete the item instead of saving it
+ControlForm.prototype.del=function()
+{
+	rpc(
+		this.params.del_data, 
+		this.params.del_data_params,
+		function(result)
+		{
+			if (!viewShowError(result, this.context, this.meta))
+			{
+				viewRefresh();
+				if (this.params.close_after_save)
+					viewClose(this.params.view);
+			}
+		},
+		debugTxt+"form deleting item"
+	);
+}
+
+//gets metadata for this form and fills in metadata in the specified this.context
+//if all goes well, get_data will be called.
 ControlForm.prototype.get_meta=function()
 {
 	//disable submit button while loading
-	$(".controlOnClickSave", context).prop("disabled", true);
+	$(".controlOnClickSave", this.context).prop("disabled", true);
 	
 	//get meta data
 	this.meta={};
@@ -199,145 +310,11 @@ ControlForm.prototype.get_meta=function()
 			this.meta=result['data'];
 			$(this.context).autoMeta(this.meta);
 
-			this.attachEventHandlers();			
-			
-			if (params.getData && params.getDataParams && Object.keys(params.getDataParams).length)
-				{
-				//get data
-				rpc(
-					params.getData, 
-					params.getDataParams,
-					function(result)
-					{
-						$(".controlOnClickSave", context).prop("disabled", false);
-
-						if (('data' in result) && (result.data != null) )
-						{
-							$(context).autoPut(meta, result.data);
-						}
-						
-						controlFormFocus();
-
-						if (viewShowError(result, context, meta))
-						{
-							if (params['errorCallback'])
-								params['errorCallback'](result);
-						}
-						else
-						{
-							if (params['loadCallback'])
-								params['loadCallback'](result);
-						}
-						
-
-					},
-					debugTxt+"getting form data"
-				);
-			}
-			//when not loading data, dont forget to call the loadCallback:
-			else
-			{
-				$(".controlOnClickSave", context).prop("disabled", false);
-
-				controlFormFocus();
-
-				if (params['loadCallback'])
-					params['loadCallback']({}); //pass an empty result
-
-			}
+			this.attachEventHandlers();	
+			this.get_data();
 		},
 		debugTxt+"form getting meta data"
 	);
-	
-	//save 
-	var save=function()
-	{
-		$(".controlOnClickSave", context).prop("disabled", true);
-
-		//are there putParams that we should COPY to putData
-		var putParams={};
-		if (params.putDataParams)
-			putParams=jQuery.extend(true, {}, params.putDataParams); //COPY, and not by reference!
-
-		//get the data
-		$(context).autoGet(meta, putParams);
-
-		//put data
-		rpc(
-			params.putData,
-			putParams,
-			function(result)
-			{
-				$(".controlOnClickSave", context).prop("disabled", false);
-				
-				viewShowError(result, context, meta);
-
-				if (result)
-				{
-					if ('error' in result)
-					{
-						if (params['errorCallback']!=null)
-							params['errorCallback'](result);
-						
-						return;
-					}
-				}
-
-
-				viewRefresh();
-
-				//all ok, call save callback?
-				if (params['saveCallback']!=null)
-					params['saveCallback'](result);
-				
-				//all ok, close window
-				if (params.closeAfterSave)
-					viewClose(params.view);
-			},
-			debugTxt+"form putting data"
-		);
-	};
-
-	var del=function()
-	{
-		$(this).confirm(function()
-		{
-			rpc(
-				params.delData, 
-				params.getDataParams,
-				function(result)
-				{
-					if (!viewShowError(result, this, meta))
-					{
-						viewRefresh();
-						if (params.closeAfterSave)
-							viewClose(params.view);
-					}
-				},
-				debugTxt+"form deleting item"
-			);
-		});
-	}
-	
-	
-	$(".controlOnClickSave", context).click(save);
-
-	//pressing enter will also save:
-	$(context).bind('keypress', function(e) {
-		
-		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
-		{
-			save();
-		}
-	});
-	
-	$(".controlOnClickDel", context).click(del);
-
-
-	$(".controlOnClickCancel", context).click(function()
-			{
-				viewClose(params.view);
-			});
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

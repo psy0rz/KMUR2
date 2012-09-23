@@ -2,21 +2,11 @@
 <script>
 
 
-
-
-
-
 controlForm({
 	view 			: view,
-	getMeta			: 'example.FieldDemo.get_meta',
-	getMetaParams	: undefined,
-	getData			: 'example.FieldDemo.get',
-	getDataParams	: view.params,
-	putData			: 'example.FieldDemo.put',
-	putDataParams	: view.params,
-	delData			: 'example.FieldDemo.delete',	
+	class           : 'example.FieldDemo',
 	defaultFocus	: [ "stringTest" ],
-	closeAfterSave	: true,
+	close_after_save: true,
 	loadCallback	: function(result) {
 
 		//FIXME: make this generic in controls.js and use the format() function to fill in the result data
@@ -163,19 +153,19 @@ controlForm({
 				<td>
 			</tr>
 		</thead>
-		<tbody class='controlSortable'>
+		<tbody class='controlListSortable'>
 			<tr class='colorRows autoMeta autoListSource ui-widget-content' _key='listTest'  _index='_id'>
 				<td class='controlOnDragSort ui-icon ui-icon-arrowthick-2-n-s'> 
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.stringTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.multiselectTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.passwordTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.booleanTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.numberIntTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.numberFloatTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.selectTest'>
-				<td class='autoMeta controlOnFocusAdd' _key='listTest.timestampTest'>
-				<td class='controlOnClickDel ui-icon ui-icon-trash'>
-				<td class='controlOnClickAdd ui-icon ui-icon-plus'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.stringTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.multiselectTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.passwordTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.booleanTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.numberIntTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.numberFloatTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.selectTest'>
+				<td class='autoMeta controlOnFocusListAdd' _key='listTest.timestampTest'>
+				<td class='controlOnClickListDel ui-icon ui-icon-trash'>
+				<td class='controlOnClickListAdd ui-icon ui-icon-plus'>
 			</tr>
 		</tbody>
 	</table>
