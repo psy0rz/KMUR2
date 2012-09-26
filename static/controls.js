@@ -1,11 +1,59 @@
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//base-class for all controllers
+//usually the constructors in the subclass do all the work.
+/* 
+params:
+	view:                view to operate on. view.id is used to determine jquery this.context.
+	class:               rpc-class-name to call (used to fill in default values)
+	get_meta: 	         rpc-method called to get metadata (default: class+".get_meta")
+	get_data: 	         rpc-method called to get data (default: class+".get_data")
+	put_data:            rpc-method called to put data (default: class+".delete")
+	delete:            rpc-method called to delete data (default: class+".delete")
+	get_all:             rpc-method called to get all data (default: class+".get_all)
+	title:               title to set after get_data. (will be processed by format())
+
+Other items in params documented in the subclasses below.
+
+*/
+function ControlBase(params)
+{
+	//constructor
+	this.params=params;
+	this.context=$("#"+params.view.id);
+	this.debug_txt=params.view.id+" "+params.view.name+" ";
+
+	//fill in some paramaters automaticly with defaults?
+	if ('class' in params)
+	{
+		if (!('get_meta' in params))
+			params.get_meta=params.class+".get_meta";
+
+		if (!('get_data' in params))
+			params.get_data=params.class+".get_data";
+
+		if (!('put_data' in params))
+			params.put_data=params.class+".put_data";
+
+		if (!('delete' in params))
+			params.delete=params.class+".delete";
+
+		if (!('get_all' in params))
+			params.get_all=params.class+".get_all";
+	}
+
+	if (!('title' in params))
+		params.title="Untitled "+params.view.id;
+}
+
 /**
  Substitute macros found in text with data.
 
  Example: format("your name is {name}", { 'name': 'foobs' })
  Returns: "your name is foobs"
 */
-function format(txt, data)
+ControlBase.prototype.format=function(txt, data)
 {
 	var key;
 	var ret=txt;
@@ -26,49 +74,6 @@ function format(txt, data)
 	return(ret)
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//base-class for all controllers
-//usually the constructors in the subclass do all the work.
-/* 
-params:
-	view:                view to operate on. view.id is used to determine jquery this.context.
-	class:               rpc-class-name to call (used to fill in default values)
-	get_meta: 	         rpc-method called to get metadata (default: class+".get_meta")
-	get_data: 	         rpc-method called to get data (default: class+".get_data")
-	put_data:            rpc-method called to put data (default: class+".del_data")
-	del_data:            rpc-method called to delete data (default: class+".del_data")
-	get_all:             rpc-method called to get all data (default: class+".get_all)
-
-Other items in params documented in the subclasses below.
-
-*/
-function ControlBase(params)
-{
-	//constructor
-	this.params=params;
-	this.context=$("#"+params.view.id);
-	this.debugTxt=params.view.id+" "+params.view.name+" ";
-
-	//fill in some paramaters automaticly with defaults?
-	if ('class' in params)
-	{
-		if (!('get_meta' in params))
-			params.get_meta=params.class+".get_meta";
-
-		if (!('get_data' in params))
-			params.get_data=params.class+".get_data";
-
-		if (!('put_data' in params))
-			params.put_data=params.class+".put_data";
-
-		if (!('del_data' in params))
-			params.del_data=params.class+".del_data";
-
-		if (!('get_all' in params))
-			params.get_all=params.class+".get_all";
-	}
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //form controller
@@ -79,8 +84,12 @@ params:
 	get_meta_params      parameters to pass to get_meta (default: undefined)
 	get_data_params      parameters to pass to get_data (default: view.params)
 	put_data_params      parameters to pass to put_data (default: view.params)
-	del_data_params      parameters to pass to put_data (default: view.params)
+	delete_params      parameters to pass to put_data (default: view.params)
 	close_after_safe     close the view after succesfully saving the data
+	put_data_result		 called with results of put data 
+	get_data_result		 called with results of get data 
+	get_meta_result		 called with results of get data 
+	delete_result		 called with results of del
 
 */
 function ControlForm(params)
@@ -96,27 +105,112 @@ function ControlForm(params)
 	if (!('put_data_params' in params))
 		params.put_data_params=params.view.params;
 
-	if (!('del_data_params' in params))
-		paramsdel_data_params=params.view.params;
+	if (!('delete_params' in params))
+		params.delete_params=params.view.params;
 
+	if (! params.get_data_result)
+		params.get_data_result=function(){};
 
+	if (! params.put_data_result)
+		params.put_data_result=function(){};
+
+	if (! params.get_meta_result)
+		params.get_meta_result=function(){};
+
+	if (! params.delete_result)
+		params.delete_result=function(){};
 
 	this.get_meta();
 }
 ControlForm.prototype=Object.create(ControlBase.prototype);
 
+
+//gets metadata for this form and fills in metadata in the specified this.context
+
+//if all goes well, get_data will be called.
+ControlForm.prototype.get_meta=function()
+{	
+	//get meta data
+	this.meta={};
+	rpc(this.params.get_meta, 
+		this.params.get_meta_params,
+		$.proxy(this.get_meta_result, this),
+		this.debug_txt+"form getting meta data"
+	);
+}
+
+ControlForm.prototype.get_meta_result=function(result)
+{
+	this.params.get_meta_result(result);
+
+	if (viewShowError(result, this.context, this.meta))
+		return;
+	
+	if (!('data' in result))
+		return;
+
+	this.meta=result['data'];
+	$(this.context).autoMeta(this.meta);
+
+	this.attach_event_handlers();	
+	this.get_data();
+}
+
+//gets data from the rpc server and fills in the form
+ControlForm.prototype.get_data=function()
+{
+	//enough parameters to get the data?
+	if (this.params.get_data && this.params.get_data_params && Object.keys(this.params.get_data_params).length)
+	{
+		//get data
+		rpc(
+			params.get_data, 
+			params.get_data_params,
+			$.proxy(this.get_data_result,this),
+			this.debug_txt+"getting form data"
+		);
+	}
+	else
+	{
+		//NOTE:not loading data, we still call get_data_result with an empty result.
+		this.get_data_result({});
+	}
+}
+
+ControlForm.prototype.get_data_result=function(result)
+{
+	// $(".controlOnClickSave", this.context).prop("disabled", false);
+	if (('data' in result) && (result.data != null) )
+	{
+		$(this.context).autoPut(this.meta, result.data);
+	}
+	
+	this.focus();
+
+	viewShowError(result, this.context, this.meta);				
+
+	viewReady({
+		'view': this.params.view,
+		'title': this.format(this.params.title, result)
+	});
+
+	this.params.get_data_result(result);
+}
+
+
 ControlForm.prototype.attach_event_handlers=function()
 {
 	var this_control=this;
+	var context=this.context;
 
 	//create an add-handler to add items to lists
-	$(".controlOnClickListAdd", this.context).click(function(){
+	$(".controlOnClickListAdd", context).click(function(){
 		//find the clicked list element, and the source element of the list
-		var clicked_element=$(this, this_control.context).closest(".autoListItem, .autoListSource",this_control.context);
+		var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
 		
 		if (clicked_element.length==0)
 			return;
-		
+
 		var source_element=clicked_element.parent().children(".autoListSource");
 		
 		var add_element=autoListClone(source_element);
@@ -129,8 +223,8 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//create an auto-add handler if the source-element of a list is focussed
-	$(".controlOnFocusListAdd :input", this.context).focus(function(){
-		var changed_element=$(this, this_control.context).closest(".autoListSource, .autoListItem", this_control.context);
+	$(".controlOnFocusListAdd :input", context).focus(function(){
+		var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
         if (changed_element.hasClass("autoListSource"))
         {
 			var add_element=autoListClone(changed_element);
@@ -140,9 +234,9 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//create a handler to delete a list item
-	$(".controlOnClickListDel", this.context).click(function()
+	$(".controlOnClickListDel", context).click(function()
 	{
-		var clicked_element=$(this, this_control.context).closest(".autoListItem",this_control.context);
+		var clicked_element=$(this, context).closest(".autoListItem",context);
         if (clicked_element.hasClass("autoListItem"))
 		{
 			$(this).confirm(function()
@@ -156,7 +250,7 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//make lists sortable
-	$(".controlListSortable", this.context).sortable({
+	$(".controlListSortable", context).sortable({
 		placeholder: ".tempateSortPlaceholder",
 		handle: ".controlOnDragSort",
 		cancel: ".autoListSource",
@@ -166,80 +260,50 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 
 
-	$(".controlOnClickSave", this.context).click(this.put_data);
+	$(".controlOnClickSave", context).click(function()
+	{
+		this_control.put_data();
+	});
 
 	//pressing enter will also save:
-	$(this.context).bind('keypress', function(e) 
+	$(context).bind('keypress', function(e) 
 	{
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
-			this.put_data();
+			this_control.put_data();
 		}
 	});
 	
-	$(".controlOnClickDel", this.context).click(function() 
+	$(".controlOnClickDel", context).click(function() 
 	{
 		$(this).confirm(function() {
-			this_control.del();
+			this_control.delete();
 		});
 	});
 
-	$(".controlOnClickCancel", this.context).click(function()
+	$(".controlOnClickCancel", context).click(function()
 	{
 		viewClose(this_control.params.view);
 	});
 }
+
 
 //focus the correct input field
 ControlForm.prototype.focus=function()
 {
 	if (this.params.view && this.params.view.focus)
 		$(this.context).autoFindElement(this.meta, this.params.view.focus).focus();
-	else if (this.params.defaultFocus)
-		$(this.context).autoFindElement(this.meta, this.params.defaultFocus).focus();
+	else if (this.params.default_focus)
+		$(this.context).autoFindElement(this.meta, this.params.default_focus).focus();
 
 	//elements that have controlSetFocus always overrule the focus:
 	$(".controlSetFocus", this.context).focus();
 }
 
-//gets data from the rpc server and fills in the form
-ControlForm.prototype.get_data=function()
-{
-	//enough parameters to get the data?
-	if (this.params.get_data && this.params.get_data_params && Object.keys(this.params.get_data_params).length)
-	{
-		//get data
-		rpc(
-			params.get_data, 
-			params.get_data_params,
-			function(result)
-			{
-				$(".controlOnClickSave", this.context).prop("disabled", false);
-
-				if (('data' in result) && (result.data != null) )
-				{
-					$(this.context).autoPut(this.meta, result.data);
-				}
-				
-				this.focus();
-
-				viewShowError(result, this.context, this.meta);				
-			},
-			debugTxt+"getting form data"
-		);
-	}
-	else
-	{
-		//not loading data
-		$(".controlOnClickSave", this.context).prop("disabled", false);
-		this.focus();
-	}
-}
 
 //save the form data by calling the put_data rpc function
 ControlForm.prototype.put_data=function()
 {
-	$(".controlOnClickSave", this.context).prop("disabled", true);
 
 	//are there put_data_params that we should COPY?
 	var put_data_params={};
@@ -253,71 +317,48 @@ ControlForm.prototype.put_data=function()
 	rpc(
 		this.params.put_data,
 		put_data_params,
-		function(result)
-		{
-			$(".controlOnClickSave", this.context).prop("disabled", false);
-			
-			viewShowError(result, this.context, this.meta);
-
-			viewRefresh();
-			
-			//all ok, close window
-			if (params.close_after_save)
-				viewClose(this.params.view);
-		},
-		debugTxt+"form putting data"
+		$.proxy(this.put_data_result, this),
+		this.debug_txt+"form putting data"
 	);
+}
+
+ControlForm.prototype.put_data_result=function(result)
+{
+	viewShowError(result, this.context, this.meta);
+
+	viewRefresh();
+	
+	this.params.put_data_result(result);
+
+	//all ok, close window
+	if (this.params.close_after_save)
+		viewClose(this.params.view);
 }
 
 //delete the item instead of saving it
-ControlForm.prototype.del=function()
+ControlForm.prototype.delete=function()
 {
 	rpc(
-		this.params.del_data, 
-		this.params.del_data_params,
-		function(result)
-		{
-			if (!viewShowError(result, this.context, this.meta))
-			{
-				viewRefresh();
-				if (this.params.close_after_save)
-					viewClose(this.params.view);
-			}
-		},
-		debugTxt+"form deleting item"
+		this.params.delete, 
+		this.params.delete_params,
+		$.proxy(this.delete_result, this),
+		this.debug_txt+"form deleting item"
 	);
 }
 
-//gets metadata for this form and fills in metadata in the specified this.context
-//if all goes well, get_data will be called.
-ControlForm.prototype.get_meta=function()
+ControlForm.prototype.delete_result=function(result)
 {
-	//disable submit button while loading
-	$(".controlOnClickSave", this.context).prop("disabled", true);
-	
-	//get meta data
-	this.meta={};
-	rpc(
-		this.params.get_meta, 
-		this.params.get_meta_params,
-		function(result)
-		{
-			
-			if (viewShowError(result, this.context, this.meta))
-				return;
-			
-			if (!('data' in result))
-				return;
+	if (!viewShowError(result, this.context, this.meta))
+	{
+		viewRefresh();
 
-			this.meta=result['data'];
-			$(this.context).autoMeta(this.meta);
+		this.params.delete_result(result);
 
-			this.attachEventHandlers();	
-			this.get_data();
-		},
-		debugTxt+"form getting meta data"
-	);
+		if (this.params.close_after_save)
+			viewClose(this.params.view);
+	}
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 function controlList(params)
@@ -327,7 +368,7 @@ function controlList(params)
 	var autoListsource_element=$(".autoListSource:first",context);
 	var beginLength=autoListsource_element.parent().children().length;
 
-	var debugTxt=params.view.id+" "+params.view.name+" ";
+	this.debug_txt=params.view.id+" "+params.view.name+" ";
 
 	////// GENERIC LIST STUFF
 	
@@ -383,7 +424,7 @@ function controlList(params)
 						viewRefresh();
 					}
 				},
-				debugTxt+"list deleting item"
+				this.debug_txt+"list deleting item"
 			);
 		});
 	};
@@ -423,7 +464,7 @@ function controlList(params)
 					params.loadCallback(result);
 				}
 			},
-			debugTxt+"list getting data, update="+update
+			this.debug_txt+"list getting data, update="+update
 		);
 	}
 
@@ -452,7 +493,7 @@ function controlList(params)
 				getData(false);
 			}
 		},
-		debugTxt+"list getting meta data"		
+		this.debug_txt+"list getting meta data"		
 
 	)
 
@@ -561,7 +602,7 @@ function controlList(params)
 					);
 					endlessUpdating=false;
 				},
-				debugTxt+"list getting data (scrolling)"
+				this.debug_txt+"list getting data (scrolling)"
 			);
 		});
 	}

@@ -47,7 +47,6 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 			};
 	console.debug(debugTxt, "REQUEST", request);
 
-	
 	$.ajax({
 		"dataType":		"json",
 		"url":			"rpc",

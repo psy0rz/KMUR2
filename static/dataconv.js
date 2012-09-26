@@ -1,6 +1,6 @@
 //Convert metadata and normal data from and to the dom-tree
 
-
+//FIXME: put this in dataconv.List.clone
 function autoListClone(source)
 {
 	var clone=$(source).clone(true);

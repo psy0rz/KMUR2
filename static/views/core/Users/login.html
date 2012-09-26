@@ -1,17 +1,10 @@
 <script>
 new ControlForm({
 	'view'			: view,
-	'getMeta'		: 'core.Users.get_meta',
-	'putData'		: 'core.Users.login',
-	'defaultFocus'	: ['username'],
-	'loadCallback' : function(result)
-	{
-		viewReady({
-			'view': view,
-			'title': 'Inloggen'
-		});
-	},
-	'saveCallback' : function()
+	'class'			: 'core.Users',
+	'default_focus'	: ['username'],
+	'title'			: 'Inloggen',
+	'on_put_ok'     : function()
 	{
 		$(document).trigger("menu.reload");
 	},
