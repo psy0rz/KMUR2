@@ -1,4 +1,5 @@
-/*
+
+/**
  Substitute macros found in text with data.
 
  Example: format("your name is {name}", { 'name': 'foobs' })
@@ -266,6 +267,7 @@ ControlForm.prototype.put_data=function()
 		},
 		debugTxt+"form putting data"
 	);
+}
 
 //delete the item instead of saving it
 ControlForm.prototype.del=function()
@@ -367,26 +369,23 @@ function controlList(params)
 		var id=listParent.attr("_id");
 		var index=listParent.attr("_index");
 
-//		if (!rowElement.hasClass("autoListSource"))
+		$(this).confirm(function()
 		{
-			$(this).confirm(function()
-			{
-				var rpcParams={};
-				rpcParams[index]=id;
-				rpc(
-					params.delData,
-					rpcParams,
-					function(result)
+			var rpcParams={};
+			rpcParams[index]=id;
+			rpc(
+				params.delData,
+				rpcParams,
+				function(result)
+				{
+					if (!viewShowError(result, listParent, meta))
 					{
-						if (!viewShowError(result, listParent, meta))
-						{
-							viewRefresh();
-						}
-					},
-					debugTxt+"list deleting item"
-				);
-			});
-		}
+						viewRefresh();
+					}
+				},
+				debugTxt+"list deleting item"
+			);
+		});
 	};
 
 	function getData(update)
