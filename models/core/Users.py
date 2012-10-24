@@ -69,7 +69,7 @@ class Users(models.mongodb.MongoDB):
 
     @Acl(groups=["everyone"])
     def logout(self):
-        '''logout the user. username become anonymous, groups becomes everyone.
+        '''logout the user. username becomes anonymous, groups becomes everyone.
         '''
         if self.context.user_id == None:
             raise fields.FieldException("You're not logged in")
