@@ -81,7 +81,7 @@ ControlBase.prototype.format=function(txt, data)
 params:
 	(look in the baseclass for the basic documentation)
 
-	get_meta_params      parameters to pass to get_meta (default: undefined)
+	get_meta_params      parameters to pass to get_meta (default: view.params)
 	get_data_params      parameters to pass to get_data (default: view.params)
 	put_data_params      parameters to pass to put_data (default: view.params)
 	delete_params      parameters to pass to put_data (default: view.params)
@@ -97,7 +97,7 @@ function ControlForm(params)
 	ControlBase.call(this,params);
 
 	if (!('get_meta_params' in params))
-		params.get_meta_params=undefined;
+		params.get_meta_params=params.view.params;
 
 	if (!('get_data_params' in params))
 		params.get_data_params=params.view.params;
@@ -107,6 +107,9 @@ function ControlForm(params)
 
 	if (!('delete_params' in params))
 		params.delete_params=params.view.params;
+
+	if (!('close_after_save' in params))
+		params.close_after_save=true;
 
 	if (! params.get_data_result)
 		params.get_data_result=function(){};
@@ -126,7 +129,6 @@ ControlForm.prototype=Object.create(ControlBase.prototype);
 
 
 //gets metadata for this form and fills in metadata in the specified this.context
-
 //if all goes well, get_data will be called.
 ControlForm.prototype.get_meta=function()
 {	
@@ -179,6 +181,8 @@ ControlForm.prototype.get_data=function()
 
 ControlForm.prototype.get_data_result=function(result)
 {
+	this.params.get_data_result(result);
+
 	// $(".controlOnClickSave", this.context).prop("disabled", false);
 	if (('data' in result) && (result.data != null) )
 	{
@@ -187,14 +191,13 @@ ControlForm.prototype.get_data_result=function(result)
 	
 	this.focus();
 
-	viewShowError(result, this.context, this.meta);				
+	viewShowError(result, this.context, this.meta);
 
 	viewReady({
 		'view': this.params.view,
 		'title': this.format(this.params.title, result)
 	});
 
-	this.params.get_data_result(result);
 }
 
 
@@ -204,7 +207,7 @@ ControlForm.prototype.attach_event_handlers=function()
 	var context=this.context;
 
 	//create an add-handler to add items to lists
-	$(".controlOnClickListAdd", context).click(function(){
+	$(".controlOnClickListAdd", context).off().click(function(){
 		//find the clicked list element, and the source element of the list
 		var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
 		
@@ -223,7 +226,7 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//create an auto-add handler if the source-element of a list is focussed
-	$(".controlOnFocusListAdd :input", context).focus(function(){
+	$(".controlOnFocusListAdd :input", context).off().focus(function(){
 		var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
         if (changed_element.hasClass("autoListSource"))
         {
@@ -234,7 +237,7 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//create a handler to delete a list item
-	$(".controlOnClickListDel", context).click(function()
+	$(".controlOnClickListDel", context).off().click(function()
 	{
 		var clicked_element=$(this, context).closest(".autoListItem",context);
         if (clicked_element.hasClass("autoListItem"))
@@ -250,7 +253,7 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 	
 	//make lists sortable
-	$(".controlListSortable", context).sortable({
+	$(".controlListSortable", context).off().sortable({
 		placeholder: ".tempateSortPlaceholder",
 		handle: ".controlOnDragSort",
 		cancel: ".autoListSource",
@@ -260,13 +263,13 @@ ControlForm.prototype.attach_event_handlers=function()
 	});
 
 
-	$(".controlOnClickSave", context).click(function()
+	$(".controlOnClickSave", context).off().click(function()
 	{
 		this_control.put_data();
 	});
 
 	//pressing enter will also save:
-	$(context).bind('keypress', function(e) 
+	$(context).off().bind('keypress', function(e) 
 	{
 		if (e.keyCode==$.ui.keyCode.ENTER && e.target.nodeName.toLowerCase()!="textarea")
 		{
@@ -274,14 +277,14 @@ ControlForm.prototype.attach_event_handlers=function()
 		}
 	});
 	
-	$(".controlOnClickDel", context).click(function() 
+	$(".controlOnClickDel", context).off().click(function() 
 	{
 		$(this).confirm(function() {
 			this_control.delete();
 		});
 	});
 
-	$(".controlOnClickCancel", context).click(function()
+	$(".controlOnClickCancel", context).off().click(function()
 	{
 		viewClose(this_control.params.view);
 	});
@@ -295,9 +298,8 @@ ControlForm.prototype.focus=function()
 		$(this.context).autoFindElement(this.meta, this.params.view.focus).focus();
 	else if (this.params.default_focus)
 		$(this.context).autoFindElement(this.meta, this.params.default_focus).focus();
-
-	//elements that have controlSetFocus always overrule the focus:
-	$(".controlSetFocus", this.context).focus();
+	else
+		$(".controlDefaultFocus", this.context).focus();
 }
 
 
@@ -324,15 +326,13 @@ ControlForm.prototype.put_data=function()
 
 ControlForm.prototype.put_data_result=function(result)
 {
-	viewShowError(result, this.context, this.meta);
+	this.params.put_data_result(result);
+
+	if (!viewShowError(result, this.context, this.meta) && (this.params.close_after_save))
+		viewClose(this.params.view);
 
 	viewRefresh();
 	
-	this.params.put_data_result(result);
-
-	//all ok, close window
-	if (this.params.close_after_save)
-		viewClose(this.params.view);
 }
 
 //delete the item instead of saving it
@@ -348,11 +348,10 @@ ControlForm.prototype.delete=function()
 
 ControlForm.prototype.delete_result=function(result)
 {
+	this.params.delete_result(result);
 	if (!viewShowError(result, this.context, this.meta))
 	{
 		viewRefresh();
-
-		this.params.delete_result(result);
 
 		if (this.params.close_after_save)
 			viewClose(this.params.view);

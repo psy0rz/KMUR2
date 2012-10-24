@@ -1,14 +1,14 @@
 <script>
 new ControlForm({
-	'view'			: view,
-	'class'			: 'core.Users',
-	'default_focus'	: ['username'],
-	'title'			: 'Inloggen',
-	'on_put_ok'     : function()
+	'view'			  : view,
+	'class'			  : 'core.Users',
+	'default_focus'	  : ['username'],
+	'title'			  : 'Inloggen',
+	'put_data'		  : 'core.Users.login',
+	'put_data_result' : function()
 	{
 		$(document).trigger("menu.reload");
-	},
-	'closeAfterSave': true
+	}
 });
 
 </script>

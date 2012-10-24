@@ -130,6 +130,9 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 						}
 						$(".logtxt", logDiv).text(logLine.text);							
 						$('#viewLog').append(logDiv);
+
+						if ($('#viewLog .log').length>4)
+							$($('#viewLog .log').first().remove());
 						
 					});
 				}

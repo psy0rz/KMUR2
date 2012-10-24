@@ -1,4 +1,5 @@
 
+//TODO: rewrite this a the View class.
 
 //array containing view status
 //views will be created and destroyed by comparing this data to the url hash
@@ -197,6 +198,7 @@ function viewCloseAll()
 /*** Shows error and highlights field
  * Returns false if there are no errors to report
  */
+ //FIXME: this belongs in ControlBase now
 function viewShowError(result, parent, meta)
 {
 	$(".viewErrorText", parent).text("");
