@@ -288,7 +288,7 @@ function viewDOMadd(view)
 		viewDiv.addClass("ui-widget-content");
 		viewDiv.addClass("viewMain");
 		viewDiv.attr("id",view.id);
-		viewDiv.addClass("autoRefresh");
+		viewDiv.addClass("view");
 		$("#views").append(viewDiv);
 
 		viewPathUpdate();
@@ -301,7 +301,7 @@ function viewDOMadd(view)
 		
 		var viewDiv=$("<div>");
 		viewDiv.attr("id",view.id);
-		viewDiv.addClass("autoRefresh");
+		viewDiv.addClass("view");
 		
 		$("body").append(dialogDiv);	
 		dialogDiv.append(viewDiv);	
@@ -458,12 +458,5 @@ function viewLoad(view)
 
 
 
-//send a refresh event to all .autoRefresh classes.
-function viewRefresh()
-{
-	//console.debug("Triggering refresh");
-	$(".autoRefresh").trigger('refresh');
-
-}
 
 

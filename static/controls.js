@@ -331,7 +331,7 @@ ControlForm.prototype.put_data_result=function(result)
 	if (!viewShowError(result, this.context, this.meta) && (this.params.close_after_save))
 		viewClose(this.params.view);
 
-	viewRefresh();
+	$(".view").trigger('refresh');
 	
 }
 
@@ -351,7 +351,7 @@ ControlForm.prototype.delete_result=function(result)
 	this.params.delete_result(result);
 	if (!viewShowError(result, this.context, this.meta))
 	{
-		viewRefresh();
+		$(".view").trigger('refresh');
 
 		if (this.params.close_after_save)
 			viewClose(this.params.view);
@@ -360,6 +360,66 @@ ControlForm.prototype.delete_result=function(result)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//list controller
+/*
+params:
+	(look in the baseclass for the basic documentation)
+
+	get_meta_params      parameters to pass to get_meta (default: view.params)
+	get_data_params      parameters to pass to get_data (default: view.params)
+	put_data_params      parameters to pass to put_data (default: view.params)
+	delete_params      parameters to pass to put_data (default: view.params)
+	close_after_safe     close the view after succesfully saving the data
+	put_data_result		 called with results of put data 
+	get_data_result		 called with results of get data 
+	get_meta_result		 called with results of get data 
+	delete_result		 called with results of del
+
+*/
+function ControlList(params)
+{
+	ControlBase.call(this,params);
+
+	if (!('get_meta_params' in params))
+		params.get_meta_params=params.view.params;
+
+	if (!('get_data_params' in params))
+		params.get_data_params=params.view.params;
+
+	if (!('put_data_params' in params))
+		params.put_data_params=params.view.params;
+
+	if (!('delete_params' in params))
+		params.delete_params=params.view.params;
+
+	if (!('close_after_save' in params))
+		params.close_after_save=true;
+
+	if (! params.get_data_result)
+		params.get_data_result=function(){};
+
+	if (! params.put_data_result)
+		params.put_data_result=function(){};
+
+	if (! params.get_meta_result)
+		params.get_meta_result=function(){};
+
+	if (! params.delete_result)
+		params.delete_result=function(){};
+
+	this.get_meta();
+}
+
+
+ControlList.prototype=Object.create(ControlBase.prototype);
+
+
+
+
+
+
+
 function controlList(params)
 {
 	var meta={};
@@ -420,7 +480,7 @@ function controlList(params)
 				{
 					if (!viewShowError(result, listParent, meta))
 					{
-						viewRefresh();
+						$(".view").trigger('refresh');
 					}
 				},
 				this.debug_txt+"list deleting item"
