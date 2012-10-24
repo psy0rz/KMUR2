@@ -4,7 +4,7 @@
 //base-class for all controllers
 /* 
 params:
-    view:                view to operate on. view.id is used to determine jquery this.context.
+    view:                view to operate on. view.id is used to determine jquery this.context. 
     class:               rpc-class-name to call (used to fill in default values)
 
     get_meta:            rpc-method called to get metadata (default: class+".get_meta")
@@ -16,16 +16,8 @@ params:
     get_result           called with results of get data 
     title:               title to set after get. (will be processed by format(..,result))
 
-    put:                 rpc-method called to put data (default: class+".delete")
-    put_params           parameters to pass to put (default: view.params)
-    put_result           called with results of put data 
-
     delete:              rpc-method called to delete data (default: class+".delete")
     delete_params        parameters to pass to put (default: view.params)
-    delete_result        called with results of del
-
-    get_all:             rpc-method called to get all data (default: class+".get_all)
-    get_all_params:      parameters to pass to get_all (default: view.params)
 
 Other items in params documented in the subclasses below.
 
@@ -59,32 +51,13 @@ function ControlBase(params)
     if (!('title' in params))
         params.title="Untitled "+params.view.id;
 
-
-    if (!('put' in params))
-        params.put=params.class+".put";
-
-    if (!('put_params' in params))
-        params.put_params=params.view.params;
-
-    if (! params.put_result)
-        params.put_result=function(){};
-
-
     if (!('delete' in params))
         params.delete=params.class+".delete";
 
     if (!('delete_params' in params))
         params.delete_params=params.view.params;
 
-    if (! params.delete_result)
-        params.delete_result=function(){};
 
-
-    if (!('get_all' in params))
-        params.get_all=params.class+".get_all";
-
-    if (! params.get_all_result)
-        params.get_all_result=function(){};
 
 }
 
@@ -115,44 +88,20 @@ ControlBase.prototype.format=function(txt, data)
     return(ret)
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//form controller
-/*
-params:
-    (look in the baseclass for the basic documentation)
-
-    close_after_safe     close the view after succesfully saving the data
-
-*/
-function ControlForm(params)
-{
-    ControlBase.call(this,params);
-
-
-    if (!('close_after_save' in params))
-        params.close_after_save=true;
-
-
-    this.get_meta();
-}
-ControlForm.prototype=Object.create(ControlBase.prototype);
-
-
-//gets metadata for this form and fills in metadata in the specified this.context
-//if all goes well, get will be called.
-ControlForm.prototype.get_meta=function()
+//gets metadata for this control and fills in metadata in the specified this.context
+//calls this.get_meta_result with the results
+ControlBase.prototype.get_meta=function()
 {   
     //get meta data
     this.meta={};
     rpc(this.params.get_meta, 
         this.params.get_meta_params,
         $.proxy(this.get_meta_result, this),
-        this.debug_txt+"form getting meta data"
+        this.debug_txt+"control getting meta data"
     );
 }
 
-ControlForm.prototype.get_meta_result=function(result)
+ControlBase.prototype.get_meta_result=function(result)
 {
     this.params.get_meta_result(result);
 
@@ -169,18 +118,19 @@ ControlForm.prototype.get_meta_result=function(result)
     this.get();
 }
 
-//gets data from the rpc server and fills in the form
-ControlForm.prototype.get=function()
+
+//gets data from the rpc server 
+ControlBase.prototype.get=function()
 {
     //enough parameters to get the data?
     if (this.params.get && this.params.get_params && Object.keys(this.params.get_params).length)
     {
         //get data
         rpc(
-            params.get, 
-            params.get_params,
+            this.params.get, 
+            this.params.get_params,
             $.proxy(this.get_result,this),
-            this.debug_txt+"getting form data"
+            this.debug_txt+"getting control data"
         );
     }
     else
@@ -189,6 +139,48 @@ ControlForm.prototype.get=function()
         this.get_result({});
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//form controller
+/*
+params:
+    (look in the baseclass for the basic documentation)
+
+
+    put:                 rpc-method called to put data (default: class+".delete")
+    put_params           parameters to pass to put (default: view.params)
+    put_result           called with results of put data 
+
+    close_after_safe     close the view after succesfully saving the data
+
+    delete_result        called with results of del
+
+*/
+function ControlForm(params)
+{
+    ControlBase.call(this,params);
+
+
+    if (!('close_after_save' in params))
+        params.close_after_save=true;
+
+    if (!('put' in params))
+        params.put=params.class+".put";
+
+    if (!('put_params' in params))
+        params.put_params=params.view.params;
+
+    if (! params.put_result)
+        params.put_result=function(){};
+
+
+    if (! params.delete_result)
+        params.delete_result=function(){};
+
+
+    this.get_meta();
+}
+ControlForm.prototype=Object.create(ControlBase.prototype);
 
 ControlForm.prototype.get_result=function(result)
 {
@@ -376,56 +368,242 @@ ControlForm.prototype.delete_result=function(result)
 /*
 params:
     (look in the baseclass for the basic documentation)
-
-    get_meta_params      parameters to pass to get_meta (default: view.params)
-    get_params      parameters to pass to get (default: view.params)
-    put_params      parameters to pass to put (default: view.params)
-    delete_params      parameters to pass to put (default: view.params)
-    close_after_safe     close the view after succesfully saving the data
-    put_result       called with results of put data 
-    get_result       called with results of get data 
-    get_meta_result      called with results of get data 
-    delete_result        called with results of del
+    
+    edit_view: View that is opened when a user clicks an element with class .controlOnClickEdit
+    get: rpc-call to get data, if not specified will be set to class.get_all
 
 */
 function ControlList(params)
 {
-    ControlBase.call(this,params);
+    if (!('get' in params))
+        params.get=params.class+".get_all";
 
-    if (!('get_meta_params' in params))
-        params.get_meta_params=params.view.params;
+    ControlBase.call(this, params);
 
-    if (!('get_params' in params))
-        params.get_params=params.view.params;
+    this.list_source_element=$(".autoListSource:first",context);
+    this.list_begin_length=this.list_source_element.parent().children().length;
 
-    if (!('put_params' in params))
-        params.put_params=params.view.params;
-
-    if (!('delete_params' in params))
-        params.delete_params=params.view.params;
-
-    if (!('close_after_save' in params))
-        params.close_after_save=true;
-
-    if (! params.get_result)
-        params.get_result=function(){};
-
-    if (! params.put_result)
-        params.put_result=function(){};
-
-    if (! params.get_meta_result)
-        params.get_meta_result=function(){};
-
-    if (! params.delete_result)
-        params.delete_result=function(){};
+    this.update=false;
+    this.view_ready=false;
 
     this.get_meta();
 }
-
-
 ControlList.prototype=Object.create(ControlBase.prototype);
 
+ControlList.prototype.get_result=function(result)
+{
+    this.params.get_result(result);
 
+    viewShowError(result, this.context, this.meta);
+
+    if ('data' in result)
+    {
+        dataConv.List.put(
+                this.list_source_element,   //element
+                { meta: this.meta },        //meta
+                '',                         //keyStr
+                result.data,                //value 
+                {                           //settings
+                    update: this.update,
+                    showChanges: this.update
+                }
+        );
+    }
+
+    if (!this.view_ready)
+    {
+        viewReady({
+            'view': this.params.view,
+            'title': this.format(this.params.title, result)
+        });
+        this.view_ready=true;
+    }
+
+    //all data from now on is considered an update
+    this.update=true;
+}
+
+ControlList.prototype.attach_event_handlers=function()
+{   
+    var this_control=this;
+    var context=this.context;
+
+    //refresh the list when we receive a refresh event
+    $(context).off().bind('refresh',function()
+    {
+        //console.log("reresh!!");
+        this_control.get();
+    });
+
+    //open a view to edit the clicked element
+    $(".controlOnClickEdit", context).off().click(function(event)
+    {
+        var listParent=$(this).closest(".autoListItem[_index], .autoListSource[_index]",context);
+        
+        var element=$(this);
+        var id=listParent.attr("_id");
+        var index=listParent.attr("_index");
+        element.addClass("ui-state-highlight");
+    
+        //create the view to edit the clicked item
+        var editView={};
+        $.extend( editView, this_control.params.edit_view );
+        if (! editView.params)
+            editView.params={};
+
+        editView.focus=$(element).autoFindKeys(this_control.meta);
+        if (typeof id != "undefined")
+            editView.params[index]=id;
+        editView.x=event.clientX;
+        editView.y=event.clientY;
+        viewCreate(
+            {
+                creator: element
+            },
+            editView);
+    });
+
+    //delete the element, after confirmation
+    $(".controlOnClickDel", context).off().click(function(event)
+    {
+        var listParent=$(this).closest(".autoListItem",context);
+        var id=listParent.attr("_id");
+        var index=listParent.attr("_index");
+
+        $(this).confirm(function()
+        {
+            var rpcParams={};
+            rpcParams[index]=id;
+            rpc(
+                this_control.params.delete,
+                rpcParams,
+                function(result)
+                {
+                    if (!viewShowError(result, listParent, meta))
+                    {
+                        $(".view").trigger('refresh');
+                    }
+                },
+                this_control.debug_txt+"list deleting item"
+            );
+        });
+    });
+
+
+    /// ORDER STUFF
+    
+    //what is the current selected sorting column?
+    if ($(".controlOrderAsc",context).length !=0)
+    {
+        this_control.params.get_params.sort={};
+        this_control.params.get_params.sort[$(".controlOrderAsc",context).attr("_key")]=1;
+    }
+    else if ($(".controlOrderDesc",context).length !=0)
+    {
+        this_control.params.get_params.sort={};
+        this_control.params.get_params.sort[$(".controlOrderDesc",context).attr("_key")]=1;
+    }
+
+    $(".controlOnClickOrder", context).click(function()
+    {
+        this_control.params.get_params.sort={};
+        
+        if ($(this).hasClass("controlOrderAsc"))
+        {
+            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
+            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
+            this_control.params.get_params.sort[$(this).attr("_key")]=-1;
+            $(this).addClass("controlOrderDesc");
+        }
+        else
+        {
+            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
+            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
+            this_control.params.get_params.sort=1;
+            $(this).addClass("controlOrderAsc");
+        }
+
+        this_control.update=false;        
+        this_control.get();
+    });
+    
+
+    /// FILTER STUFF
+    //handle filtering 
+    $(".controlOnChangeFilter", context).keyup(function()
+    {
+        filterPrevious=$(this).val();
+        
+        if (!this_control.params.get_params.filter)
+            this_control.params.get_params.filter={};
+        
+        if ($(this).val()!="")
+        {
+            //not changed?
+            if (this_control.params.get_params.filter[$(this).attr("_key")]==$(this).val())
+                return;
+            
+            this_control.params.get_params.filter[$(this).attr("_key")]=$(this).val();
+            this_control.update=false;
+            this_control.get();
+        }
+        else
+        {
+            //delete filter?
+            if (!($(this).attr("_key") in this_control.params.get_params.filter))
+                return;
+            
+            delete this_control.params.get_params.filter[$(this).attr("_key")];
+            this_control.get();
+        }
+    });
+    
+    //set default focus
+    $(".controlSetFocus", context).focus();
+
+    //enable endless scrolling?
+    if (this_control.params.endless_scrolling && ('limit' in getParams))
+    {
+        var endlessUpdating=false;
+        $(context).on("view.scrolledBottom",function()
+        {
+            if (endlessUpdating)
+                return;
+            
+            endlessUpdating=true;
+            
+            var endlessParams={};
+            $.extend( endlessParams, getParams );
+            
+            if (!('offset' in endlessParams))
+                endlessParams.offset=0;
+            
+            endlessParams.offset+=$(autoListsource_element).parent().children().length-beginLength;
+            
+            logDebug("endless scroll offset is ",endlessParams.offset);
+
+            rpc(
+                params.getData,
+                endlessParams,
+                function(result)
+                {
+                    dataConv.List.put(
+                            autoListsource_element, //element
+                            { meta: meta },         //meta
+                            '',                     //keyStr
+                            result.data,            //value 
+                            {                       //settings
+                                noRemove: true
+                            }       
+                    );
+                    endlessUpdating=false;
+                },
+                this.debug_txt+"list getting data (scrolling)"
+            );
+        });
+    }
+
+}
 
 
 
