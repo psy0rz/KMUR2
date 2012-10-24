@@ -1,14 +1,14 @@
 <script>
 new ControlForm({
-	'view'			  : view,
-	'class'			  : 'core.Users',
-	'default_focus'	  : ['username'],
-	'title'			  : 'Inloggen',
-	'put_data'		  : 'core.Users.login',
-	'put_data_result' : function()
-	{
-		$(document).trigger("menu.reload");
-	}
+    'view'            : view,
+    'class'           : 'core.Users',
+    'default_focus'   : ['username'],
+    'title'           : 'Inloggen',
+    'put'             : 'core.Users.login',
+    'put_result' : function()
+    {
+        $(document).trigger("menu.reload");
+    }
 });
 
 </script>
@@ -17,12 +17,12 @@ new ControlForm({
 
 <table>
 <tr>
-	<td class='autoMeta' _key='username' _meta='desc'>
-	<td class='autoMeta' _key='username'>
+    <td class='autoMeta' _key='username' _meta='desc'>
+    <td class='autoMeta' _key='username'>
 </tr>
 <tr>
-	<td class='autoMeta' _key='password' _meta='desc'>
-	<td class='autoMeta' _key='password'>
+    <td class='autoMeta' _key='password' _meta='desc'>
+    <td class='autoMeta' _key='password'>
 </tr>
 </table>
 
