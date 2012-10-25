@@ -1,26 +1,16 @@
 
 <script>
-		controlList({
-		view		: view,
-		getMeta		: 'example.FieldDemo.get_meta',
-		getMetaParams	: view.params,
-		getData		: 'example.FieldDemo.get_all',
-		getDataParams	: view.params,
-		delData		: 'example.FieldDemo.del',
-		editView		: {
-			name: 'example.FieldDemo.edit',
-			mode: 'main',
-			params: view.params
-		},
-		loadCallback	: function(result) {
-			viewReady({
-				view: view,
-				title: "field demo overview"
-			});
-		},
-		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
-	});
+    new ControlList({
+        'view'            : view,
+        'class'           : 'example.FieldDemo',
+        'title'           : 'field demo overview',
+        'edit_view'       : {
+            name: 'example.FieldDemo.edit',
+            mode: 'main',
+            params: view.params
+        }
+    });
+
 </script>
 
 <p>This is an advanced example that shows all the possible field types, including a nested Dict and List field.</p>
@@ -33,7 +23,7 @@
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta controlOnClickOrder' _key='stringTest' _meta='desc'>
+	<th class='autoMeta controlOnClickOrder controlOrderAsc' _key='stringTest' _meta='desc'>
 	<th class='autoMeta controlOnClickOrder' _key='multiselectTest' _meta='desc'>
 	<th class='autoMeta controlOnClickOrder' _key='passwordTest' _meta='desc'>
 	<th class='autoMeta controlOnClickOrder' _key='booleanTest' _meta='desc'>
@@ -51,7 +41,7 @@
 	<td>
 	<td>
 	<td>
-	<td>
+    <td class='autoMeta controlOnChangeFilter' _key='numberIntTest'>
 	<td>
 	<td>
 	<td>

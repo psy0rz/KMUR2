@@ -152,14 +152,14 @@ class Base(object):
         self.context.debug(debug_object, level=2)
 
     @Acl(groups=["everyone"])
-    def get_meta(self, doc=None):
+    def get_meta(self, *args, **kwargs):
         """Return the metadata for this model
 
         Usually this is a mandatory function thats used by the views as well to get the metadata.
 
         Fields may also be dynamic and returns different fields for different parameters.
-        Usually the relevant document will be passed, so you can for example use the _id field to find the document and
-        change the metadata according to the state of the document.
+        Usually the relevant document will be passed, so you can for example overwrite this function in a subclass
+        and use the _id field to find the document and change the metadata according to the state of the document.
 
         """
         return (self.meta)

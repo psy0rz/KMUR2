@@ -90,20 +90,30 @@ ControlBase.prototype.format=function(txt, data)
 
 //gets metadata for this control and fills in metadata in the specified this.context
 //calls this.get_meta_result with the results
-ControlBase.prototype.get_meta=function()
+//the request_params are just passed along to get_meta_result, and may be used to identify the request or to pass arbitrary parameters around.
+ControlBase.prototype.get_meta=function(request_params)
 {   
-    //get meta data
-    this.meta={};
-    rpc(this.params.get_meta, 
-        this.params.get_meta_params,
-        $.proxy(this.get_meta_result, this),
-        this.debug_txt+"control getting meta data"
-    );
+    if (this.params.get_meta)
+    {
+        //get meta data
+        this.meta={};
+        var this_control=this;
+        rpc(this.params.get_meta, 
+            this.params.get_meta_params,
+            function(result) { this_control.get_meta_result(result, request_params) },
+            this.debug_txt+"control getting meta data"
+        );
+    }
+    else
+    {
+        //NOTE:not loading data, we still call get_result with an empty result.
+        this.get_meta_result({}, request_params);
+    }
 }
 
-ControlBase.prototype.get_meta_result=function(result)
+ControlBase.prototype.get_meta_result=function(result, request_params)
 {
-    this.params.get_meta_result(result);
+    this.params.get_meta_result(result, request_params);
 
     if (viewShowError(result, this.context, this.meta))
         return;
@@ -115,28 +125,28 @@ ControlBase.prototype.get_meta_result=function(result)
     $(this.context).autoMeta(this.meta);
 
     this.attach_event_handlers();   
-    this.get();
+    this.get(request_params);
 }
 
 
 //gets data from the rpc server 
-ControlBase.prototype.get=function()
+ControlBase.prototype.get=function(request_params)
 {
-    //enough parameters to get the data?
-    if (this.params.get && this.params.get_params && Object.keys(this.params.get_params).length)
+    if (this.params.get)
     {
         //get data
+        var this_control=this;
         rpc(
             this.params.get, 
             this.params.get_params,
-            $.proxy(this.get_result,this),
+            function(result) { this_control.get_result(result, request_params) },
             this.debug_txt+"getting control data"
         );
     }
     else
     {
         //NOTE:not loading data, we still call get_result with an empty result.
-        this.get_result({});
+        this.get_result({}, request_params);
     }
 }
 
@@ -182,9 +192,9 @@ function ControlForm(params)
 }
 ControlForm.prototype=Object.create(ControlBase.prototype);
 
-ControlForm.prototype.get_result=function(result)
+ControlForm.prototype.get_result=function(result, request_params)
 {
-    this.params.get_result(result);
+    this.params.get_result(result, request_params);
 
     // $(".controlOnClickSave", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
@@ -307,7 +317,7 @@ ControlForm.prototype.focus=function()
 
 
 //save the form data by calling the put rpc function
-ControlForm.prototype.put=function()
+ControlForm.prototype.put=function(request_params)
 {
 
     //are there put_params that we should COPY?
@@ -319,17 +329,18 @@ ControlForm.prototype.put=function()
     $(this.context).autoGet(this.meta, put_params);
 
     //call the put function on the rpc server
+    var this_control=this;
     rpc(
         this.params.put,
         put_params,
-        $.proxy(this.put_result, this),
+        function(result) { this_control.put_result(result, request_params) },
         this.debug_txt+"form putting data"
     );
 }
 
-ControlForm.prototype.put_result=function(result)
+ControlForm.prototype.put_result=function(result, request_params)
 {
-    this.params.put_result(result);
+    this.params.put_result(result, request_params);
 
     if (!viewShowError(result, this.context, this.meta) && (this.params.close_after_save))
         viewClose(this.params.view);
@@ -339,19 +350,21 @@ ControlForm.prototype.put_result=function(result)
 }
 
 //delete the item instead of saving it
-ControlForm.prototype.delete=function()
+ControlForm.prototype.delete=function(request_params)
 {
+
+    var this_control=this;
     rpc(
         this.params.delete, 
         this.params.delete_params,
-        $.proxy(this.delete_result, this),
+        function(result) { this_control.delete_result(result, request_params) },
         this.debug_txt+"form deleting item"
     );
 }
 
-ControlForm.prototype.delete_result=function(result)
+ControlForm.prototype.delete_result=function(result, request_params)
 {
-    this.params.delete_result(result);
+    this.params.delete_result(result, request_params);
     if (!viewShowError(result, this.context, this.meta))
     {
         $(".view").trigger('refresh');
@@ -380,19 +393,21 @@ function ControlList(params)
 
     ControlBase.call(this, params);
 
-    this.list_source_element=$(".autoListSource:first",context);
+    if (typeof (params.get_params) ==='undefined')
+        params.get_params={};
+
+    this.list_source_element=$(".autoListSource:first", this.context);
     this.list_begin_length=this.list_source_element.parent().children().length;
 
-    this.update=false;
     this.view_ready=false;
 
-    this.get_meta();
+    this.get_meta(false);
 }
 ControlList.prototype=Object.create(ControlBase.prototype);
 
-ControlList.prototype.get_result=function(result)
+ControlList.prototype.get_result=function(result, request_params)
 {
-    this.params.get_result(result);
+    this.params.get_result(result, request_params);
 
     viewShowError(result, this.context, this.meta);
 
@@ -404,8 +419,8 @@ ControlList.prototype.get_result=function(result)
                 '',                         //keyStr
                 result.data,                //value 
                 {                           //settings
-                    update: this.update,
-                    showChanges: this.update
+                    update: request_params,
+                    showChanges: request_params
                 }
         );
     }
@@ -419,10 +434,9 @@ ControlList.prototype.get_result=function(result)
         this.view_ready=true;
     }
 
-    //all data from now on is considered an update
-    this.update=true;
 }
 
+//TODO: just handle this in get_meta_result
 ControlList.prototype.attach_event_handlers=function()
 {   
     var this_control=this;
@@ -432,7 +446,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).off().bind('refresh',function()
     {
         //console.log("reresh!!");
-        this_control.get();
+        this_control.get(true);
     });
 
     //open a view to edit the clicked element
@@ -493,45 +507,53 @@ ControlList.prototype.attach_event_handlers=function()
     /// ORDER STUFF
     
     //what is the current selected sorting column?
-    if ($(".controlOrderAsc",context).length !=0)
+    function getSortSettings()
     {
         this_control.params.get_params.sort={};
-        this_control.params.get_params.sort[$(".controlOrderAsc",context).attr("_key")]=1;
+        $(".controlOrderAsc",context).each(function()
+        {
+            this_control.params.get_params.sort[$(this).attr("_key")]=1;
+        });
+        $(".controlOrderDesc",context).each(function()
+        {
+            this_control.params.get_params.sort[$(this).attr("_key")]=-1;
+        });
     }
-    else if ($(".controlOrderDesc",context).length !=0)
-    {
-        this_control.params.get_params.sort={};
-        this_control.params.get_params.sort[$(".controlOrderDesc",context).attr("_key")]=1;
-    }
+    getSortSettings();
 
-    $(".controlOnClickOrder", context).click(function()
+    $(".controlOnClickOrder", context).off().click(function()
     {
-        this_control.params.get_params.sort={};
-        
+        //NOTE:it would be possible to select multiple columns for sorting, but  this is a bit too unclear in the UI and backend
+
+
+        //change to desc
         if ($(this).hasClass("controlOrderAsc"))
         {
-            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
-            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
-            this_control.params.get_params.sort[$(this).attr("_key")]=-1;
+            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
             $(this).addClass("controlOrderDesc");
         }
+        //change to unsorted
+        else if ($(this).hasClass("controlOrderDesc"))
+        {
+            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
+        }
+        //start with asc
         else
         {
-            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
-            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
-            this_control.params.get_params.sort=1;
+            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
             $(this).addClass("controlOrderAsc");
         }
 
-        this_control.update=false;        
-        this_control.get();
+        getSortSettings();
+        this_control.get(false);
     });
     
 
     /// FILTER STUFF
     //handle filtering 
-    $(".controlOnChangeFilter", context).keyup(function()
+    $(".controlOnChangeFilter:input, .controlOnChangeFilter :input", context).off().keyup(function()
     {
+        console.log("deze", this);
         filterPrevious=$(this).val();
         
         if (!this_control.params.get_params.filter)
@@ -544,8 +566,7 @@ ControlList.prototype.attach_event_handlers=function()
                 return;
             
             this_control.params.get_params.filter[$(this).attr("_key")]=$(this).val();
-            this_control.update=false;
-            this_control.get();
+            this_control.get(false);
         }
         else
         {
@@ -554,7 +575,7 @@ ControlList.prototype.attach_event_handlers=function()
                 return;
             
             delete this_control.params.get_params.filter[$(this).attr("_key")];
-            this_control.get();
+            this_control.get(false);
         }
     });
     
@@ -607,7 +628,7 @@ ControlList.prototype.attach_event_handlers=function()
 
 
 
-
+/*
 
 function controlList(params)
 {
@@ -857,3 +878,4 @@ function controlList(params)
             
 }
 
+*/

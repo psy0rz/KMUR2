@@ -359,6 +359,7 @@
     //                          {
                                     dataConv[meta.meta[key].type].put(this, meta.meta[key], keyStr, thisvalue, settings);
                                     //FIXME: (werkt niet met array in test/list) if (settings.showChanges)
+                                    //volgensmij is dit automatisch gefixed nu (lists roepen uiteindelijk ook weer de normale autoput aan)
                                     //  $(this).effect('highlight', 2000);
     //                          }
                             }
