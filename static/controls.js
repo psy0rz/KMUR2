@@ -551,32 +551,39 @@ ControlList.prototype.attach_event_handlers=function()
 
     /// FILTER STUFF
     //handle filtering 
-    $(".controlOnChangeFilter:input, .controlOnChangeFilter :input", context).off().keyup(function()
+    //NOTE: current implementation allows only to filter on 'top level' keys.
+    $(".controlOnChangeFilter:input, .controlOnChangeFilter :input", context).off().on('change keypress paste focus textInput input', function()
     {
-        console.log("deze", this);
-        filterPrevious=$(this).val();
+        //read the current value of the field in the correct way:
+        // var key_str=$(this).attr("_key");
+        // var element_meta=resolveMeta(key_str, this_control.meta);
+        // var val=dataConv[element_meta['type']]['get'](this, element_meta, key_str);
+
         
         if (!this_control.params.get_params.filter)
             this_control.params.get_params.filter={};
-        
-        if ($(this).val()!="")
+            $(this).parent().autoGet(this_control.meta, this_control.params.get_params.filter);
+            console.log(this_control.params.get_params.filter);
+            this_control.get(false);
+/*
+        if (val)
         {
             //not changed?
-            if (this_control.params.get_params.filter[$(this).attr("_key")]==$(this).val())
-                return;
+//            if (this_control.params.get_params.filter[key_str]==val)
+//                return;
             
-            this_control.params.get_params.filter[$(this).attr("_key")]=$(this).val();
-            this_control.get(false);
+//            this_control.params.get_params.filter[key_str]=val;
         }
         else
         {
             //delete filter?
-            if (!($(this).attr("_key") in this_control.params.get_params.filter))
+            if (!(key_str in this_control.params.get_params.filter))
                 return;
             
-            delete this_control.params.get_params.filter[$(this).attr("_key")];
+            delete this_control.params.get_params.filter[key_str];
             this_control.get(false);
         }
+        */
     });
     
     //set default focus
