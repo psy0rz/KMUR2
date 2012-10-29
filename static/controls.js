@@ -551,39 +551,76 @@ ControlList.prototype.attach_event_handlers=function()
 
     /// FILTER STUFF
     //handle filtering 
-    //NOTE: current implementation allows only to filter on 'top level' keys.
-    $(".controlOnChangeFilter:input, .controlOnChangeFilter :input", context).off().on('change keypress paste focus textInput input', function()
+    //The parent element should have the .controlOnChangeFilter class as well as any other options.
+    //The input element should be the only input element in the parent.
+    //The parent element can have special attirbutes to hint about the type of filtering we want:
+    //When no special attribute is set, return all records that contain the string.
+    //When _filterMatch is set on the parent, the value should match exactly.
+    //When _filterGt is set, filter on values that are greater than or equal to it.
+    //When _filterLt is set, filter on values that are less than or equal to.
+    $(".controlOnChangeFilter", context).off().on('change keypress paste focus textInput input', ':input', function()
     {
-        //read the current value of the field in the correct way:
-        // var key_str=$(this).attr("_key");
-        // var element_meta=resolveMeta(key_str, this_control.meta);
-        // var val=dataConv[element_meta['type']]['get'](this, element_meta, key_str);
-
-        
-        if (!this_control.params.get_params.filter)
-            this_control.params.get_params.filter={};
-            $(this).parent().autoGet(this_control.meta, this_control.params.get_params.filter);
-            console.log(this_control.params.get_params.filter);
-            this_control.get(false);
-/*
-        if (val)
-        {
-            //not changed?
-//            if (this_control.params.get_params.filter[key_str]==val)
-//                return;
-            
-//            this_control.params.get_params.filter[key_str]=val;
-        }
+        //element to look in for the attributes:
+        var attribute_element;
+        if ($(this).hasClass("controlOnChangeFilter"))
+            attribute_element=$(this);
         else
+            attribute_element=$(this).parent();
+
+        //get the value via the correct data conversion routines:
+        var key_str=attribute_element.attr("_key");
+        var meta=resolveMeta(key_str, this_control.meta.meta);
+        var value=dataConv[meta.type]['get'](this, meta, key_str);
+
+        if (!this_control.params.get_params.spec)
+            this_control.params.get_params.spec={};
+
+        if (!this_control.params.get_params.spec[key_str])
+            this_control.params.get_params.spec[key_str]={};
+
+        //create reference to the correct spec (to make code more readable and shorter)
+        var spec_ref=this_control.params.get_params.spec[key_str];
+
+        //exact match?
+        if (attribute_element.attr("_filterMatch")!=null)
         {
-            //delete filter?
-            if (!(key_str in this_control.params.get_params.filter))
-                return;
-            
-            delete this_control.params.get_params.filter[key_str];
-            this_control.get(false);
+            if (value!=spec_ref)
+            {
+                spec_ref=value;
+                this_control.get(false);
+            }
         }
-        */
+        //advanced querys:
+        else 
+        {
+            //make sure its a object:
+            if (typeof spec_ref != "object")
+                spec_ref={};
+
+            if (attribute_element.attr("_filterGt")!=null)
+            {
+                if (spec_ref["$gt"]!=value)
+                {
+                    spec_ref["$gt"]=value;
+                    this_control.get(false);
+                }
+            }
+            else if (attribute_element.attr("_filterLt")!=null)
+            {
+                if (spec_ref["$lt"]!=value)
+                {
+                    spec_ref["$lt"]=value;
+                   this_control.get(false);
+                }
+            }
+            else if (spec_ref["$regex"]!=value)
+            {
+                spec_ref["$regex"]=value;
+                spec_ref["$options"]="i";
+                this_control.get(false);
+            }
+         }
+
     });
     
     //set default focus

@@ -142,32 +142,35 @@ class MongoDB(models.common.Base):
 
         return doc
 
-    def _get_all(self, collection=None, filter={}, match={}, skip=0, limit=0, sort={}):
+    def _get_all(self, collection=None, spec=None, fields=None, skip=0, limit=0, sort={}):
         '''gets one or more users according to search options
 
         collection: name of the collection to perform the search on.  If collection is not set, the self.default_collection will be used.
-        filter: a dict containing keys and regular expression strings.
-        match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
+        fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
+        spec: specify which documents to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
         skip: number of items to skip
         limit: number of maximum items to return
-        sort: a dect containing keys and sort directions (-1 descending, +1 ascending)
+        sort: a dict containing keys and sort directions (-1 descending, +1 ascending)
+
+
         '''
 
         if not collection:
             collection = self.default_collection
 
-        regex_filters = {}
+        #NOTE: we choose to expose the pymongo api here for spec and fields. 
+        #is it safe? 
+        #should we wrap our own database agnostic wrapper around it, 
+        #so that somebody can choose to use a differt data base backend? 
+        #perhaps... time will tell, maybe i will refactor this later.
+        #or maybe the stuff thats most used (like $gt, $lt, $regex) is generic enough already to be ported to other
+        #database backends.
 
-        for key in filter:
-            regex_filters[key] = re.compile(filter[key], re.IGNORECASE)
-
-        for key in match:
-            regex_filters[key] = match[key]
-
-        return(self.db[collection].find(spec=regex_filters,
-                           skip=skip,
-                           limit=limit,
-                           sort=sort.items()))
+        return(self.db[collection].find(spec=spec,
+                            fields=fields,
+                            skip=skip,
+                            limit=limit,
+                            sort=sort.items()))
 
     def _delete(self, _id, collection=None):
         '''deletes _id from collection

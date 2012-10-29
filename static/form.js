@@ -1,4 +1,60 @@
     
+//returns a reference in the meta-object, by traversing the key
+//example key: items.price
+//returns null when key can not be found.
+function resolveMeta(key, meta)
+{
+    if (!key)
+        return(null);
+    
+    var keyList=key.split(".");
+    var thismeta=meta[keyList[0]];
+    for (keyI=1; keyI<keyList.length; keyI++)
+    {   
+        if (("meta" in thismeta) && (keyList[keyI] in thismeta["meta"]))
+        {
+            thismeta=thismeta["meta"][keyList[keyI]];
+        }
+        else
+        {
+            //key not found in meta
+            thismeta=null;
+            break;
+        }
+    }
+    return (thismeta);
+}
+
+//returns a reference in the dataobject, by traversing the key.
+//example key: items.price
+//note: creates Objects() in data for keys that do not yet exist. (e.g. builds a hasharray for you)
+function resolveData(key, data)
+{
+    if (!key)
+        return(null);
+
+    var keyList=key.split(".");
+    var thisdata=data;
+    for (keyI=0; keyI<keyList.length; keyI++)
+    {   
+        if (keyList[keyI] in thisdata)
+        {
+            thisdata=thisdata[keyList[keyI]];
+        }
+        else
+        {
+            //key not found in meta, create it:
+            if (typeof(thismeta)!='object')
+            {
+                console.error("resolveData warning: changing data to object:",key,data);
+                thisdata=new Object();
+            }
+            thisdata[keyList[keyI]]=null;
+            thisdata=thisdata[keyList[keyI]];
+        }
+    }
+    return (thisdata);
+}
 
 (function( $ ){
 
@@ -119,62 +175,6 @@
         return (key);       
     }
     
-    //returns a reference in the meta-object, by traversing the key
-    //example key: items.price
-    //returns null when key can not be found.
-    function resolveMeta(key, meta)
-    {
-        if (!key)
-            return(null);
-        
-        var keyList=key.split(".");
-        var thismeta=meta[keyList[0]];
-        for (keyI=1; keyI<keyList.length; keyI++)
-        {   
-            if (("meta" in thismeta) && (keyList[keyI] in thismeta["meta"]))
-            {
-                thismeta=thismeta["meta"][keyList[keyI]];
-            }
-            else
-            {
-                //key not found in meta
-                thismeta=null;
-                break;
-            }
-        }
-        return (thismeta);
-    }
-    
-    //returns a reference in the dataobject, by traversing the key.
-    //example key: items.price
-    //note: creates Objects() in data for keys that do not yet exist. (e.g. builds a hasharray for you)
-    function resolveData(key, data)
-    {
-        if (!key)
-            return(null);
-
-        var keyList=key.split(".");
-        var thisdata=data;
-        for (keyI=0; keyI<keyList.length; keyI++)
-        {   
-            if (keyList[keyI] in thisdata)
-            {
-                thisdata=thisdata[keyList[keyI]];
-            }
-            else
-            {
-                //key not found in meta, create it:
-                if (typeof(thismeta)!='object')
-                {
-                    console.error("resolveData warning: changing data to object:",key,data);
-                    thisdata=new Object();
-                }
-                thisdata[keyList[keyI]]=null;
-                thisdata=thisdata[keyList[keyI]];
-            }
-        }
-        return (thisdata);
-    }
     
     /*** Generates html input fields and descriptions from metadata
     */

@@ -5,7 +5,9 @@
 
 if [ "$1" == "" ]; then
     echo "For example:"
-    echo  "./call core Users authenticate '{\"username\":\"geert\", \"password\":\"kut\"}'"
+    echo  "./call core Users login '{\"username\":\"geert\", \"password\":\"kut\"}'"
+    echo 
+    echo "It remembers cookies, hence sessions"
     exit 1
 fi
 
