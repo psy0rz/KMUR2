@@ -309,8 +309,10 @@ class Timestamp(Base):
 class Bool(Base):
     """Boolean, only real boolean types allowed"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, true_desc="Yes", false_desc="No", **kwargs):
         super(Bool, self).__init__(**kwargs)
+        self.meta['true_desc']=true_desc
+        self.meta['false_desc']=false_desc
 
     def check(self, data):
 

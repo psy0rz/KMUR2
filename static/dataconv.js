@@ -219,6 +219,9 @@ var dataConv=
                 addedElement=$("<input>")
                     .attr("type","text");                       
             }
+
+            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+
             $(addedElement).val(meta.default);
             return(addedElement);
         },
@@ -228,6 +231,8 @@ var dataConv=
         },
         get:function(element, meta, keyStr)
         {
+            if ($(element).attr("_allow_null")=="" && $(element).val()=="")
+                return (null);
             return($(element).val());
         },
         put:function(element, meta, keyStr, value)
@@ -241,6 +246,7 @@ var dataConv=
             var addedElement=$("<input>")
                 .attr("type","password");
             $(addedElement).val(meta.default);
+            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
             return (addedElement);
         },
         html:function(element, meta, keyStr, value)
@@ -249,6 +255,8 @@ var dataConv=
         },
         get:function(element, meta, keyStr)
         {
+            if ($(element).attr("_allow_null")=="" && $(element).val()=="")
+                return (null);
             return($(element).val());
         },
         put:function(element, meta, keyStr, value)
@@ -262,6 +270,10 @@ var dataConv=
             //NOTE: we could make this nicer, by showing the decimal point and stuff.
             var addedElement=$("<input>")
                     .attr("type","text");
+            
+            //not neccesary, already returns 0 by no value:
+            //addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+            
             $(addedElement).val(meta.default);
             return(addedElement);
         },
@@ -287,6 +299,17 @@ var dataConv=
         {
             //create select element
             var addedElement=$("<select>");
+
+            //allow null choice?
+            var allow_null=$(element).attr("_allow_null")=="";
+            if (allow_null)
+            {
+                addedElement.attr("_allow_null","");
+                var optionElement=$("<option>")
+                    .attr("value","")
+                optionElement.attr("selected","selected");
+                addedElement.append(optionElement);
+            }
             
             //add choices
             $.each(meta['choices'], function(choice, desc){
@@ -295,7 +318,7 @@ var dataConv=
                     .text(desc);
                 
                 //we use this instead of addedElement.val(thismeta.default) because clone wont work with this.
-                if (choice==meta.default)
+                if (choice==meta.default &&  !allow_null)
                     optionElement.attr("selected","selected");
                 addedElement.append(optionElement);
             });
@@ -312,6 +335,9 @@ var dataConv=
         },
         get:function(element, meta, keyStr)
         {
+            if ($(element).attr("_allow_null")=="" && $(element).prop("selectedIndex")==0)
+                return (null);
+
             return($(element).val());
         },
         put:function(element, meta, keyStr, value)
@@ -324,6 +350,8 @@ var dataConv=
         {
             var addedElement=$("<span>")
                 .attr("title",meta.desc);
+
+            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
 
             //add choices
             $.each(meta.choices, function(choice, desc){
@@ -376,6 +404,11 @@ var dataConv=
                 if ($(this).attr("checked"))
                     value.push($(this).attr("value"));              
             });
+
+            //NOTE: not sure if this how we want it.
+            //perhaps its better to add a extra control to 'enable' or 'disable' the checkboxes?
+            if ($(element).attr("_allow_null")=="" && value.length==0)
+                return (null);
             
             return(value);
         },
@@ -391,11 +424,24 @@ var dataConv=
     Bool:{
         input:function(element, meta)
         {
-            var addedElement=$("<input>")
-                .attr("type","checkbox")
-                .attr("value","")
-            addedElement.attr("checked", meta.default);
-            return(addedElement);
+            if ($(element).attr("_allow_null")=="")
+            {
+                //if we allow null, we use a select box for it
+                return(dataConv['Select']['input'](element, {
+                    'choices':{
+                        false:meta.false_desc,
+                        true:meta.true_desc,
+                   }
+                }));
+            }
+            else
+            {
+                var addedElement=$("<input>")
+                    .attr("type","checkbox")
+                    .attr("value","")
+                addedElement.attr("checked", meta.default);
+                return(addedElement);
+            }
         },
         html:function(element, meta, keyStr, value)
         {
@@ -405,26 +451,46 @@ var dataConv=
             {
                 newElement.addClass("autoHtml_"+meta.type+"_True");
                 newElement.addClass("autoHtml_"+keyStr+"_True");
-                newElement.text("Yes");
+                newElement.text(meta.true_desc);
             }
             else
             {
                 newElement.addClass("autoHtml_"+meta.type+"_False");
                 newElement.addClass("autoHtml_"+keyStr+"_False");
-                newElement.text("No");
+                newElement.text(meta.false_desc);
             }
             return (newElement);
         },
         get:function(element, meta, keyStr)
         {
-            if ($(element).attr("checked"))
-                return(true);
+            if ($(element).attr("_allow_null")=="")
+            {
+                //if we allow null, we use a select box for it
+                var value=dataConv['Select']['get'](element, meta, keyStr);
+                if (value==null)
+                    return (null);
+
+                return(value==true);
+            }
             else
-                return(false);
+            {
+                if ($(element).attr("checked"))
+                    return(true);
+                else
+                    return(false);
+            }
         },
         put:function(element, meta, keyStr, value)
         {
-            $(element).attr("checked", value);
+            if ($(element).attr("_allow_null")=="")
+            {
+                //if we allow null, we use a select box for it
+                dataConv['Select']['put'](element, meta, keyStr, value);
+            }
+            else
+            {
+                $(element).attr("checked", value);
+            }
         }
     },
     Timestamp:{

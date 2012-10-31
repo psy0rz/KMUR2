@@ -560,6 +560,7 @@ ControlList.prototype.attach_event_handlers=function()
     //When _filterLt is set, filter on values that are less than or equal to.
     $(".controlOnChangeFilter", context).off().on('change keypress paste focus textInput input', ':input', function()
     {
+
         //element to look in for the attributes:
         var attribute_element;
         if ($(this).hasClass("controlOnChangeFilter"))
@@ -572,55 +573,93 @@ ControlList.prototype.attach_event_handlers=function()
         var meta=resolveMeta(key_str, this_control.meta.meta);
         var value=dataConv[meta.type]['get'](this, meta, key_str);
 
+        if (value!=null)
+            attribute_element.addClass("controlFilterActive");
+        else
+            attribute_element.removeClass("controlFilterActive");
+
+        //look if there are any other filters active under the controlOnFilterHighlight element, to determine
+        //if we still need to highlight it.
+        if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".controlOnFilterHighlight").find(".controlFilterActive").length!=0))
+            attribute_element.closest(".controlOnFilterHighlight").addClass("ui-state-highlight");
+        else
+            attribute_element.closest(".controlOnFilterHighlight").removeClass("ui-state-highlight");
+
+
         if (!this_control.params.get_params.spec)
             this_control.params.get_params.spec={};
 
         if (!this_control.params.get_params.spec[key_str])
             this_control.params.get_params.spec[key_str]={};
 
-        //create reference to the correct spec (to make code more readable and shorter)
-        var spec_ref=this_control.params.get_params.spec[key_str];
+        var changed=false;
 
         //exact match?
-        if (attribute_element.attr("_filterMatch")!=null)
+        if (attribute_element.attr("_filterMatch")=="")
         {
-            if (value!=spec_ref)
+            if (value!=this_control.params.get_params.spec[key_str])
             {
-                spec_ref=value;
-                this_control.get(false);
+                this_control.params.get_params.spec[key_str]=value;
+                changed=true;
             }
         }
         //advanced querys:
         else 
         {
             //make sure its a object:
-            if (typeof spec_ref != "object")
-                spec_ref={};
+            if (typeof this_control.params.get_params.spec[key_str] != "object")
+                this_control.params.get_params.spec[key_str]={};
 
-            if (attribute_element.attr("_filterGt")!=null)
+            if (attribute_element.attr("_filterGt")=="")
             {
-                if (spec_ref["$gt"]!=value)
+                if (this_control.params.get_params.spec[key_str]["$gt"]!=value)
                 {
-                    spec_ref["$gt"]=value;
-                    this_control.get(false);
+                    if (value==null)
+                        delete(this_control.params.get_params.spec[key_str]["$gt"]);
+                    else
+                        this_control.params.get_params.spec[key_str]["$gt"]=value;
+
+                    changed=true;
                 }
             }
-            else if (attribute_element.attr("_filterLt")!=null)
+            else if (attribute_element.attr("_filterLt")=="")
             {
-                if (spec_ref["$lt"]!=value)
+                if (this_control.params.get_params.spec[key_str]["$lt"]!=value)
                 {
-                    spec_ref["$lt"]=value;
-                   this_control.get(false);
+                    if (value==null)
+                        delete(this_control.params.get_params.spec[key_str]["$lt"]);
+                    else
+                        this_control.params.get_params.spec[key_str]["$lt"]=value;
+
+                    changed=true;
                 }
             }
-            else if (spec_ref["$regex"]!=value)
+            else if (this_control.params.get_params.spec[key_str]["$regex"]!=value)
             {
-                spec_ref["$regex"]=value;
-                spec_ref["$options"]="i";
-                this_control.get(false);
+                if (value==null)
+                {
+                    delete(this_control.params.get_params.spec[key_str]["$regex"]);
+                    delete(this_control.params.get_params.spec[key_str]["$options"]);
+                }
+                else
+                {
+                    this_control.params.get_params.spec[key_str]["$regex"]=value;
+                    this_control.params.get_params.spec[key_str]["$options"]="i";
+                }
+                changed=true;
             }
          }
 
+        //delete the whole thing if its empty or null
+        if (this_control.params.get_params.spec[key_str]==null || $.isEmptyObject(this_control.params.get_params.spec[key_str]))
+        {
+            delete (this_control.params.get_params.spec[key_str]);
+        }
+
+         if (changed)
+            this_control.get(false);
+
+         console.log("filtering is", this_control.params.get_params.spec);
     });
     
     //set default focus
