@@ -47,18 +47,10 @@ function formatDateTime(timestamp, allowTime)
 */
 var dataConv=
 {
+    //these normally arent called by form.js, since all the functions already know how to handle dicts.
     Dict:{
         input:function (element, meta, keyStr)
         {
-            //add autoGet and autoPut for convienience
-            if (!meta.readonly)
-            {
-                $(element).addClass("autoGet");
-            }
-            $(element).addClass("autoPut");
-
-            //recurse into sub:
-            logDebug("recursing into sub Dict", meta, keyStr);
             $(element).autoMeta(meta, keyStr);
             return (null);
         },
@@ -74,7 +66,7 @@ var dataConv=
         },
         put:function(element, meta, keyStr, value, settings)
         {
-            $(element).autoPut(meta, value, keyStr, settings);
+            $(element).autoPut(meta, value, keyStr, settings); 
         }
     },
     List:{
@@ -559,7 +551,7 @@ var dataConv=
         get:function(element, meta, keyStr)
         {
 
-            if ($(element.attr("_allow_null")=="") && $(element).val()=="")
+            if ($(element).attr("_allow_null")=="" && $(element).val()=="")
                 return(null);
 
             //var dateStr=$(element).val().split()

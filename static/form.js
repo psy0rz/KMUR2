@@ -204,41 +204,49 @@ function resolveData(key, data)
                 
                 var selector='.autoMeta[_key="'+keyStr+'"]';
 
-
-                //traverse the autoMeta elements that reference this key
-                $(selector, context).each(function()
+                //we know how to handle Dicts ourselfs, so just recurse
+                if (thismeta.type=='Dict')
                 {
-                    
-                    //just fill in the value of the specified metadata-field as plain text?
-                    if ($(this).attr("_meta"))
-                        $(this).text(thismeta[$(this).attr("_meta")]);
-                    //convert metadata to input element:
-                    else
+                    $(context).autoMeta(thismeta, keyStr);
+                }
+                else
+                {
+                    //traverse the autoMeta elements that reference this key
+                    $(selector, context).each(function()
                     {
-                        var addedElement=dataConv[thismeta.type].input(this, thismeta, keyStr);
-                        if (addedElement)
-                        {
-                            addedElement.addClass("autoPut")
-                                .attr("_key",keyStr)
-                                .attr("title",thismeta.desc);
-                            
-                            if (!thismeta.readonly)
-                            {
-                                addedElement.addClass("autoGet")
-                            }
-                            else
-                            {
-                                addedElement.attr('disabled',true);
-                            }
-                            //now add the new element to the DOM:
-                            $(this).empty();
-                            $(this).append(addedElement);
-                        }
                         
-                    }
-                }); //key
-            }); //meta
-        }); //elements
+                        //just fill in the value of the specified metadata-field as plain text?
+                        //TODO: move to dataconv, or make a differnt class for it? doesnt really seem to fit here..
+                        if ($(this).attr("_meta"))
+                            $(this).text(thismeta[$(this).attr("_meta")]);
+                        //convert metadata to input element:
+                        else
+                        {
+                            var addedElement=dataConv[thismeta.type].input(this, thismeta, keyStr);
+                            if (addedElement)
+                            {
+                                addedElement.addClass("autoPut")
+                                    .attr("_key",keyStr)
+                                    .attr("title",thismeta.desc);
+                                
+                                if (!thismeta.readonly)
+                                {
+                                    addedElement.addClass("autoGet")
+                                }
+                                else
+                                {
+                                    addedElement.attr('disabled',true);
+                                }
+                                //now add the new element to the DOM:
+                                $(this).empty();
+                                $(this).append(addedElement);
+                            }
+                            
+                        }
+                    }); //elements references by this key
+                }
+            }); //meta data
+        }); //elements provided as input
         
     };
 
@@ -274,15 +282,23 @@ function resolveData(key, data)
                     keyStr=parentKey+"."+key;
                 else
                     keyStr=key;
-                
-                //find the element that belongs to this key 
-                //there SHOULD be only one or zero. 
-                var selector='.autoGet[_key="'+keyStr+'"]';
-                $(selector, context).each(function() {
-    //              console.log("autogetting", selector, value, this);
-                    value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
-                });
-                
+
+                //we know how to handle Dicts ourselfs, so just recurse
+                if (thismeta.type=='Dict')
+                {
+                    value[key]=new Object();
+                    $(context).autoGet(thismeta, value[key], keyStr);
+                }
+                else
+                {
+                    //find the element that belongs to this key 
+                    //there SHOULD be only one or zero. 
+                    var selector='.autoGet[_key="'+keyStr+'"]';
+                    $(selector, context).each(function() {
+        //              console.log("autogetting", selector, value, this);
+                        value[key]=dataConv[thismeta.type].get(this, thismeta, keyStr);
+                    });
+                }
             }); //meta
         }); //elements
     }
@@ -333,43 +349,51 @@ function resolveData(key, data)
 
                 if (key in meta.meta)
                 {
-                    //find the element that belongs to this key 
-                    //there SHOULD be only one or zero. 
-                    var selector='.autoPut[_key="'+keyStr+'"]';
-                    $(selector, context).each(function() {
-                        if (meta.meta[key].type in dataConv)
-                        {
-                            //generate html
-                            if ($(this).attr("_html")!=null)
+                    //we know how to handle Dicts ourselfs, just recurse
+                    if (meta.meta[key].type=='Dict')
+                    {
+                        $(context).autoPut(meta.meta[key], thisvalue, keyStr, options);
+                    }
+                    else
+                    {
+                        //find the element that belongs to this key 
+                        //there SHOULD be only one or zero. 
+                        var selector='.autoPut[_key="'+keyStr+'"]';
+                        $(selector, context).each(function() {
+                            if (meta.meta[key].type in dataConv)
                             {
-    //                          console.log("check", meta.meta, key);
-                                var newElement=dataConv[meta.meta[key].type].html(this, meta.meta[key], keyStr, thisvalue, settings);
-                                if (newElement.text()!=$(this).text())
+                                //generate html
+                                if ($(this).attr("_html")!=null)
                                 {
-                                    $(this).empty();
-                                    $(this).append(newElement);
-                                    if (settings.showChanges)
-                                        $(this).effect('highlight', 2000);
+        //                          console.log("check", meta.meta, key);
+                                    var newElement=dataConv[meta.meta[key].type].html(this, meta.meta[key], keyStr, thisvalue, settings);
+                                    if (newElement.text()!=$(this).text())
+                                    {
+                                        $(this).empty();
+                                        $(this).append(newElement);
+                                        if (settings.showChanges)
+                                            $(this).effect('highlight', 2000);
+                                    }
+                                }
+                                //put data into existing input fields (or arrays or hashes)
+                                else
+                                {
+        //                          if (dataConv[meta.meta[key].type].get(this, meta.meta[key], keyStr)!=thisvalue)
+        //                          {
+                                        dataConv[meta.meta[key].type].put(this, meta.meta[key], keyStr, thisvalue, settings);
+                                        //FIXME: (werkt niet met array in test/list) if (settings.showChanges)
+                                        //volgensmij is dit automatisch gefixed nu (lists roepen uiteindelijk ook weer de normale autoput aan)
+                                        //  $(this).effect('highlight', 2000);
+        //                          }
                                 }
                             }
-                            //put data into existing input fields (or arrays or hashes)
                             else
                             {
-    //                          if (dataConv[meta.meta[key].type].get(this, meta.meta[key], keyStr)!=thisvalue)
-    //                          {
-                                    dataConv[meta.meta[key].type].put(this, meta.meta[key], keyStr, thisvalue, settings);
-                                    //FIXME: (werkt niet met array in test/list) if (settings.showChanges)
-                                    //volgensmij is dit automatisch gefixed nu (lists roepen uiteindelijk ook weer de normale autoput aan)
-                                    //  $(this).effect('highlight', 2000);
-    //                          }
+                                console.error("Metadata has unknown type: ", meta.meta[key]);
+                                return false;
                             }
-                        }
-                        else
-                        {
-                            console.error("Metadata has unknown type: ", meta.meta[key]);
-                            return false;
-                        }
-                    });
+                        });
+                    }
                 }
             }); //meta
         }); //elements
