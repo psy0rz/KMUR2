@@ -547,7 +547,18 @@ ControlList.prototype.attach_event_handlers=function()
         getSortSettings();
         this_control.get(false);
     });
-    
+
+
+    $(".controlOnFilterHighlight",context).on('click', function(e)
+    {
+        if ($(e.srcElement).hasClass("controlOnFilterHighlight"))
+        {
+            $(":input", this).val("");
+            $("select", this).prop("selectedIndex",0);
+            $(":input", this).trigger('change');
+
+        }
+    }) ;  
 
     /// FILTER STUFF
     //handle filtering 
@@ -558,7 +569,7 @@ ControlList.prototype.attach_event_handlers=function()
     //When _filterMatch is set on the parent, the value should match exactly.
     //When _filterGt is set, filter on values that are greater than or equal to it.
     //When _filterLt is set, filter on values that are less than or equal to.
-    $(".controlOnChangeFilter", context).off().on('change keypress paste focus textInput input', ':input', function()
+    $(".controlOnChangeFilter", context).on('change keypress paste focus textInput input', ':input', function()
     {
 
         //element to look in for the attributes:
@@ -572,6 +583,8 @@ ControlList.prototype.attach_event_handlers=function()
         var key_str=attribute_element.attr("_key");
         var meta=resolveMeta(key_str, this_control.meta.meta);
         var value=dataConv[meta.type]['get'](this, meta, key_str);
+
+        console.log("change detected", this, value);
 
         if (value!=null)
             attribute_element.addClass("controlFilterActive");
@@ -662,6 +675,8 @@ ControlList.prototype.attach_event_handlers=function()
          console.log("filtering is", this_control.params.get_params.spec);
     });
     
+
+
     //set default focus
     $(".controlSetFocus", context).focus();
 
