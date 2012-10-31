@@ -3,13 +3,24 @@
 		"title":"Examples",
 		"items":[
 			{
-				"title":"Field demo",
-				"view":
-					{ 
-						"name":"example.FieldDemo.list",
-						"mode":"main"
-						}
-			}
+                "title":"Field demo",
+                "view":
+                    { 
+                        "name":"example.FieldDemo.list",
+                        "mode":"main"
+                        }
+            },
+            {
+                "title":"Field demo (slow)",
+                "view":
+                    { 
+                        "name":"example.FieldDemo.list",
+                        "mode":"main",
+                        "params": {
+                            "sleep": 2
+                        }
+                    }
+            }
 		]
 	}
 }

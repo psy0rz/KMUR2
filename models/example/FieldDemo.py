@@ -1,6 +1,7 @@
 from models.common import *
 import fields
 import models.mongodb
+import time
 
 
 class FieldDemo(models.mongodb.MongoDB):
@@ -77,8 +78,14 @@ class FieldDemo(models.mongodb.MongoDB):
         self.info("Deleted demo row {}".format(doc['stringTest']))
 
     @Acl(groups="admin")
-    def get_all(self, **params):
+    def get_all(self, sleep=0, **params):
         '''get all test documents from database'''
+
+        #artificial sleep to simulate slow results.
+        if sleep:
+            time.sleep(sleep)
+
         #NOTE: dont forget to explicitly set collection to None!
         #otherwise the user can look in every collection!
         return(self._get_all(collection=None, **params))
+

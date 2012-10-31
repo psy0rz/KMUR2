@@ -405,8 +405,32 @@ function ControlList(params)
 }
 ControlList.prototype=Object.create(ControlBase.prototype);
 
+//only calls this.get, if its not already busy getting data.
+//otherwise just sets a flag, so that get_result will call get again as soon as its done.
+//this way multiple calls are not queued and not executed in parallel. (which is nice for for ordering and filtering)
+ControlList.prototype.get_delayed=function(request_params)
+{
+    if (!this.getting)
+    {
+        this.getting=true;
+        this.get(request_params);
+    }
+    else
+    {
+        this.get_again=true;
+        this.get_again_request_params=request_params;
+    }
+}
+
 ControlList.prototype.get_result=function(result, request_params)
 {
+    this.getting=false;
+    if (this.get_again)
+    {
+        this.get_again=false;
+        this.get_delayed(this.get_again_request_params);
+    }
+
     this.params.get_result(result, request_params);
 
     viewShowError(result, this.context, this.meta);
@@ -446,7 +470,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).off().bind('refresh',function()
     {
         //console.log("reresh!!");
-        this_control.get(true);
+        this_control.get_delayed(true);
     });
 
     //open a view to edit the clicked element
@@ -525,7 +549,6 @@ ControlList.prototype.attach_event_handlers=function()
     {
         //NOTE:it would be possible to select multiple columns for sorting, but  this is a bit too unclear in the UI and backend
 
-
         //change to desc
         if ($(this).hasClass("controlOrderAsc"))
         {
@@ -545,7 +568,7 @@ ControlList.prototype.attach_event_handlers=function()
         }
 
         getSortSettings();
-        this_control.get(false);
+        this_control.get_delayed(false);
     });
 
 
@@ -670,7 +693,7 @@ ControlList.prototype.attach_event_handlers=function()
         }
 
          if (changed)
-            this_control.get(false);
+            this_control.get_delayed(false);
 
          console.log("filtering is", this_control.params.get_params.spec);
     });
