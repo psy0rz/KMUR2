@@ -600,14 +600,16 @@ ControlList.prototype.attach_event_handlers=function()
         if ($(this).hasClass("controlOnChangeFilter"))
             attribute_element=$(this);
         else
-            attribute_element=$(this).parent();
+            attribute_element=$(this).closest(".controlOnChangeFilter");
+
 
         //get the value via the correct data conversion routines:
         var key_str=attribute_element.attr("_key");
         var meta=resolveMeta(key_str, this_control.meta.meta);
-        var value=dataConv[meta.type]['get'](this, meta, key_str);
+        var get_element=$(".autoGet", attribute_element);
+        var value=dataConv[meta.type]['get'](get_element, meta, key_str);
 
-        console.log("change detected", this, value);
+        console.log("get_element, keystr, meta, value" , get_element, key_str, meta, value);
 
         if (value!=null)
             attribute_element.addClass("controlFilterActive");
@@ -635,6 +637,7 @@ ControlList.prototype.attach_event_handlers=function()
         {
             if (value!=this_control.params.get_params.spec[key_str])
             {
+                console.log("ik zet hem naar ",value);
                 this_control.params.get_params.spec[key_str]=value;
                 changed=true;
             }

@@ -95,7 +95,7 @@ class Menu(models.mongodb.MongoDB):
 
         note: not formatted as defined in get_meta
         '''
-        return self._get_all(match={
+        return self._get_all(spec={
                                     'user_id': self.context.user_id
                                     },
                              sort={
