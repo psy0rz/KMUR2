@@ -27,7 +27,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
     //(add extra info to the url for easier debugging in webserver logs)
     gActiveRpcs++;
     $(".viewLoading").show();
-    //$("body").css('cursor','progress');
+    $("body").css('cursor','progress');
     function rpcEnd()
     {
         gActiveRpcs--;
@@ -35,6 +35,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
             return;
         
         $(".viewLoading").hide();
+        $("body").css('cursor','auto');
     }
 
     var request={

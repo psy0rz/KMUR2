@@ -429,8 +429,8 @@ var dataConv=
                 //if we allow null, we use a select box for it
                 return(dataConv['Select']['input'](element, {
                     'choices':{
-                        false:meta.false_desc,
-                        true:meta.true_desc,
+                        0:meta.false_desc,
+                        1:meta.true_desc,
                    }
                 }));
             }
@@ -470,7 +470,7 @@ var dataConv=
                 if (value==null)
                     return (null);
 
-                return(value==true);
+                return(value==1);
             }
             else
             {
@@ -499,7 +499,9 @@ var dataConv=
             var allowTime=false;
 
             var addedElement=$("<input>")
-            .attr("type","text");
+                .attr("type","text");
+
+            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
             
             if ($(element).attr("_allowTime")!=null)
             {
@@ -556,6 +558,10 @@ var dataConv=
         },
         get:function(element, meta, keyStr)
         {
+
+            if ($(element.attr("_allow_null")=="") && $(element).val()=="")
+                return(null);
+
             //var dateStr=$(element).val().split()
             //var date=new Date($(element).datepicker("getDate"));
             //return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);

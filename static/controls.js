@@ -576,12 +576,13 @@ ControlList.prototype.attach_event_handlers=function()
     {
         if ($(e.srcElement).hasClass("controlOnFilterHighlight"))
         {
-            $(":input", this).val("");
+            //reset all controls so that they return null, hence disabling the filter
+            $(':input[type="checkbox"]', this).attr("checked",false);
+            $(':input[type!="checkbox"]', this).val("");
             $("select", this).prop("selectedIndex",0);
-            $(":input", this).trigger('change');
-
+            $(':input',this).trigger('change');
         }
-    }) ;  
+    });  
 
     /// FILTER STUFF
     //handle filtering 
@@ -619,9 +620,9 @@ ControlList.prototype.attach_event_handlers=function()
         //look if there are any other filters active under the controlOnFilterHighlight element, to determine
         //if we still need to highlight it.
         if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".controlOnFilterHighlight").find(".controlFilterActive").length!=0))
-            attribute_element.closest(".controlOnFilterHighlight").addClass("ui-state-highlight");
+            attribute_element.closest(".controlOnFilterHighlight").addClass("ui-state-highlight controlFilterHighlight");
         else
-            attribute_element.closest(".controlOnFilterHighlight").removeClass("ui-state-highlight");
+            attribute_element.closest(".controlOnFilterHighlight").removeClass("ui-state-highlight controlFilterHighlight");
 
 
         if (!this_control.params.get_params.spec)
@@ -632,73 +633,77 @@ ControlList.prototype.attach_event_handlers=function()
 
         var changed=false;
 
-        //exact match?
+        //simple exact match?
         if (attribute_element.attr("_filterMatch")=="")
         {
             if (value!=this_control.params.get_params.spec[key_str])
             {
-                console.log("ik zet hem naar ",value);
-                this_control.params.get_params.spec[key_str]=value;
+                if (value==null)
+                    delete(this_control.params.get_params.spec[key_str])
+                else
+                    this_control.params.get_params.spec[key_str]=value;
                 changed=true;
             }
         }
         //advanced querys:
         else 
         {
-            //make sure its a object:
-            if (typeof this_control.params.get_params.spec[key_str] != "object")
-                this_control.params.get_params.spec[key_str]={};
+            var changed_filters={};
 
-            if (attribute_element.attr("_filterGt")=="")
+            if (attribute_element.attr("_filterGte")=="")
+                changed_filters["$gte"]=value;
+            else if (attribute_element.attr("_filterLte")=="")
+                changed_filters["$lte"]=value;
+            else if (attribute_element.attr("_filterIn")=="")
+                changed_filters["$in"]=value;
+            else 
+            //default to a case insensitive regex match:
             {
-                if (this_control.params.get_params.spec[key_str]["$gt"]!=value)
-                {
-                    if (value==null)
-                        delete(this_control.params.get_params.spec[key_str]["$gt"]);
-                    else
-                        this_control.params.get_params.spec[key_str]["$gt"]=value;
-
-                    changed=true;
-                }
+                changed_filters["$regex"]=value;
+                changed_filters["$options"]="i";
             }
-            else if (attribute_element.attr("_filterLt")=="")
+
+            //delete the changes, since its null now?
+            if (value==null)
             {
-                if (this_control.params.get_params.spec[key_str]["$lt"]!=value)
+                $.each(changed_filters, function(k,v)
                 {
-                    if (value==null)
-                        delete(this_control.params.get_params.spec[key_str]["$lt"]);
-                    else
-                        this_control.params.get_params.spec[key_str]["$lt"]=value;
-
-                    changed=true;
-                }
+                    if (k in this_control.params.get_params.spec[key_str])
+                    {
+                        changed=true;
+                        delete(this_control.params.get_params.spec[key_str][k]);
+                    }
+                });
             }
-            else if (this_control.params.get_params.spec[key_str]["$regex"]!=value)
+            else
+            //add/overwrite values
             {
-                if (value==null)
-                {
-                    delete(this_control.params.get_params.spec[key_str]["$regex"]);
-                    delete(this_control.params.get_params.spec[key_str]["$options"]);
-                }
-                else
-                {
-                    this_control.params.get_params.spec[key_str]["$regex"]=value;
-                    this_control.params.get_params.spec[key_str]["$options"]="i";
-                }
-                changed=true;
-            }
-         }
 
-        //delete the whole thing if its empty or null
-        if (this_control.params.get_params.spec[key_str]==null || $.isEmptyObject(this_control.params.get_params.spec[key_str]))
-        {
-            delete (this_control.params.get_params.spec[key_str]);
+                //make sure its a object:
+                // if (typeof this_control.params.get_params.spec[key_str] != "object")
+                //     this_control.params.get_params.spec[key_str]={};
+
+                $.each(changed_filters, function(k,v)
+                {
+                    if (this_control.params.get_params.spec[key_str][k]!=v)
+                    {
+                        this_control.params.get_params.spec[key_str][k]=v
+                        changed=true;
+                    }
+                });
+            }
+
+            //delete the entry if its empty
+            if ($.isEmptyObject(this_control.params.get_params.spec[key_str]))
+            {
+                delete (this_control.params.get_params.spec[key_str]);
+            }
         }
+
 
          if (changed)
             this_control.get_delayed(false);
 
-         console.log("filtering is", this_control.params.get_params.spec);
     });
     
 

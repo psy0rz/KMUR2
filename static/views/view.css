@@ -43,6 +43,10 @@
 	height: 4em;
 }
 
+.controlFilterHighlight
+{
+    cursor:  pointer;
+}
 
 .autoHtml_MultiSelect
 {
