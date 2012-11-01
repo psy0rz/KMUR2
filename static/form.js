@@ -4,6 +4,8 @@
 //returns null when key can not be found.
 function resolveMeta(key, meta)
 {
+    //FIXME:fixen voor lists op 1 of andere nette manier..
+
     if (!key)
         return(null);
     

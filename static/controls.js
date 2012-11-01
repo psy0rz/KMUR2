@@ -88,6 +88,8 @@ ControlBase.prototype.format=function(txt, data)
     return(ret)
 }
 
+console.log(ControlBase.format.call("blaat", null));
+
 //gets metadata for this control and fills in metadata in the specified this.context
 //calls this.get_meta_result with the results
 //the request_params are just passed along to get_meta_result, and may be used to identify the request or to pass arbitrary parameters around.
@@ -607,6 +609,7 @@ ControlList.prototype.attach_event_handlers=function()
         //get the value via the correct data conversion routines:
         var key_str=attribute_element.attr("_key");
         var meta=resolveMeta(key_str, this_control.meta.meta);
+        console.log(key_str, this_control.meta.meta);
         var get_element=$(".autoGet", attribute_element);
         var value=dataConv[meta.type]['get'](get_element, meta, key_str);
 
