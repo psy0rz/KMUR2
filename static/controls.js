@@ -88,7 +88,6 @@ ControlBase.prototype.format=function(txt, data)
     return(ret)
 }
 
-console.log(ControlBase.format.call("blaat", null));
 
 //gets metadata for this control and fills in metadata in the specified this.context
 //calls this.get_meta_result with the results
