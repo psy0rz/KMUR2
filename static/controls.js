@@ -486,12 +486,12 @@ function controlList(params)
 			var endlessParams={};
 			$.extend( endlessParams, getParams );
 			
-			if (!('offset' in endlessParams))
-				endlessParams.offset=0;
+			if (!('skip' in endlessParams))
+				endlessParams.skip=0;
 			
-			endlessParams.offset+=$(autoListSourceElement).parent().children().length-beginLength;
+			endlessParams.skip+=$(autoListSourceElement).parent().children().length-beginLength;
 			
-			logDebug("endless scroll offset is ",endlessParams.offset);
+			logDebug("endless scroll skip is ",endlessParams.skip);
 
 			rpc(
 				params.getData,

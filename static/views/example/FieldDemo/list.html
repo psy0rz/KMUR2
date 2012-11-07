@@ -5,7 +5,7 @@
 		getMeta		: 'example.FieldDemo.get_meta',
 		getMetaParams	: view.params,
 		getData		: 'example.FieldDemo.get_all',
-		getDataParams	: view.params,
+		getDataParams	: { 'limit': 3 } ,
 		delData		: 'example.FieldDemo.del',
 		editView		: {
 			name: 'example.FieldDemo.edit',
@@ -19,7 +19,8 @@
 			});
 		},
 		errorCallback	: function(result) { },
-		saveCallback	: function(result) { }
+		saveCallback	: function(result) { },
+		endlessScrolling:true
 	});
 </script>
 
