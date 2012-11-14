@@ -1,3 +1,32 @@
+a={};
+
+a.eerste=function()
+{
+    console.log("eerste");
+};
+
+a.ni=function()
+{
+    console.log("not implemented!");
+};
+
+a.dinges=function ()
+{
+    this.ni();
+}
+
+
+b=Object.create(a);
+
+b.dinges=function()
+{
+    console.log("joo wel implmented");
+}
+
+//a.ni();
+a.dinges();
+b.dinges();
+b.eerste();
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

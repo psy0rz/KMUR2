@@ -5,10 +5,9 @@
 Field={};
 
 
-
 /*** Fields base prototype
     Most publicly callable functions have these parameters:
-        key         :key of the specified meta data. Usually also stored in context.attr("field-key")
+        key         :key of the specified meta data in dotted notation. Usually also stored in context.attr("field-key")
         meta        :meta-data 
         context     :jquery dom element to operate on or in
         data        :data to put in
@@ -92,26 +91,110 @@ Field.Base.input_put=Field.Base.not_implemented;
 Field.Base.input_get=Field.Base.not_implemented;
 
 
-/*** convert data into html and store it in the context
+/*** stores specified element or string in context
+
+    mostly used internally by html_create.
+    if options.show_changes is true, then it highlights the field if it has gotten a different content.
+    element can be a jquery object or a string. if its a string then context.text() will be used to
+    set the element. otherwise the content will be emptied and the element will be added.
+
+    */ 
+Field.Base.html_append=function(key, meta, context, element, options)
+{
+    if (typeof element=='String')
+    {
+        if (element!=context.text())
+        {
+            context.text(element);
+            if (options.show_changes)
+                context.effect('highlight', 2000);
+        }
+    }
+    else
+    {
+        if (element.text()!=context.text())
+        {
+            context.empty();
+            context.append(element);
+            if (options.show_changes)
+                context.effect('highlight', 2000);
+        }
+    }
+}
+
+
+/*** convert data into html or plain text and store it in the context
     context should have class field-html-create    
 */
 Field.Base.html_create=Field.Base.not_implemented;
-{
-
-}
-
 
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-/*** Dictonary type. This is usually the base fieldtype we start with.
-
+/*** Dictonary type. This is usually the base fieldtype we start with. (the "root" of the meta-data)
+    This fieldtype is recursive, so its allowed for meta data to have Dicts in Dicts.
 */
 Field.Dict=Object.create(Field.Base);
 
 
+//a dict will traverse all the sub-metadata items
 Field.Dict.input_create=function(key, meta, context)
 {
+    //traverse the sub meta data
+    $.each(meta.meta, function(sub_key, thismeta){
+        var key_str;
+        if (key)
+            key_str=key+"."+sub_key;
+        else
+            key_str=sub_key;
+        
+        var selector='.field-input-create[field-key="'+key_str+'"]';
 
-}
+        //traverse the field-input-create elements for this key:
+        $(selector, context).each(function()
+        {
+            Field[thismeta.type].input_create(key_str, thismeta, this);
+        }); 
 
+        //traverse the field-meta-put elements for this key:
+        selector='.field-meta-put[field-key="'+key_str+'"]';
+        $(selector, context).each(function()
+        {
+            Field[thismeta.type].meta_put(key_str, thismeta, this);
+        }); 
+
+    }); //meta data
+};
+
+//-options.update: set true to update existing data instead of cleaning it. (usefull for List)
+Field.Dict.input_put=function(key, meta, context, data, options)
+{
+
+};
+
+Field.Dict.input_get=function(key, meta, context)
+{
+
+};
+
+
+//-options.show_changes: highlight changed data 
+Field.Dict.html_create=function(key, meta, context, data, options)
+{
+    //traverse the sub meta data
+    $.each(meta.meta, function(sub_key, thismeta){
+        var key_str;
+        if (key)
+            key_str=key+"."+sub_key;
+        else
+            key_str=sub_key;
+        
+        var selector='.field-html-create[field-key="'+key_str+'"]';
+
+        //traverse the field-input-create elements for this key:
+        $(selector, context).each(function()
+        {
+            Dict[thismeta.type].input_create(key_str, thismeta, this);
+        }); 
+
+};
