@@ -14,6 +14,15 @@ Field={};
 */
 Field.Base={};
 
+//adds key to basekey, using dotted notation
+Field.Base.concat_keys(base_key, key)
+{
+        if (base_key)
+            return(base_key+"."+key);
+        else
+            return(key);
+}
+
 /*** generic function thats used when something is not implemented. 
 
     tries to make the error visible and logs it to the console.
@@ -142,12 +151,7 @@ Field.Dict.input_create=function(key, meta, context)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str;
-        if (key)
-            key_str=key+"."+sub_key;
-        else
-            key_str=sub_key;
-        
+        var key_str=this.concat_keys(key, sub_key);
         var selector='.field-input-create[field-key="'+key_str+'"]';
 
         //traverse the field-input-create elements for this key:
@@ -155,16 +159,25 @@ Field.Dict.input_create=function(key, meta, context)
         {
             Field[thismeta.type].input_create(key_str, thismeta, this);
         }); 
+    }); //meta data
+};
+
+//a dict will traverse all the sub-metadata items
+Field.Dict.meta_put=function(key, meta, context)
+{
+    //traverse the sub meta data
+    $.each(meta.meta, function(sub_key, thismeta){
+        var key_str=this.concat_keys(key, sub_key);
+        var selector='.field-meta-put[field-key="'+key_str+'"]';
 
         //traverse the field-meta-put elements for this key:
-        selector='.field-meta-put[field-key="'+key_str+'"]';
         $(selector, context).each(function()
         {
             Field[thismeta.type].meta_put(key_str, thismeta, this);
         }); 
-
     }); //meta data
 };
+
 
 //-options.update: set true to update existing data instead of cleaning it. (usefull for List)
 Field.Dict.input_put=function(key, meta, context, data, options)
@@ -183,18 +196,15 @@ Field.Dict.html_create=function(key, meta, context, data, options)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str;
-        if (key)
-            key_str=key+"."+sub_key;
-        else
-            key_str=sub_key;
+        var key_str=this.concat_keys(key, sub_key);
         
         var selector='.field-html-create[field-key="'+key_str+'"]';
 
         //traverse the field-input-create elements for this key:
         $(selector, context).each(function()
         {
-            Dict[thismeta.type].input_create(key_str, thismeta, this);
+            Field[thismeta.type].html_create(key_str, thismeta, this, options);
         }); 
 
 };
+
