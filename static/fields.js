@@ -58,7 +58,7 @@ Field.Base.meta_put=function(key, meta, context)
     when meta.readonly is not true, automaticly adds field-input-get class, otherwise disables input element.
     automacly sets title to meta.desc.
     */ 
-Field.Base.input_append=function(key, meta, context, input)
+Field.Base.input_append=function(key, meta, context, element)
 {
     context.addClass("field-input-put");
     context.attr("field-key", key);
@@ -94,7 +94,7 @@ Field.Base.input_put=Field.Base.not_implemented;
 
 
 /*** gets data from existing input element and returns it.
-    context should be an input-field was created by input_create 
+    context should be an input-field that was created by input_create 
     context should have class field-input-get
 */
 Field.Base.input_get=Field.Base.not_implemented;
@@ -182,12 +182,36 @@ Field.Dict.meta_put=function(key, meta, context)
 //-options.update: set true to update existing data instead of cleaning it. (usefull for List)
 Field.Dict.input_put=function(key, meta, context, data, options)
 {
+    //traverse the sub meta data
+    $.each(meta.meta, function(sub_key, thismeta){
+        var key_str=this.concat_keys(key, sub_key);
+        var selector='.field-input-put[field-key="'+key_str+'"]';
 
+        //traverse the field-meta-put elements for this key:
+        $(selector, context).each(function()
+        {
+            Field[thismeta.type].input_put(key_str, thismeta, this, data[sub_key], options);
+        }); 
+    }); //meta data
 };
 
 Field.Dict.input_get=function(key, meta, context)
 {
+    var ret={};
 
+    //traverse the sub meta data
+    $.each(meta.meta, function(sub_key, thismeta){
+        var key_str=this.concat_keys(key, sub_key);
+        var selector='.field-input-get[field-key="'+key_str+'"]';
+
+        //traverse the field-meta-put elements for this key:
+        $(selector, context).each(function()
+        {
+            ret[sub_key]=Field[thismeta.type].input_get(key_str, thismeta, this);
+        }); 
+    }); //meta data
+
+    return(ret);
 };
 
 
