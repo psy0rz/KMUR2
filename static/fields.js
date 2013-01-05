@@ -195,7 +195,6 @@ Field.Dict.meta_put=function(key, meta, context)
 };
 
 
-//-options.update: set true to update existing data instead of cleaning it. (usefull for List)
 Field.Dict.input_put=function(key, meta, context, data, options)
 {
     //traverse the sub meta data
@@ -212,7 +211,7 @@ Field.Dict.input_put=function(key, meta, context, data, options)
             //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
-                console.log("subkey", sub_key, data);
+                console.log("dict.input_put subkey", sub_key, data[sub_key]);
                 Field[thismeta.type].input_put(key_str, thismeta, $(this), data[sub_key], options);
             }); 
         }
@@ -348,50 +347,54 @@ Field.List.input_put=function(key, meta, context, data, options)
     var clone=Field.List.clone(context);
     
     //traverse all the new list items
-    $.each(data, function (item_nr, item_value) {
-        
-        //this will become a new or existing item that needs to be filled with data
-        var update_element={};
-        
-        //update mode
-        if (settings.update)
-        {
-            if (list_key)
+    if (data)
+    {
+        $.each(data, function (item_nr, item_value) {
+            
+            //this will become a new or existing item that needs to be filled with data
+            var update_element={};
+            
+            //update mode
+            if (options.list_update)
             {
-                //try to find existing element
-                //the field-key and field-list-id should both match
-                updateElement=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[list_key]+'"]', parent);
+                if (list_key)
+                {
+                    //try to find existing element
+                    //the field-key and field-list-id should both match
+                    update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[list_key]+'"]', parent);
+                }
+                else
+                {
+                    //just use plain item_nr array adressing:
+                    if (item_nr < existing_items.length)
+                        update_element=existing_items[item_nr];
+                }
             }
+            
+            //not found? clone new element
+            if (!update_element.length)
+            {
+                //deep clone the prepared clone
+                update_element=clone.clone(true);
+
+                if (list_key)
+                    update_element.attr("field-list-id", item_value[list_key]);
+
+                //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
+                //NOTE: can we improve performance a lot by appending after the input_put on cloned items?
+                update_element.insertBefore(context);
+            }
+            //found, make sure its not deleted
             else
             {
-                //just use plain item_nr array adressing:
-                updateElement=$(list_items[item_nr]);
+                if (options.list_update)
+                    update_element.removeClass("field-list-delete");
             }
-        }
-        
-        //not found? clone new element
-        if (!update_element.length)
-        {
-            //deep clone the prepared clone
-            update_element=clone.clone(true);
-
-            if (list_key)
-                update_element.attr("field-list-id", item_value[list_key]);
-
-            //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
-            //NOTE: can we improve performance a lot by appending after the input_put on cloned items?
-            update_element.insertBefore(context);
-        }
-        //found, make sure its not deleted
-        else
-        {
-            if (settings.list_update)
-                update_element.removeClass("field-list-delete");
-        }
-        
-        //finally put data into it
-        Field.Dict.input_put(key, meta.meta, update_element, item_value, options);
-    });         
+            
+            //finally put data into it
+            Field.Dict.input_put(key, meta.meta, update_element, item_value, options);
+        });
+    }
     
     //delete stuff that still has the delete-marker in it:
     if (options.list_update)
@@ -401,6 +404,18 @@ Field.List.input_put=function(key, meta, context, data, options)
                     $(this).remove();
                 });
     }
+}
+
+Field.List.input_get=function(key, meta, context)
+{
+    var value=new Array();
+    var parent=$(context).parent();
+    
+    //traverse all the list items
+    $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
+        value.push(Field.Dict.input_get(key, meta, $(this)));
+    });
+    return(value);    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
