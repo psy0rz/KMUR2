@@ -15,7 +15,7 @@ Field={};
 Field.Base={};
 
 //adds key to basekey, using dotted notation
-Field.Base.concat_keys(base_key, key)
+Field.Base.concat_keys=function(base_key, key)
 {
         if (base_key)
             return(base_key+"."+key);
@@ -42,7 +42,7 @@ Field.Base.not_implemented=function(key, meta, context, data)
 */
 Field.Base.meta_put=function(key, meta, context)
 {
-    var meta_key=context.attr("field-meta-key")];
+    var meta_key=context.attr("field-meta-key");
     if (meta_key in meta)
         context.text(meta[meta_key]);
     else
@@ -151,7 +151,7 @@ Field.Dict.input_create=function(key, meta, context)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=this.concat_keys(key, sub_key);
+        var key_str=Field.Dict.concat_keys(key, sub_key);
         var selector='.field-input-create[field-key="'+key_str+'"]';
 
         //traverse the field-input-create elements for this key:
@@ -167,12 +167,13 @@ Field.Dict.meta_put=function(key, meta, context)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=this.concat_keys(key, sub_key);
+        var key_str=Field.Dict.concat_keys(key, sub_key);
         var selector='.field-meta-put[field-key="'+key_str+'"]';
-
         //traverse the field-meta-put elements for this key:
+        console.log('select', selector);
         $(selector, context).each(function()
         {
+            console.log(this);
             Field[thismeta.type].meta_put(key_str, thismeta, this);
         }); 
     }); //meta data
@@ -184,7 +185,7 @@ Field.Dict.input_put=function(key, meta, context, data, options)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=this.concat_keys(key, sub_key);
+        var key_str=Field.Dict.concat_keys(key, sub_key);
         var selector='.field-input-put[field-key="'+key_str+'"]';
 
         //traverse the field-meta-put elements for this key:
@@ -201,7 +202,7 @@ Field.Dict.input_get=function(key, meta, context)
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=this.concat_keys(key, sub_key);
+        var key_str=Field.Dict.concat_keys(key, sub_key);
         var selector='.field-input-get[field-key="'+key_str+'"]';
 
         //traverse the field-meta-put elements for this key:
@@ -220,7 +221,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=this.concat_keys(key, sub_key);
+        var key_str=Field.Dict.concat_keys(key, sub_key);
         
         var selector='.field-html-create[field-key="'+key_str+'"]';
 
@@ -228,7 +229,8 @@ Field.Dict.html_create=function(key, meta, context, data, options)
         $(selector, context).each(function()
         {
             Field[thismeta.type].html_create(key_str, thismeta, this, options);
-        }); 
+        });
+    }); 
 
 };
 

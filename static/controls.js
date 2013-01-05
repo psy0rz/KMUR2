@@ -1,34 +1,3 @@
-a={};
-
-a.eerste=function()
-{
-    console.log("eerste");
-};
-
-a.ni=function()
-{
-    console.log("not implemented!");
-};
-
-a.dinges=function ()
-{
-    this.ni();
-}
-
-
-b=Object.create(a);
-
-b.dinges=function()
-{
-    console.log("joo wel implmented");
-}
-
-//a.ni();
-a.dinges();
-b.dinges();
-b.eerste();
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //base-class for all controllers
 /* 
@@ -152,7 +121,9 @@ ControlBase.prototype.get_meta_result=function(result, request_params)
         return;
 
     this.meta=result['data'];
-    $(this.context).autoMeta(this.meta);
+    Field.Dict.meta_put('',this.meta, this.context);
+    Field.Dict.input_create('',this.meta, this.context);
+    //$(this.context).autoMeta(this.meta);
 
     this.attach_event_handlers();   
     this.get(request_params);
