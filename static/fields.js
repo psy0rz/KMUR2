@@ -29,9 +29,9 @@ Field.Base.concat_keys=function(base_key, key)
     */
 Field.Base.not_implemented=function(key, meta, context, data)
 {
-    context.empty();
-    context.append($("<span class='ui-state-error'>Not implemented: "+key));
-    console.error("Not-implemented field-function called: ", key, meta, context, data);
+    //context.empty();
+    context.append($("<span class='ui-state-highlight'>datatype not implemented: "+meta.type+"</span>"));
+    console.error("unimplemented datatype in field "+key+": ", meta, context, data);
 }
 
 /*** put specified meta-datafield literally into context
@@ -152,13 +152,21 @@ Field.Dict.input_create=function(key, meta, context)
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
-        var selector='.field-input-create[field-key="'+key_str+'"]';
 
-        //traverse the field-input-create elements for this key:
-        $(selector, context).each(function()
+        if (thismeta.type=='Dict')
         {
-            Field[thismeta.type].input_create(key_str, thismeta, this);
-        }); 
+            Field.Dict.input_create(key_str, thismeta, context);
+        }
+        else
+        {
+            var selector='.field-input-create[field-key="'+key_str+'"]';
+
+             //traverse the field-input-create elements for this key:
+            $(selector, context).each(function()
+            {
+                Field[thismeta.type].input_create(key_str, thismeta, $(this));
+            }); 
+        }
     }); //meta data
 };
 
@@ -168,13 +176,20 @@ Field.Dict.meta_put=function(key, meta, context)
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
+
+        if (thismeta.type=='Dict')
+        {
+            Field.Dict.meta_put(key_str, thismeta, context);
+        }
+
         var selector='.field-meta-put[field-key="'+key_str+'"]';
         //traverse the field-meta-put elements for this key:
-        console.log('select', selector);
         $(selector, context).each(function()
         {
-            console.log(this);
-            Field[thismeta.type].meta_put(key_str, thismeta, this);
+            if (thismeta.type=='Dict')
+                Field.Base.meta_put(key_str, thismeta, $(this));
+            else
+                Field[thismeta.type].meta_put(key_str, thismeta, $(this));
         }); 
     }); //meta data
 };
@@ -186,13 +201,21 @@ Field.Dict.input_put=function(key, meta, context, data, options)
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
-        var selector='.field-input-put[field-key="'+key_str+'"]';
-
-        //traverse the field-meta-put elements for this key:
-        $(selector, context).each(function()
+        if (thismeta.type=='Dict')
         {
-            Field[thismeta.type].input_put(key_str, thismeta, this, data[sub_key], options);
-        }); 
+            Field.Dict.input_put(key_str, thismeta, context, data[sub_key], options);
+        }
+        else
+        {
+            var selector='.field-input-put[field-key="'+key_str+'"]';
+
+            //traverse the field-meta-put elements for this key:
+            $(selector, context).each(function()
+            {
+                console.log("subkey", sub_key, data);
+                Field[thismeta.type].input_put(key_str, thismeta, $(this), data[sub_key], options);
+            }); 
+        }
     }); //meta data
 };
 
@@ -203,13 +226,20 @@ Field.Dict.input_get=function(key, meta, context)
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
-        var selector='.field-input-get[field-key="'+key_str+'"]';
-
-        //traverse the field-meta-put elements for this key:
-        $(selector, context).each(function()
+        if (thismeta.type=='Dict')
         {
-            ret[sub_key]=Field[thismeta.type].input_get(key_str, thismeta, this);
-        }); 
+            ret[sub_key]=Field.Dict.input_get(key_str, thismeta, context);
+        }
+        else
+        {
+            var selector='.field-input-get[field-key="'+key_str+'"]';
+
+            //traverse the field-meta-put elements for this key:
+            $(selector, context).each(function()
+            {
+                ret[sub_key]=Field[thismeta.type].input_get(key_str, thismeta, $(this));
+            }); 
+        }
     }); //meta data
 
     return(ret);
@@ -223,14 +253,169 @@ Field.Dict.html_create=function(key, meta, context, data, options)
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
         
-        var selector='.field-html-create[field-key="'+key_str+'"]';
-
-        //traverse the field-input-create elements for this key:
-        $(selector, context).each(function()
+        if (thismeta.type=='Dict')
         {
-            Field[thismeta.type].html_create(key_str, thismeta, this, options);
-        });
+            Field.Dict.html_create(key_str, thismeta, context, data[sub_key], options);
+        }
+        else
+        {
+            var selector='.field-html-create[field-key="'+key_str+'"]';
+
+            //traverse the field-input-create elements for this key:
+            $(selector, context).each(function()
+            {
+                Field[thismeta.type].html_create(key_str, thismeta, $(this), data[sub_key], options);
+            });
+        }
     }); 
 
 };
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * List is a bit of a special case: 
+ * The original element we call the 'source-element', it should have a field-list-source class. 
+ * input_create will make sure of this.
+ * 
+ * When calling input_put, the source-element will be cloned, and input_put will be called recursively 
+ * with this cloned item as context.
+ *
+ * Every cloned item gets the class field-list-item, but the other field-classes are removed. otherwise
+ * the rest of the fieldfunctions would get confused about these clones.
+ *
+ * Add a field-list-source-hide the source element to hide it. (e.g. user doesnt see a dummy-item)
+ * 
+ * Use Field.List.Clone to correctly clone the source element.
+ * 
+ * When the data is put, the field-list-id attribute of every cloned list item is set to the value of field
+ * that is specified in field-list-key in the list source.
+ */
+Field.List=Object.create(Field.Base);
+
+// correctly clones the specified field-list-source and resturns it
+// source should be a jquery object
+Field.List.clone=function(source_element)
+{
+    var clone=source_element.clone(true);
+    clone.removeClass("field-input-create field-input-get field-input-put field-meta-put field-html-create field-list-source field-list-source-hide");
+    clone.addClass("field-list-item");
+    return(clone);
+
+}
+
+Field.List.input_create=function(key, meta, context)
+{
+    context.addClass("field-list-source");
+
+    if (!meta.readonly)
+        context.addClass("field-input-get");
+
+    context.addClass("field-input-put");
+    //recurse into subdict, every list should have one
+    Field.Dict.input_create(key, meta.meta, context);
+};
+
+/*
+ options.list_update: update an existing list, instead off removing and recreating it. 
+ usefull with options.show_changes, to give user feedback of changes.
+
+ options.list_no_remove: dont remove existing items. usefull for endless scrolling.
+*/
+
+Field.List.input_put=function(key, meta, context, data, options)
+{
+    var parent=context.parent();
+    var list_key=context.attr("field-list-key");
+
+    //existing list items (if any)
+    var existing_items=$('.field-list-item[field-key="'+key+'"]', parent);
+    
+    //not in update mode
+    if (!options.list_update)
+    {
+        //remove existing listitems
+        if (!options.list_no_remove)
+            existing_items.remove();
+    }
+    //in update mode, add a marker to remember which stuff can be deleted
+    else
+    {
+        existing_items.addClass("field-list-delete");
+    }
+    
+    //for performance, prepare a listitem one time and clone that.
+    var clone=Field.List.clone(context);
+    
+    //traverse all the new list items
+    $.each(data, function (item_nr, item_value) {
+        
+        //this will become a new or existing item that needs to be filled with data
+        var update_element={};
+        
+        //update mode
+        if (settings.update)
+        {
+            if (list_key)
+            {
+                //try to find existing element
+                //the field-key and field-list-id should both match
+                updateElement=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[list_key]+'"]', parent);
+            }
+            else
+            {
+                //just use plain item_nr array adressing:
+                updateElement=$(list_items[item_nr]);
+            }
+        }
+        
+        //not found? clone new element
+        if (!update_element.length)
+        {
+            //deep clone the prepared clone
+            update_element=clone.clone(true);
+
+            if (list_key)
+                update_element.attr("field-list-id", item_value[list_key]);
+
+            //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
+            //NOTE: can we improve performance a lot by appending after the input_put on cloned items?
+            update_element.insertBefore(context);
+        }
+        //found, make sure its not deleted
+        else
+        {
+            if (settings.list_update)
+                update_element.removeClass("field-list-delete");
+        }
+        
+        //finally put data into it
+        Field.Dict.input_put(key, meta.meta, update_element, item_value, options);
+    });         
+    
+    //delete stuff that still has the delete-marker in it:
+    if (options.list_update)
+    {
+        $('.field-list-delete[field-key="'+key+'"]', parent).hide(1000, function()
+                {
+                    $(this).remove();
+                });
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+Field.String=Object.create(Field.Base);
+
+Field.Password=Object.create(Field.String);
+
+Field.Number=Object.create(Field.Base);
+
+Field.Timestamp=Object.create(Field.Base);
+
+Field.Bool=Object.create(Field.Base);
+
+Field.Select=Object.create(Field.Base);
+
+Field.MultiSelect=Object.create(Field.Base);
+
 

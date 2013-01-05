@@ -9,8 +9,8 @@ class Users(models.mongodb.MongoDB):
     
     meta = fields.Dict({
                         '_id': models.mongodb.FieldId(),
-                        'username': fields.String(min=3),
-                        'password': fields.Password(min=5),
+                        'username': fields.String(min=3, desc='Username'),
+                        'password': fields.Password(min=5, desc='Password'),
                         'active': fields.Bool(),
                         'groups': fields.MultiSelect(choices={
                                                               "admin": "Administrator",
