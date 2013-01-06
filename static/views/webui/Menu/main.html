@@ -14,9 +14,12 @@
 			function (result)
 			{
 				viewShowError(result, context)
-				Field.Dict.input_put('', meta, context, result["data"], { 
-					'update':true 
-				} );
+                Field[meta.type].put('', meta, context, result["data"], { 
+                    'list_update':true,
+                    'show_change':true
+                } );
+
+
 			},
 			debugTxt+"menu reload data"
 			);
@@ -45,13 +48,13 @@
 
 
 	//a menu item was clicked:
-	$('[_data]', context).click(function(event)
+	$('[field-store-data]', context).click(function(event)
 	{
 //		console.log("data ",this, $(this).data("_data"));
 
 		//create the view
 		var view={};
-		$.extend( view, $(this).data("_data").view);
+		$.extend( view, $(this).data("field-data").view);
 		view.x=event.clientX;
 		view.y=event.clientY;
 		if (view.highlight)
@@ -101,18 +104,18 @@
 
 <div class='viewError'></div>
 <div>
-	<div class='field-input-put autoListHide menuMain menuMain_Passive' field-key='main'>
+	<div class='field-put field-list-source field-list-source-hide menuMain menuMain_Passive' field-key='main'>
 		<div class='menuMainTitle' >
 			<span class='ui-icon ui-icon-triangle-1-e menuMain_ActiveHide' style='float:left'></span>
 			<span class='ui-icon ui-icon-triangle-1-s menuMain_PassiveHide' style='float:left'></span>
-			<span class='field-input-put' field-key='main.title' _html></span>
+			<span class='field-put' field-key='main.title'></span>
 		</div>
 		<div class='menuMainSubs'>
-			<div class='field-input-put menuSub autoListHide ' field-key='main.items' _data>
-				<div class='field-input-put' field-key='main.items.title' _html  ></div>
+			<div class='field-put field-list-source menuSub field-list-source-hide ' field-key='main.items' field-store-data>
+				<div class='field-put' field-key='main.items.title' ></div>
 			</div>
-			<div class='field-input-put menuFavorite autoListHide ' field-key='main.favorites' _data>
-				<div class='field-input-put' field-key='main.favorites.title' _html  ></div>
+			<div class='field-put menuFavorite field-list-source-hide ' field-key='main.favorites' field-store-data>
+				<div class='field-put' field-key='main.favorites.title'></div>
 			</div>
 		</div>
 	</div>

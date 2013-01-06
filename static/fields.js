@@ -49,66 +49,54 @@ Field.Base.meta_put=function(key, meta, context)
         context.text("");
 }
 
-/*** appends specified input element into the context
+/*** appends specified jquery input element into the jquery context
 
     mostly used internally by input_create
-    this will modify the input-element as well!
+    this will modify the element as well!
     automaticly sets field-key attribute.
-    automaticly adds field-input-put class.
-    when meta.readonly is not true, automaticly adds field-input-get class, otherwise disables input element.
-    automacly sets title to meta.desc.
+    automaticly adds field-input class, so that .put functions know it is an input element.
+    when meta.readonly is not true, automaticly adds field-get class, otherwise disables input element.
+    automaticly sets title to meta.desc.
+
+    if context has field-allow-null attribute, then the element will get it as well
     */ 
 Field.Base.input_append=function(key, meta, context, element)
 {
-    context.addClass("field-input-put");
-    context.attr("field-key", key);
-    context.attr("title", meta.desc);
+    element.addClass("field-input field-put");
+    element.attr("field-key", key);
+    element.attr("title", meta.desc);
     
     if (!meta.readonly)
     {
-        context.addClass("field-input-get");
+        element.addClass("field-get");
     }
     else
     {
-        context.attr('disabled',true);
+        element.attr('disabled',true);
     }
+
+    if (context.attr("field-allow-null")=="")
+    {
+        element.attr("field-allow-null", "");
+    }
+
     context.empty();
     context.append(element);
 };
 
 
-/*** create input element from metadata and store it in the context
-
-    context should have class field-input-create
-    newly created input elements automaticly get apporpiate classes and attributes. (see input_append)
-    */
-Field.Base.input_create=Field.Base.not_implemented;
-
-
-/*** puts data into existing input element
-
-    context should be a input element that was created by input_create
-    context should have class field-input-put
-    */
-Field.Base.input_put=Field.Base.not_implemented;
-
-
-/*** gets data from existing input element and returns it.
-    context should be an input-field that was created by input_create 
-    context should have class field-input-get
-*/
-Field.Base.input_get=Field.Base.not_implemented;
-
-
 /*** stores specified element or string in context
 
-    mostly used internally by html_create.
+    mostly used internally by put.
+
     if options.show_changes is true, then it highlights the field if it has gotten a different content.
+
     element can be a jquery object or a string. if its a string then context.text() will be used to
     set the element. otherwise the content will be emptied and the element will be added.
 
+    if field-store-data is set, then the raw data is stored under field-data.
     */ 
-Field.Base.html_append=function(key, meta, context, element, options)
+Field.Base.html_append=function(key, meta, context, data, options, element)
 {
     if (typeof element=='String')
     {
@@ -119,6 +107,7 @@ Field.Base.html_append=function(key, meta, context, element, options)
                 context.effect('highlight', 2000);
         }
     }
+    //its probably a jquery object:
     else
     {
         if (element.text()!=context.text())
@@ -129,13 +118,45 @@ Field.Base.html_append=function(key, meta, context, element, options)
                 context.effect('highlight', 2000);
         }
     }
+
+    if (context.attr("field-store-data")!=null)
+    {
+        context.data("field-data",data);
+    }
 }
 
 
-/*** convert data into html or plain text and store it in the context
-    context should have class field-html-create    
+/*** create input element from metadata and store it in the context
+
+    context should have class field-input-create
+    newly created input elements automaticly get apporpiate classes and attributes. (see input_append)
+    */
+Field.Base.input_create=Field.Base.not_implemented;
+
+
+/*** puts data into context
+
+    context should have class field-put
+
+    if the field-input class is set on the context, then the current content of the context must have been
+    created with input_create. the existing input elements will then be filled with the data.
+
+    otherwise the data and metadata will be converted to a html representation and stored in the context
+
+    */
+Field.Base.put=Field.Base.not_implemented;
+
+
+/*** gets data from content.
+
+    context must contain input-elements that where created with input_create.
+    context should have class field-get
 */
-Field.Base.html_create=Field.Base.not_implemented;
+Field.Base.get=Field.Base.not_implemented;
+
+
+
+
 
 
 
@@ -194,31 +215,32 @@ Field.Dict.meta_put=function(key, meta, context)
     }); //meta data
 };
 
-
-Field.Dict.input_put=function(key, meta, context, data, options)
+//-options.show_changes: highlight changed data 
+Field.Dict.put=function(key, meta, context, data, options)
 {
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
-            Field.Dict.input_put(key_str, thismeta, context, data[sub_key], options);
+            //for subdicts, we stay in the same context while we recurse:
+            Field.Dict.put(key_str, thismeta, context, data[sub_key], options);
         }
         else
         {
-            var selector='.field-input-put[field-key="'+key_str+'"]';
+            var selector='.field-put[field-key="'+key_str+'"]';
 
             //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
                 console.log("dict.input_put subkey", sub_key, data[sub_key]);
-                Field[thismeta.type].input_put(key_str, thismeta, $(this), data[sub_key], options);
-            }); 
+                Field[thismeta.type].put(key_str, thismeta, $(this), data[sub_key], options);
+            });
         }
     }); //meta data
 };
 
-Field.Dict.input_get=function(key, meta, context)
+Field.Dict.get=function(key, meta, context)
 {
     var ret={};
 
@@ -227,16 +249,16 @@ Field.Dict.input_get=function(key, meta, context)
         var key_str=Field.Dict.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
-            ret[sub_key]=Field.Dict.input_get(key_str, thismeta, context);
+            ret[sub_key]=Field.Dict.get(key_str, thismeta, context);
         }
         else
         {
-            var selector='.field-input-get[field-key="'+key_str+'"]';
+            var selector='.field-get[field-key="'+key_str+'"]';
 
             //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
-                ret[sub_key]=Field[thismeta.type].input_get(key_str, thismeta, $(this));
+                ret[sub_key]=Field[thismeta.type].get(key_str, thismeta, $(this));
             }); 
         }
     }); //meta data
@@ -244,7 +266,7 @@ Field.Dict.input_get=function(key, meta, context)
     return(ret);
 };
 
-
+/*
 //-options.show_changes: highlight changed data 
 Field.Dict.html_create=function(key, meta, context, data, options)
 {
@@ -269,7 +291,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
     }); 
 
 };
-
+*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -277,7 +299,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
  * The original element we call the 'source-element', it should have a field-list-source class. 
  * input_create will make sure of this.
  * 
- * When calling input_put, the source-element will be cloned, and input_put will be called recursively 
+ * When calling put, the source-element will be cloned, and put will be called recursively 
  * with this cloned item as context.
  *
  * Every cloned item gets the class field-list-item, but the other field-classes are removed. otherwise
@@ -285,7 +307,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
  *
  * Add a field-list-source-hide the source element to hide it. (e.g. user doesnt see a dummy-item)
  * 
- * Use Field.List.Clone to correctly clone the source element.
+ * Use Field.List.Clone to correctly clone a source element.
  * 
  * When the data is put, the field-list-id attribute of every cloned list item is set to the value of field
  * that is specified in field-list-key in the list source.
@@ -297,7 +319,7 @@ Field.List=Object.create(Field.Base);
 Field.List.clone=function(source_element)
 {
     var clone=source_element.clone(true);
-    clone.removeClass("field-input-create field-input-get field-input-put field-meta-put field-html-create field-list-source field-list-source-hide");
+    clone.removeClass("field-input-create field-get field-put field-meta-put field-list-source field-list-source-hide");
     clone.addClass("field-list-item");
     return(clone);
 
@@ -308,9 +330,9 @@ Field.List.input_create=function(key, meta, context)
     context.addClass("field-list-source");
 
     if (!meta.readonly)
-        context.addClass("field-input-get");
+        context.addClass("field-get");
 
-    context.addClass("field-input-put");
+    context.addClass("field-put field-input");
     //recurse into subdict, every list should have one
     Field.Dict.input_create(key, meta.meta, context);
 };
@@ -322,7 +344,7 @@ Field.List.input_create=function(key, meta, context)
  options.list_no_remove: dont remove existing items. usefull for endless scrolling.
 */
 
-Field.List.input_put=function(key, meta, context, data, options)
+Field.List.put=function(key, meta, context, data, options)
 {
     var parent=context.parent();
     var list_key=context.attr("field-list-key");
@@ -381,7 +403,7 @@ Field.List.input_put=function(key, meta, context, data, options)
                     update_element.attr("field-list-id", item_value[list_key]);
 
                 //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
-                //NOTE: can we improve performance a lot by appending after the input_put on cloned items?
+                //NOTE: can we improve performance a lot by appending after the put on cloned items?
                 update_element.insertBefore(context);
             }
             //found, make sure its not deleted
@@ -392,7 +414,7 @@ Field.List.input_put=function(key, meta, context, data, options)
             }
             
             //finally put data into it
-            Field.Dict.input_put(key, meta.meta, update_element, item_value, options);
+            Field.Dict.put(key, meta.meta, update_element, item_value, options);
         });
     }
     
@@ -406,14 +428,14 @@ Field.List.input_put=function(key, meta, context, data, options)
     }
 }
 
-Field.List.input_get=function(key, meta, context)
+Field.List.get=function(key, meta, context)
 {
     var value=new Array();
     var parent=$(context).parent();
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
-        value.push(Field.Dict.input_get(key, meta, $(this)));
+        value.push(Field.Dict.get(key, meta, $(this)));
     });
     return(value);    
 }
@@ -421,7 +443,59 @@ Field.List.input_get=function(key, meta, context)
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
 
+Field.String.input_create=function(key, meta, context)
+{
+    var added_element;
+    if (meta.max>100)
+    {
+        added_element=$("<textarea>");
+    }
+    else
+    {
+        added_element=$("<input>")
+            .attr("type","text");                       
+    }
+
+    added_element.val(meta.default);
+
+    Field.Base.input_append(key, meta, context, added_element);
+}
+
+
+Field.String.get=function(key, meta, context)
+{
+    var val=context.val();
+
+    if (context.attr("field-allow-null")  && val=="")
+                return (null);
+
+    return (val);
+}
+
+Field.String.put=function(key, meta, context, data, options)
+{
+    if (context.hasClass("field-input"))
+        context.val(data);
+    else
+        Field.Base.html_append(key, meta, context, data, options, $("<span>").text(data));
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//Password is almost the same as String
 Field.Password=Object.create(Field.String);
+
+Field.Password.input_create=function(key, meta, context)
+{
+    var added_element;
+        added_element=$("<input>")
+            .attr("type","password"); 
+
+    added_element.val(meta.default);
+    Field.Base.input_append(key, meta, context, added_element);
+}
+
 
 Field.Number=Object.create(Field.Base);
 
