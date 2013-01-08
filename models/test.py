@@ -37,7 +37,7 @@ t=field.Dict({
 
     
 
-print json.dumps(t, cls=field.JSONEncoder, indent=1)
+print(json.dumps(t, cls=field.JSONEncoder, indent=1))
 
 d={
    'poep': 12.44,
@@ -60,8 +60,8 @@ d={
 try:
     t.check(d)
 except field.FieldException as e:
-    print e.message
-    print e.fields
+    print(e.message)
+    print(e.fields)
     
 
 

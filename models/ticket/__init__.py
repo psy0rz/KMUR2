@@ -1,1 +1,1 @@
-print "in ticket"
+print("in ticket")

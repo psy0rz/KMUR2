@@ -66,7 +66,7 @@ class Base(object):
             self.meta['default'] = default
 
         if desc != None:
-            if not isinstance(desc, (unicode, str)):
+            if not isinstance(desc, str):
                 raise FieldException("desc should be a string")
             self.meta['desc'] = desc
 
@@ -121,7 +121,7 @@ class Dict(Base):
         if not isinstance(meta, dict):
             raise FieldException("Metadata should be a dict")
 
-        for key, submeta in meta.iteritems():
+        for key, submeta in meta.items():
             if not isinstance(submeta, Base):
                 raise FieldException("Metadata {} should be an instance of fields.Base".format(key), key)
 
@@ -145,7 +145,7 @@ class Dict(Base):
         if not isinstance(data, dict):
             raise FieldException("Data should be a dict")
 
-        for key, value in data.iteritems():
+        for key, value in data.items():
 
             if not key in self.meta['meta']:
                 raise FieldException("'{}' is an unknown field-name".format(key), key)
@@ -235,7 +235,7 @@ class String(Base):
         if not super(String, self).check(data):
             return
 
-        if not isinstance(data, (str, unicode)):
+        if not isinstance(data, str):
             raise FieldException("This should be a string")
 
         if (('min' in self.meta) and (len(data) < self.meta['min'])):

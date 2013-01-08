@@ -14,7 +14,7 @@ def loadmenus():
     for menufile in glob.glob("static/views/*/*/menu.json"):
         with open(menufile) as f:
             menudef = json.load(f)
-            for (name, menudata) in menudef.items():
+            for (name, menudata) in list(menudef.items()):
                 if not name in menus:
                     menus[name] = menudata
                     #just add this for developer convienience. (otherwise its hard to figure out which menu to specify in add_favorites)
@@ -130,5 +130,5 @@ class Menu(models.mongodb.MongoDB):
                                                              })
 
         return {
-                'main': menus.values()
+                'main': list(menus.values())
                 }

@@ -1,3 +1,3 @@
-print "in invoice"
+print("in invoice")
 import models.core.users
 

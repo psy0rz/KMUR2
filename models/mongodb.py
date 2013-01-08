@@ -21,7 +21,7 @@ class FieldId(fields.Base):
         if not super(FieldId, self).check(data):
             return
 
-        if not isinstance(data, (str, unicode, bson.objectid.ObjectId)):
+        if not isinstance(data, (str, bson.objectid.ObjectId)):
             raise fields.FieldException("id should be a string or bson.ObjectId")
 
         if str(bson.objectid.ObjectId(data)) != data:
@@ -170,7 +170,7 @@ class MongoDB(models.common.Base):
                             fields=fields,
                             skip=skip,
                             limit=limit,
-                            sort=sort.items()))
+                            sort=list(sort.items())))
 
     def _delete(self, _id, collection=None):
         '''deletes _id from collection
