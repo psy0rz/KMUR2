@@ -48,9 +48,9 @@
 
 
 	//a menu item was clicked:
-	$('[field-store-data]', context).click(function(event)
+	$('.field-dict-raw', context).click(function(event)
 	{
-//		console.log("data ",this, $(this).data("_data"));
+		console.log("data ",this, $(this).data("field-data"));
 
 		//create the view
 		var view={};
@@ -111,10 +111,10 @@
 			<span class='field-put' field-key='main.title'></span>
 		</div>
 		<div class='menuMainSubs'>
-			<div class='field-put field-list-source menuSub field-list-source-hide ' field-key='main.items' field-store-data>
+			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuSub' field-key='main.items' >
 				<div class='field-put' field-key='main.items.title' ></div>
 			</div>
-			<div class='field-put menuFavorite field-list-source-hide ' field-key='main.favorites' field-store-data>
+			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuFavorite' field-key='main.favorites' >
 				<div class='field-put' field-key='main.favorites.title'></div>
 			</div>
 		</div>

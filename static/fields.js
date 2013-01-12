@@ -115,21 +115,11 @@ Field.Base.input_append=function(key, meta, context, element)
     element can be a jquery object or a string. if its a string then context.text() will be used to
     set the element. otherwise the content will be emptied and the element will be added.
 
-    if field-store-data is set, then the raw data is stored under field-data of the context.
     */ 
 Field.Base.html_append=function(key, meta, context, data, options, element)
 {
-    if (typeof element=='String')
-    {
-        if (element!=context.text())
-        {
-            context.text(element);
-            if (options.show_changes)
-                context.effect('highlight', 2000);
-        }
-    }
-    //its probably a jquery object:
-    else
+    //probably a jquery object
+    if (typeof element ==='object')
     {
         if (element.text()!=context.text())
         {
@@ -139,11 +129,16 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
                 context.effect('highlight', 2000);
         }
     }
-
-    if (context.attr("field-store-data")!=null)
+    else
     {
-        context.data("field-data",data);
+        if (element!=context.text())
+        {
+            context.text(element);
+            if (options.show_changes)
+                context.effect('highlight', 2000);
+        }
     }
+
 }
 
 
@@ -210,8 +205,15 @@ Field.Dict.meta_put=function(key, meta, context)
 
 
 //-options.show_changes: highlight changed data 
+//if the context has the class field-dict-raw, then also the raw data is stored in the field-data data-attribute.
 Field.Dict.put=function(key, meta, context, data, options)
 {
+    //also store raw input?
+    if (context.hasClass("field-dict-raw"))
+    {
+        context.data("field-data",data);
+    }
+
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
@@ -227,7 +229,6 @@ Field.Dict.put=function(key, meta, context, data, options)
             //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
-                console.log("dict.input_put subkey", sub_key, data[sub_key]);
                 Field[thismeta.type].put(key_str, thismeta, $(this), data[sub_key], options);
             });
         }
@@ -477,7 +478,7 @@ Field.String.put=function(key, meta, context, data, options)
     if (context.hasClass("field-input"))
         context.val(data);
     else
-        Field.Base.html_append(key, meta, context, data, options, $("<span>").text(data));
+        Field.Base.html_append(key, meta, context, data, options, data);
 }
 
 
