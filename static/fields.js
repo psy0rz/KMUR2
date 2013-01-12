@@ -54,16 +54,16 @@ Field.Base.meta_put=function(key, meta, context)
     var meta_key=context.attr("field-meta-key");
     if (meta_key==undefined)
     {
+        return(false);
+    }
+    else
+    {
         if (meta_key in meta)
             context.text(meta[meta_key]);
         else
             context.text("");
 
-        return (false);
-    }
-    else
-    {
-        return(true);
+        return (true);
     }
 }
 
@@ -179,13 +179,13 @@ Field.Dict=Object.create(Field.Base);
 //a dict will traverse all the sub-metadata items
 Field.Dict.meta_put=function(key, meta, context)
 {
+    console.log("PUTTING META", key,meta, context);
     if (Field.Base.meta_put(key, meta, context))
         return;
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
-
         if (thismeta.type=='Dict')
         {
             Field.Dict.meta_put(key_str, thismeta, context);
@@ -193,10 +193,11 @@ Field.Dict.meta_put=function(key, meta, context)
         else
         {
             var selector='.field-meta-put[field-key="'+key_str+'"]';
-
+            console.log(selector, $(selector, context));
              //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
+                console.log("puting", this);
                 Field[thismeta.type].meta_put(key_str, thismeta, $(this));
             });
         }

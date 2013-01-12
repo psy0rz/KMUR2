@@ -122,7 +122,6 @@ ControlBase.prototype.get_meta_result=function(result, request_params)
 
     this.meta=result['data'];
     Field.Dict.meta_put('',this.meta, this.context);
-    Field.Dict.input_create('',this.meta, this.context);
     //$(this.context).autoMeta(this.meta);
 
     this.attach_event_handlers();   
@@ -200,7 +199,8 @@ ControlForm.prototype.get_result=function(result, request_params)
     // $(".controlOnClickSave", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
     {
-        $(this.context).autoPut(this.meta, result.data);
+        //$(this.context).autoPut(this.meta, result.data);
+        Field.Dict.put('', this.meta, this.context, result.data)
     }
     
     this.focus();
@@ -324,10 +324,11 @@ ControlForm.prototype.put=function(request_params)
     //are there put_params that we should COPY?
     var put_params={};
     if (this.params.put_params)
-        put_params=jQuery.extend(true, {}, this.params.put_params); //COPY, and not by reference!
+        put_params=jQuery.extend(true, put_params, this.params.put_params); //COPY, and not by reference!
 
     //get the data and store it into our local put_params
-    $(this.context).autoGet(this.meta, put_params);
+    //$(this.context).autoGet(this.meta, put_params);
+    put_params=jQuery.extend(true, put_params, Field.Dict.get('', this.meta, this.context));
 
     //call the put function on the rpc server
     var this_control=this;
