@@ -2,11 +2,11 @@
 	View specific CSS stuff. Stuff that happens INSIDE a view 
 */
 
-.controlOnClickEdit:hover, .controlOnClickDel:hover
+.control-on-click-edit:hover, .control-on-click-del:hover
 {
 }
 
-.controlOnClickEdit, .controlOnClickDel, .controlOnClickAdd
+.control-on-click-edit, .control-on-click-del, .control-on-click-add
 {
 	cursor:pointer;
 }

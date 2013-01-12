@@ -132,7 +132,7 @@ $(this).ready(function()
 					<td class='autoMeta' _key='items.desc' >
 					<td class='autoMeta' _key='items.price' >
 					<td class='autoMeta' _key='items.tax'>					
-					<td class='controlOnClickDel ui-icon ui-icon-trash'>
+					<td class='control-on-click-del ui-icon ui-icon-trash'>
 					<td class='autoClickAdd ui-icon ui-icon-plus'>
 				</tr>
 				<tr>

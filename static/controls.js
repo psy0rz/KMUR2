@@ -291,7 +291,7 @@ ControlForm.prototype.attach_event_handlers=function()
         }
     });
     
-    $(".controlOnClickDel", context).off().click(function() 
+    $(".control-on-click-del", context).off().click(function() 
     {
         $(this).confirm(function() {
             this_control.delete();
@@ -384,7 +384,7 @@ ControlForm.prototype.delete_result=function(result, request_params)
 params:
     (look in the baseclass for the basic documentation)
     
-    edit_view: View that is opened when a user clicks an element with class .controlOnClickEdit
+    edit_view: View that is opened when a user clicks an element with class .control-on-click-edit
     get: rpc-call to get data, if not specified will be set to class.get_all
 
 */
@@ -476,7 +476,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //open a view to edit the clicked element
-    $(".controlOnClickEdit", context).off().click(function(event)
+    $(".control-on-click-edit", context).off().click(function(event)
     {
         var listParent=$(this).closest(".autoListItem[_index], .autoListSource[_index]",context);
         
@@ -504,7 +504,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //delete the element, after confirmation
-    $(".controlOnClickDel", context).off().click(function(event)
+    $(".control-on-click-del", context).off().click(function(event)
     {
         var listParent=$(this).closest(".autoListItem",context);
         var id=listParent.attr("_id");
@@ -574,9 +574,9 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
 
-    $(".controlOnFilterHighlight",context).on('click', function(e)
+    $(".control-on-filter-highlight",context).on('click', function(e)
     {
-        if ($(e.srcElement).hasClass("controlOnFilterHighlight"))
+        if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
             //reset all controls so that they return null, hence disabling the filter
             $(':input[type="checkbox"]', this).attr("checked",false);
@@ -588,22 +588,22 @@ ControlList.prototype.attach_event_handlers=function()
 
     /// FILTER STUFF
     //handle filtering 
-    //The parent element should have the .controlOnChangeFilter class as well as any other options.
+    //The parent element should have the .control-on-change-filter class as well as any other options.
     //The input element should be the only input element in the parent.
     //The parent element can have special attirbutes to hint about the type of filtering we want:
     //When no special attribute is set, return all records that contain the string.
     //When _filterMatch is set on the parent, the value should match exactly.
     //When _filterGt is set, filter on values that are greater than or equal to it.
     //When _filterLt is set, filter on values that are less than or equal to.
-    $(".controlOnChangeFilter", context).on('change keypress paste focus textInput input', ':input', function()
+    $(".control-on-change-filter", context).on('change keypress paste focus textInput input', ':input', function()
     {
 
         //element to look in for the attributes:
         var attribute_element;
-        if ($(this).hasClass("controlOnChangeFilter"))
+        if ($(this).hasClass("control-on-change-filter"))
             attribute_element=$(this);
         else
-            attribute_element=$(this).closest(".controlOnChangeFilter");
+            attribute_element=$(this).closest(".control-on-change-filter");
 
 
         //get the value via the correct data conversion routines:
@@ -620,12 +620,12 @@ ControlList.prototype.attach_event_handlers=function()
         else
             attribute_element.removeClass("controlFilterActive");
 
-        //look if there are any other filters active under the controlOnFilterHighlight element, to determine
+        //look if there are any other filters active under the control-on-filter-highlight element, to determine
         //if we still need to highlight it.
-        if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".controlOnFilterHighlight").find(".controlFilterActive").length!=0))
-            attribute_element.closest(".controlOnFilterHighlight").addClass("ui-state-highlight controlFilterHighlight");
+        if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".control-on-filter-highlight").find(".controlFilterActive").length!=0))
+            attribute_element.closest(".control-on-filter-highlight").addClass("ui-state-highlight controlFilterHighlight");
         else
-            attribute_element.closest(".controlOnFilterHighlight").removeClass("ui-state-highlight controlFilterHighlight");
+            attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight controlFilterHighlight");
 
 
         if (!this_control.params.get_params.spec)
@@ -855,10 +855,10 @@ function controlList(params)
                     );
                 }
                 
-                $(".controlOnClickDel", context).unbind('click');
-                $(".controlOnClickDel", context).click( del);
-                $(".controlOnClickEdit", context).unbind( 'click');
-                $(".controlOnClickEdit", context).click( edit);
+                $(".control-on-click-del", context).unbind('click');
+                $(".control-on-click-del", context).click( del);
+                $(".control-on-click-edit", context).unbind( 'click');
+                $(".control-on-click-edit", context).click( edit);
 
                 if (!update)
                 {
@@ -938,7 +938,7 @@ function controlList(params)
 
     /// FILTER STUFF
     //handle filtering 
-    $(".controlOnChangeFilter", context).keyup(function()
+    $(".control-on-change-filter", context).keyup(function()
     {
         filterPrevious=$(this).val();
         

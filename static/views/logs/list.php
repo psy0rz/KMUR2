@@ -45,9 +45,9 @@ $(document).ready(function()
 </tr>
 <tr>
 	<td>
-	<td><input type='text' class='controlOnChangeFilter' _key='username'>
+	<td><input type='text' class='control-on-change-filter' _key='username'>
 	<td>
-	<td><input type='text' class='controlOnChangeFilter controlSetFocus' _key='text'>
+	<td><input type='text' class='control-on-change-filter controlSetFocus' _key='text'>
 </tr>
 <tr class='colorRows autoListSource ui-widget-content'>
 	<td class='autoPut' _key='time' _allowTime _html>

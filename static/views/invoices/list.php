@@ -49,11 +49,11 @@ $(document).ready(function()
 </tr>
 
 <tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
-	<td class='autoPut controlOnClickEdit' _key='number'>
-	<td class='autoPut controlOnClickEdit' _key='company'>
-	<td class='autoPut controlOnClickEdit' _key='desc'>
-	<td class='autoPut controlOnClickEdit' _key='status'>
-	<td class='controlOnClickDel ui-icon ui-icon-trash'>
+	<td class='autoPut control-on-click-edit' _key='number'>
+	<td class='autoPut control-on-click-edit' _key='company'>
+	<td class='autoPut control-on-click-edit' _key='desc'>
+	<td class='autoPut control-on-click-edit' _key='status'>
+	<td class='control-on-click-del ui-icon ui-icon-trash'>
 </tr>
 </table>
 
