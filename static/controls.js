@@ -221,7 +221,7 @@ ControlForm.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //create an add-handler to add items to lists
-    $(".controlOnClickListAdd", context).off().click(function(){
+    $(".control-on-click-list-add", context).off().click(function(){
         //find the clicked list element, and the source element of the list
         var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
         
@@ -240,7 +240,7 @@ ControlForm.prototype.attach_event_handlers=function()
     });
     
     //create an auto-add handler if the source-element of a list is focussed
-    $(".controlOnFocusListAdd :input", context).off().focus(function(){
+    $(".control-on-focus-list-add :input", context).off().focus(function(){
         var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
         if (changed_element.hasClass("autoListSource"))
         {
@@ -251,7 +251,7 @@ ControlForm.prototype.attach_event_handlers=function()
     });
     
     //create a handler to delete a list item
-    $(".controlOnClickListDel", context).off().click(function()
+    $(".control-on-click-list-del", context).off().click(function()
     {
         var clicked_element=$(this, context).closest(".autoListItem",context);
         if (clicked_element.hasClass("autoListItem"))
