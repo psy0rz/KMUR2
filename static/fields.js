@@ -179,7 +179,6 @@ Field.Dict=Object.create(Field.Base);
 //a dict will traverse all the sub-metadata items
 Field.Dict.meta_put=function(key, meta, context)
 {
-    console.log("PUTTING META", key,meta, context);
     if (Field.Base.meta_put(key, meta, context))
         return;
 
@@ -193,11 +192,9 @@ Field.Dict.meta_put=function(key, meta, context)
         else
         {
             var selector='.field-meta-put[field-key="'+key_str+'"]';
-            console.log(selector, $(selector, context));
              //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
-                console.log("puting", this);
                 Field[thismeta.type].meta_put(key_str, thismeta, $(this));
             });
         }
