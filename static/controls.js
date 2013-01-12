@@ -122,7 +122,6 @@ ControlBase.prototype.get_meta_result=function(result, request_params)
 
     this.meta=result['data'];
     Field.Dict.meta_put('',this.meta, this.context);
-    //$(this.context).autoMeta(this.meta);
 
     this.attach_event_handlers();   
     this.get(request_params);
@@ -196,10 +195,9 @@ ControlForm.prototype.get_result=function(result, request_params)
 {
     this.params.get_result(result, request_params);
 
-    // $(".controlOnClickSave", this.context).prop("disabled", false);
+    // $(".control-on-click-save", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
     {
-        //$(this.context).autoPut(this.meta, result.data);
         Field.Dict.put('', this.meta, this.context, result.data)
     }
     
@@ -222,39 +220,22 @@ ControlForm.prototype.attach_event_handlers=function()
 
     //create an add-handler to add items to lists
     $(".control-on-click-list-add", context).off().click(function(){
-        //find the clicked list element, and the source element of the list
-        var clicked_element=$(this, context).closest(".autoListItem, .autoListSource",context);
-        
-        if (clicked_element.length==0)
-            return;
-
-        var source_element=clicked_element.parent().children(".autoListSource");
-        
-        var add_element=autoListClone(source_element);
-
-        if (clicked_element.hasClass("autoListSource"))
-            add_element.insertBefore(clicked_element);
-        else
-            add_element.insertAfter(clicked_element);
-        
+        Field.List.from_element_add(this);
     });
     
-    //create an auto-add handler if the source-element of a list is focussed
+    //create an add-handler if the source-element of a list is focussed
     $(".control-on-focus-list-add :input", context).off().focus(function(){
-        var changed_element=$(this, context).closest(".autoListSource, .autoListItem", context);
-        if (changed_element.hasClass("autoListSource"))
-        {
-            var add_element=autoListClone(changed_element);
-            add_element.insertBefore(changed_element);
-            $('.autoGet[_key="'+$(this).attr("_key")+'"]', add_element).focus();
-        }
+        var added_item=Field.List.from_element_add(this);
+
+        //refocus the same input on the new item 
+        $('.field-input[field-key="'+$(this).attr("field-key")+'"]', add_element).focus();
     });
     
     //create a handler to delete a list item
     $(".control-on-click-list-del", context).off().click(function()
     {
-        var clicked_element=$(this, context).closest(".autoListItem",context);
-        if (clicked_element.hasClass("autoListItem"))
+        var clicked_element=Field.List.from_element_get(this);
+        if (clicked_element.hasClass("field-list-item"))
         {
             $(this).confirm(function()
             {
@@ -267,17 +248,17 @@ ControlForm.prototype.attach_event_handlers=function()
     });
     
     //make lists sortable
-    $(".controlListSortable", context).off().sortable({
-        placeholder: ".tempateSortPlaceholder",
+    $(".control-list-sortable", context).off().sortable({
+        //placeholder: "",
         handle: ".control-on-drag-sort",
-        cancel: ".autoListSource",
-        items:"> .autoListItem",
+        cancel: ".field-list-source",
+        items:"> .field-list-item",
         forceHelperSize: true,
         forcePlaceholderSize: true
     });
 
 
-    $(".controlOnClickSave", context).off().click(function()
+    $(".control-on-click-save", context).off().click(function()
     {
         this_control.put();
     });
@@ -298,7 +279,7 @@ ControlForm.prototype.attach_event_handlers=function()
         });
     });
 
-    $(".controlOnClickCancel", context).off().click(function()
+    $(".control-on-click-cancel", context).off().click(function()
     {
         viewClose(this_control.params.view);
     });
@@ -313,7 +294,7 @@ ControlForm.prototype.focus=function()
     else if (this.params.default_focus)
         $(this.context).autoFindElement(this.meta, this.params.default_focus).focus();
     else
-        $(".controlDefaultFocus", this.context).focus();
+        $(".control-default-focus", this.context).focus();
 }
 
 
@@ -327,7 +308,6 @@ ControlForm.prototype.put=function(request_params)
         put_params=jQuery.extend(true, put_params, this.params.put_params); //COPY, and not by reference!
 
     //get the data and store it into our local put_params
-    //$(this.context).autoGet(this.meta, put_params);
     put_params=jQuery.extend(true, put_params, Field.Dict.get('', this.meta, this.context));
 
     //call the put function on the rpc server
@@ -398,7 +378,7 @@ function ControlList(params)
     if (typeof (params.get_params) ==='undefined')
         params.get_params={};
 
-    this.list_source_element=$(".autoListSource:first", this.context);
+    this.list_source_element=$(".field-list-source:first", this.context);
     this.list_begin_length=this.list_source_element.parent().children().length;
 
     this.view_ready=false;
@@ -478,11 +458,11 @@ ControlList.prototype.attach_event_handlers=function()
     //open a view to edit the clicked element
     $(".control-on-click-edit", context).off().click(function(event)
     {
-        var listParent=$(this).closest(".autoListItem[_index], .autoListSource[_index]",context);
+        var listParent=Field.List.from_element_get(this);
         
         var element=$(this);
-        var id=listParent.attr("_id");
-        var index=listParent.attr("_index");
+        var id=listParent.attr("field-list-id");
+        var index=listParent.attr("field-list-key");
         element.addClass("ui-state-highlight");
     
         //create the view to edit the clicked item
@@ -506,7 +486,7 @@ ControlList.prototype.attach_event_handlers=function()
     //delete the element, after confirmation
     $(".control-on-click-del", context).off().click(function(event)
     {
-        var listParent=$(this).closest(".autoListItem",context);
+        var listParent=Field.List.from_element_get(this);
         var id=listParent.attr("_id");
         var index=listParent.attr("_index");
 
@@ -610,19 +590,19 @@ ControlList.prototype.attach_event_handlers=function()
         var key_str=attribute_element.attr("_key");
         var meta=resolveMeta(key_str, this_control.meta.meta);
         console.log(key_str, this_control.meta.meta);
-        var get_element=$(".autoGet", attribute_element);
+        var get_element=$(".field-get", attribute_element);
         var value=dataConv[meta.type]['get'](get_element, meta, key_str);
 
         console.log("get_element, keystr, meta, value" , get_element, key_str, meta, value);
 
         if (value!=null)
-            attribute_element.addClass("controlFilterActive");
+            attribute_element.addClass("control-filter-active");
         else
-            attribute_element.removeClass("controlFilterActive");
+            attribute_element.removeClass("control-filter-active");
 
         //look if there are any other filters active under the control-on-filter-highlight element, to determine
         //if we still need to highlight it.
-        if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".control-on-filter-highlight").find(".controlFilterActive").length!=0))
+        if ((attribute_element.hasClass("control-filter-active") || attribute_element.closest(".control-on-filter-highlight").find(".control-filter-active").length!=0))
             attribute_element.closest(".control-on-filter-highlight").addClass("ui-state-highlight control-filter-highlight");
         else
             attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight control-filter-highlight");
@@ -731,7 +711,7 @@ ControlList.prototype.attach_event_handlers=function()
             if (!('offset' in endlessParams))
                 endlessParams.offset=0;
             
-            endlessParams.offset+=$(autoListsource_element).parent().children().length-beginLength;
+            endlessParams.offset+=$(list_source_element).parent().children().length-beginLength;
             
             logDebug("endless scroll offset is ",endlessParams.offset);
 
@@ -741,7 +721,7 @@ ControlList.prototype.attach_event_handlers=function()
                 function(result)
                 {
                     dataConv.List.put(
-                            autoListsource_element, //element
+                            list_source_element, //element
                             { meta: meta },         //meta
                             '',                     //keyStr
                             result.data,            //value 

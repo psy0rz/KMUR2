@@ -148,6 +148,6 @@ $(this).ready(function()
 
 
 <span class='viewError'></span>
-<button class='controlOnClickSave' style='display:block'>Opslaan</button>
-<button class='controlOnClickSave' style='display:block'>Opslaan en versturen</button>
+<button class='control-on-click-save' style='display:block'>Opslaan</button>
+<button class='control-on-click-save' style='display:block'>Opslaan en versturen</button>
 

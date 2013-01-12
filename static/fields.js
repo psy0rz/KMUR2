@@ -290,7 +290,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
 /**
  * List is a bit of a special case: 
  * The original element we call the 'source-element', it should have a field-list-source class. 
- * input_create will make sure of this.
+ * meta_put will make sure of this.
  * 
  * When calling put, the source-element will be cloned, and put will be called recursively 
  * with this cloned item as context.
@@ -436,6 +436,38 @@ Field.List.get=function(key, meta, context)
     return(value);    
 }
 
+/*** Gets a reference to the list-item-element, by resolving the specified elelment.
+*/
+Field.List.from_element_get=function(element)
+{
+    return($(element).closest(".field-list-item, .field-list-source"));
+}
+
+/***  Adds a new list item, by resolving the list that belongs to the specfied element.
+
+It will always make sure the field-list-source stays at the end of the list.
+
+Also returns a reference to the new item.
+*/
+Field.List.from_element_add=function(element)
+{
+    var list_item=Field.List.from_element_get(element);
+
+    if (list_item.length==0)
+        return;
+
+    var source_item=list_element.parent().children(".field-list-source");
+
+    var add_item=Field.List.Clone(source_item);
+
+    if (list_element.hasClass("field-list-source"))
+        add_item.insertBefore(list_item);
+    else
+        add_item.insertAfter(list_item);
+
+    return(add_item);
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
 
@@ -478,6 +510,7 @@ Field.String.put=function(key, meta, context, data, options)
     else
         Field.Base.html_append(key, meta, context, data, options, data);
 }
+
 
 
 
