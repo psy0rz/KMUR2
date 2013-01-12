@@ -34,28 +34,49 @@ Field.Base.not_implemented=function(key, meta, context, data)
     console.error("unimplemented datatype in field "+key+": ", meta, context, data);
 }
 
-/*** put specified meta-datafield literally into context
+/*** put metadata into context
  
-    this is usually used to show the description of a field to the user, or things like min and max values.
+    the base implementation just litteraly puts the data specified in the field-meta-key attribute into the context.text().
+
+    it returns false if there is no field-meta-key specified. 
+
+    subclasses usually first call this base implemenation, and when it returns false, the subclass will then dynamicly create a correct input field from the metadata.
+
     context should have class field-meta-put
-    context should have an attribute called 'field-meta-key' that specfies the metadata key
+
+    context may have an attribute called 'field-meta-key'.
+
+    dynamicly created input fields get a field-input class, so that .put knows its a inputfield instead of a normal html field
+
 */
 Field.Base.meta_put=function(key, meta, context)
 {
     var meta_key=context.attr("field-meta-key");
-    if (meta_key in meta)
-        context.text(meta[meta_key]);
+    if (meta_key==undefined)
+    {
+        if (meta_key in meta)
+            context.text(meta[meta_key]);
+        else
+            context.text("");
+
+        return (false);
+    }
     else
-        context.text("");
+    {
+        return(true);
+    }
 }
 
 /*** appends specified jquery input element into the jquery context
 
-    mostly used internally by input_create
-    this will modify the element as well!
+    mostly used internally by subclasses that overload meta_put.
+
+    this will modify the specified element as well!
+
     automaticly sets field-key attribute.
-    automaticly adds field-input class, so that .put functions know it is an input element.
+
     when meta.readonly is not true, automaticly adds field-get class, otherwise disables input element.
+
     automaticly sets title to meta.desc.
 
     if context has field-allow-null attribute, then the element will get it as well
@@ -94,7 +115,7 @@ Field.Base.input_append=function(key, meta, context, element)
     element can be a jquery object or a string. if its a string then context.text() will be used to
     set the element. otherwise the content will be emptied and the element will be added.
 
-    if field-store-data is set, then the raw data is stored under field-data.
+    if field-store-data is set, then the raw data is stored under field-data of the context.
     */ 
 Field.Base.html_append=function(key, meta, context, data, options, element)
 {
@@ -126,25 +147,18 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
 }
 
 
-/*** create input element from metadata and store it in the context
-
-    context should have class field-input-create
-    newly created input elements automaticly get apporpiate classes and attributes. (see input_append)
-    */
-Field.Base.input_create=Field.Base.not_implemented;
-
-
-/*** puts data into context
+/*** puts data into a context
 
     context should have class field-put
 
-    if the field-input class is set on the context, then the current content of the context must have been
-    created with input_create. the existing input elements will then be filled with the data.
+    if the field-nput class is set on the context, then the current content is assumed to be a input-field that was created with meta_put.
+    the existing input elements will then be filled with the data.
 
-    otherwise the data and metadata will be converted to a html representation and stored in the context
+    otherwise the data and metadata will be converted to a html representation and stored in the context.
 
     */
-Field.Base.put=Field.Base.not_implemented;
+
+Field.Base.put=Field.Base.not_implemented;//(key, meta, context, data, options)
 
 
 /*** gets data from content.
@@ -152,7 +166,7 @@ Field.Base.put=Field.Base.not_implemented;
     context must contain input-elements that where created with input_create.
     context should have class field-get
 */
-Field.Base.get=Field.Base.not_implemented;
+Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
 
 
 
@@ -168,32 +182,11 @@ Field.Dict=Object.create(Field.Base);
 
 
 //a dict will traverse all the sub-metadata items
-Field.Dict.input_create=function(key, meta, context)
-{
-    //traverse the sub meta data
-    $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=Field.Dict.concat_keys(key, sub_key);
-
-        if (thismeta.type=='Dict')
-        {
-            Field.Dict.input_create(key_str, thismeta, context);
-        }
-        else
-        {
-            var selector='.field-input-create[field-key="'+key_str+'"]';
-
-             //traverse the field-input-create elements for this key:
-            $(selector, context).each(function()
-            {
-                Field[thismeta.type].input_create(key_str, thismeta, $(this));
-            }); 
-        }
-    }); //meta data
-};
-
-//a dict will traverse all the sub-metadata items
 Field.Dict.meta_put=function(key, meta, context)
 {
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Dict.concat_keys(key, sub_key);
@@ -202,18 +195,19 @@ Field.Dict.meta_put=function(key, meta, context)
         {
             Field.Dict.meta_put(key_str, thismeta, context);
         }
-
-        var selector='.field-meta-put[field-key="'+key_str+'"]';
-        //traverse the field-meta-put elements for this key:
-        $(selector, context).each(function()
+        else
         {
-            if (thismeta.type=='Dict')
-                Field.Base.meta_put(key_str, thismeta, $(this));
-            else
+            var selector='.field-meta-put[field-key="'+key_str+'"]';
+
+             //traverse the field-meta-put elements for this key:
+            $(selector, context).each(function()
+            {
                 Field[thismeta.type].meta_put(key_str, thismeta, $(this));
-        }); 
+            });
+        }
     }); //meta data
 };
+
 
 //-options.show_changes: highlight changed data 
 Field.Dict.put=function(key, meta, context, data, options)
@@ -325,8 +319,11 @@ Field.List.clone=function(source_element)
 
 }
 
-Field.List.input_create=function(key, meta, context)
+Field.List.meta_put=function(key, meta, context)
 {
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
     context.addClass("field-list-source");
 
     if (!meta.readonly)
@@ -334,7 +331,7 @@ Field.List.input_create=function(key, meta, context)
 
     context.addClass("field-put field-input");
     //recurse into subdict, every list should have one
-    Field.Dict.input_create(key, meta.meta, context);
+    Field.Dict.meta_put(key, meta.meta, context);
 };
 
 /*
@@ -443,8 +440,11 @@ Field.List.get=function(key, meta, context)
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
 
-Field.String.input_create=function(key, meta, context)
+Field.String.meta_put=function(key, meta, context)
 {
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
     var added_element;
     if (meta.max>100)
     {
@@ -486,8 +486,11 @@ Field.String.put=function(key, meta, context, data, options)
 //Password is almost the same as String
 Field.Password=Object.create(Field.String);
 
-Field.Password.input_create=function(key, meta, context)
+Field.Password.meta_put=function(key, meta, context)
 {
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
     var added_element;
         added_element=$("<input>")
             .attr("type","password"); 
