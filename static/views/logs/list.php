@@ -37,10 +37,10 @@ $(document).ready(function()
 
 <table >
 <tr class='ui-widget-header'>
-	<th class='autoMeta controlOnClickOrder controlOrderDesc' _key='time' _meta='desc'>
-	<th class='autoMeta controlOnClickOrder' _key='username' _meta='desc'>
-	<th class='autoMeta controlOnClickOrder' _key='logType' _meta='desc'>
-	<th class='autoMeta controlOnClickOrder' _key='text' _meta='desc'>
+	<th class='autoMeta control-on-click-order control-order-desc' _key='time' _meta='desc'>
+	<th class='autoMeta control-on-click-order' _key='username' _meta='desc'>
+	<th class='autoMeta control-on-click-order' _key='logType' _meta='desc'>
+	<th class='autoMeta control-on-click-order' _key='text' _meta='desc'>
 
 </tr>
 <tr>

@@ -11,12 +11,12 @@
 	cursor:pointer;
 }
 
-.controlOnDragSort
+.control-on-drag-sort
 {
 	cursor:row-resize;
 }
 
-.controlOnClickOrder
+.control-on-click-order
 {
 	cursor:pointer;
 	background-image: url("../icons/order.png");
@@ -28,22 +28,22 @@
 }
 
 
-.controlOrderAsc
+.control-order-asc
 {
 	background-image: url("../icons/orderAsc.png");
 }
 
-.controlOrderDesc
+.control-order-desc
 {
 	background-image: url("../icons/orderDesc.png");
 }
 
-.controlSortPlaceholder 
+.control-sort-placeholder 
 {
 	height: 4em;
 }
 
-.controlFilterHighlight
+.control-filter-highlight
 {
     cursor:  pointer;
 }

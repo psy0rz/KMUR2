@@ -269,7 +269,7 @@ ControlForm.prototype.attach_event_handlers=function()
     //make lists sortable
     $(".controlListSortable", context).off().sortable({
         placeholder: ".tempateSortPlaceholder",
-        handle: ".controlOnDragSort",
+        handle: ".control-on-drag-sort",
         cancel: ".autoListSource",
         items:"> .autoListItem",
         forceHelperSize: true,
@@ -536,37 +536,37 @@ ControlList.prototype.attach_event_handlers=function()
     function getSortSettings()
     {
         this_control.params.get_params.sort={};
-        $(".controlOrderAsc",context).each(function()
+        $(".control-order-asc",context).each(function()
         {
             this_control.params.get_params.sort[$(this).attr("_key")]=1;
         });
-        $(".controlOrderDesc",context).each(function()
+        $(".control-order-desc",context).each(function()
         {
             this_control.params.get_params.sort[$(this).attr("_key")]=-1;
         });
     }
     getSortSettings();
 
-    $(".controlOnClickOrder", context).off().click(function()
+    $(".control-on-click-order", context).off().click(function()
     {
         //NOTE:it would be possible to select multiple columns for sorting, but  this is a bit too unclear in the UI and backend
 
         //change to desc
-        if ($(this).hasClass("controlOrderAsc"))
+        if ($(this).hasClass("control-order-asc"))
         {
-            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
-            $(this).addClass("controlOrderDesc");
+            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
+            $(this).addClass("control-order-desc");
         }
         //change to unsorted
-        else if ($(this).hasClass("controlOrderDesc"))
+        else if ($(this).hasClass("control-order-desc"))
         {
-            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
+            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
         }
         //start with asc
         else
         {
-            $(".controlOnClickOrder", context).removeClass("controlOrderAsc").removeClass("controlOrderDesc");
-            $(this).addClass("controlOrderAsc");
+            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
+            $(this).addClass("control-order-asc");
         }
 
         getSortSettings();
@@ -623,9 +623,9 @@ ControlList.prototype.attach_event_handlers=function()
         //look if there are any other filters active under the control-on-filter-highlight element, to determine
         //if we still need to highlight it.
         if ((attribute_element.hasClass("controlFilterActive") || attribute_element.closest(".control-on-filter-highlight").find(".controlFilterActive").length!=0))
-            attribute_element.closest(".control-on-filter-highlight").addClass("ui-state-highlight controlFilterHighlight");
+            attribute_element.closest(".control-on-filter-highlight").addClass("ui-state-highlight control-filter-highlight");
         else
-            attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight controlFilterHighlight");
+            attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight control-filter-highlight");
 
 
         if (!this_control.params.get_params.spec)
@@ -902,34 +902,34 @@ function controlList(params)
     /// ORDER STUFF
     
     //what is the current selected sorting column?
-    if ($(".controlOrderAsc",context).length !=0)
+    if ($(".control-order-asc",context).length !=0)
     {
         getParams.sort={};
-        getParams.sort[$(".controlOrderAsc").attr("_key")]=1;
+        getParams.sort[$(".control-order-asc").attr("_key")]=1;
     }
-    else if ($(".controlOrderDesc",context).length !=0)
+    else if ($(".control-order-desc",context).length !=0)
     {
         getParams.sort={};
-        getParams.sort[$(".controlOrderDesc").attr("_key")]=-1;
+        getParams.sort[$(".control-order-desc").attr("_key")]=-1;
     }
 
-    $(".controlOnClickOrder", context).click(function()
+    $(".control-on-click-order", context).click(function()
     {
         getParams.sort={};
         
-        if ($(this).hasClass("controlOrderAsc"))
+        if ($(this).hasClass("control-order-asc"))
         {
-            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
-            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
+            $(".control-order-asc",context).removeClass("control-order-asc");
+            $(".control-order-desc",context).removeClass("control-order-desc");
             getParams.sort[$(this).attr("_key")]=-1;
-            $(this).addClass("controlOrderDesc");
+            $(this).addClass("control-order-desc");
         }
         else
         {
-            $(".controlOrderAsc",context).removeClass("controlOrderAsc");
-            $(".controlOrderDesc",context).removeClass("controlOrderDesc");
+            $(".control-order-asc",context).removeClass("control-order-asc");
+            $(".control-order-desc",context).removeClass("control-order-desc");
             getParams.sort[$(this).attr("_key")]=1;
-            $(this).addClass("controlOrderAsc");
+            $(this).addClass("control-order-asc");
         }
         
         getData(false);
