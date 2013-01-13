@@ -814,8 +814,115 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
 }
 
 
-
+/////////////////////////////////////////////////////////////////////////
 Field.Timestamp=Object.create(Field.Base);
+
+Field.Timestamp.defaultDateFormat='dd-mm-yy';
+Field.Timestamp.defaultTimeFormat='hh:mm';
+
+Field.Timestamp.meta_put=function(key, meta, context)
+{
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
+
+    var allowTime=false;
+
+    var new_element=$("<input>")
+        .attr("type","text");
+
+    if (context.attr("field-timestamp-allow-time")!=null)
+    {
+        allowTime=true;
+        new_element.attr("field-timestamp-allow-time","");
+    }
+    
+    if ('default' in meta)
+        new_element.val(formatDateTime(meta.default, allowTime));
+    
+    //create datepicker on demand, to make it clonable:
+    //(its probably more efficient as well on long lists)
+    new_element.focus(function(){
+        //we probably never wabt activate inside of a list-source
+        if ($(this).closest(".field-list-source").length != 0)
+            return;
+        
+        if (allowTime)
+        {
+            //date AND time picker:
+            $(this).datetimepicker({
+                dateFormat:Field.Timestamp.defaultDateFormat, //make configurable via attributes?
+                timeFormat:Field.Timestamp.defaultTimeFormat,
+                onClose: function(dateText, inst) 
+                {
+                    $(this).datetimepicker("destroy");
+                    $(this).attr("id",null);
+                }
+            }).datetimepicker("show");
+        }
+        else
+        {
+            //date picker only:
+            $(this).datepicker({
+                dateFormat:Field.Timestamp.defaultDateFormat,
+                onClose: function(dateText, inst) 
+                {
+                    $(this).datepicker("destroy");
+                    $(this).attr("id",null);
+                }
+            }).datepicker("show");
+        }
+    });
+
+
+    Field.Base.input_append(key, meta, context, new_element);
+}
+
+
+Field.Timestamp.get=function(key, meta, context)
+{
+    if (context.attr("field-allow-null")=="" && context.val()=="")
+        return(null);
+
+    //var dateStr=$(element).val().split()
+    //var date=new Date($(element).datepicker("getDate"));
+    //return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);
+    //return(Date.parse()/1000);
+    return(Date.parse(
+            $.datepicker.parseDateTime(Field.Timestamp.defaultDateFormat, Field.Timestamp.defaultTimeFormat, context.val())
+        )/1000);
+}
+
+Field.Timestamp.put=function(key, meta, context, data, options)
+{
+    var dateStr="";
+
+    if (data!='')
+    {
+        var date=new Date(data*1000);
+        dateStr=$.datepicker.formatDate( Field.Timestamp.defaultDateFormat, date );
+
+        if (context.attr("field-timestamp-allow-time")!=null)
+        {
+            dateStr+=" "+$.datepicker.formatTime( Field.Timestamp.defaultTimeFormat, 
+                    {
+                        hour:   date.getHours(),
+                        minute: date.getMinutes(),
+                        second: date.getSeconds()
+                    });
+        }
+    }
+
+    if (context.hasClass("field-input"))
+    {
+        context.val(dateStr);
+    }
+    else
+    {
+        Field.Base.html_append(key, meta, context, data, options, dateStr);
+    }
+}
+
 
 
 
