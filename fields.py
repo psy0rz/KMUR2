@@ -171,13 +171,23 @@ class List(Base):
     Usually a list contains a dict, since this is most usefull in practice (escpecially with our javascript gui framework)
 
     Dicts and Lists may be nested without problems.
+
+    @param list_key: which field to use as key when referring to a specific dataitem in a list. 
+    if None then normal zero-based array indexing will be used. 
+    note that these list_keys are also used when throwing field errors and in the gui frontends to focus fields etc.
+
     """
 
-    def __init__(self, meta=None, **kwargs):
+    def __init__(self, meta=None, list_key=None, **kwargs):
         super(List, self).__init__(**kwargs)
 
         if not isinstance(meta, Base):
             raise FieldException("Metadata should be a an instance of fields.Base")
+
+        if list_key != None:
+            if not isinstance(list_key, str):
+                raise FieldException("list_key should be a string")
+            self.meta['list_key'] = list_key
 
         self.meta['meta'] = meta
 
@@ -195,7 +205,13 @@ class List(Base):
                 self.meta['meta'].check(value)
             except FieldException as e:
                 #record the key that throwed the exception:
-                e.fields.insert(0, index)
+                if ('list_key' in self.meta) and (self.meta['list_key'] in value):
+                    #list_key based indexing
+                    e.fields.insert(0, value[self.meta['list_key']])
+                else:
+                    #array based indexing
+                    e.fields.insert(0, index)
+
                 raise
 
 
@@ -207,8 +223,8 @@ class ListDict(object):
     This is just to make the definition of metadata simpeller and more readable by humans.
     '''
 
-    def __new__(cls, meta, **kwargs):
-        return(List(Dict(meta, **kwargs)))
+    def __new__(cls, meta, list_key=None, **kwargs):
+        return(List(Dict(meta, **kwargs), list_key=list_key))
 
 
 class String(Base):

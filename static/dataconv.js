@@ -10,8 +10,8 @@ function autoListClone(source)
     clone.removeClass("autoGet");
     clone.removeClass("autoPut");
     clone.removeClass("autoMeta");
-    clone.removeClass("autoListSource");
-    clone.removeClass("autoListHide");
+    clone.removeClass("field-list-source");
+    clone.removeClass("field-list-source-hide");
     clone.addClass("autoListItem");
     
     
@@ -75,10 +75,10 @@ var dataConv=
     List:{
         /**
          * List is a bit of a special case: 
-         * The original element we call the 'source-element', it should have a autoListSource class.
+         * The original element we call the 'source-element', it should have a field-list-source class.
          * For every item this original is cloned and then autoPut is called on the cloned item.  
          * Every cloned item gets a class autoListItem added, but the other auto-classes are removed.
-         * Add a autoListHide class to the source element to hide it. (e.g. user doesnt see a dummy-item)
+         * Add a field-list-source-hide class to the source element to hide it. (e.g. user doesnt see a dummy-item)
          * Use the autoListClone() function to correctly clone the source element and fix the classes.
          * 
          * When the data is put, the _id attribute of every cloned list item is set to the value of field
@@ -86,8 +86,8 @@ var dataConv=
          */
         input:function(element, meta, keyStr)
         {
-            //if it is a autoListSource, add autoGet and autoPut for convienience
-            if ($(element).hasClass("autoListSource"))
+            //if it is a field-list-source, add autoGet and autoPut for convienience
+            if ($(element).hasClass("field-list-source"))
             {
                 if (!meta.readonly)
                 {
@@ -510,7 +510,7 @@ var dataConv=
             //create datepicker on demand, to make it clonable:
             //(its probably more efficient as well on long lists)
             addedElement.focus(function(){
-                if ($(this).closest(".autoListSource").length != 0)
+                if ($(this).closest(".field-list-source").length != 0)
                     return;
                 
                 if (allowTime)

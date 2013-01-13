@@ -404,6 +404,7 @@ ControlList.prototype.get_delayed=function(request_params)
     }
 }
 
+//request_params will be true in case of an endless scrolling update
 ControlList.prototype.get_result=function(result, request_params)
 {
     this.getting=false;
@@ -419,15 +420,15 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if ('data' in result)
     {
-        dataConv.List.put(
-                this.list_source_element,   //element
-                { meta: this.meta },        //meta
-                '',                         //keyStr
-                result.data,                //value 
-                {                           //settings
-                    update: request_params,
-                    showChanges: request_params
-                }
+        Field.List.put(
+            '',
+            this.meta,
+            this.list_source_element,
+            result.data,
+            {
+                list_update: request_params,
+                list_no_remove: request_params
+            }
         );
     }
 
@@ -746,8 +747,8 @@ function controlList(params)
 {
     var meta={};
     var context=$("#"+params.view.id);
-    var autoListsource_element=$(".autoListSource:first",context);
-    var beginLength=autoListsource_element.parent().children().length;
+    var field-list-source_element=$(".field-list-source:first",context);
+    var beginLength=field-list-source_element.parent().children().length;
 
     this.debug_txt=params.view.id+" "+params.view.name+" ";
 
@@ -760,7 +761,7 @@ function controlList(params)
     
     var edit=function(event)
     {
-        var listParent=$(this).closest(".autoListItem[_index], .autoListSource[_index]",context)    ;
+        var listParent=$(this).closest(".autoListItem[_index], .field-list-source[_index]",context)    ;
         
         var element=$(this);
         var id=listParent.attr("_id");
@@ -824,7 +825,7 @@ function controlList(params)
                 if ('data' in result)
                 {
                     dataConv.List.put(
-                            autoListsource_element, //element
+                            field-list-source_element, //element
                             { meta: meta },         //meta
                             '',                     //keyStr
                             result.data,            //value 
@@ -869,7 +870,7 @@ function controlList(params)
                 $(context).autoMeta(meta);
                 
                 //make sure autoListItems are recognised (normally autoMeta does this when it encounters and array or hash type)
-    //          $(".autoListSource:first", context).addClass("autoListItem");
+    //          $(".field-list-source:first", context).addClass("autoListItem");
                 
                 getData(false);
             }
@@ -963,7 +964,7 @@ function controlList(params)
             if (!('offset' in endlessParams))
                 endlessParams.offset=0;
             
-            endlessParams.offset+=$(autoListsource_element).parent().children().length-beginLength;
+            endlessParams.offset+=$(field-list-source_element).parent().children().length-beginLength;
             
             logDebug("endless scroll offset is ",endlessParams.offset);
 
@@ -973,7 +974,7 @@ function controlList(params)
                 function(result)
                 {
                     dataConv.List.put(
-                            autoListsource_element, //element
+                            field-list-source_element, //element
                             { meta: meta },         //meta
                             '',                     //keyStr
                             result.data,            //value 

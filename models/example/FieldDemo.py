@@ -41,8 +41,11 @@ class FieldDemo(models.mongodb.MongoDB):
     #add primitive fields to allFields as well
     allFields.update(primitiveFields)
 
-    #now create the root dict with everything in it:
-    meta = fields.Dict(allFields)
+    #now create the root ListDict with everything in it:
+    meta = fields.List(
+        fields.Dict(allFields),
+        list_key='_id'
+    )
 
     @Acl(groups="admin")
     def put(self, **doc):

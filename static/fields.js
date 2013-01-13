@@ -172,6 +172,10 @@ Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
 /////////////////////////////////////////////////////////////////////////////////////////////
 /*** Dictonary type. This is usually the base fieldtype we start with. (the "root" of the meta-data)
     This fieldtype is recursive, so its allowed for meta data to have Dicts in Dicts.
+
+    Note that Dict is the only field-type where the context-parameter doesnt actually point directly to a field element,
+    but rather points to a dom element that contains children which are fields.
+
 */
 Field.Dict=Object.create(Field.Base);
 
@@ -184,7 +188,7 @@ Field.Dict.meta_put=function(key, meta, context)
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=Field.Dict.concat_keys(key, sub_key);
+        var key_str=Field.Base.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
             Field.Dict.meta_put(key_str, thismeta, context);
@@ -214,7 +218,8 @@ Field.Dict.put=function(key, meta, context, data, options)
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=Field.Dict.concat_keys(key, sub_key);
+        var key_str=Field.Base.concat_keys(key, sub_key);
+
         if (thismeta.type=='Dict')
         {
             //for subdicts, we stay in the same context while we recurse:
@@ -239,7 +244,7 @@ Field.Dict.get=function(key, meta, context)
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
-        var key_str=Field.Dict.concat_keys(key, sub_key);
+        var key_str=Field.Base.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
             ret[sub_key]=Field.Dict.get(key_str, thismeta, context);
@@ -345,6 +350,10 @@ Field.List.put=function(key, meta, context, data, options)
     var parent=context.parent();
     var list_key=context.attr("field-list-key");
 
+    //if no list_key specified, try to get it from the metadata 
+    if (!list_key && meta.list_key)
+        list_key=meta.list_key;
+
     //existing list items (if any)
     var existing_items=$('.field-list-item[field-key="'+key+'"]', parent);
     
@@ -370,7 +379,7 @@ Field.List.put=function(key, meta, context, data, options)
         $.each(data, function (item_nr, item_value) {
             
             //this will become a new or existing item that needs to be filled with data
-            var update_element={};
+            var update_element=undefined;
             
             //update mode
             if (options.list_update)
@@ -380,6 +389,8 @@ Field.List.put=function(key, meta, context, data, options)
                     //try to find existing element
                     //the field-key and field-list-id should both match
                     update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[list_key]+'"]', parent);
+                    if (update_element.length==0)
+                        update_element=undefined;
                 }
                 else
                 {
@@ -390,13 +401,16 @@ Field.List.put=function(key, meta, context, data, options)
             }
             
             //not found? clone new element
-            if (!update_element.length)
+            if (update_element==undefined)
             {
                 //deep clone the prepared clone
                 update_element=clone.clone(true);
 
                 if (list_key)
                     update_element.attr("field-list-id", item_value[list_key]);
+                else
+                    update_element.attr("field-list-id", item_nr);
+
 
                 //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
                 //NOTE: can we improve performance a lot by appending after the put on cloned items?
@@ -410,7 +424,8 @@ Field.List.put=function(key, meta, context, data, options)
             }
             
             //finally put data into it
-            Field.Dict.put(key, meta.meta, update_element, item_value, options);
+            console.log("put jan", meta);
+            Field[meta.meta.type].put(key, meta.meta, update_element, item_value, options);
         });
     }
     

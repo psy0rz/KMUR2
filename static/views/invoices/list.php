@@ -48,7 +48,7 @@ $(document).ready(function()
 	<td>
 </tr>
 
-<tr class='colorRows autoPut autoListSource ui-widget-content' _key='_id' _value>
+<tr class='colorRows autoPut field-list-source ui-widget-content' _key='_id' _value>
 	<td class='autoPut control-on-click-edit' _key='number'>
 	<td class='autoPut control-on-click-edit' _key='company'>
 	<td class='autoPut control-on-click-edit' _key='desc'>

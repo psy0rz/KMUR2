@@ -425,7 +425,7 @@ function resolveData(key, data)
                                 
                 //NOTE: hack - this logic probably belongs in dataconv as well?
                 var nextelement=$('.autoGet[_key="'+keyStr+'"]', elements);
-                if (nextelement.hasClass("autoListSource"))
+                if (nextelement.hasClass("field-list-source"))
                     elements=$('.autoListItem[_key="'+keyStr+'"]', elements);
                 else
                     elements=nextelement;
