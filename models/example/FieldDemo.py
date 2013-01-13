@@ -29,12 +29,16 @@ class FieldDemo(models.mongodb.MongoDB):
                             }
 
     allFields = {
-              '_id': models.mongodb.FieldId(desc='Document ID'),
-             'listTest': fields.ListDict(desc="List containing a Dict with the primitive fields",
-                                         meta=primitiveFields),
-              'dictTest': fields.Dict(desc="A sub-Dict containing the primitive fields again",
-                                      meta=primitiveFields),
-              }
+        '_id': models.mongodb.FieldId(desc='Document ID'),
+        'listTest': fields.List(
+            fields.Dict(primitiveFields),
+            desc="List containing a Dict with the primitive fields"
+        ),
+        'dictTest': fields.Dict(
+            primitiveFields,
+            desc="A sub-Dict containing the primitive fields again"
+        ),
+    }
 
     # print allFields['listTest']
 
@@ -44,7 +48,8 @@ class FieldDemo(models.mongodb.MongoDB):
     #now create the root ListDict with everything in it:
     meta = fields.List(
         fields.Dict(allFields),
-        list_key='_id'
+        list_key='_id',
+        desc='the root list of this class, usually not shown in the userinterface'
     )
 
     @Acl(groups="admin")

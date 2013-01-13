@@ -32,17 +32,17 @@ class Menu(models.mongodb.MongoDB):
     '''Manages menu items and favorites for webui interface'''
 
     meta = fields.Dict({
-                        'main':fields.ListDict({
+                        'main':fields.List(fields.Dict({
                                                 'title': fields.String(),
-                                                'items': fields.ListDict({
+                                                'items': fields.List(fields.Dict({
                                                                           'title': fields.String(),
                                                                           'view': fields.Anything({'desc': 'View parameters'}),
-                                                                          }),
-                                                'favorites': fields.ListDict({
+                                                                          })),
+                                                'favorites': fields.List(fields.Dict({
                                                                           'title': fields.String(),
-                                                                              'view': fields.Anything({'desc': 'View parameters'}),
-                                                                              }),
-                                                })
+                                                                          'view': fields.Anything({'desc': 'View parameters'}),
+                                                                          })),
+                                                }))
                         })
                           
     @Acl(groups="user")

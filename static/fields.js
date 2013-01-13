@@ -185,14 +185,23 @@ Field.Dict=Object.create(Field.Base);
 //a dict will traverse all the sub-metadata items
 Field.Dict.meta_put=function(key, meta, context)
 {
-    if (Field.Base.meta_put(key, meta, context))
-        return;
+    //dict operates on a bigger content, but meta_put is expecting direct element, so give it that:
+    if (key)
+    {
+        var selector='.field-meta-put[field-key="'+key+'"]';
+        $(selector, context).each(function()
+        {               
+            Field.Base.meta_put(key, meta, $(this));
+        });
+    }
 
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Base.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
+            //handle sub-dicts in the same content. this way you can use keys
+            //like foo.subdict, without needing a surrounding element that has key foo.
             Field.Dict.meta_put(key_str, thismeta, context);
         }
         else
@@ -331,6 +340,7 @@ Field.List.clone=function(source_element)
 
 Field.List.meta_put=function(key, meta, context)
 {
+    //console.log("list metaput", key, meta, context);
     if (Field.Base.meta_put(key, meta, context))
         return;
 
@@ -340,8 +350,8 @@ Field.List.meta_put=function(key, meta, context)
         context.addClass("field-get");
 
     context.addClass("field-put field-input");
-    //recurse into subdict, every list should have one
-    Field.Dict.meta_put(key, meta.meta, context);
+    //recurse into submeta
+    Field[meta.meta.type].meta_put(key, meta.meta, context);
 };
 
 /*
@@ -451,7 +461,7 @@ Field.List.get=function(key, meta, context)
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
-        value.push(Field.Dict.get(key, meta, $(this)));
+        value.push(Field[meta.meta.type].get(key, meta, $(this)));
     });
     return(value);    
 }

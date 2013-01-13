@@ -215,16 +215,17 @@ class List(Base):
                 raise
 
 
-class ListDict(object):
-    '''Easier way to create a List containing Dicts
+# seems to make things more complicated..                
+# class ListDict(object):
+#     '''Easier way to create a List containing Dicts
 
-    This is a shorthand for List(Dict(...))
+#     This is a shorthand for List(Dict(...))
 
-    This is just to make the definition of metadata simpeller and more readable by humans.
-    '''
+#     This is just to make the definition of metadata simpeller and more readable by humans.
+#     '''
 
-    def __new__(cls, meta, list_key=None, **kwargs):
-        return(List(Dict(meta, **kwargs), list_key=list_key))
+#     def __new__(cls, meta, list_key=None, **kwargs):
+#         return(List(Dict(meta, **kwargs), list_key=list_key))
 
 
 class String(Base):
