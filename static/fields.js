@@ -119,7 +119,8 @@ Field.Base.input_append=function(key, meta, context, element)
 Field.Base.html_append=function(key, meta, context, data, options, element)
 {
     //probably a jquery object
-    if (typeof element ==='object')
+    // console.log("html_append", key , meta, context, data , options, element);
+    if (element instanceof jQuery)
     {
         if (element.text()!=context.text())
         {
@@ -216,24 +217,28 @@ Field.Dict.put=function(key, meta, context, data, options)
         context.data("field-data",data);
     }
 
-    //traverse the sub meta data
-    $.each(meta.meta, function(sub_key, thismeta){
+    //traverse the data
+    $.each(data, function(sub_key, thisdata){
         var key_str=Field.Base.concat_keys(key, sub_key);
-
-        if (thismeta.type=='Dict')
+        var thismeta=meta.meta[sub_key];
+        if (thismeta!=undefined)
         {
-            //for subdicts, we stay in the same context while we recurse:
-            Field.Dict.put(key_str, thismeta, context, data[sub_key], options);
-        }
-        else
-        {
-            var selector='.field-put[field-key="'+key_str+'"]';
 
-            //traverse the field-meta-put elements for this key:
-            $(selector, context).each(function()
+            if (thismeta.type=='Dict')
             {
-                Field[thismeta.type].put(key_str, thismeta, $(this), data[sub_key], options);
-            });
+                //for subdicts, we stay in the same context while we recurse:
+                Field.Dict.put(key_str, thismeta, context, thisdata, options);
+            }
+            else
+            {
+                var selector='.field-put[field-key="'+key_str+'"]';
+
+                //traverse the field-meta-put elements for this key:
+                $(selector, context).each(function()
+                {
+                    Field[thismeta.type].put(key_str, thismeta, $(this), thisdata, options);
+                });
+            }
         }
     }); //meta data
 };
@@ -424,7 +429,6 @@ Field.List.put=function(key, meta, context, data, options)
             }
             
             //finally put data into it
-            console.log("put jan", meta);
             Field[meta.meta.type].put(key, meta.meta, update_element, item_value, options);
         });
     }
@@ -442,7 +446,7 @@ Field.List.put=function(key, meta, context, data, options)
 Field.List.get=function(key, meta, context)
 {
     var value=new Array();
-    var parent=$(context).parent();
+    var parent=context.parent();
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
@@ -547,13 +551,103 @@ Field.Password.meta_put=function(key, meta, context)
 }
 
 
-Field.Number=Object.create(Field.Base);
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Field.Number=Object.create(Field.String);
+Field.Number.meta_put=function(key, meta, context)
+{
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
+    var added_element;
+    added_element=$("<input>")
+        .attr("type","text");                       
+
+    added_element.val(meta.default);
+
+    Field.Base.input_append(key, meta, context, added_element);
+}
+
+
+
+Field.Number.get=function(key, meta, context)
+{
+    var val=context.val();
+    if (val=="")
+        return(null)
+    else
+        return(Number(val));
+
+}
+
+
+///////////////////////////////////////////////////
+Field.Select=Object.create(Field.Base);
+Field.Select.meta_put=function(key, meta, context)
+{
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
+    //create select element
+    var added_element=$("<select>");
+
+    //allow null choice?
+    var allow_null=context.attr("field-allow-null")=="";
+    if (allow_null)
+    {
+        var option_element=$("<option>")
+            .attr("value","")
+        option_element.attr("selected","selected");
+        added_element.append(option_element);
+    }
+    
+    //add choices
+    $.each(meta['choices'], function(choice, desc){
+        var option_element=$("<option>")
+            .attr("value",choice)
+            .text(desc);
+        
+        //we use this instead of added_element.val(thismeta.default) because clone wont work with this.
+        if (choice==meta.default &&  !allow_null)
+            option_element.attr("selected","selected");
+        added_element.append(option_element);
+    });
+            
+    Field.Base.input_append(key, meta, context, added_element);
+}
+
+
+Field.Select.get=function(key, meta, context)
+{
+
+    if (context.attr("field-allow-null")=="" && context.prop("selectedIndex")==0)
+        return (null);
+
+    return(context.val());
+}
+
+Field.Select.put=function(key, meta, context, data, options)
+{
+    if (context.hasClass("field-input"))
+        context.val(data);
+    else
+    {
+        var newElement=$("<span>");
+        newElement.addClass("field-select-"+data);
+        newElement.addClass("field-select-"+key+"-"+data);
+        newElement.text(meta.choices[data]);
+        Field.Base.html_append(key, meta, context, data, options, newElement);
+    }
+}
+
+
+
+
 
 Field.Timestamp=Object.create(Field.Base);
 
 Field.Bool=Object.create(Field.Base);
 
-Field.Select=Object.create(Field.Base);
 
 Field.MultiSelect=Object.create(Field.Base);
 
