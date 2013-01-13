@@ -731,6 +731,87 @@ Field.Bool.put=function(key, meta, context, data, options)
 
 
 
+///////////////////////////////////////////////////
+Field.MultiSelect=Object.create(Field.Base);
+Field.MultiSelect.meta_put=function(key, meta, context)
+{
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
+    var new_element=$("<span>")
+        .attr("title",meta.desc);
+
+
+    //add choices
+    $.each(meta.choices, function(choice, desc){
+        var label=$("<label>").text(desc);
+
+        //add checkbox
+        var checkbox=$("<input>")
+                .attr("value",choice)
+                .attr("type","checkbox");
+
+        if ('default' in meta)
+            checkbox.attr("checked", meta.default.indexOf(choice) != -1);
+
+        label.append(checkbox);
+        new_element.append(label);
+                
+        //add break
+        //TODO: do this with css via a field-multiselect-bla class or something?
+        new_element.append($("<br>"));
+    });
+
+    Field.Base.input_append(key, meta, context, new_element);
+}
+
+
+Field.MultiSelect.get=function(key, meta, context)
+{
+    var value=new Array();
+    
+    $("input", context).each(function()
+    {
+        if ($(this).attr("checked"))
+            value.push($(this).attr("value"));              
+    });
+
+    //NOTE: not sure if this how we want it.
+    //perhaps its better to add a extra control to 'enable' or 'disable' the checkboxes?
+    if (context.attr("field-allow-null")=="" && value.length==0)
+        return (null);
+    
+    return(value);
+}
+
+Field.MultiSelect.put=function(key, meta, context, data, options)
+{
+    if (context.hasClass("field-input"))
+    {
+        $("input", context).each(function()
+        {
+            //set checked to true if the value of the checkbox is found in the value passed to this function:
+            $(this).attr("checked", (data.indexOf($(this).attr("value")) != -1));
+        });
+    }
+    else
+    {
+        var new_element=$("<span>");
+        
+        for(data_nr in data)
+        {
+            new_element.append(
+                $("<span>") 
+                    .addClass("field-multiselect")
+                    .addClass("field-multiselect-"+data[data_nr])
+                    .addClass("field-multiselect-"+key+"-"+data[data_nr])
+                    .text(meta.choices[data[data_nr]])
+            );
+        }
+
+        Field.Base.html_append(key, meta, context, data, options, new_element);
+    }
+}
 
 
 
@@ -738,6 +819,5 @@ Field.Timestamp=Object.create(Field.Base);
 
 
 
-Field.MultiSelect=Object.create(Field.Base);
 
 

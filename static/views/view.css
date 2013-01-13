@@ -1,5 +1,7 @@
 /* 
 	View specific CSS stuff. Stuff that happens INSIDE a view 
+
+    Views usually have <style>-tags themselfs as well
 */
 
 .control-on-click-edit:hover, .control-on-click-del:hover
@@ -48,7 +50,8 @@
     cursor:  pointer;
 }
 
-.autoHtml_MultiSelect
+/* one choice of a multiselect field */
+.field-multiselect
 {
 	border-left-width: 1px;
 	border-left-style: solid;
@@ -56,16 +59,17 @@
 	border-color: #aaaaaa;
 }
 
-.autoHtml_rights_admin
+/* administrators */
+.field-multiselect-rights-admin
 {
 	color: red;
 }
 
-.autoHtml_active_True
+.field-bool-active-true
 {
 }
 
-.autoHtml_active_False
+.field-bool-active-false
 {
 	color:red;
 	
@@ -83,13 +87,13 @@
 
 
 
-.autoHtml_logType_info
+.field-select-logType-info
 {
 	padding-left:1em;
 	padding-right:1em;
 }
 
-.autoHtml_logType_error
+.field-select-logType-error
 {
 	background-color: red;
 	color:white;
@@ -97,7 +101,7 @@
 	padding-right:1em;
 }
 
-.autoHtml_logType_warning
+.field-select-logType-warning
 {
 	background-color: yellow;
 	color: black;
