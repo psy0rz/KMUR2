@@ -51,6 +51,7 @@ Field.Base.not_implemented=function(key, meta, context, data)
 */
 Field.Base.meta_put=function(key, meta, context)
 {
+    console.log("meta_put", key, meta, context);
     var meta_key=context.attr("field-meta-key");
     if (meta_key==undefined)
     {
@@ -495,20 +496,20 @@ Field.String.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-    var added_element;
+    var new_element;
     if (meta.max>100)
     {
-        added_element=$("<textarea>");
+        new_element=$("<textarea>");
     }
     else
     {
-        added_element=$("<input>")
+        new_element=$("<input>")
             .attr("type","text");                       
     }
 
-    added_element.val(meta.default);
+    new_element.val(meta.default);
 
-    Field.Base.input_append(key, meta, context, added_element);
+    Field.Base.input_append(key, meta, context, new_element);
 }
 
 
@@ -542,12 +543,12 @@ Field.Password.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-    var added_element;
-        added_element=$("<input>")
+    var new_element;
+        new_element=$("<input>")
             .attr("type","password"); 
 
-    added_element.val(meta.default);
-    Field.Base.input_append(key, meta, context, added_element);
+    new_element.val(meta.default);
+    Field.Base.input_append(key, meta, context, new_element);
 }
 
 
@@ -559,13 +560,13 @@ Field.Number.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-    var added_element;
-    added_element=$("<input>")
+    var new_element;
+    new_element=$("<input>")
         .attr("type","text");                       
 
-    added_element.val(meta.default);
+    new_element.val(meta.default);
 
-    Field.Base.input_append(key, meta, context, added_element);
+    Field.Base.input_append(key, meta, context, new_element);
 }
 
 
@@ -589,7 +590,7 @@ Field.Select.meta_put=function(key, meta, context)
         return;
 
     //create select element
-    var added_element=$("<select>");
+    var new_element=$("<select>");
 
     //allow null choice?
     var allow_null=context.attr("field-allow-null")=="";
@@ -598,7 +599,7 @@ Field.Select.meta_put=function(key, meta, context)
         var option_element=$("<option>")
             .attr("value","")
         option_element.attr("selected","selected");
-        added_element.append(option_element);
+        new_element.append(option_element);
     }
     
     //add choices
@@ -607,13 +608,13 @@ Field.Select.meta_put=function(key, meta, context)
             .attr("value",choice)
             .text(desc);
         
-        //we use this instead of added_element.val(thismeta.default) because clone wont work with this.
+        //we use this instead of new_element.val(thismeta.default) because clone wont work with this.
         if (choice==meta.default &&  !allow_null)
             option_element.attr("selected","selected");
-        added_element.append(option_element);
+        new_element.append(option_element);
     });
             
-    Field.Base.input_append(key, meta, context, added_element);
+    Field.Base.input_append(key, meta, context, new_element);
 }
 
 
@@ -632,11 +633,99 @@ Field.Select.put=function(key, meta, context, data, options)
         context.val(data);
     else
     {
-        var newElement=$("<span>");
-        newElement.addClass("field-select-"+data);
-        newElement.addClass("field-select-"+key+"-"+data);
-        newElement.text(meta.choices[data]);
-        Field.Base.html_append(key, meta, context, data, options, newElement);
+        var new_element=$("<span>");
+        new_element.addClass("field-select-"+data);
+        new_element.addClass("field-select-"+key+"-"+data);
+        new_element.text(meta.choices[data]);
+        Field.Base.html_append(key, meta, context, data, options, new_element);
+    }
+}
+
+
+
+///////////////////////////////////////////////////
+Field.Bool=Object.create(Field.Base);
+Field.Bool.meta_put=function(key, meta, context)
+{
+    if (Field.Base.meta_put(key, meta, context))
+        return;
+
+    if (context.attr("field-allow-null")=="")
+    {
+        //if we allow null, we use a select box for it
+        Field.Select.meta_put(key,
+                {
+                    'choices':{
+                        0:meta.false_desc,
+                        1:meta.true_desc
+                    }
+                }, 
+                context);
+    }
+    else
+    {
+        var new_element=$("<input>")
+            .attr("type","checkbox")
+            .attr("value","")
+        new_element.attr("checked", meta.default);
+        Field.Base.input_append(key, meta, context, new_element);
+    }
+}
+
+
+Field.Bool.get=function(key, meta, context)
+{
+
+    if (context.attr("field-allow-null")=="")
+    {
+        //if we allow null, we use a select box for it
+        var value=Field.Select.get(key ,meta, context);
+        if (value==null)
+            return (null);
+
+        return(value==1);
+    }
+    else
+    {
+        if (context.attr("checked"))
+            return(true);
+        else
+            return(false);
+    }
+}
+
+Field.Bool.put=function(key, meta, context, data, options)
+{
+    if (context.hasClass("field-input"))
+    {
+            if (context.attr("field-allow-null")=="")
+            {
+                //if we allow null, we use a select box for it
+                Field.Select.put(key, meta, context, data, options);
+            }
+            else
+            {
+                context.attr("checked", data);
+            }
+    }
+    else
+    {
+        var new_element=$("<span>");
+        
+        if (data)
+        {
+            new_element.addClass("field-bool-true");
+            new_element.addClass("field-bool-"+key+"-true");
+            new_element.text(meta.true_desc);
+        }
+        else
+        {
+            new_element.addClass("field-bool-false");
+            new_element.addClass("field-bool-"+key+"-false");
+            new_element.text(meta.false_desc);
+        }
+
+        Field.Base.html_append(key, meta, context, data, options, new_element);
     }
 }
 
@@ -644,9 +733,9 @@ Field.Select.put=function(key, meta, context, data, options)
 
 
 
+
 Field.Timestamp=Object.create(Field.Base);
 
-Field.Bool=Object.create(Field.Base);
 
 
 Field.MultiSelect=Object.create(Field.Base);

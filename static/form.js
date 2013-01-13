@@ -224,24 +224,24 @@ function resolveData(key, data)
                         //convert metadata to input element:
                         else
                         {
-                            var addedElement=dataConv[thismeta.type].input(this, thismeta, keyStr);
-                            if (addedElement)
+                            var added_element=dataConv[thismeta.type].input(this, thismeta, keyStr);
+                            if (added_element)
                             {
-                                addedElement.addClass("autoPut")
+                                added_element.addClass("autoPut")
                                     .attr("_key",keyStr)
                                     .attr("title",thismeta.desc);
                                 
                                 if (!thismeta.readonly)
                                 {
-                                    addedElement.addClass("autoGet")
+                                    added_element.addClass("autoGet")
                                 }
                                 else
                                 {
-                                    addedElement.attr('disabled',true);
+                                    added_element.attr('disabled',true);
                                 }
                                 //now add the new element to the DOM:
                                 $(this).empty();
-                                $(this).append(addedElement);
+                                $(this).append(added_element);
                             }
                             
                         }
@@ -368,11 +368,11 @@ function resolveData(key, data)
                                 if ($(this).attr("_html")!=null)
                                 {
         //                          console.log("check", meta.meta, key);
-                                    var newElement=dataConv[meta.meta[key].type].html(this, meta.meta[key], keyStr, thisvalue, settings);
-                                    if (newElement.text()!=$(this).text())
+                                    var new_element=dataConv[meta.meta[key].type].html(this, meta.meta[key], keyStr, thisvalue, settings);
+                                    if (new_element.text()!=$(this).text())
                                     {
                                         $(this).empty();
-                                        $(this).append(newElement);
+                                        $(this).append(new_element);
                                         if (settings.showChanges)
                                             $(this).effect('highlight', 2000);
                                     }

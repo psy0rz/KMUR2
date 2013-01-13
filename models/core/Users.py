@@ -7,18 +7,21 @@ from models import mongodb
 class Users(models.mongodb.MongoDB):
     '''user management'''
     
-    meta = fields.Dict({
-                        '_id': models.mongodb.FieldId(),
-                        'username': fields.String(min=3, desc='Username'),
-                        'password': fields.Password(min=5, desc='Password'),
-                        'active': fields.Bool(),
-                        'groups': fields.MultiSelect(choices={
-                                                              "admin": "Administrator",
-                                                              "employee": "Employee",
-                                                              "customer": "Customer",
-                                                              "finance": "Finance"
-                                                            }),
-                            })
+    meta = fields.ListDict(
+            {
+                '_id': models.mongodb.FieldId(),
+                'username': fields.String(min=3, desc='Username'),
+                'password': fields.Password(min=5, desc='Password'),
+                'active': fields.Bool(),
+                'groups': fields.MultiSelect(choices={
+                                                      "admin": "Administrator",
+                                                      "employee": "Employee",
+                                                      "customer": "Customer",
+                                                      "finance": "Finance"
+                                                    }),
+            },
+            list_key='_id'
+        )
 
     @Acl(groups="admin")
     def put(self, **user):

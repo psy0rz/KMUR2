@@ -110,23 +110,6 @@ ControlBase.prototype.get_meta=function(request_params)
     }
 }
 
-ControlBase.prototype.get_meta_result=function(result, request_params)
-{
-    this.params.get_meta_result(result, request_params);
-
-    if (viewShowError(result, this.context, this.meta))
-        return;
-    
-    if (!('data' in result))
-        return;
-
-    this.meta=result['data'];
-    Field.Dict.meta_put('',this.meta, this.context);
-
-    this.attach_event_handlers();   
-    this.get(request_params);
-}
-
 
 //gets data from the rpc server 
 ControlBase.prototype.get=function(request_params)
@@ -190,6 +173,27 @@ function ControlForm(params)
     this.get_meta();
 }
 ControlForm.prototype=Object.create(ControlBase.prototype);
+
+
+ControlForm.prototype.get_meta_result=function(result, request_params)
+{
+    this.params.get_meta_result(result, request_params);
+
+    if (viewShowError(result, this.context, this.meta))
+        return;
+    
+    if (!('data' in result))
+        return;
+
+    //all default models are ListDicts, and since a form is editting one item from that list, we should
+    //use the Dict, so we use .meta:
+    this.meta=result['data'].meta;
+    Field[this.meta.type].meta_put('',this.meta, this.context);
+
+    this.attach_event_handlers();   
+    this.get(request_params);
+}
+
 
 ControlForm.prototype.get_result=function(result, request_params)
 {
@@ -387,7 +391,26 @@ function ControlList(params)
 }
 ControlList.prototype=Object.create(ControlBase.prototype);
 
-//only calls this.get, if its not already busy getting data.
+ControlList.prototype.get_meta_result=function(result, request_params)
+{
+    this.params.get_meta_result(result, request_params);
+
+    if (viewShowError(result, this.context, this.meta))
+        return;
+    
+    if (!('data' in result))
+        return;
+
+    this.meta=result['data'];
+    Field[this.meta.type].meta_put('',this.meta, this.context);
+
+    this.attach_event_handlers();   
+    this.get(request_params);
+}
+
+
+
+//this one only calls this.get, if its not already busy getting data.
 //otherwise just sets a flag, so that get_result will call get again as soon as its done.
 //this way multiple calls are not queued and not executed in parallel. (which is nice for for ordering and filtering)
 ControlList.prototype.get_delayed=function(request_params)

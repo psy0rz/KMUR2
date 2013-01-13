@@ -204,21 +204,21 @@ var dataConv=
     String:{
         input:function(element, meta)
         {
-            var addedElement;
+            var added_element;
             if (meta.max>100)
             {
-                addedElement=$("<textarea>");
+                added_element=$("<textarea>");
             }
             else
             {
-                addedElement=$("<input>")
+                added_element=$("<input>")
                     .attr("type","text");                       
             }
 
-            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+            added_element.attr("_allow_null",$(element).attr("_allow_null"));
 
-            $(addedElement).val(meta.default);
-            return(addedElement);
+            $(added_element).val(meta.default);
+            return(added_element);
         },
         html:function(element, meta, keyStr, value)
         {
@@ -238,11 +238,11 @@ var dataConv=
     Password:{
         input:function(element, meta)
         {
-            var addedElement=$("<input>")
+            var added_element=$("<input>")
                 .attr("type","password");
-            $(addedElement).val(meta.default);
-            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
-            return (addedElement);
+            $(added_element).val(meta.default);
+            added_element.attr("_allow_null",$(element).attr("_allow_null"));
+            return (added_element);
         },
         html:function(element, meta, keyStr, value)
         {
@@ -263,14 +263,14 @@ var dataConv=
         input:function(element, meta)
         {
             //NOTE: we could make this nicer, by showing the decimal point and stuff.
-            var addedElement=$("<input>")
+            var added_element=$("<input>")
                     .attr("type","text");
             
             //not neccesary, already returns 0 by no value:
-            //addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+            //added_element.attr("_allow_null",$(element).attr("_allow_null"));
             
-            $(addedElement).val(meta.default);
-            return(addedElement);
+            $(added_element).val(meta.default);
+            return(added_element);
         },
         html:function(element, meta, keyStr, value)
         {
@@ -293,17 +293,17 @@ var dataConv=
         input:function(element, meta)
         {
             //create select element
-            var addedElement=$("<select>");
+            var added_element=$("<select>");
 
             //allow null choice?
             var allow_null=$(element).attr("_allow_null")=="";
             if (allow_null)
             {
-                addedElement.attr("_allow_null","");
+                added_element.attr("_allow_null","");
                 var optionElement=$("<option>")
                     .attr("value","")
                 optionElement.attr("selected","selected");
-                addedElement.append(optionElement);
+                added_element.append(optionElement);
             }
             
             //add choices
@@ -312,21 +312,21 @@ var dataConv=
                     .attr("value",choice)
                     .text(desc);
                 
-                //we use this instead of addedElement.val(thismeta.default) because clone wont work with this.
+                //we use this instead of added_element.val(thismeta.default) because clone wont work with this.
                 if (choice==meta.default &&  !allow_null)
                     optionElement.attr("selected","selected");
-                addedElement.append(optionElement);
+                added_element.append(optionElement);
             });
             
-            return(addedElement);
+            return(added_element);
         },
         html:function(element, meta, keyStr, value)
         {
-            var newElement=$("<span>");
-            newElement.addClass("autoHtml_"+meta.type+"_"+value);
-            newElement.addClass("autoHtml_"+keyStr+"_"+value);
-            newElement.text(meta.choices[value]);
-            return(newElement);
+            var new_element=$("<span>");
+            new_element.addClass("autoHtml_"+meta.type+"_"+value);
+            new_element.addClass("autoHtml_"+keyStr+"_"+value);
+            new_element.text(meta.choices[value]);
+            return(new_element);
         },
         get:function(element, meta, keyStr)
         {
@@ -343,10 +343,10 @@ var dataConv=
     MultiSelect:{
         input:function(element, meta, keyStr)
         {
-            var addedElement=$("<span>")
+            var added_element=$("<span>")
                 .attr("title",meta.desc);
 
-            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+            added_element.attr("_allow_null",$(element).attr("_allow_null"));
 
             //add choices
             $.each(meta.choices, function(choice, desc){
@@ -358,29 +358,29 @@ var dataConv=
                         
                 if ('default' in meta)
                     checkbox.attr("checked", meta.default.indexOf(choice) != -1);
-                addedElement.append(checkbox);
+                added_element.append(checkbox);
                 
                 //add description
-                addedElement.append(
+                added_element.append(
                     $("<label>")
                         .attr("for",keyStr+"."+choice)
                         .text(desc)
                 );
                 
                 //add break
-                addedElement.append($("<br>"));
+                added_element.append($("<br>"));
 
             });
 
-            return(addedElement);
+            return(added_element);
         },
         html:function(element, meta, keyStr, value)
         {
-            var newElement=$("<span>");
+            var new_element=$("<span>");
             
             for(valueI in value)
             {
-                newElement.append(
+                new_element.append(
                     $("<span>") 
                         .addClass("autoHtml_"+meta.type)
                         .addClass("autoHtml_"+meta.type+"_"+value[valueI])
@@ -388,7 +388,7 @@ var dataConv=
                         .text(meta.choices[value[valueI]])
                 );
             }
-            return(newElement);
+            return(new_element);
         },
         get:function(element, meta, keyStr)
         {
@@ -431,30 +431,30 @@ var dataConv=
             }
             else
             {
-                var addedElement=$("<input>")
+                var added_element=$("<input>")
                     .attr("type","checkbox")
                     .attr("value","")
-                addedElement.attr("checked", meta.default);
-                return(addedElement);
+                added_element.attr("checked", meta.default);
+                return(added_element);
             }
         },
         html:function(element, meta, keyStr, value)
         {
-            var newElement=$("<span>");
+            var new_element=$("<span>");
             
             if (value)
             {
-                newElement.addClass("autoHtml_"+meta.type+"_True");
-                newElement.addClass("autoHtml_"+keyStr+"_True");
-                newElement.text(meta.true_desc);
+                new_element.addClass("autoHtml_"+meta.type+"_True");
+                new_element.addClass("autoHtml_"+keyStr+"_True");
+                new_element.text(meta.true_desc);
             }
             else
             {
-                newElement.addClass("autoHtml_"+meta.type+"_False");
-                newElement.addClass("autoHtml_"+keyStr+"_False");
-                newElement.text(meta.false_desc);
+                new_element.addClass("autoHtml_"+meta.type+"_False");
+                new_element.addClass("autoHtml_"+keyStr+"_False");
+                new_element.text(meta.false_desc);
             }
-            return (newElement);
+            return (new_element);
         },
         get:function(element, meta, keyStr)
         {
@@ -493,23 +493,23 @@ var dataConv=
         {
             var allowTime=false;
 
-            var addedElement=$("<input>")
+            var added_element=$("<input>")
                 .attr("type","text");
 
-            addedElement.attr("_allow_null",$(element).attr("_allow_null"));
+            added_element.attr("_allow_null",$(element).attr("_allow_null"));
             
             if ($(element).attr("_allowTime")!=null)
             {
                 allowTime=true;
-                addedElement.attr("_allowTime","");
+                added_element.attr("_allowTime","");
             }
             
             if ('default' in meta)
-                $(addedElement).val(formatDateTime(meta.default, allowTime));
+                $(added_element).val(formatDateTime(meta.default, allowTime));
             
             //create datepicker on demand, to make it clonable:
             //(its probably more efficient as well on long lists)
-            addedElement.focus(function(){
+            added_element.focus(function(){
                 if ($(this).closest(".field-list-source").length != 0)
                     return;
                 
@@ -540,7 +540,7 @@ var dataConv=
                 }
                 
             });
-            return(addedElement);
+            return(added_element);
         },
         html:function(element, meta, keyStr, value)
         {
