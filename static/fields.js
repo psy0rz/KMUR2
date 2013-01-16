@@ -168,6 +168,22 @@ Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
 
 
 
+/**
+ * Looks up an element in the current context by traversing the keys array.
+ * these are usually dict keys and list keys.
+ * array items are noted by a number.
+ * example: [ "test", 5, "bla" ]
+ * This selects the bla key in the 5th element of the test array.
+ * This notation is also used by errors that are returned from the server.
+ */
+Field.Base.find_element=function(key, meta, context, keys)
+{  
+        //the interesting stuff happens in Field.Dict and Field.List
+        //when we reach Field.Base, it means we've reached 'the end' 
+        //(we cant search any deeper, even if we still have keys left)
+        return(context);
+
+}
 
 
 
@@ -278,6 +294,22 @@ Field.Dict.get=function(key, meta, context)
 
     return(ret);
 };
+
+Field.Dict.find_element=function(key, meta, context, keys)
+{
+    var key_str=Field.Base.concat_keys(key, keys[0]);
+
+    var selector='.field-put[field-key="'+key_str+'"]';
+
+    var sub_context=$(selector, context);
+
+    //if the key is not found, just keep looking in the same context for the next one
+    if (sub_context.length==0)
+        sub_context=context;
+
+    //recurse into next key:
+    Field[meta.type]
+}
 
 /*
 //-options.show_changes: highlight changed data 
