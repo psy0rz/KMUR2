@@ -297,18 +297,20 @@ Field.Dict.get=function(key, meta, context)
 
 Field.Dict.find_element=function(key, meta, context, keys)
 {
-    var key_str=Field.Base.concat_keys(key, keys[0]);
+    var this_key=keys[0];
+    var sub_keys=keys.splice(1);
+    var sub_meta=meta.meta[sub_key];
 
+    var key_str=Field.Base.concat_keys(key, this_key);
     var selector='.field-put[field-key="'+key_str+'"]';
-
     var sub_context=$(selector, context);
 
     //if the key is not found, just keep looking in the same context for the next one
     if (sub_context.length==0)
         sub_context=context;
 
-    //recurse into next key:
-    Field[meta.type]
+    //recurse into substuff
+    return(Field[sub_meta.type].find_element(key_str, sub_meta, sub_context, sub_keys ));
 }
 
 /*
@@ -498,11 +500,53 @@ Field.List.get=function(key, meta, context)
     return(value);    
 }
 
-/*** Gets a reference to the list-item-element, by resolving the specified elelment.
+/*** Gets a reference to the list-item-element, by resolving the specified element.
+
+key should match the field-key of the list-item
 */
-Field.List.from_element_get=function(element)
+Field.List.from_element_get=function(key, element)
 {
-    return($(element).closest(".field-list-item, .field-list-source"));
+    return($(element).closest('.field-list-item[field-key="'+key+'"], .field-list-source[field-key="'+key+'"]'));
+}
+
+
+/*** Returns the id from the list item that holds the clicked element
+
+key should match the field-key of the list-item
+    
+If it uses array based indexing it returns an index nr
+
+If it uses list-keys it returns an object:  { list-key: list-key-id }
+
+Returns -1 if the element somehow doesnt exist in the list, or the list is empty and only has a list-source item
+
+*/
+Field.List.from_element_get_id=function(key, element)
+{
+    list_element=Field.List.from_element_get(key, element);
+
+    if (list_element.attr("field-list-key")!=null)
+    {
+        //list-key indexing:
+        ret={};
+        ret[list_element.attr("field-list-key")]=list_element.attr("field-list-id");
+        return (ret);
+    }
+    else
+    {
+        //array based indexing:
+        //traverse all the parent field-list-items and count them until we find the list_element:
+        var list_element_index=-1;
+        list_element.parent().children('.field-list-item[field-key="'+list_element.attr("field-key")+'"]').each(function(index, list_item)
+        {
+            if (list_item===list_element[0])
+            {
+                list_element_index=index;
+                return(false); //exit the .each()...
+            }
+        });
+        return(list_element_index);
+    }
 }
 
 /***  Adds a new list item, by resolving the list that belongs to the specfied element.
@@ -529,6 +573,32 @@ Field.List.from_element_add=function(element)
 
     return(add_item);
 };
+
+/** a Field.List expects a 'list item id' in keys[0], which will then be looked up and recursed up on..
+
+*/
+Field.List.find_element=function(key, meta, context, keys)
+{
+    var list_item_id=keys[0];
+    var sub_keys=keys.splice(1);
+    var sub_meta=meta.meta; //(usually a dict)
+
+    var selector='.field-list-item[field-key="'+key+'"]';
+    var sub_context;
+    //does the list use indexes or list-keys to identify an item?
+    if ('list_key' in meta)
+        sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', context);
+    else   
+        sub_context=$(selector, context).eq(list_item_id);
+
+    //if the listitem is not found, just give it up and return an empty jquery result
+    if (sub_context.length==0)
+        return(sub_context);
+
+    //recurse into substuff
+    return(Field[sub_meta.type].find_element(key, sub_meta, sub_context, sub_keys ));
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);

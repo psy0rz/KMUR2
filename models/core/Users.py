@@ -46,6 +46,16 @@ class Users(models.mongodb.MongoDB):
         '''authenticate the with the specified username and password.
 
         if its ok, it doesnt throw an exception and returns nothing'''
+
+        #FIXME: ugly temporary hack to bootstrap empty DB
+        if username=="admin":
+            self.context.groups.append('everyone')
+            self.context.groups.append('user')
+            self.context.groups.append('admin')
+            self.info("logged in via DEBUG HACK - REMOVE ME")
+            return
+
+
         try:
             user = self._get(match={
                                   'username': username,
