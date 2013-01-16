@@ -7,8 +7,8 @@ from models import mongodb
 class Users(models.mongodb.MongoDB):
     '''user management'''
     
-    meta = fields.ListDict(
-            {
+    meta = fields.List(
+            fields.Dict({
                 '_id': models.mongodb.FieldId(),
                 'username': fields.String(min=3, desc='Username'),
                 'password': fields.Password(min=5, desc='Password'),
@@ -19,7 +19,7 @@ class Users(models.mongodb.MongoDB):
                                                       "customer": "Customer",
                                                       "finance": "Finance"
                                                     }),
-            },
+            }),
             list_key='_id'
         )
 

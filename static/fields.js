@@ -51,7 +51,7 @@ Field.Base.not_implemented=function(key, meta, context, data)
 */
 Field.Base.meta_put=function(key, meta, context)
 {
-    console.log("meta_put", key, meta, context);
+//    console.log("meta_put", key, meta, context);
     var meta_key=context.attr("field-meta-key");
     if (meta_key==undefined)
     {
@@ -412,7 +412,7 @@ Field.List.put=function(key, meta, context, data, options)
                 {
                     //just use plain item_nr array adressing:
                     if (item_nr < existing_items.length)
-                        update_element=existing_items[item_nr];
+                        update_element=$(existing_items[item_nr]);
                 }
             }
             
@@ -535,6 +535,7 @@ Field.String.get=function(key, meta, context)
 
 Field.String.put=function(key, meta, context, data, options)
 {
+//    console.log("String.put", key , meta, context, data, options);
     if (context.hasClass("field-input"))
         context.val(data);
     else

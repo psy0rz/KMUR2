@@ -402,7 +402,9 @@ ControlList.prototype.get_meta_result=function(result, request_params)
         return;
 
     this.meta=result['data'];
-    Field[this.meta.type].meta_put('',this.meta, this.context);
+
+    //call meta_put on the whole view, with the subdict:
+    Field.Dict.meta_put('',this.meta.meta, this.context);
 
     this.attach_event_handlers();   
     this.get(request_params);
