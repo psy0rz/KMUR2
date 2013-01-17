@@ -357,7 +357,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
  * Use Field.List.Clone to correctly clone a source element.
  * 
  * When the data is put, the field-list-id attribute of every cloned list item is set to the value of field
- * that is specified in field-list-key in the list source.
+ * that is specified in meta.list_key
  */
 Field.List=Object.create(Field.Base);
 
@@ -398,11 +398,6 @@ Field.List.meta_put=function(key, meta, context)
 Field.List.put=function(key, meta, context, data, options)
 {
     var parent=context.parent();
-    var list_key=context.attr("field-list-key");
-
-    //if no list_key specified, try to get it from the metadata 
-    if (!list_key && meta.list_key)
-        list_key=meta.list_key;
 
     //existing list items (if any)
     var existing_items=$('.field-list-item[field-key="'+key+'"]', parent);
@@ -434,11 +429,11 @@ Field.List.put=function(key, meta, context, data, options)
             //update mode
             if (options.list_update)
             {
-                if (list_key)
+                if (meta.list_key)
                 {
                     //try to find existing element
                     //the field-key and field-list-id should both match
-                    update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[list_key]+'"]', parent);
+                    update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[meta.list_key]+'"]', parent);
                     if (update_element.length==0)
                         update_element=undefined;
                 }
@@ -456,8 +451,8 @@ Field.List.put=function(key, meta, context, data, options)
                 //deep clone the prepared clone
                 update_element=clone.clone(true);
 
-                if (list_key)
-                    update_element.attr("field-list-id", item_value[list_key]);
+                if (meta.list_key)
+                    update_element.attr("field-list-id", item_value[meta.list_key]);
                 else
                     update_element.attr("field-list-id", item_nr);
 
@@ -513,30 +508,27 @@ Field.List.from_element_get=function(key, element)
 /*** Returns the id from the list item that holds the clicked element
 
 key should match the field-key of the list-item
-    
-If it uses array based indexing it returns an index nr
+  
+If the listitem has a field-list-id, it returns that.
 
-If it uses list-keys it returns an object:  { list-key: list-key-id }
+Otherwas it returns the index number. (array based indexing)
 
-Returns -1 if the element somehow doesnt exist in the list, or the list is empty and only has a list-source item
+Returns undefined if the element somehow doesnt exist in the list, or the list is empty and only has a list-source item
 
 */
 Field.List.from_element_get_id=function(key, element)
 {
     list_element=Field.List.from_element_get(key, element);
 
-    if (list_element.attr("field-list-key")!=null)
+    if (list_element.attr("field-list-id")!=null)
     {
-        //list-key indexing:
-        ret={};
-        ret[list_element.attr("field-list-key")]=list_element.attr("field-list-id");
-        return (ret);
+        return (list_element.attr("field-list-id"));
     }
     else
     {
         //array based indexing:
         //traverse all the parent field-list-items and count them until we find the list_element:
-        var list_element_index=-1;
+        var list_element_index=undefined;
         list_element.parent().children('.field-list-item[field-key="'+list_element.attr("field-key")+'"]').each(function(index, list_item)
         {
             if (list_item===list_element[0])

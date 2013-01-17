@@ -485,6 +485,12 @@ ControlList.prototype.attach_event_handlers=function()
     //open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
     $(".control-on-click-edit", context).off().click(function(event)
     {
+        if (this_control.meta.list_key==undefined)
+        {
+            console.error("Cant edit list item, since there is no list_key defined in the metadata",this );
+            return;
+        }
+
         var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
         var element=$(this);
@@ -497,12 +503,7 @@ ControlList.prototype.attach_event_handlers=function()
             editView.params={};
 
 //TODO:        editView.focus=$(element).autoFindKeys(this_control.meta);
-        if (typeof list_id == 'object')
-        {
-            //extend params the key->value of the listitem that was clicked
-            $.extend(editView.params, list_id);
-        }
-
+        editView.params[this_control.meta.list_key]=list_id;
         editView.x=event.clientX;
         editView.y=event.clientY;
  
