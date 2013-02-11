@@ -175,6 +175,8 @@ function ControlForm(params)
 ControlForm.prototype=Object.create(ControlBase.prototype);
 
 
+
+
 ControlForm.prototype.get_meta_result=function(result, request_params)
 {
     this.params.get_meta_result(result, request_params);
@@ -190,8 +192,21 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
     this.meta=result['data'].meta;
     Field[this.meta.type].meta_put('',this.meta, this.context);
 
-    this.attach_event_handlers();   
-    this.get(request_params);
+    this.attach_event_handlers();
+
+
+    //its not possible to 'get' data from a form when there are now get_parameters. 
+    //this is the case when the user wants to create a new item instead of editting an existing one
+    if (this.get_params==null)
+    {
+        //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
+        this.get_result({}, request_params);
+    }
+    else
+    {
+        this.get(request_params);
+    }
+
 }
 
 

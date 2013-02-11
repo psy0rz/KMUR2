@@ -297,9 +297,11 @@ Field.Dict.get=function(key, meta, context)
 
 Field.Dict.find_element=function(key, meta, context, keys)
 {
+    console.log("Dict.find_element", key, meta, context, keys);
+
     var this_key=keys[0];
     var sub_keys=keys.splice(1);
-    var sub_meta=meta.meta[sub_key];
+    var sub_meta=meta.meta[this_key];
 
     var key_str=Field.Base.concat_keys(key, this_key);
     var selector='.field-put[field-key="'+key_str+'"]';

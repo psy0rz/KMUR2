@@ -231,6 +231,10 @@ function viewShowError(result, parent, meta)
             
             if ('fields' in result.error)
             {
+...
+                Field.Dict.find_element=function(key, meta, context, keys)
+
+
                 $(parent).autoFindElement(meta, result.error.fields)
                     .addClass("ui-state-error").focus();
             }

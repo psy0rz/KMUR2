@@ -80,9 +80,9 @@ class MongoDB(models.common.Base):
             collection = self.default_collection
 
         if meta:
-            meta.check(doc)
+            meta.meta['meta'].check(doc)
         else:
-            self.get_meta(doc).check(doc)
+            self.get_meta(doc).meta['meta'].check(doc)
 
         #add new
         if not '_id' in doc:
