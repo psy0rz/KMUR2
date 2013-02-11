@@ -8,7 +8,8 @@ import time
 class Logs(models.mongodb.MongoDB):
     '''logging functionality'''
 
-    meta = fields.Dict({
+    meta = fields.List(
+            fields.Dict({
                         'username': fields.String(desc='Username'),
                         'user_id': models.mongodb.FieldId(desc='User ID', required=False),
                         'type': fields.Select(desc='Type', choices={
@@ -20,6 +21,8 @@ class Logs(models.mongodb.MongoDB):
                         'module_name': fields.String(desc='Module name'),
                         'time': fields.Timestamp(desc='Time')
                         })
+            ,list_key='_id'
+            )
 
     def __init__(self, *args, **kwargs):
         self.last_logs = []

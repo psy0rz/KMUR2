@@ -49,7 +49,7 @@ class FieldDemo(models.mongodb.MongoDB):
     meta = fields.List(
         fields.Dict(allFields),
         list_key='_id',
-        desc='the root list of this class, usually not shown in the userinterface'
+        desc='the root list of this class, this metadata is usually not shown in the userinterface'
     )
 
     @Acl(groups="admin")

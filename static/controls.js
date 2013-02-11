@@ -1,6 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //base-class for all controllers
+
+
 /* 
+Contrary to fields.js, we DO intent to emultate classes by using javascript prototyping. A control-class will
+be instantiated and will have lots of member variables that contain parameters and retrieved meta-data.
+
 params:
     view:                view to operate on. view.id is used to determine jquery this.context. 
     class:               rpc-class-name to call (used to fill in default values)
@@ -194,19 +199,24 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
 
     this.attach_event_handlers();
 
+    this.get(request_params);
 
-    //its not possible to 'get' data from a form when there are now get_parameters. 
+}
+
+ControlForm.prototype.get=function(request_params)
+{
+    //its not possible to 'get' data from a form when there are no get_parameters. 
     //this is the case when the user wants to create a new item instead of editting an existing one
-    if (this.get_params==null)
+    if (this.params.get_params==null)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
         this.get_result({}, request_params);
     }
     else
     {
-        this.get(request_params);
+        //if we do have usefull get-parameters, just let the base class handle it
+        ControlBase.prototype.get.call(this, request_params);
     }
-
 }
 
 
@@ -217,7 +227,7 @@ ControlForm.prototype.get_result=function(result, request_params)
     // $(".control-on-click-save", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
     {
-        Field.Dict.put('', this.meta, this.context, result.data)
+        Field.Dict.put('', this.meta, this.context, result.data, {})
     }
     
     this.focus();
@@ -244,10 +254,11 @@ ControlForm.prototype.attach_event_handlers=function()
     
     //create an add-handler if the source-element of a list is focussed
     $(".control-on-focus-list-add :input", context).off().focus(function(){
+        xxx...key mist bij al deze from_element dingen..
         var added_item=Field.List.from_element_add(this);
 
         //refocus the same input on the new item 
-        $('.field-input[field-key="'+$(this).attr("field-key")+'"]', add_element).focus();
+        //$('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
     });
     
     //create a handler to delete a list item

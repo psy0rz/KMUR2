@@ -1,6 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 /*** All fieldtypes are stored in a dictorany so we can easily look them up.
+
+These are not real classes that are instantiated; instead its a bunch of static functions with are overloaded by
+'subclasses' via prototyping. all the data is passed around as function parameters. (in contrast to controls.js)
 */
 Field={};
 
@@ -549,7 +552,7 @@ It will always make sure the field-list-source stays at the end of the list.
 
 Also returns a reference to the new item.
 */
-Field.List.from_element_add=function(element)
+Field.List.from_element_add=function(key, element)
 {
     var list_item=Field.List.from_element_get(element);
 

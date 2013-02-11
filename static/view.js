@@ -199,6 +199,7 @@ function viewCloseAll()
  * Returns false if there are no errors to report
  */
  //FIXME: this belongs in ControlBase now
+ //TODO: rename parent to context
 function viewShowError(result, parent, meta)
 {
     $(".viewErrorText", parent).text("");
@@ -229,14 +230,10 @@ function viewShowError(result, parent, meta)
                 });
             }
             
+            //highlight the field that has the error
             if ('fields' in result.error)
             {
-...
-                Field.Dict.find_element=function(key, meta, context, keys)
-
-
-                $(parent).autoFindElement(meta, result.error.fields)
-                    .addClass("ui-state-error").focus();
+                $(Field[meta.type].find_element('', meta, parent, result.error.fields)).addClass("ui-state-error").focus();
             }
             return(true);
         }
