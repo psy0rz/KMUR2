@@ -207,7 +207,7 @@ ControlForm.prototype.get=function(request_params)
 {
     //its not possible to 'get' data from a form when there are no get_parameters. 
     //this is the case when the user wants to create a new item instead of editting an existing one
-    if (this.params.get_params==null)
+    if (Object.keys(this.params.get_params).length==0)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
         this.get_result({}, request_params);
@@ -249,13 +249,12 @@ ControlForm.prototype.attach_event_handlers=function()
 
     //create an add-handler to add items to lists
     $(".control-on-click-list-add", context).off().click(function(){
-        Field.List.from_element_add(this);
+        Field.List.from_element_add(null, this);
     });
     
     //create an add-handler if the source-element of a list is focussed
     $(".control-on-focus-list-add :input", context).off().focus(function(){
-        xxx...key mist bij al deze from_element dingen..
-        var added_item=Field.List.from_element_add(this);
+        var added_item=Field.List.from_element_add(null, this);
 
         //refocus the same input on the new item 
         //$('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
@@ -264,7 +263,7 @@ ControlForm.prototype.attach_event_handlers=function()
     //create a handler to delete a list item
     $(".control-on-click-list-del", context).off().click(function()
     {
-        var clicked_element=Field.List.from_element_get(this);
+        var clicked_element=Field.List.from_element_get(null, this);
         if (clicked_element.hasClass("field-list-item"))
         {
             $(this).confirm(function()
@@ -472,6 +471,7 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if ('data' in result)
     {
+        console.error("updateing", request_params);
         Field.List.put(
             '',
             this.meta,
@@ -543,7 +543,7 @@ ControlList.prototype.attach_event_handlers=function()
     //delete the element, after confirmation
     $(".control-on-click-del", context).off().click(function(event)
     {
-        var listParent=Field.List.from_element_get(this);
+        var listParent=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
         var id=listParent.attr("_id");
         var index=listParent.attr("_index");
 

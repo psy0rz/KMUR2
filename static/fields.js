@@ -502,17 +502,22 @@ Field.List.get=function(key, meta, context)
 
 /*** Gets a reference to the list-item-element, by resolving the specified element.
 
-key should match the field-key of the list-item
+if key is specified, it will only match list-items which this key. otherwise it will just get the closest one.
+
+
 */
 Field.List.from_element_get=function(key, element)
 {
-    return($(element).closest('.field-list-item[field-key="'+key+'"], .field-list-source[field-key="'+key+'"]'));
+    if (key)
+        return($(element).closest('.field-list-item[field-key="'+key+'"], .field-list-source[field-key="'+key+'"]'));
+    else
+        return($(element).closest('.field-list-item, .field-list-source[field-key="'+key+'"]'));
+
 }
 
 
 /*** Returns the id from the list item that holds the clicked element
 
-key should match the field-key of the list-item
   
 If the listitem has a field-list-id, it returns that.
 
@@ -554,7 +559,7 @@ Also returns a reference to the new item.
 */
 Field.List.from_element_add=function(key, element)
 {
-    var list_item=Field.List.from_element_get(element);
+    var list_item=Field.List.from_element_get(key, element);
 
     if (list_item.length==0)
         return;
