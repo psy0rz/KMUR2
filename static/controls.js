@@ -581,11 +581,11 @@ ControlList.prototype.attach_event_handlers=function()
         this_control.params.get_params.sort={};
         $(".control-order-asc",context).each(function()
         {
-            this_control.params.get_params.sort[$(this).attr("_key")]=1;
+            this_control.params.get_params.sort[$(this).attr("field-key")]=1;
         });
         $(".control-order-desc",context).each(function()
         {
-            this_control.params.get_params.sort[$(this).attr("_key")]=-1;
+            this_control.params.get_params.sort[$(this).attr("field-key")]=-1;
         });
     }
     getSortSettings();
@@ -650,7 +650,7 @@ ControlList.prototype.attach_event_handlers=function()
 
 
         //get the value via the correct data conversion routines:
-        var key_str=attribute_element.attr("_key");
+        var key_str=attribute_element.attr("field-key");
         var meta=resolveMeta(key_str, this_control.meta.meta);
         console.log(key_str, this_control.meta.meta);
         var get_element=$(".field-get", attribute_element);
