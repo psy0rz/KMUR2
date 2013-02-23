@@ -181,6 +181,7 @@ Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
  */
 Field.Base.find_element=function(key, meta, context, keys)
 {  
+        console.log("Field.Base.find_element found element: ", key, meta, context, keys);
         //the interesting stuff happens in Field.Dict and Field.List
         //when we reach Field.Base, it means we've reached 'the end' 
         //(we cant search any deeper, even if we still have keys left)
@@ -591,17 +592,26 @@ Field.List.from_element_add=function(key, element)
 */
 Field.List.find_element=function(key, meta, context, keys)
 {
+//    console.log("Field.List.find_element", key, meta, context, keys);
+
     var list_item_id=keys[0];
     var sub_keys=keys.splice(1);
     var sub_meta=meta.meta; //(usually a dict)
+    var list_context=context.parent();
+
+    // console.log("key", key);
+    // console.log("list_item_id", list_item_id);
+    // console.log("sub_keys", sub_keys);
+    // console.log("sub_meta", sub_meta);
 
     var selector='.field-list-item[field-key="'+key+'"]';
     var sub_context;
+
     //does the list use indexes or list-keys to identify an item?
     if ('list_key' in meta)
-        sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', context);
+        sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', list_context);
     else   
-        sub_context=$(selector, context).eq(list_item_id);
+        sub_context=$(selector, list_context).eq(list_item_id);
 
     //if the listitem is not found, just give it up and return an empty jquery result
     if (sub_context.length==0)
