@@ -253,11 +253,16 @@ ControlForm.prototype.attach_event_handlers=function()
     });
     
     //create an add-handler if the source-element of a list is focussed
-    $(".control-on-focus-list-add :input", context).off().focus(function(){
-        var added_item=Field.List.from_element_add(null, this);
+    $(".control-on-focus-list-add :input", context).focus(function(){
+        //only add an item if the user focusses a field in the listsource..
+        //console.error(from_element_get(null, $(this)));
+        if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
+        {
+            var added_item=Field.List.from_element_add(null, this);
 
-        //refocus the same input on the new item 
-        //$('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
+            //refocus the same input on the new item 
+            $('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
+        }
     });
     
     //create a handler to delete a list item

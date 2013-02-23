@@ -204,7 +204,7 @@ Field.Dict=Object.create(Field.Base);
 //a dict will traverse all the sub-metadata items
 Field.Dict.meta_put=function(key, meta, context)
 {
-    //dict operates on a bigger content, but meta_put is expecting direct element, so give it that:
+    //dict operates on a bigger context, but meta_put is expecting direct element, so give it that:
     if (key)
     {
         var selector='.field-meta-put[field-key="'+key+'"]';
@@ -219,7 +219,7 @@ Field.Dict.meta_put=function(key, meta, context)
         var key_str=Field.Base.concat_keys(key, sub_key);
         if (thismeta.type=='Dict')
         {
-            //handle sub-dicts in the same content. this way you can use keys
+            //handle sub-dicts in the same context. this way you can use keys
             //like foo.subdict, without needing a surrounding element that has key foo.
             Field.Dict.meta_put(key_str, thismeta, context);
         }
@@ -383,12 +383,17 @@ Field.List.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-    context.addClass("field-list-source");
+//DONT:    context.addClass("field-list-source");
+//sometimes we want to meta-put a list-header without making it the list source!
 
-    if (!meta.readonly)
-        context.addClass("field-get");
+    //only listsources can get these:
+    if (context.hasClass("field-list-source"))
+    {
+        if (!meta.readonly)
+            context.addClass("field-get");
 
-    context.addClass("field-put field-input");
+        context.addClass("field-put field-input");
+    }
     //recurse into submeta
     Field[meta.meta.type].meta_put(key, meta.meta, context);
 };
@@ -402,6 +407,8 @@ Field.List.meta_put=function(key, meta, context)
 
 Field.List.put=function(key, meta, context, data, options)
 {
+//    console.log("Field.List.put: ", key ,meta, context, data, options);
+
     var parent=context.parent();
 
     //existing list items (if any)
@@ -490,12 +497,15 @@ Field.List.put=function(key, meta, context, data, options)
 
 Field.List.get=function(key, meta, context)
 {
+    console.log("Field.List.get", key, meta, context);
+
     var value=new Array();
     var parent=context.parent();
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
-        value.push(Field[meta.meta.type].get(key, meta, $(this)));
+        console.log("Field.List.get item", this);
+        value.push(Field[meta.meta.type].get(key, meta.meta, $(this)));
     });
     return(value);    
 }
