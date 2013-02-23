@@ -359,7 +359,7 @@ Field.Dict.html_create=function(key, meta, context, data, options)
  *
  * Add a field-list-source-hide the source element to hide it. (e.g. user doesnt see a dummy-item)
  * 
- * Use Field.List.Clone to correctly clone a source element.
+ * Use Field.List.clone to correctly clone a source element.
  * 
  * When the data is put, the field-list-id attribute of every cloned list item is set to the value of field
  * that is specified in meta.list_key
@@ -511,7 +511,7 @@ Field.List.from_element_get=function(key, element)
     if (key)
         return($(element).closest('.field-list-item[field-key="'+key+'"], .field-list-source[field-key="'+key+'"]'));
     else
-        return($(element).closest('.field-list-item, .field-list-source[field-key="'+key+'"]'));
+        return($(element).closest('.field-list-item, .field-list-source'));
 
 }
 
@@ -564,11 +564,11 @@ Field.List.from_element_add=function(key, element)
     if (list_item.length==0)
         return;
 
-    var source_item=list_element.parent().children(".field-list-source");
+    var source_item=list_item.parent().children(".field-list-source");
 
-    var add_item=Field.List.Clone(source_item);
+    var add_item=Field.List.clone(source_item);
 
-    if (list_element.hasClass("field-list-source"))
+    if (list_item.hasClass("field-list-source"))
         add_item.insertBefore(list_item);
     else
         add_item.insertAfter(list_item);
