@@ -643,7 +643,12 @@ Field.String.put=function(key, meta, context, data, options)
     if (context.hasClass("field-input"))
         context.val(data);
     else
-        Field.Base.html_append(key, meta, context, data, options, data);
+    {
+        if (data==null)
+            Field.Base.html_append(key, meta, context, data, options, "");
+        else
+            Field.Base.html_append(key, meta, context, data, options, data);
+    }
 }
 
 

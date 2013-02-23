@@ -207,7 +207,7 @@ ControlForm.prototype.get=function(request_params)
 {
     //its not possible to 'get' data from a form when there are no get_parameters. 
     //this is the case when the user wants to create a new item instead of editting an existing one
-    if (Object.keys(this.params.get_params).length==0)
+    if (this.params.get_params==undefined || Object.keys(this.params.get_params).length==0)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
         this.get_result({}, request_params);
@@ -479,7 +479,8 @@ ControlList.prototype.get_result=function(result, request_params)
             result.data,
             {
                 list_update: request_params,
-                list_no_remove: request_params
+                list_no_remove: request_params,
+                show_changes: request_params,
             }
         );
     }
