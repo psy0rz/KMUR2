@@ -4,6 +4,11 @@
 
 These are not real classes that are instantiated; instead its a bunch of static functions with are overloaded by
 'subclasses' via prototyping. all the data is passed around as function parameters. (in contrast to controls.js)
+
+There is a difference between keys and data_keys: A key refers to an element from a meta-array. A data-key refers to a element from a data-array.
+
+Sometimes they are the same, but in the case of a List, the data-key will also include the array index or id.
+
 */
 Field={};
 
@@ -24,6 +29,19 @@ Field.Base.concat_keys=function(base_key, key)
             return(base_key+"."+key);
         else
             return(key);
+}
+
+//converts a dotted key string to a keys-array
+// foo.0.bar becomes ["foo", "0", "bar"]
+Field.Base.keys=function(key)
+{
+    return(key.split("."));
+}
+
+//convert a key-array to dotted notation string
+Field.Base.key_str=function(keys)
+{
+    return(keys.join("."));
 }
 
 /*** generic function thats used when something is not implemented. 
@@ -172,16 +190,16 @@ Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
 
 
 /**
- * Looks up an element in the current context by traversing the keys array.
+ * Looks up an element in the current context by traversing the data_keys array.
  * these are usually dict keys and list keys.
  * array items are noted by a number.
  * example: [ "test", 5, "bla" ]
  * This selects the bla key in the 5th element of the test array.
  * This notation is also used by errors that are returned from the server.
  */
-Field.Base.find_element=function(key, meta, context, keys)
+Field.Base.find_element=function(key, meta, context, data_keys)
 {  
-        console.log("Field.Base.find_element found element: ", key, meta, context, keys);
+        console.log("Field.Base.find_element found element: ", key, meta, context, data_keys);
         //the interesting stuff happens in Field.Dict and Field.List
         //when we reach Field.Base, it means we've reached 'the end' 
         //(we cant search any deeper, even if we still have keys left)
@@ -189,6 +207,55 @@ Field.Base.find_element=function(key, meta, context, keys)
 
 }
 
+/** 
+ * Return a reference to the meta-data by finding the keys 
+ *
+ *
+*/
+Field.Base.resolve_meta=function(meta, keys)
+{
+    var meta_ref=meta;
+
+    for(var i=0; i<keys.length; i++)
+    {
+        var key=keys[i];
+        if (key in meta_ref.meta)
+            meta_ref=meta_ref.meta[key];
+        else 
+            break;
+    }
+    return (meta_ref);
+}
+
+/** 
+ * Determines the data-key-array of the specified element.
+ *
+ * The first time you call it you have to specify keys_left by using Field.Base.keys on the field-key of the element.
+ *
+ */
+Field.Base.find_data_keys=function(keys, meta, element)
+{
+    var this_key=keys.pop();
+
+    var data_keys=[this_key];
+
+    //do we have any more keys left?
+    if (keys.length!=0)
+    {
+        //resolve the metadata of the parent
+        var this_meta=Field.Base.resolve_meta(meta, keys);
+        console.log("this meta", keys, this_meta);
+
+        //call the find_keys function of the parents datatype
+        var parent_keys=Field[this_meta['type']].find_data_keys(keys, meta, element);
+
+        //append our data_keys to the parent_keys
+        data_keys=parent_keys.concat(data_keys);
+    }
+
+    return(data_keys);
+
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -299,12 +366,12 @@ Field.Dict.get=function(key, meta, context)
     return(ret);
 };
 
-Field.Dict.find_element=function(key, meta, context, keys)
+Field.Dict.find_element=function(key, meta, context, data_keys)
 {
-    console.log("Dict.find_element", key, meta, context, keys);
+    console.log("Dict.find_element", key, meta, context, data_keys);
 
-    var this_key=keys[0];
-    var sub_keys=keys.splice(1);
+    var this_key=data_keys[0];
+    var sub_keys=data_keys.splice(1);
     var sub_meta=meta.meta[this_key];
 
     var key_str=Field.Base.concat_keys(key, this_key);
@@ -513,13 +580,13 @@ Field.List.get=function(key, meta, context)
 
 /*** Gets a reference to the list-item-element, by resolving the specified element.
 
-if key is specified, it will only match list-items which this key. otherwise it will just get the closest one.
+  if key is not null, it will only match list-items which this key. otherwise it will just get the closest one.
 
 
 */
 Field.List.from_element_get=function(key, element)
 {
-    if (key)
+    if (key!=null)
         return($(element).closest('.field-list-item[field-key="'+key+'"], .field-list-source[field-key="'+key+'"]'));
     else
         return($(element).closest('.field-list-item, .field-list-source'));
@@ -587,15 +654,15 @@ Field.List.from_element_add=function(key, element)
     return(add_item);
 };
 
-/** a Field.List expects a 'list item id' in keys[0], which will then be looked up and recursed up on..
+/** a Field.List expects a 'list item id' in data_keys[0], which will then be looked up and recursed up on..
 
 */
-Field.List.find_element=function(key, meta, context, keys)
+Field.List.find_element=function(key, meta, context, data_keys)
 {
 //    console.log("Field.List.find_element", key, meta, context, keys);
 
-    var list_item_id=keys[0];
-    var sub_keys=keys.splice(1);
+    var list_item_id=data_keys[0];
+    var sub_keys=data_keys.splice(1);
     var sub_meta=meta.meta; //(usually a dict)
     var list_context=context.parent();
 
@@ -621,6 +688,30 @@ Field.List.find_element=function(key, meta, context, keys)
     return(Field[sub_meta.type].find_element(key, sub_meta, sub_context, sub_keys ));
 }
 
+
+/** 
+ * Determines the data-key-array of the specified element.
+ *
+ * This one is for the special case of the List-type. Usually you call Field.Base.
+ *
+ */
+Field.List.find_data_keys=function(keys, meta, element)
+{
+    //determine the list_id of the specified element:
+    var key_str=Field.Base.concat_keys('',keys);
+    console.log("list keystr", keys, key_str);
+    var list_id=Field.List.from_element_get_id(key_str, element);
+    var data_keys=[list_id];
+
+    //let the base class handle the rest
+    var parent_keys=Field.Base.find_data_keys(keys, meta, element);
+
+    //append our list_id to the parent_keys and return that
+    data_keys=parent_keys.concat(data_keys);
+
+    return(data_keys);
+
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);

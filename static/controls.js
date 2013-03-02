@@ -523,6 +523,9 @@ ControlList.prototype.attach_event_handlers=function()
             return;
         }
 
+
+
+
         var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
         var element=$(this);
@@ -534,7 +537,10 @@ ControlList.prototype.attach_event_handlers=function()
         if (! editView.params)
             editView.params={};
 
-//TODO:        editView.focus=$(element).autoFindKeys(this_control.meta);
+        //determine focus field:
+        var keys=Field.Base.keys($(this).attr("field-key"));
+        editView.focus=Field.Base.find_data_keys(keys, this_control.meta.meta, $(this));
+
         editView.params[this_control.meta.list_key]=list_id;
         editView.x=event.clientX;
         editView.y=event.clientY;
