@@ -657,10 +657,14 @@ ControlList.prototype.attach_event_handlers=function()
 
         //get the value via the correct data conversion routines:
         var key_str=attribute_element.attr("field-key");
-        var meta=resolveMeta(key_str, this_control.meta.meta);
-        console.log(key_str, this_control.meta.meta);
+        var keys=Field.Base.keys(key_str);
+
+        console.log("resorlving", key_str, this_control.meta.meta);
+        var meta=Field.Dict.resolve_meta(this_control.meta.meta, keys);
+        console.log(key_str, meta);
+
         var get_element=$(".field-get", attribute_element);
-        var value=dataConv[meta.type]['get'](get_element, meta, key_str);
+        var value=Field[meta.type].get(key_str, meta, get_element);
 
         console.log("get_element, keystr, meta, value" , get_element, key_str, meta, value);
 
@@ -686,7 +690,7 @@ ControlList.prototype.attach_event_handlers=function()
         var changed=false;
 
         //simple exact match?
-        if (attribute_element.attr("_filterMatch")=="")
+        if (attribute_element.attr("filter-match")=="")
         {
             if (value!=this_control.params.get_params.spec[key_str])
             {
@@ -702,11 +706,14 @@ ControlList.prototype.attach_event_handlers=function()
         {
             var changed_filters={};
 
-            if (attribute_element.attr("_filterGte")=="")
+            //greather-than-or-equal
+            if (attribute_element.attr("filter-gte")=="")
                 changed_filters["$gte"]=value;
-            else if (attribute_element.attr("_filterLte")=="")
+            //less-than-or-equal
+            else if (attribute_element.attr("filter-lte")=="")
                 changed_filters["$lte"]=value;
-            else if (attribute_element.attr("_filterIn")=="")
+            //value is IN specified value-array (used with multiselect filtering)
+            else if (attribute_element.attr("filter-in")=="")
                 changed_filters["$in"]=value;
             else 
             //default to a case insensitive regex match:

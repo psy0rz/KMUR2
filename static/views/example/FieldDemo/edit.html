@@ -8,48 +8,6 @@ new ControlForm({
     'title'           : 'Edit field demo {stringTest}',
 });
 
-/*
-controlForm({
-	view 			: view,
-	class           : 'example.FieldDemo',
-	defaultFocus	: [ "stringTest" ],
-	close_after_save: true,
-	loadCallback	: function(result) {
-
-		//FIXME: make this generic in controls.js and use the format() function to fill in the result data
-		if (result.data)
-		{
-			title="Edit field demo "+result.data.stringTest;
-
-
-
-			$(document).trigger("menu.add_favorite",{
-				menu:		"example",	
-				title: 		"Edit "+result.data.stringTest,
-				view:		view
-			});
-		}
-		else
-			title="New field demo";
-
-		viewReady({
-			view: view,
-			title:title
-		});
-
-	},
-	errorCallback	: function(result) { },
-	saveCallback	: function(result) {
-		view.params._id=result.data._id;
-		$(document).trigger("menu.add_favorite",{
-			menu:		"example",	
-			title: 		"Edit "+result.data.stringTest,
-			view:		view
-		});
-	}
-});
-
-*/
 </script>
 
 <p>If you clicked the 'gray row' in the list, you're creating a new item. Otherwise you're editting an existing item.</p>

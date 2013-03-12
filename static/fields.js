@@ -742,7 +742,7 @@ Field.String.get=function(key, meta, context)
 {
     var val=context.val();
 
-    if (context.attr("field-allow-null")  && val=="")
+    if (context.attr("field-allow-null")=="" && val=="")
                 return (null);
 
     return (val);
