@@ -476,7 +476,7 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if ('data' in result)
     {
-        console.error("updateing", request_params);
+//        console.error("updateing", request_params);
         Field.List.put(
             '',
             this.meta,
@@ -627,6 +627,7 @@ ControlList.prototype.attach_event_handlers=function()
     {
         if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
+        console.log("tak");
             //reset all controls so that they return null, hence disabling the filter
             $(':input[type="checkbox"]', this).attr("checked",false);
             $(':input[type!="checkbox"]', this).val("");
@@ -660,7 +661,7 @@ ControlList.prototype.attach_event_handlers=function()
         var keys=Field.Base.keys(key_str);
 
         console.log("resorlving", key_str, this_control.meta.meta);
-        var meta=Field.Dict.resolve_meta(this_control.meta.meta, keys);
+        var meta=Field[this_control.meta.meta.type].resolve_meta(this_control.meta.meta, keys);
         console.log(key_str, meta);
 
         var get_element=$(".field-get", attribute_element);

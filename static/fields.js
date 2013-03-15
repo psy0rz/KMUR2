@@ -214,17 +214,21 @@ Field.Base.find_element=function(key, meta, context, data_keys)
 */
 Field.Base.resolve_meta=function(meta, keys)
 {
-    var meta_ref=meta;
+    if (keys.length==0)
+        return(meta);
 
-    for(var i=0; i<keys.length; i++)
+    var this_key=keys[0];
+
+    if (this_key in meta.meta)
     {
-        var key=keys[i];
-        if (key in meta_ref.meta)
-            meta_ref=meta_ref.meta[key];
-        else 
-            break;
+        var sub_meta=meta.meta[this_key];
+        var sub_keys=keys.concat().splice(1);
+        return(Field[sub_meta.type].resolve_meta(sub_meta, sub_keys));
     }
-    return (meta_ref);
+    else
+    {
+        return(meta);
+    }
 }
 
 /** 
@@ -712,6 +716,15 @@ Field.List.find_data_keys=function(keys, meta, element)
     return(data_keys);
 
 }
+
+Field.List.resolve_meta=function(meta, keys)
+{
+    console.error("resolve in list", meta, keys);
+    return(Field.Base.resolve_meta(meta.meta, keys));
+}
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
