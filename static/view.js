@@ -68,10 +68,11 @@ $(document).ready(function()
     );
 
     //endless scrolling stuff.
-    //send an event to the last mainview (e.g. the one that is visble and on the foreground
+    //send an event to the last mainview (e.g. the one that is visble and on the foreground)
     var prevHeight=0;
     $(window).scroll(function()
     {
+        console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
         var height=$(document).height();
         if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
         {

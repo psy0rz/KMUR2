@@ -175,7 +175,7 @@ function ControlForm(params)
         params.delete_result=function(){};
 
 
-    this.get_meta();
+    this.get_meta({});
 }
 ControlForm.prototype=Object.create(ControlBase.prototype);
 
@@ -405,7 +405,10 @@ params:
     (look in the baseclass for the basic documentation)
     
     edit_view: View that is opened when a user clicks an element with class .control-on-click-edit
+
     get: rpc-call to get data, if not specified will be set to class.get_all
+
+    endless_scrolling: set to true to activate endless scrolling. (by default get_params.limit will be set to 25 but you can specify a different value)
 
 */
 function ControlList(params)
@@ -417,6 +420,14 @@ function ControlList(params)
 
     if (typeof (params.get_params) ==='undefined')
         params.get_params={};
+
+    if (params.endless_scrolling)
+    {
+        if (!('limit' in params.get_params))
+            params.get_params.limit=25;
+
+        params.get_params.skip=0;
+    }
 
     this.list_source_element=$(".field-list-source:first", this.context);
     console.log("list_source_element=", this.list_source_element);
@@ -621,6 +632,10 @@ ControlList.prototype.attach_event_handlers=function()
         {
             this_control.params.get_params.sort[$(this).attr("field-key")]=-1;
         });
+
+        //reset scrolling
+        if (this_control.params.endless_scrolling)
+            this_control.params.get_params.skip=0;
     }
     getSortSettings();
 
@@ -647,7 +662,7 @@ ControlList.prototype.attach_event_handlers=function()
         }
 
         getSortSettings();
-        this_control.get_delayed(false);
+        this_control.get_delayed({});
     });
 
 
@@ -788,8 +803,14 @@ ControlList.prototype.attach_event_handlers=function()
         }
 
 
-         if (changed)
-            this_control.get_delayed(false);
+        if (changed)
+        {
+            //reset scrolling
+            if (this_control.params.endless_scrolling)
+                this_control.params.get_params.skip=0;
+
+            this_control.get_delayed({});
+        }
 
     });
     
@@ -801,42 +822,15 @@ ControlList.prototype.attach_event_handlers=function()
     //enable endless scrolling?
     if (this_control.params.endless_scrolling)
     {
-        var endlessUpdating=false;
         $(context).on("view.scrolledBottom",function()
         {
-            if (endlessUpdating)
-                return;
-            
-            endlessUpdating=true;
-            
-            var endlessParams={};
-            $.extend( endlessParams, getParams );
-            
-            if (!('offset' in endlessParams))
-                endlessParams.offset=0;
-            
-            endlessParams.offset+=$(list_source_element).parent().children().length-beginLength;
-            
-            logDebug("endless scroll offset is ",endlessParams.offset);
-
-            rpc(
-                params.getData,
-                endlessParams,
-                function(result)
-                {
-                    dataConv.List.put(
-                            list_source_element, //element
-                            { meta: meta },         //meta
-                            '',                     //keyStr
-                            result.data,            //value 
-                            {                       //settings
-                                noRemove: true
-                            }       
-                    );
-                    endlessUpdating=false;
-                },
-                this.debug_txt+"list getting data (scrolling)"
-            );
+            this_control.params.get_params.skip+=this_control.params.get_params.limit;
+            //NOTE: maybe we should create a small overlap to allow for deleted items on the server?
+            logDebug("endless scroll skip is ", this_control.params.get_params.skip);
+            this_control.get_delayed({
+                list_no_remove: true,
+                list_update: true
+            });
         });
     }
 

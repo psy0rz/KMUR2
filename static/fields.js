@@ -472,7 +472,7 @@ Field.List.meta_put=function(key, meta, context)
 
 /*
  options.list_update: update an existing list, instead off removing and recreating it. 
- usefull with options.show_changes, to give user feedback of changes.
+ usefull with options.show_changes, to give user feedback of changes, or with endless scrolling.
 
  options.list_no_remove: dont remove existing items. usefull for endless scrolling.
 */

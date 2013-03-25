@@ -11,11 +11,12 @@ var form=new ControlForm({
 
 //test button to fill the database with random stuff quickly to test autoscrolling
 $(".on-click-filler", "#"+view.id).click(function(){
-	var txt=$('[field-key="stringTest"]:input', "#"+view.id).val();
+	var context="#"+view.id;
+	var txt=$('.field-get[field-key="stringTest"]', context).val();
 	delete view.params._id;
 	for(var i=0; i<50; i++)
 	{
-		$('[field-key="stringTest"]:input', "#"+view.id).val(txt+" "+i);
+		$('.field-get[field-key="stringTest"]', context).val(txt+" "+i);
 		form.put();
 	}
 });

@@ -1,12 +1,16 @@
 
 <script>
     new ControlList({
-        'view'            : view,
-        'class'           : 'example.FieldDemo',
-        'title'           : 'field demo overview',
+        'view'            	: view,
+        'class'        		: 'example.FieldDemo',
+        'title'           	: 'field demo overview',
+        'get_params'      	: { 
+        	limit: 10
+        },
+        'endless_scrolling'	: true,
         'edit_view'       : {
-            name: 'example.FieldDemo.edit',
-            mode: 'main',
+            name: 	'example.FieldDemo.edit',
+            mode: 	'main',
             params: view.params
         }
     });
