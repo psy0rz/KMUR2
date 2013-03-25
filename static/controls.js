@@ -531,7 +531,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).on(this.params.class+'.deleted', function(e, result)
     {
         console.log("deleted",result);
-        
+
         var key=result.data[this_control.meta.list_key];
         var element=Field.List.find_element(
             this_control.list_source_element.attr("field-key"),
@@ -799,7 +799,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(".controlSetFocus", context).focus();
 
     //enable endless scrolling?
-    if (this_control.params.endless_scrolling && ('limit' in getParams))
+    if (this_control.params.endless_scrolling)
     {
         var endlessUpdating=false;
         $(context).on("view.scrolledBottom",function()

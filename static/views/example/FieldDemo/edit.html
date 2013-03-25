@@ -1,12 +1,25 @@
 
 <script>
 
-new ControlForm({
+var form=new ControlForm({
     'view'            : view,
     'class'           : 'example.FieldDemo',
     'default_focus'   : ['stringTest'],
     'title'           : 'Edit field demo {stringTest}',
 });
+
+
+//test button to fill the database with random stuff quickly to test autoscrolling
+$(".on-click-filler", "#"+view.id).click(function(){
+	var txt=$('[field-key="stringTest"]:input', "#"+view.id).val();
+	delete view.params._id;
+	for(var i=0; i<50; i++)
+	{
+		$('[field-key="stringTest"]:input', "#"+view.id).val(txt+" "+i);
+		form.put();
+	}
+});
+
 
 </script>
 
@@ -141,5 +154,6 @@ new ControlForm({
 	<button class='control-on-click-save' >Save</button>
 	<button class='control-on-click-del' >Delete</button>
 	<button class='control-on-click-cancel' >Cancel</button>
+	<button class='on-click-filler' >Clone 50 times</button>
 	<span class='viewErrorText'></span>
 </div>
