@@ -358,11 +358,15 @@ ControlForm.prototype.put_result=function(result, request_params)
 {
     this.params.put_result(result, request_params);
 
-    if (!viewShowError(result, this.context, this.meta) && (this.params.close_after_save))
-        viewClose(this.params.view);
+    //no errors?
+    if (!viewShowError(result, this.context, this.meta))
+    {
+        if (this.params.close_after_save)
+            viewClose(this.params.view);
 
-    $(".view").trigger('refresh');
-    
+        //broadcast a changed-event to update all the views:
+        $(".view").trigger(this.params.class+'.changed', result);
+    }
 }
 
 //delete the item instead of saving it
@@ -383,10 +387,12 @@ ControlForm.prototype.delete_result=function(result, request_params)
     this.params.delete_result(result, request_params);
     if (!viewShowError(result, this.context, this.meta))
     {
-        $(".view").trigger('refresh');
-
         if (this.params.close_after_save)
             viewClose(this.params.view);
+
+        //broadcast the deleted event to update other views
+        $(".view").trigger(this.params.class+'.deleted', result);
+
     }
 }
 
@@ -460,7 +466,7 @@ ControlList.prototype.get_delayed=function(request_params)
     }
 }
 
-//request_params will be true in case of an endless scrolling update
+
 ControlList.prototype.get_result=function(result, request_params)
 {
     this.getting=false;
@@ -482,11 +488,7 @@ ControlList.prototype.get_result=function(result, request_params)
             this.meta,
             this.list_source_element,
             result.data,
-            {
-                list_update: request_params,
-                list_no_remove: request_params,
-                show_changes: request_params,
-            }
+            request_params
         );
     }
 
@@ -507,12 +509,43 @@ ControlList.prototype.attach_event_handlers=function()
     var this_control=this;
     var context=this.context;
 
-    //refresh the list when we receive a refresh event
-    $(context).off().bind('refresh',function()
-    {
-        //console.log("reresh!!");
-        this_control.get_delayed(true);
+    //some  control changed/added an item in our class, so update the list
+    $(context).on(this.params.class+'.changed', function(e,result)
+    { 
+        console.log("changed",result);
+        Field.List.put(
+            this_control.list_source_element.attr("field-key"),
+            this_control.meta,
+            this_control.list_source_element,
+            [ result.data ],
+            {
+                list_no_remove: true,
+                list_update: true,
+                show_changes: true
+
+            }
+        );
     });
+
+    //some control (or maybe this control) deleted an item in our class, so update the list
+    $(context).on(this.params.class+'.deleted', function(e, result)
+    {
+        console.log("deleted",result);
+        
+        var key=result.data[this_control.meta.list_key];
+        var element=Field.List.find_element(
+            this_control.list_source_element.attr("field-key"),
+            this_control.meta,
+            this_control.list_source_element,
+            [ key ]
+        );
+
+        element.hide(1000, function()
+        {
+            element.remove();
+        });
+    });
+ 
 
     //open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
     $(".control-on-click-edit", context).off().click(function(event)
@@ -523,13 +556,10 @@ ControlList.prototype.attach_event_handlers=function()
             return;
         }
 
-
-
-
         var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
         var element=$(this);
-        element.addClass("ui-state-highlight");
+        //element.addClass("ui-state-highlight");
     
         //create the view to edit the clicked item
         var editView={};
@@ -555,22 +585,20 @@ ControlList.prototype.attach_event_handlers=function()
     //delete the element, after confirmation
     $(".control-on-click-del", context).off().click(function(event)
     {
-        var listParent=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
-        var id=listParent.attr("_id");
-        var index=listParent.attr("_index");
+        var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
         $(this).confirm(function()
         {
-            var rpcParams={};
-            rpcParams[index]=id;
+            var rpc_params={};
+            rpc_params[this_control.meta.list_key]=list_id;
             rpc(
                 this_control.params.delete,
-                rpcParams,
+                rpc_params,
                 function(result)
                 {
-                    if (!viewShowError(result, listParent, meta))
+                    if (!viewShowError(result, this_control.context, this_control.meta))
                     {
-                        $(".view").trigger('refresh');
+                        $(".view").trigger(this_control.params.class+'.deleted', result);
                     }
                 },
                 this_control.debug_txt+"list deleting item"
@@ -627,7 +655,6 @@ ControlList.prototype.attach_event_handlers=function()
     {
         if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
-        console.log("tak");
             //reset all controls so that they return null, hence disabling the filter
             $(':input[type="checkbox"]', this).attr("checked",false);
             $(':input[type!="checkbox"]', this).val("");

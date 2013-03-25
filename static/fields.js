@@ -496,7 +496,9 @@ Field.List.put=function(key, meta, context, data, options)
     //in update mode, add a marker to remember which stuff can be deleted
     else
     {
-        existing_items.addClass("field-list-delete");
+        //remove missing items
+        if (!options.list_no_remove)
+            existing_items.addClass("field-list-delete");
     }
     
     //for performance, prepare a listitem one time and clone that.
@@ -603,7 +605,7 @@ Field.List.from_element_get=function(key, element)
   
 If the listitem has a field-list-id, it returns that.
 
-Otherwas it returns the index number. (array based indexing)
+Otherwise it returns the index number. (array based indexing)
 
 Returns undefined if the element somehow doesnt exist in the list, or the list is empty and only has a list-source item
 
@@ -663,7 +665,7 @@ Field.List.from_element_add=function(key, element)
 */
 Field.List.find_element=function(key, meta, context, data_keys)
 {
-//    console.log("Field.List.find_element", key, meta, context, keys);
+    console.log("Field.List.find_element", key, meta, context, data_keys);
 
     var list_item_id=data_keys[0];
     var sub_keys=data_keys.splice(1);
@@ -684,9 +686,15 @@ Field.List.find_element=function(key, meta, context, data_keys)
     else   
         sub_context=$(selector, list_context).eq(list_item_id);
 
+    //no more keys left?
+    if (sub_keys.length==0)
+        return(sub_context);
+
+
     //if the listitem is not found, just give it up and return an empty jquery result
     if (sub_context.length==0)
         return(sub_context);
+
 
     //recurse into substuff
     return(Field[sub_meta.type].find_element(key, sub_meta, sub_context, sub_keys ));

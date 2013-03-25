@@ -81,9 +81,11 @@ class FieldDemo(models.mongodb.MongoDB):
         #get document for better logging
         doc=self._get(_id)
 
-        self._delete(_id)
+        ret=self._delete(_id)
 
         self.info("Deleted demo row {}".format(doc['stringTest']))
+
+        return(ret)
 
     @Acl(groups="admin")
     def get_all(self, sleep=0, **params):

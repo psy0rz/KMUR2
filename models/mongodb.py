@@ -142,6 +142,7 @@ class MongoDB(models.common.Base):
 
         return doc
 
+
     def _get_all(self, collection=None, spec=None, fields=None, skip=0, limit=0, sort={}):
         '''gets one or more users according to search options
 
@@ -172,12 +173,15 @@ class MongoDB(models.common.Base):
                             limit=limit,
                             sort=list(sort.items())))
 
+
     def _delete(self, _id, collection=None):
         '''deletes _id from collection
 
         If collection is not set, the self.default_collection will be used.
 
         throws exeception if not found
+
+        returns a document with only _id set to the deleted id
         '''
 
         if not collection:
@@ -186,3 +190,6 @@ class MongoDB(models.common.Base):
         result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
         if result['n'] == 0:
             raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+
+        return({ '_id': _id })
+
