@@ -7,7 +7,8 @@
 				"view":
 					{ 
 						"name":"core.Users.edit",
-						"mode":"main"
+						"mode":"main",
+                        "params": {}
 						}
 			},
 			{

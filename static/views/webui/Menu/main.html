@@ -15,10 +15,9 @@
 			{
 				viewShowError(result, context)
                 Field[meta.type].put('', meta, context, result["data"], { 
-                    'list_update':true,
-                    'show_changes':true
+                    'list_update':params.update,
+                    'show_changes':params.update
                 } );
-
 
 			},
 			debugTxt+"menu reload data"
@@ -35,7 +34,7 @@
 					params,
 					function(result)
 					{
-						$(document).trigger("menu.reload");
+						$(document).trigger("menu.reload", {update: true});
 					},
 					debugTxt+"menu adding favorite"
 				);
@@ -70,7 +69,7 @@
 		function (result)
 		{
 			meta=result.data;
-			$(document).trigger("menu.reload");
+			$(document).trigger("menu.reload", { update: false });
 		},
 		debugTxt+"menu getting meta data"
 	);
