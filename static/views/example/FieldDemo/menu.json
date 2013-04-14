@@ -7,8 +7,11 @@
                 "view":
                     { 
                         "name":"example.FieldDemo.list",
-                        "mode":"main"
+                        "mode":"main",
+                        "params": {
+                                "limit": 10
                         }
+                    }
             },
             {
                 "title":"Field demo (slow)",
@@ -17,7 +20,8 @@
                         "name":"example.FieldDemo.list",
                         "mode":"main",
                         "params": {
-                            "sleep": 2
+                            "sleep": 2,
+                            "limit": 10
                         }
                     }
             }
