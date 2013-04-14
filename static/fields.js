@@ -828,6 +828,8 @@ Field.Number.get=function(key, meta, context)
     var val=context.val();
     if (val=="")
         return(null)
+    else if (Number(val)!=val)
+        return val;
     else
         return(Number(val));
 
