@@ -12,8 +12,10 @@ class Users(models.mongodb.MongoDB):
                 '_id': models.mongodb.FieldId(),
                 'username': fields.String(min=3, desc='Username'),
                 'password': fields.Password(min=5, desc='Password'),
-                'active': fields.Bool(),
+                'fullname': fields.Password(desc='Full name'),
+                'active': fields.Bool(desc="Enabled"),
                 'groups': fields.MultiSelect(choices={
+                                                      #make this configurable in a seperate group-module?
                                                       "admin": "Administrator",
                                                       "employee": "Employee",
                                                       "customer": "Customer",
