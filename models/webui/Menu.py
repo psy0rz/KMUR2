@@ -39,18 +39,18 @@ class Menu(models.mongodb.MongoDB):
                                                                           'view': fields.Anything({'desc': 'View parameters'}),
                                                                           })),
                                                 'favorites': fields.List(fields.Dict({
-                                                                          'title': fields.String(),
-                                                                          'view': fields.Anything({'desc': 'View parameters'}),
-                                                                          })),
+                                                                                'title': fields.String(),
+                                                                                'view': fields.Anything({'desc': 'View parameters'}),
+                                                                            }),
+                                                                            list_key='_id'
+                                                                        ),
                                                 }))
                         })
                           
     @Acl(groups="user")
-    def add_favorite(self, menu, title, view, favorite_id=None):
-        '''add a menu item to the favorites of this user. '''
+    def put_favorite(self, menu, title, view, favorite_id=None):
+        '''add/update a menu item to in the favorites of this user. '''
 
-        if not favorite_id:
-            favorite_id = view['params']['_id']
 
         #add /update favorite item in database:
         self.db[self.default_collection].update(
@@ -99,7 +99,7 @@ class Menu(models.mongodb.MongoDB):
                                     'user_id': self.context.user_id
                                     },
                              sort={
-                                   'time':-1
+                                   'title':1
                                    })
 
     @Acl(groups="everyone")
@@ -125,6 +125,7 @@ class Menu(models.mongodb.MongoDB):
                 if not 'favorites' in  menus[favorite['menu']]:
                     menus[favorite['menu']]['favorites'] = []
                 menus[favorite['menu']]['favorites'].append({
+                                                             '_id': favorite['_id'],
                                                              'title': favorite['title'],
                                                              'view': favorite['view']
                                                              })

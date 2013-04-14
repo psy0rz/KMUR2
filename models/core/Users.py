@@ -16,6 +16,8 @@ class Users(models.mongodb.MongoDB):
                 'active': fields.Bool(desc="Enabled"),
                 'groups': fields.MultiSelect(choices={
                                                       #make this configurable in a seperate group-module?
+                                                      #All users, including anonymous, are member of 'everyone'.
+                                                      #All users, except anonymous, are member of 'user'
                                                       "admin": "Administrator",
                                                       "employee": "Employee",
                                                       "customer": "Customer",

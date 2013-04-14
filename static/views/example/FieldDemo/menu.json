@@ -2,8 +2,17 @@
 	"example":{
 		"title":"Examples",
 		"items":[
+            {
+                "title":"New item",
+                "view":
+                    { 
+                        "name":"example.FieldDemo.edit",
+                        "mode":"main",
+                        "params": { }
+                    }
+            },
 			{
-                "title":"Field demo",
+                "title":"Item list",
                 "view":
                     { 
                         "name":"example.FieldDemo.list",
@@ -14,7 +23,7 @@
                     }
             },
             {
-                "title":"Field demo (slow)",
+                "title":"Item list (slow)",
                 "view":
                     { 
                         "name":"example.FieldDemo.list",

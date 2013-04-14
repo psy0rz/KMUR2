@@ -152,7 +152,8 @@ params:
 
     delete_result        called with results of del
 
-    add_favorite         up on openening and saving add favorite to specified menu.
+    favorite_menu       up on openening and saving add/upate favorite to specified menu.
+    favorite_key         the result-key to use as favorite identifier (defaults to _id)
 
 */
 function ControlForm(params)
@@ -176,6 +177,8 @@ function ControlForm(params)
     if (! params.delete_result)
         params.delete_result=function(){};
 
+    if (! params.favorite_key)
+        params.favorite_key='_id';
 
     this.get_meta({});
 }
@@ -231,11 +234,15 @@ ControlForm.prototype.get_result=function(result, request_params)
     {
         Field.Dict.put('', this.meta, this.context, result.data, {})
 
-        $(document).trigger('menu.add_favorite', {
-            'menu':      this.params.add_favorite,
-            'title':     this.format(this.params.title, result.data),
-            'view':      this.params.view
-        });
+        if (this.params.favorite_menu)
+        {
+            $(document).trigger('menu.put_favorite', {
+                'menu':      this.params.favorite_menu,
+                'title':     this.format(this.params.title, result.data),
+                'view':      this.params.view,
+                'favorite_id': result.data[this.params.favorite_key]
+            });
+        }
 
     }
     
@@ -376,11 +383,19 @@ ControlForm.prototype.put_result=function(result, request_params)
         //broadcast a changed-event to update all the views:
         $(".view").trigger(this.params.class+'.changed', result);
 
-        $(document).trigger('menu.add_favorite', {
-            'menu':      this.params.add_favorite,
-            'title':     this.format(this.params.title, result.data),
-            'view':      this.params.view
-        });
+        if (this.params.favorite_menu)
+        {
+            var menu_view={};
+            $.extend(menu_view, this.params.view);
+            menu_view.params[this.params.favorite_key]=result.data[this.params.favorite_key];
+
+            $(document).trigger('menu.put_favorite', {
+                'menu':      this.params.favorite_menu,
+                'title':     this.format(this.params.title, result.data),
+                'view':      menu_view,
+                'favorite_id': result.data[this.params.favorite_key]
+            });
+        }
     }
 }
 

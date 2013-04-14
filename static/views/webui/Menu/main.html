@@ -16,7 +16,7 @@
 				viewShowError(result, context)
                 Field[meta.type].put('', meta, context, result["data"], { 
                     'list_update':true,
-                    'show_change':true
+                    'show_changes':true
                 } );
 
 
@@ -25,13 +25,13 @@
 			);
 	});
 
-	/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
+	/* add/update a 'favorite' to the specified menu. automaticly keeps count of most used items.
      Look in Menu.py for more info.
     */
-	$(document).on("menu.add_favorite", function(event, params)
+	$(document).on("menu.put_favorite", function(event, params)
 			{
 				rpc(
-					"webui.Menu.add_favorite",
+					"webui.Menu.put_favorite",
 					params,
 					function(result)
 					{
