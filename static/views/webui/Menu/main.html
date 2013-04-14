@@ -26,12 +26,8 @@
 	});
 
 	/* add a 'favorite' to the specified menu. automaticly keeps count of most used items.
-	parameters:
-	{
-		'menu':		"users",
-		'desc':		"Wijzig "+result.data.username,
-		'view':		(view parameters, look at viewCreate in view.js)}
-	*/
+     Look in Menu.py for more info.
+    */
 	$(document).on("menu.add_favorite", function(event, params)
 			{
 				rpc(

@@ -152,6 +152,8 @@ params:
 
     delete_result        called with results of del
 
+    add_favorite         up on openening and saving add favorite to specified menu.
+
 */
 function ControlForm(params)
 {
@@ -228,6 +230,13 @@ ControlForm.prototype.get_result=function(result, request_params)
     if (('data' in result) && (result.data != null) )
     {
         Field.Dict.put('', this.meta, this.context, result.data, {})
+
+        $(document).trigger('menu.add_favorite', {
+            'menu':      this.params.add_favorite,
+            'title':     this.format(this.params.title, result.data),
+            'view':      this.params.view
+        });
+
     }
     
     this.focus();
@@ -366,6 +375,12 @@ ControlForm.prototype.put_result=function(result, request_params)
 
         //broadcast a changed-event to update all the views:
         $(".view").trigger(this.params.class+'.changed', result);
+
+        $(document).trigger('menu.add_favorite', {
+            'menu':      this.params.add_favorite,
+            'title':     this.format(this.params.title, result.data),
+            'view':      this.params.view
+        });
     }
 }
 
@@ -507,7 +522,7 @@ ControlList.prototype.get_result=function(result, request_params)
     {
         viewReady({
             'view': this.params.view,
-            'title': this.format(this.params.title, result)
+            'title': this.format(this.params.title, result.data)
         });
         this.view_ready=true;
     }
