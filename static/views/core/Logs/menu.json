@@ -1,0 +1,15 @@
+{
+	"system":{
+		"title":"System",
+		"items":[
+			{
+				"title":"Logs",
+				"view":
+					{ 
+						"name":"core.Logs.list",
+						"mode":"main"
+						}
+			}
+		]
+	}
+}

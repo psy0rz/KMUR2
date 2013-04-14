@@ -1,0 +1,68 @@
+
+<script>
+    new ControlList({
+        'view'            	: view,
+        'class'        		: 'core.Logs',
+        'title'           	: 'Logs',
+        'endless_scrolling'	: true,
+    });
+
+</script>
+
+<style>
+    .field-select-type-info
+    {
+        padding-left:1em;
+        padding-right:1em;
+    }
+
+    .field-select-type-error
+    {
+        background-color: red;
+        color:white;
+        padding-left:1em;
+        padding-right:1em;
+    }
+
+    .field-select-type-warning
+    {
+        background-color: yellow;
+        color: black;
+        padding-left:1em;
+        padding-right:1em;
+    }
+
+
+</style>
+
+
+<table >
+<tr class='ui-widget-header'>
+	<th class='field-meta-put control-on-click-order control-order-desc' field-key='time' field-meta-key='desc'>
+    <th class='field-meta-put control-on-click-order' field-key='username' field-meta-key='desc'>
+    <th class='field-meta-put control-on-click-order' field-key='module_name' field-meta-key='desc'>
+	<th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
+	<th class='field-meta-put control-on-click-order' field-key='text' field-meta-key='desc'>
+	<th>
+</tr>
+
+<tr>
+    <td class='control-on-filter-highlight'>
+        From <div class='field-meta-put control-on-change-filter' field-key='time' filter-gte field-allow-null field-timestamp-allow-time></div>
+        to <div class='field-meta-put control-on-change-filter' field-key='time' filter-lte field-allow-null field-timestamp-allow-time></div>
+
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='username' field-allow-null>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='module_name' field-allow-null>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='type' field-allow-null>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='text' field-allow-null>
+</tr>
+
+<tr class='colorRows field-list-source ui-widget-content' field-key=''>
+    <td class='field-put' field-key='time' field-timestamp-allow-time >
+    <td class='field-put' field-key='username' >
+    <td class='field-put' field-key='module_name' >
+    <td class='field-put' field-key='type' >
+    <td class='field-put' field-key='text' >
+</tr>
+</table>
+

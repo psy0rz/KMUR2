@@ -87,27 +87,6 @@
 
 
 
-.field-select-logType-info
-{
-	padding-left:1em;
-	padding-right:1em;
-}
-
-.field-select-logType-error
-{
-	background-color: red;
-	color:white;
-	padding-left:1em;
-	padding-right:1em;
-}
-
-.field-select-logType-warning
-{
-	background-color: yellow;
-	color: black;
-	padding-left:1em;
-	padding-right:1em;
-}
 
 .value
 {
