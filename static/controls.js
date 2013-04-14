@@ -598,6 +598,9 @@ ControlList.prototype.attach_event_handlers=function()
     {
         var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
+        if (list_id===undefined)
+            return;
+
         $(this).confirm(function()
         {
             var rpc_params={};
