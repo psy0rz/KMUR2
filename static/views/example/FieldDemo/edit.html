@@ -5,7 +5,8 @@ var form=new ControlForm({
     'view'            : view,
     'class'           : 'example.FieldDemo',
     'default_focus'   : ['stringTest'],
-    'title'           : 'Edit field demo {stringTest}',
+    'title'           : 'Edit demo {stringTest}',
+    'title_new'       : 'New demo item',
     'favorite_menu'   : 'example'
 });
 
@@ -154,7 +155,7 @@ $(".on-click-filler", "#"+view.id).click(function(){
 
 <div class='floatingBar viewErrorClass'>
 	<button class='control-on-click-save' >Save</button>
-	<button class='control-on-click-del' >Delete</button>
+	<button class='control-on-click-del control-hide-on-new' >Delete</button>
 	<button class='control-on-click-cancel' >Cancel</button>
 	<button class='on-click-filler' >Clone 50 times</button>
 	<span class='viewErrorText'></span>

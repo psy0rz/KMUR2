@@ -14,7 +14,8 @@ class Users(models.mongodb.MongoDB):
                 'password': fields.Password(min=5, desc='Password'),
                 'fullname': fields.Password(desc='Full name'),
                 'active': fields.Bool(desc="Enabled", default=True),
-                'groups': fields.MultiSelect(choices={
+                'groups': fields.MultiSelect(desc="Groups",
+                                             choices={
                                                       #make this configurable in a seperate group-module?
                                                       #All users, including anonymous, are member of 'everyone'.
                                                       #All users, except anonymous, are member of 'user'

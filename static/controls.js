@@ -52,7 +52,7 @@ function ControlBase(params)
         params.get_result=function(){};
 
     if (!('title' in params))
-        params.title="Untitled "+params.view.id;
+        params.title="Edit item {_id}";
 
     if (!('delete' in params))
         params.delete=params.class+".delete";
@@ -74,11 +74,12 @@ ControlBase.prototype.format=function(txt, data)
 {
     var key;
     var ret=txt;
+
     while(matches=ret.match(/\{\w*\}/))
     {
         key=matches[0].substr(1,matches[0].length-2);
         //console.log("found ", key);
-        if (key in data)
+        if (data != undefined && key in data)
         {
             ret=ret.replace(matches[0], data[key]);
         }
@@ -152,6 +153,8 @@ params:
 
     delete_result        called with results of del
 
+    title_new            title for new items
+
     favorite_menu       up on openening and saving add/upate favorite to specified menu.
     favorite_key         the result-key to use as favorite identifier (defaults to _id)
 
@@ -179,6 +182,9 @@ function ControlForm(params)
 
     if (! params.favorite_key)
         params.favorite_key='_id';
+
+    if (!('title_new' in params))
+        params.title_new="New item";
 
     this.get_meta({});
 }
@@ -244,16 +250,28 @@ ControlForm.prototype.get_result=function(result, request_params)
             });
         }
 
+        viewReady({
+            'view': this.params.view,
+            'title': this.format(this.params.title, result.data)
+        });
+
+        $(".control-hide-on-edit", this.context).hide();
+    }
+    //its a new item
+    else
+    {
+        viewReady({
+            'view': this.params.view,
+            'title': this.params.title_new
+        });
+
+        $(".control-hide-on-new", this.context).hide();
     }
     
     this.focus();
 
     viewShowError(result, this.context, this.meta);
 
-    viewReady({
-        'view': this.params.view,
-        'title': this.format(this.params.title, result)
-    });
 
 }
 
