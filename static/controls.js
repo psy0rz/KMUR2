@@ -532,14 +532,18 @@ ControlList.prototype.get_result=function(result, request_params)
             request_params
         );
 
-        if (this_control.params.endless_scrolling)
+        if (this.params.endless_scrolling)
         {
-            //we dont have enough items to fill the window, and there are still items left on the server?
-            if  ($(document).height() <= $(window).scrollTop() && result.data.length!=0)
+            console.log("checking", result.data.length, $(window).scrollTop(), $(document).scrollTop());
+            //we dont have enough items to overflow the window enough, and there are still items left on the server?
+            if  ( 
+                    ($(window).height()*2)+$(window).scrollTop() > $(document).height() && 
+                    result.data.length!=0
+                )
             {
-                this_control.params.get_params.skip+=this_control.params.get_params.limit;
-                logDebug("endless scroll getting more data because document height is not reached yet ", this_control.params.get_params.skip);
-                this_control.get_delayed({
+                this.params.get_params.skip+=this.params.get_params.limit;
+                logDebug("endless scroll getting more data because document height is not reached yet ", this.params.get_params.skip);
+                this.get_delayed({
                     list_no_remove: true,
                     list_update: true
                 });
@@ -547,7 +551,6 @@ ControlList.prototype.get_result=function(result, request_params)
         }
     }
 
-    }
 
     if (!this.view_ready)
     {
