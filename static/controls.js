@@ -447,6 +447,9 @@ params:
 
     endless_scrolling: set to true to activate endless scrolling. (by default get_params.limit will be set to 25 but you can specify a different value)
 
+    favorite_menu       up on openening and saving add/upate favorite to specified menu.
+    favorite_key         the result-key to use as favorite identifier (defaults to _id)
+
 */
 function ControlList(params)
 {
@@ -454,6 +457,9 @@ function ControlList(params)
         params.get=params.class+".get_all";
 
     ControlBase.call(this, params);
+
+    if (! params.favorite_key)
+        params.favorite_key='_id';
 
     if (typeof (params.get_params) ==='undefined')
         params.get_params={};
@@ -669,6 +675,14 @@ ControlList.prototype.attach_event_handlers=function()
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
                         $(".view").trigger(this_control.params.class+'.deleted', result);
+
+                        if (this_control.params.favorite_menu)
+                        {
+                            $(document).trigger('menu.delete_favorite', {
+                                'menu':      this_control.params.favorite_menu,
+                                'favorite_id': result.data[this_control.params.favorite_key]
+                            });
+                        }
                     }
                 },
                 this_control.debug_txt+"list deleting item"
