@@ -423,6 +423,13 @@ ControlForm.prototype.delete_result=function(result, request_params)
         //broadcast the deleted event to update other views
         $(".view").trigger(this.params.class+'.deleted', result);
 
+        if (this.params.favorite_menu)
+        {
+            $(document).trigger('menu.delete_favorite', {
+                'menu':      this.params.favorite_menu,
+                'favorite_id': result.data[this.params.favorite_key]
+            });
+        }
     }
 }
 

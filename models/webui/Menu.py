@@ -89,6 +89,21 @@ class Menu(models.mongodb.MongoDB):
             self._delete(favorite['_id'])
             count = count - 1
 
+
+    @Acl(groups="user")
+    def delete_favorite(self, menu, favorite_id=None):
+        '''delete a menu item from the favorites of this user. '''
+
+        #delete item from favorite db
+        self.db[self.default_collection].remove(
+                                                spec_or_id={
+                                                      'user_id': self.context.user_id,
+                                                      'menu': menu,
+                                                      'favorite_id': favorite_id
+                                                      },
+                                                safe=True
+                                                )
+
     @Acl(groups="everyone")
     def get_favorites(self):
         '''gets the favorites of this user

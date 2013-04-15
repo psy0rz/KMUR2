@@ -27,19 +27,33 @@
 	/* add/update a 'favorite' to the specified menu. automaticly keeps count of most used items.
      Look in Menu.py for more info.
     */
-	$(document).on("menu.put_favorite", function(event, params)
-			{
-				rpc(
-					"webui.Menu.put_favorite",
-					params,
-					function(result)
-					{
-						$(document).trigger("menu.reload", {update: true});
-					},
-					debugTxt+"menu adding favorite"
-				);
-			
-			});
+    $(document).on("menu.put_favorite", function(event, params)
+            {
+                rpc(
+                    "webui.Menu.put_favorite",
+                    params,
+                    function(result)
+                    {
+                        $(document).trigger("menu.reload", {update: true});
+                    },
+                    debugTxt+"menu adding favorite"
+                );
+            
+            });
+
+    $(document).on("menu.delete_favorite", function(event, params)
+            {
+                rpc(
+                    "webui.Menu.delete_favorite",
+                    params,
+                    function(result)
+                    {
+                        $(document).trigger("menu.reload", {update: true});
+                    },
+                    debugTxt+"menu adding favorite"
+                );
+            
+            });
 
 
 	//a menu item was clicked:
