@@ -531,6 +531,22 @@ ControlList.prototype.get_result=function(result, request_params)
             result.data,
             request_params
         );
+
+        if (this_control.params.endless_scrolling)
+        {
+            //we dont have enough items to fill the window, and there are still items left on the server?
+            if  ($(document).height() <= $(window).scrollTop() && result.data.length!=0)
+            {
+                this_control.params.get_params.skip+=this_control.params.get_params.limit;
+                logDebug("endless scroll getting more data because document height is not reached yet ", this_control.params.get_params.skip);
+                this_control.get_delayed({
+                    list_no_remove: true,
+                    list_update: true
+                });
+            }
+        }
+    }
+
     }
 
     if (!this.view_ready)
