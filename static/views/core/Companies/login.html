@@ -1,0 +1,34 @@
+<script>
+new ControlForm({
+    'view'            : view,
+    'class'           : 'core.Users',
+    'default_focus'   : ['username'],
+    'title'           : 'Inloggen',
+    'get'             : undefined,
+    'put'             : 'core.Users.login',
+    'put_result' : function()
+    {
+        $(document).trigger("menu.reload");
+    }
+});
+
+</script>
+
+
+
+<table>
+<tr>
+    <td class='field-meta-put' field-key='username' field-meta-key='desc'>
+    <td class='field-meta-put' field-key='username'>
+</tr>
+<tr>
+    <td class='field-meta-put' field-key='password' field-meta-key='desc'>
+    <td class='field-meta-put' field-key='password'>
+</tr>
+</table>
+
+
+<button class='control-on-click-save'>Login</button>
+
+<span class='viewError'></span>
+

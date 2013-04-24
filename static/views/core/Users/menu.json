@@ -1,9 +1,9 @@
 {
 	"users":{
-		"title":"User management",
+		"title":"Users",
 		"items":[
 			{
-				"title":"New",
+				"title":"New user",
 				"view":
 					{ 
 						"name":"core.Users.edit",
@@ -12,29 +12,33 @@
 						}
 			},
 			{
-				"title":"Overview",
+				"title":"Show users",
 				"view":
 					{ 
 						"name":"core.Users.list",
 						"mode":"main"
 						}
-			},
-			{
-				"title":"Log in",
-				"view":
-					{ 
-						"name":"core.Users.login",
-						"mode":"popup"
-						}
-			},
-			{
-				"title":"Log out",
-				"view":
-					{ 
-						"name":"core.Users.logout",
-						"mode":"main"
-						}
 			}
 		]
-	}
+	},
+    "system":{
+        "items":[
+            {
+                "title":"Log in",
+                "view":
+                    { 
+                        "name":"core.Users.login",
+                        "mode":"popup"
+                        }
+            },
+            {
+                "title":"Log out",
+                "view":
+                    { 
+                        "name":"core.Users.logout",
+                        "mode":"main"
+                        }
+            }
+        ]
+    }
 }

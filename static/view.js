@@ -122,7 +122,7 @@ function viewUpdateUrl(id, viewData)
         creator: element-object that was responsible for creating the view. Will be highlighted and scrolled to on close. (will create view.highlight)
 
     view:
-        name: name of    the view. e.g. 'users.list' (will load views/users/list.php)
+        name: name of    the view. e.g. 'core.Users.list' (will load static/views/core/Users/list.html)
         params: model specific parameters, used inside the view when asking data from the model (passed along without changing)
         mode:
             'main': add the view in the mainwindow and update viewPath.

@@ -1,0 +1,24 @@
+{
+	"companies":{
+		"title":"Companies",
+		"items":[
+			{
+				"title":"New company",
+				"view":
+					{ 
+						"name":"core.Companies.edit",
+						"mode":"main",
+                        "params": {}
+						}
+			},
+			{
+				"title":"Show companies",
+				"view":
+					{ 
+						"name":"core.Companies.list",
+						"mode":"main"
+						}
+			}
+		]
+	}
+}

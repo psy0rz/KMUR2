@@ -149,7 +149,7 @@ params:
     put_params           parameters to pass to put (default: view.params)
     put_result           called with results of put data 
 
-    close_after_safe     close the view after succesfully saving the data
+    close_after_save     close the view after succesfully saving the data
 
     delete_result        called with results of del
 

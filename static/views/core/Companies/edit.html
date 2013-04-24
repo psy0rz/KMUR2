@@ -1,0 +1,58 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'class'           : 'core.Companies',
+    'default_focus'   : ['name'],
+    'title'           : 'Edit company {name}',
+    'title_new'       : 'New company',
+    'favorite_menu'   : 'companies',
+    'close_after_save': false,
+});
+
+
+if ('_id' in view.params)
+{
+    viewLoad({
+        'name': 'core.Users.list',
+        'id'  : 'company_users',
+        'params': {
+            'spec':
+                { '_idX': view.params._id }
+        }
+    });
+}
+
+</script>
+
+<fieldset style='display:inline-block;'>
+	<legend>Company info</legend>
+	<table>
+        <tr>
+            <td class='field-meta-put' field-key='name' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='name'>
+        </tr>
+	</table>
+
+    <div class='viewErrorClass'>
+        <button class='control-on-click-save' >Save</button>
+        <button class='control-on-click-del control-hide-on-new' >Delete</button>
+        <button class='control-on-click-cancel' >Cancel</button>
+        <span class='viewErrorText'></span>
+    </div>
+
+</fieldset>
+
+<br>
+
+<fieldset style='display:inline-block;'>
+	<legend>Contacts that belong to this company</legend>
+
+    <div class='view' id='company_users'>
+
+    </div>
+
+</fieldset>
+
+

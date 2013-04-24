@@ -46,13 +46,13 @@ class Users(models.mongodb.MongoDB):
     def put(self, **user):
 
         if '_id' in user:
-          logTxt="Changed user {}".format(user['username'])
+          log_txt="Changed user {}".format(user['username'])
         else:
-          logTxt="Created new user {}".format(user['username'])
+          log_txt="Created new user {}".format(user['username'])
 
         ret=self._put(user)
 
-        self.info(logTxt)
+        self.info(log_txt)
 
         return(ret)
 
