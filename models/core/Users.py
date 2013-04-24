@@ -12,7 +12,6 @@ class Users(models.mongodb.MongoDB):
                 '_id': models.mongodb.FieldId(),
                 'username': fields.String(min=3, desc='Username'),
                 'password': fields.Password(min=5, desc='Password'),
-                'fullname': fields.Password(desc='Full name'),
                 'active': fields.Bool(desc="Enabled", default=True),
                 'groups': fields.MultiSelect(desc="Groups",
                                              choices={
@@ -24,13 +23,38 @@ class Users(models.mongodb.MongoDB):
                                                       "customer": "Customer",
                                                       "finance": "Finance"
                                                     }),
+                'fullname': fields.String(desc='Full name'),
+                'emails': fields.List(
+                    fields.Dict({
+                            'desc': fields.String(desc='Description'),
+                            'email': fields.Email(desc='Email address')
+                        }),
+                    desc="Email adresses"
+                ),
+                'phones': fields.List(
+                    fields.Dict({
+                            'desc': fields.String(desc='Description'),
+                            'phone': fields.Phone(desc='Phone number')
+                        }),
+                    desc="Phone numbers"
+                ),
             }),
             list_key='_id'
         )
 
     @Acl(groups="admin")
     def put(self, **user):
-        return(self._put(user))
+
+        if '_id' in user:
+          logTxt="Changed user {}".format(user['username'])
+        else:
+          logTxt="Created new user {}".format(user['username'])
+
+        ret=self._put(user)
+
+        self.info(logTxt)
+
+        return(ret)
 
     @Acl(groups="admin")
     def get(self, _id):
@@ -38,7 +62,14 @@ class Users(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def delete(self, _id):
-        return(self._delete(_id))
+
+        doc=self._get(_id)
+
+        ret=self._delete(_id)
+
+        self.info("Deleted user {}".format(doc['username']))
+
+        return(ret)
 
     @Acl(groups="admin")
     def get_all(self, **params):

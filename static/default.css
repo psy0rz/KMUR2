@@ -170,10 +170,9 @@ border-color: #bbbbbb;
 	padding-top:0.5em;
 	padding-left:1em;
 	border-width:2px;
-	border-top-color:white;
+	border-top-color:black;
 	border-top-style:solid;
 	padding-right:1em;
-	opacity: .80	;
 }
 
 .floatingBar *

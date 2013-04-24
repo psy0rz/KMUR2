@@ -21,6 +21,8 @@
     <th class='field-meta-put control-on-click-order control-order-asc' field-key='username' field-meta-key='desc'>
     <th class='field-meta-put control-on-click-order' field-key='fullname' field-meta-key='desc'>
     <th class='field-meta-put control-on-click-order' field-key='groups' field-meta-key='desc'>
+    <th class='field-meta-put control-on-click-order' field-key='emails' field-meta-key='desc'>
+    <th class='field-meta-put control-on-click-order' field-key='phones' field-meta-key='desc'>
     <th>
 </tr>
 
@@ -29,6 +31,10 @@
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='username' field-allow-null>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='fullname' field-allow-null>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='groups' field-allow-null filter-in>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='emails'>
+        <span class='field-meta-put control-on-change-filter' field-key='emails.email' field-allow-null></span>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='phones'>
+        <span class='field-meta-put control-on-change-filter' field-key='phones.phone' field-allow-null></span>
 
 </tr>
 
@@ -37,6 +43,14 @@
     <td class='control-on-click-edit field-put' field-key='username' >
     <td class='control-on-click-edit field-put' field-key='fullname' >
     <td class='control-on-click-edit field-put' field-key='groups' >
+    <td >
+        <div class='field-put field-list-source field-list-source-hide' field-key='emails'>
+            <span class='control-on-click-edit field-put' field-key='emails.email' >
+        </div>
+    <td >
+        <div class='field-put field-list-source field-list-source-hide' field-key='phones'>
+            <span class='control-on-click-edit field-put' field-key='phones.phone' >
+        </div>
     <td class='control-on-click-del ui-icon ui-icon-trash'>
 </tr>
 </table>

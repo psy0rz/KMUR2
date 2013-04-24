@@ -14,117 +14,88 @@ new ControlForm({
 </script>
 
 <fieldset style='display:inline-block;'>
-	<legend>Inlog gegevens</legend>
+	<legend>User account</legend>
 	<table>
 		<tr>
 			<td class='field-meta-put' field-key='active' field-meta-key='desc'>
 			<td class='field-meta-put' field-key='active'>
 		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='username' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='username'>
-		</tr>
+        <tr>
+            <td class='field-meta-put' field-key='username' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='username'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='fullname' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='fullname'>
+        </tr>
 		<tr>
 			<td class='field-meta-put' field-key='password' field-meta-key='desc'>
 			<td class='field-meta-put' field-key='password'>
 		</tr>
 		<tr>
-			<td class='field-meta-put' field-key='rights' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='rights'  style='background:#eeffee;'>
+			<td class='field-meta-put' field-key='groups' field-meta-key='desc'>
+			<td class='field-meta-put' field-key='groups'  style='background:#eeffee;'>
 		</tr>
 	</table>
+</fieldset>
+
+<br>
+
+<fieldset style='display:inline-block;'>
+	<legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
+
+    <table >
+        <thead >
+            <tr class='field-meta-put' field-key='emails'>
+                <td>
+                <td class='field-meta-put' field-key='emails.email' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='emails.desc' field-meta-key='desc'>
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody class='control-list-sortable'>
+            <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key='emails'>
+                <td class='control-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put control-on-focus-list-add' field-key='emails.email'>
+                <td class='field-meta-put control-on-focus-list-add' field-key='emails.desc'>
+                <td class='control-on-click-list-del ui-icon ui-icon-trash'>
+                <td class='control-on-click-list-add ui-icon ui-icon-plus'>
+            </tr>
+        </tbody>
+    </table>
+
 </fieldset>
 
 <fieldset style='display:inline-block;'>
-	<legend>Contact gegevens</legend>
-	<table>
-		<tr>
-			<td class='field-meta-put' field-key='company' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='company'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='name' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='name'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='address' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='address'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='postalcode' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='postalcode'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='city' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='city'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='country' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='country'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='email' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='email'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='phone' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='phone'>
-		</tr>
-	</table>
-</fieldset>
-
-<fieldset  style='display:inline-block;'>
-	<legend>Factuur gegevens</legend>
-	<table>
-		<tr>
-			<td class='field-meta-put' field-key='tax' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='tax'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoiceName' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoiceName'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoiceAddress' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoiceAddress'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoicePostalcode' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoicePostalcode'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoiceCity' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoiceCity'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoiceCountry' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoiceCountry'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoiceEmail' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoiceEmail'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='invoicePhone' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='invoicePhone'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='bankNumber' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='bankNumber'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='taxNumber' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='taxNumber'>
-		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='kvkNumber' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='kvkNumber'>
-		</tr>
-	</table>
+    <legend class='field-meta-put' field-key='phones' field-meta-key='desc'></legend>
+    <table >
+        <thead >
+            <tr class='field-meta-put' field-key='phones'>
+                <td>
+                <td class='field-meta-put' field-key='phones.phone' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='phones.desc' field-meta-key='desc'>
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody class='control-list-sortable'>
+            <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key='phones'>
+                <td class='control-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put control-on-focus-list-add' field-key='phones.phone'>
+                <td class='field-meta-put control-on-focus-list-add' field-key='phones.desc'>
+                <td class='control-on-click-list-del ui-icon ui-icon-trash'>
+                <td class='control-on-click-list-add ui-icon ui-icon-plus'>
+            </tr>
+        </tbody>
+    </table>
 </fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='control-on-click-save' >Opslaan</button>
+<div class='floatingBar viewErrorClass'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-del control-hide-on-new' >Delete</button>
+    <button class='control-on-click-cancel' >Cancel</button>
 	<span class='viewErrorText'></span>
 </div>

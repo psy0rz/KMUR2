@@ -727,7 +727,7 @@ Field.List.find_data_keys=function(keys, meta, element)
 
 Field.List.resolve_meta=function(meta, keys)
 {
-    console.error("resolve in list", meta, keys);
+//    console.error("resolve in list", meta, keys);
     return(Field.Base.resolve_meta(meta.meta, keys));
 }
 
@@ -1055,7 +1055,7 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
         for(data_nr in data)
         {
             new_element.append(
-                $("<span>") 
+                $("<div>") 
                     .addClass("field-multiselect")
                     .addClass("field-multiselect-"+data[data_nr])
                     .addClass("field-multiselect-"+key+"-"+data[data_nr])

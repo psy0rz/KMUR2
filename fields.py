@@ -4,6 +4,7 @@
 import json
 import bson.objectid
 import pymongo.cursor
+import re
 
 
 class FieldException(Exception):
@@ -261,6 +262,7 @@ class String(Base):
         if (('max' in self.meta) and (len(data) > self.meta['max'])):
             raise FieldException("Data should be at most {} characters long".format(self.meta['max']))
 
+        return True
 
 class Password(String):
     """Same as String, but with other GUI stuff"""
@@ -402,3 +404,54 @@ class Anything(Base):
 
         if not super(Anything, self).check(data):
             return
+
+
+
+
+
+class Email(String):
+    """Just like a string, but checks for valid email adresses"""
+
+    def __init__(self, **kwargs):
+        super(Email, self).__init__(**kwargs)
+
+        self.meta['type']='String';
+
+    def check(self, data):
+
+        if not super(Email, self).check(data):
+            return
+
+        #NOTE: correct checking is hard, see http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
+        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", data)==None:
+            raise FieldException("Invalid email address")
+
+        return True
+
+
+class Phone(String):
+    """Just like a string, but checks for valid phone numbers"""
+
+    def __init__(self, **kwargs):
+        super(Phone, self).__init__(**kwargs)
+
+        self.meta['type']='String';
+
+    def check(self, data):
+
+        if not super(Phone, self).check(data):
+            return
+
+        #For now we do a very crude check
+        if re.search("[^0-9+() ]", data)!=None:
+            raise FieldException("Invalid phone number")
+
+        return True
+
+
+
+
+
+
+
+
