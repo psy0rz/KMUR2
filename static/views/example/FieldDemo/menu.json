@@ -1,6 +1,14 @@
 {
 	"example":{
 		"title":"Examples",
+        "view":
+            { 
+                "name":"example.FieldDemo.list",
+                "mode":"main",
+                "params": {
+                        "limit": 10
+                }
+            },
 		"items":[
             {
                 "title":"New item",
@@ -9,17 +17,6 @@
                         "name":"example.FieldDemo.edit",
                         "mode":"main",
                         "params": { }
-                    }
-            },
-			{
-                "title":"Item list",
-                "view":
-                    { 
-                        "name":"example.FieldDemo.list",
-                        "mode":"main",
-                        "params": {
-                                "limit": 10
-                        }
                     }
             },
             {

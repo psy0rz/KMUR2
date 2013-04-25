@@ -1,6 +1,11 @@
 {
 	"users":{
 		"title":"Users",
+        "view":
+            { 
+                "name":"core.Users.list",
+                "mode":"main"
+                },
 		"items":[
 			{
 				"title":"New user",
@@ -9,14 +14,6 @@
 						"name":"core.Users.edit",
 						"mode":"main",
                         "params": {}
-						}
-			},
-			{
-				"title":"Show users",
-				"view":
-					{ 
-						"name":"core.Users.list",
-						"mode":"main"
 						}
 			}
 		]

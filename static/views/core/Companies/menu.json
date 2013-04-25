@@ -1,6 +1,11 @@
 {
 	"companies":{
 		"title":"Companies",
+        "view":
+            { 
+                "name":"core.Companies.list",
+                "mode":"main"
+                },
 		"items":[
 			{
 				"title":"New company",
@@ -9,14 +14,6 @@
 						"name":"core.Companies.edit",
 						"mode":"main",
                         "params": {}
-						}
-			},
-			{
-				"title":"Show companies",
-				"view":
-					{ 
-						"name":"core.Companies.list",
-						"mode":"main"
 						}
 			}
 		]

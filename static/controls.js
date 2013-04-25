@@ -590,9 +590,23 @@ ControlList.prototype.get_result=function(result, request_params)
             'title': this.format(this.params.title, result.data)
         });
         this.view_ready=true;
+
+        this.focus();
     }
 
 }
+
+//focus the correct input field, for a list is this diffent than for a form. 
+ControlList.prototype.focus=function()
+{
+    if (this.params.view && this.params.view.focus)
+        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, this.params.view.focus).focus();
+    else if (this.params.default_focus)
+        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, this.params.default_focus).focus();
+    else
+        $(".control-default-focus", this.context).focus();
+}
+
 
 //TODO: just handle this in get_meta_result
 ControlList.prototype.attach_event_handlers=function()
@@ -907,8 +921,6 @@ ControlList.prototype.attach_event_handlers=function()
     
 
 
-    //set default focus
-    $(".controlSetFocus", context).focus();
 
     //enable endless scrolling?
     if (this_control.params.endless_scrolling)
