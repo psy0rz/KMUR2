@@ -57,7 +57,8 @@ class Menu(models.mongodb.MongoDB):
                                                 spec={
                                                       'user_id': self.context.user_id,
                                                       'menu': menu,
-                                                      'favorite_id': favorite_id
+                                                      'favorite_id': favorite_id,
+                                                      'view.name' : view['name'],
                                                       },
                                                 document={'$set': {
                                                                    'user_id': self.context.user_id,
