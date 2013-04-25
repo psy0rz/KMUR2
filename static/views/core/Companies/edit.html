@@ -2,27 +2,22 @@
 <script>
 
 new ControlForm({
-    'view'            : view,
-    'class'           : 'core.Companies',
-    'default_focus'   : ['name'],
-    'title'           : 'Edit company {name}',
-    'title_new'       : 'New company',
-    'favorite_menu'   : 'companies',
-    'close_after_save': false,
+    'view'             : view,
+    'class'            : 'core.Companies',
+    'default_focus'    : ['name'],
+    'title'            : 'Edit company {name}',
+    'title_new'        : 'New company',
+    'favorite_menu'    : 'companies',
+    'create_ok'        : function(result)
+    {
+        viewCreate({},{
+            'name': 'core.Companies.show',
+            'mode': 'main',
+            'params': { '_id': result.data._id }
+        });
+    }
 });
 
-
-if ('_id' in view.params)
-{
-    viewLoad({
-        'name': 'core.Users.list',
-        'id'  : 'company_users',
-        'params': {
-            'spec':
-                { '_idX': view.params._id }
-        }
-    });
-}
 
 </script>
 
@@ -35,24 +30,16 @@ if ('_id' in view.params)
         </tr>
 	</table>
 
-    <div class='viewErrorClass'>
-        <button class='control-on-click-save' >Save</button>
-        <button class='control-on-click-del control-hide-on-new' >Delete</button>
-        <button class='control-on-click-cancel' >Cancel</button>
-        <span class='viewErrorText'></span>
-    </div>
 
 </fieldset>
 
 <br>
 
-<fieldset style='display:inline-block;'>
-	<legend>Contacts that belong to this company</legend>
 
-    <div class='view' id='company_users'>
-
-    </div>
-
-</fieldset>
-
+<div class='floatingBar viewErrorClass'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-del control-hide-on-new' >Delete</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
+</div>
 

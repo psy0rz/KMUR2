@@ -11,7 +11,7 @@
 				"title":"New company",
 				"view":
 					{ 
-						"name":"core.Companies.edit",
+						"name":"core.Companies.list",
 						"mode":"main",
                         "params": {}
 						}

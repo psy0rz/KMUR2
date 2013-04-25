@@ -22,6 +22,8 @@ params:
     delete:              rpc-method called to delete data (default: class+".delete")
     delete_params        parameters to pass to put (default: view.params)
 
+    edit_view            View that is opened when a user clicks an element with class .control-on-click-edit
+
 Other items in params documented in the subclasses below.
 
 */
@@ -148,6 +150,7 @@ params:
     put:                 rpc-method called to put data (default: class+".delete")
     put_params           parameters to pass to put (default: view.params)
     put_result           called with results of put data 
+    create_ok            called when putting a new item went ok. use this to call a new view after creating somehting.
 
     close_after_save     close the view after succesfully saving the data
 
@@ -157,6 +160,11 @@ params:
 
     favorite_menu       up on openening and saving add/upate favorite to specified menu.
     favorite_key         the result-key to use as favorite identifier (defaults to _id)
+
+    on_change           what to do when our class changes:
+                            null: dont do anything, to prevent losing data (default)
+                            get:  re-get the data from the server. also gives feedback to the user
+                            reload: re-load the whole view
 
 */
 function ControlForm(params)
@@ -176,6 +184,8 @@ function ControlForm(params)
     if (! params.put_result)
         params.put_result=function(){};
 
+    if (! params.create_ok)
+        params.create_ok=function(){};
 
     if (! params.delete_result)
         params.delete_result=function(){};
@@ -238,7 +248,9 @@ ControlForm.prototype.get_result=function(result, request_params)
     // $(".control-on-click-save", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
     {
-        Field.Dict.put('', this.meta, this.context, result.data, {})
+        this.new_item=false;
+
+        Field.Dict.put('', this.meta, this.context, result.data, request_params)
 
         if (this.params.favorite_menu)
         {
@@ -260,10 +272,13 @@ ControlForm.prototype.get_result=function(result, request_params)
     //its a new item
     else
     {
+        this.new_item=true;
+
         viewReady({
             'view': this.params.view,
             'title': this.params.title_new
         });
+
 
         $(".control-hide-on-new", this.context).hide();
     }
@@ -351,6 +366,57 @@ ControlForm.prototype.attach_event_handlers=function()
     {
         viewClose(this_control.params.view);
     });
+
+    //some forms are just showing data or are readonly. in those cases there usually will be some edit-button or elements to click.
+    $(".control-on-click-edit", context).off().click(function(event)
+    {
+
+        var element=$(this);
+    
+        //create the view to edit the clicked item
+        var editView={};
+        $.extend( editView, this_control.params.edit_view );
+        if (! editView.params)
+            editView.params={};
+
+
+        //determine focus field:
+        editView.focus=Field.Base.keys($(this).attr("field-key"));
+        editView.x=event.clientX;
+        editView.y=event.clientY;
+ 
+
+        viewCreate(
+            {
+                creator: $(this)
+            },
+            editView);
+    });
+
+
+    //some  control changed/added an item in our class, so update the list
+    $(context).on(this.params.class+'.changed', function(e,result)
+    { 
+        if (this!=e.target)
+            return false;
+
+        console.log("form: data on server has changed",e);
+
+        //reload the whole view
+        if (this_control.params.on_change=='reload')
+        {
+            viewLoad(this_control.params.view);
+        }
+        //re-get the data and show changes
+        else if (this_control.params.on_change=='get')
+        {
+            this_control.get({ show_changes: true });
+        }
+
+        return(false);
+    });
+
+
 }
 
 
@@ -395,11 +461,12 @@ ControlForm.prototype.put_result=function(result, request_params)
     //no errors?
     if (!viewShowError(result, this.context, this.meta))
     {
+
         if (this.params.close_after_save)
             viewClose(this.params.view);
 
-        //broadcast a changed-event to update all the views:
-        $(".view").trigger(this.params.class+'.changed', result);
+        //broadcast a changed-event to update all the views, except ourselfs
+        $(".view").not(this.context).trigger(this.params.class+'.changed', result);
 
         if (this.params.favorite_menu)
         {
@@ -414,6 +481,9 @@ ControlForm.prototype.put_result=function(result, request_params)
                 'favorite_id': result.data[this.params.favorite_key]
             });
         }
+
+        if (this.new_item==true)
+            this.params.create_ok(result, request_params);
     }
 }
 
@@ -459,14 +529,19 @@ ControlForm.prototype.delete_result=function(result, request_params)
 params:
     (look in the baseclass for the basic documentation)
     
-    edit_view: View that is opened when a user clicks an element with class .control-on-click-edit
 
-    get: rpc-call to get data, if not specified will be set to class.get_all
+    get:                rpc-call to get data, if not specified will be set to class.get_all
 
-    endless_scrolling: set to true to activate endless scrolling. (by default get_params.limit will be set to 25 but you can specify a different value)
+    endless_scrolling:  set to true to activate endless scrolling. 
+                        (by default get_params.limit will be set to 25 but you can specify a different value)
 
     favorite_menu       up on openening and saving add/upate favorite to specified menu.
-    favorite_key         the result-key to use as favorite identifier (defaults to _id)
+    favorite_key        the result-key to use as favorite identifier (defaults to _id)
+
+    on_change           what to do when our class changes:
+                            put: only put the new data into the list. ignores sorting and filtering, but gives best feedback to user (default)
+                            get: re-get the list, honoring sorting and filtering settings
+                            reload: re-load the whole view
 
 */
 function ControlList(params)
@@ -478,6 +553,9 @@ function ControlList(params)
 
     if (! params.favorite_key)
         params.favorite_key='_id';
+
+    if (! params.on_change)
+        params.on_change='put';
 
     if (typeof (params.get_params) ==='undefined')
         params.get_params={};
@@ -592,6 +670,7 @@ ControlList.prototype.get_result=function(result, request_params)
         this.view_ready=true;
 
         this.focus();
+
     }
 
 }
@@ -617,24 +696,51 @@ ControlList.prototype.attach_event_handlers=function()
     //some  control changed/added an item in our class, so update the list
     $(context).on(this.params.class+'.changed', function(e,result)
     { 
-        console.log("changed",result);
-        Field.List.put(
-            this_control.list_source_element.attr("field-key"),
-            this_control.meta,
-            this_control.list_source_element,
-            [ result.data ],
-            {
-                list_no_remove: true,
-                list_update: true,
-                show_changes: true
+        if (this!=e.target)
+            return false;
 
-            }
-        );
+        console.log("list: data on server has changed",e);
+
+        //reload the whole view
+        if (this_control.params.on_change=='reload')
+        {
+            viewLoad(this_control.params.view);
+        }
+        //re-get the data
+        else if (this_control.params.on_change=='get')
+        {
+            //reset scrolling
+            if (this_control.params.endless_scrolling)
+                this_control.params.get_params.skip=0;
+
+            this_control.get_delayed({});
+        }
+        //only put the new data into the list
+        else if (this_control.params.on_change=='put')
+        {
+            Field.List.put(
+                this_control.list_source_element.attr("field-key"),
+                this_control.meta,
+                this_control.list_source_element,
+                [ result.data ],
+                {
+                    list_no_remove: true,
+                    list_update: true,
+                    show_changes: true
+
+                }
+            );
+        }
+
+        return(false);
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
     $(context).on(this.params.class+'.deleted', function(e, result)
     {
+        if (this!=e.target)
+            return false;
+
         console.log("deleted",result);
 
         var key=result.data[this_control.meta.list_key];
@@ -649,6 +755,8 @@ ControlList.prototype.attach_event_handlers=function()
         {
             element.remove();
         });
+
+        return(false);
     });
  
 
