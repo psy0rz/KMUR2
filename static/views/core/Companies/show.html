@@ -1,0 +1,55 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'class'           : 'core.Companies',
+    'default_focus'   : ['name'],
+    'title'           : 'Company {name}',
+    'favorite_menu'   : 'companies',
+    'on_change'       : 'get',
+    'edit_view'       : {
+        name:   'core.Companies.edit',
+        mode:   'main',
+        params: view.params
+    }
+});
+
+
+viewLoad({
+    'name': 'core.Users.list',
+    'id'  : 'company_users',
+    'params': {
+        'spec':
+            { '_idX': view.params._id }
+    }
+});
+
+
+</script>
+
+<fieldset  class='viewErrorClass'>
+	<legend></legend>
+	<table>
+        <tr>
+            <td class='field-meta-put' field-key='name' field-meta-key='desc'>
+            <td class='field-put value control-on-click-edit' field-key='name'>
+        </tr>
+	</table>
+
+    <span class='viewErrorText'></span>
+
+</fieldset>
+
+<br>
+
+<fieldset style='display:inline-block;'>
+	<legend>Contacts</legend>
+
+    <div class='view' id='company_users'>
+
+    </div>
+
+</fieldset>
+
+
