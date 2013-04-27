@@ -282,12 +282,20 @@ ControlForm.prototype.get_result=function(result, request_params)
 
         $(".control-hide-on-new", this.context).hide();
     }
-    
-    this.focus();
 
     viewShowError(result, this.context, this.meta);
 
-
+    //assume it has been deleted/become inaccesible, so delete the favorite, if the key is in the view params.
+    if ('error' in result && this.params.favorite_menu && (this.params.favorite_key in this.params.view.params))
+    {
+        console.log("deleting stale entry from favorites menu");
+        $(document).trigger('menu.delete_favorite', {
+            'menu':      this.params.favorite_menu,
+            'favorite_id': this.params.view.params[this.params.favorite_key]
+        });
+    }
+    
+    this.focus();
 }
 
 
@@ -394,13 +402,13 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
 
-    //some  control changed/added an item in our class, so update the list
+    //some  control changed/added an item in our class, so update the form
     $(context).on(this.params.class+'.changed', function(e,result)
     { 
         if (this!=e.target)
             return false;
 
-        console.log("form: data on server has changed",e);
+        console.log("form: data on server has changed",this_control);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
@@ -416,6 +424,32 @@ ControlForm.prototype.attach_event_handlers=function()
         return(false);
     });
 
+    //a control deleted something in our class
+    $(context).on(this.params.class+'.deleted', function(e,result)
+    { 
+        if (this!=e.target)
+            return false;
+
+        //NOTE: we just assume we can compare the _id here. maybe we should make this more generic?
+        if (result.data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
+        {
+            console.log("form: data on server got deleted",this_control);
+            viewClose(this_control.params.view);
+        }
+
+        //sometimes stuff gets deleted by edit forms, which themselfs do not update favorites. 
+        //so in that case we can do it for them.
+        if (this_control.params.favorite_menu && (this_control.params.favorite_key in result.data))
+        {
+            console.log("deleting entry from favorites menu");
+            $(document).trigger('menu.delete_favorite', {
+                'menu':      this_control.params.favorite_menu,
+                'favorite_id': result.data[this_control.params.favorite_key]
+            });
+        }
+
+        return(false);
+    });
 
 }
 
@@ -506,10 +540,13 @@ ControlForm.prototype.delete_result=function(result, request_params)
     if (!viewShowError(result, this.context, this.meta))
     {
         if (this.params.close_after_save)
+        {
+            console.error("closing dah shit", this.params.view);
             viewClose(this.params.view);
+        }
 
         //broadcast the deleted event to update other views
-        $(".view").trigger(this.params.class+'.deleted', result);
+        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
 
         if (this.params.favorite_menu)
         {
@@ -699,7 +736,7 @@ ControlList.prototype.attach_event_handlers=function()
         if (this!=e.target)
             return false;
 
-        console.log("list: data on server has changed",e);
+        console.log("list: data on server has changed",this_control);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
@@ -741,7 +778,7 @@ ControlList.prototype.attach_event_handlers=function()
         if (this!=e.target)
             return false;
 
-        console.log("deleted",result);
+        console.log("list: data on server has been deleted", this_control);
 
         var key=result.data[this_control.meta.list_key];
         var element=Field.List.find_element(
@@ -814,7 +851,7 @@ ControlList.prototype.attach_event_handlers=function()
                 {
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
-                        $(".view").trigger(this_control.params.class+'.deleted', result);
+                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
 
                         if (this_control.params.favorite_menu)
                         {

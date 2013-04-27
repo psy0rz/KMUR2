@@ -199,7 +199,7 @@ Field.Base.get=Field.Base.not_implemented;//(key, meta, context)
  */
 Field.Base.find_element=function(key, meta, context, data_keys)
 {  
-        console.log("Field.Base.find_element found element: ", key, meta, context, data_keys);
+//        console.log("Field.Base.find_element found element: ", key, meta, context, data_keys);
         //the interesting stuff happens in Field.Dict and Field.List
         //when we reach Field.Base, it means we've reached 'the end' 
         //(we cant search any deeper, even if we still have keys left)
@@ -372,7 +372,7 @@ Field.Dict.get=function(key, meta, context)
 
 Field.Dict.find_element=function(key, meta, context, data_keys)
 {
-    console.log("Dict.find_element", key, meta, context, data_keys);
+//    console.log("Dict.find_element", key, meta, context, data_keys);
 
     var this_key=data_keys[0];
     var sub_keys=data_keys.splice(1);
@@ -665,7 +665,7 @@ Field.List.from_element_add=function(key, element)
 */
 Field.List.find_element=function(key, meta, context, data_keys)
 {
-    console.log("Field.List.find_element", key, meta, context, data_keys);
+//    console.log("Field.List.find_element", key, meta, context, data_keys);
 
     var list_item_id=data_keys[0];
     var sub_keys=data_keys.splice(1);

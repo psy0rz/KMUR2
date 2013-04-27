@@ -1,5 +1,5 @@
 
-//TODO: rewrite this a the View class.
+//TODO: rewrite this as 2 seperate classes (one for dom manipulation, one for abstract view handling)
 
 //array containing view status
 //views will be created and destroyed by comparing this data to the url hash
@@ -7,6 +7,8 @@ var gViewStatus={
     count:0,
     views:{}
 };
+
+
 
 //initialize view history tracker
 $(document).ready(function()
@@ -17,11 +19,40 @@ $(document).ready(function()
 
         // hash changed, update views:
         logDebug("view detected new url hash:", hash);
-        logDebug("view comparing to current viewstatus:", JSON.stringify(gViewStatus));
         
+        var viewStatus=rison.decode(hash);
+
+        viewSwitch(viewStatus);
+
+    },
+    { 'unescape': true } //dont urlencode   
+    );
+
+    //endless scrolling stuff.
+    //send an event to the last mainview (e.g. the one that is visble and on the foreground)
+    var prevHeight=0;
+    $(window).scroll(function()
+    {
+        console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
+        var height=$(document).height();
+        if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
+        {
+            prevHeight=$(document).height();
+            $("#views .viewMain:last").trigger("view.scrolledBottom");
+        }
+    });
+
+});
+
+
+//compares viewStatus with gViewStatus and creates/deletes/changes the actual dom objects.
+function viewSwitch(viewStatus)
+{
         var oldViewStatus={};
         $.extend(true, oldViewStatus, gViewStatus);
-        var newViewStatus=rison.decode(hash);
+
+        var newViewStatus={};
+        $.extend(true, newViewStatus, viewStatus);
 
         //always keep highest counter
         if (oldViewStatus.count>newViewStatus.count)
@@ -61,33 +92,16 @@ $(document).ready(function()
                 viewLoad(view);
             }
         });
-        
 
-    },
-    { 'unescape': true } //dont urlencode   
-    );
+}
 
-    //endless scrolling stuff.
-    //send an event to the last mainview (e.g. the one that is visble and on the foreground)
-    var prevHeight=0;
-    $(window).scroll(function()
-    {
-        console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
-        var height=$(document).height();
-        if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
-        {
-            prevHeight=$(document).height();
-            $("#views .viewMain:last").trigger("view.scrolledBottom");
-        }
-    });
-
-});
-
-
+//update the browser url, but also calls viewSwitch to do the actual switch right away.
 function viewSetUrl(viewStatus)
 {
     var hash=rison.encode(viewStatus);
     console.log("view changing url hash to: "+hash);
+    //switch to the new status right right now, to prevent race conditions (the history loader lags behind)
+    viewSwitch(viewStatus);
     jQuery.history.load(hash);
 }
 
@@ -95,7 +109,7 @@ function viewSetUrl(viewStatus)
 // this will trigger the history tracker which in turn will create and delete actual view elements.
 function viewUpdateUrl(id, viewData)
 {
-    //copy the current global viewstatus and expand it with this new view
+
     var viewStatus={};
     $.extend( true, viewStatus, gViewStatus );
 
