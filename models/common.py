@@ -92,7 +92,9 @@ class Context(object):
         '''raises exception if the user isnt member of any of the groups
         '''
         if not self.has_groups(groups):
-            raise Exception('Access denied - You need to be member of any of these groups: {}'.format(groups))
+            txt='Access denied - You need to be member of any of these groups: {}'.format(groups)
+            self.log("warning", txt, self.__class__.__name__);
+            raise Exception(txt)
 
     def get_results(self):
         '''gets the "results" of what was done during the context.

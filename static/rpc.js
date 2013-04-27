@@ -123,11 +123,11 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                         }
                         else if (logLine.type=='warning')
                         {
-                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Let op: </strong><span class="logtxt"></span></div>');
+                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Warning: </strong><span class="logtxt"></span></div>');
                         }
                         else
                         {
-                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Fout: </strong><span class="logtxt"></span></div>');
+                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Error: </strong><span class="logtxt"></span></div>');
                         }
                         $(".logtxt", logDiv).text(logLine.text);                            
                         $('#viewLog').append(logDiv);
