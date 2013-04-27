@@ -1064,8 +1064,42 @@ ControlList.prototype.attach_event_handlers=function()
 
     });
     
+    //generic $or filter to do quick searches in multiple fields 
+    $(".control-on-change-search", context).on('change keypress paste focus textInput input', function()
+    {
+        var search_txt=$(this).val();
 
+        if (!this_control.params.get_params.spec)
+            this_control.params.get_params.spec={};
 
+        if (search_txt=="")
+        {
+            delete this_control.params.get_params.spec['$or'];
+            $(this).removeClass("ui-state-highlight");
+        }
+        else
+        {
+            $(this).addClass("ui-state-highlight");
+            this_control.params.get_params.spec['$or']=[];
+
+            $.each($(this).attr("control-search-keys").split(" "), function(i, key_str)
+            {
+                console.error("key", key_str);
+                var search_exp={}
+                search_exp[key_str]={
+                        '$regex': search_txt,
+                        '$options': "i"                    
+                }
+                this_control.params.get_params.spec['$or'].push(search_exp);
+
+            });
+
+            if (this_control.params.endless_scrolling)
+                this_control.params.get_params.skip=0;
+
+            this_control.get_delayed({});
+        }
+    });
 
     //enable endless scrolling?
     if (this_control.params.endless_scrolling)

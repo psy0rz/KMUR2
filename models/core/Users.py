@@ -3,6 +3,7 @@ import fields
 import models.mongodb
 from models import mongodb
 
+import models.core.Companies
 
 class Users(models.mongodb.MongoDB):
     '''user management'''
@@ -23,6 +24,11 @@ class Users(models.mongodb.MongoDB):
                                                       "customer": "Customer",
                                                       "finance": "Finance"
                                                     }),
+
+                'companies': fields.Relation(desc="Companies",
+                                             class=core.Companies
+                                             ),
+
                 'fullname': fields.String(desc='Full name'),
                 'emails': fields.List(
                     fields.Dict({
