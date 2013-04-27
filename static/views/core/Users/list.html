@@ -6,7 +6,7 @@
         'title'             : 'Users overview',
         'endless_scrolling' : true,
         'favorite_menu'     : 'users',
-        'default_focus'     : ['username'],
+        'default_focus'     : null,
         'edit_view'       : {
             name:   'core.Users.edit',
             mode:   'main',
@@ -15,6 +15,9 @@
     });
 
 </script>
+
+<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+<input type='text' class='control-on-change-search control-default-focus' control-search-keys='username fullname emails.email phones.phone'>
 
 <table >
 <tr class='ui-widget-header'>

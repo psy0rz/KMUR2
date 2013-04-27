@@ -680,11 +680,11 @@ ControlList.prototype.get_result=function(result, request_params)
 
         if (this.params.endless_scrolling)
         {
-            console.log("checking", result.data.length, $(window).scrollTop(), $(document).scrollTop());
+            //console.log("checking", result.data.length, $(window).scrollTop(), $(document).scrollTop());
             //we dont have enough items to overflow the window enough, and there are still items left on the server?
             if  ( 
                     ($(window).height()*2)+$(window).scrollTop() > $(document).height() && 
-                    result.data.length!=0
+                    result.data.length>=this.params.get_params.limit
                 )
             {
                 this.params.get_params.skip+=this.params.get_params.limit;
@@ -1069,6 +1069,11 @@ ControlList.prototype.attach_event_handlers=function()
     {
         var search_txt=$(this).val();
 
+        if (this_control.last_search_txt==search_txt)
+            return;
+
+        this_control.last_search_txt=search_txt;
+
         if (!this_control.params.get_params.spec)
             this_control.params.get_params.spec={};
 
@@ -1079,12 +1084,14 @@ ControlList.prototype.attach_event_handlers=function()
         }
         else
         {
+            var search_keys=$(this).attr("control-search-keys").split(" ");
+
             $(this).addClass("ui-state-highlight");
+
             this_control.params.get_params.spec['$or']=[];
 
-            $.each($(this).attr("control-search-keys").split(" "), function(i, key_str)
+            $.each(search_keys, function(i, key_str)
             {
-                console.error("key", key_str);
                 var search_exp={}
                 search_exp[key_str]={
                         '$regex': search_txt,
@@ -1094,11 +1101,13 @@ ControlList.prototype.attach_event_handlers=function()
 
             });
 
-            if (this_control.params.endless_scrolling)
-                this_control.params.get_params.skip=0;
-
-            this_control.get_delayed({});
         }
+
+        if (this_control.params.endless_scrolling)
+            this_control.params.get_params.skip=0;
+
+        this_control.get_delayed({});
+
     });
 
     //enable endless scrolling?
