@@ -1,0 +1,75 @@
+
+<script>
+    var clone_sources=$(".clone-source", view.context);
+
+    $("#model_get_meta").click(function()
+    {
+        var cls=$("#model_class").val();
+
+        rpc(cls+".get_meta",{}, function(result)
+        {
+            viewShowError(result, view.context);
+
+            //remove old stuff
+            $(".clone", view.context).remove();
+
+            //traverse the fields
+            $.each(result.data.meta.meta, function (key, meta)
+            {
+                if (meta.type=='List')
+                    return;
+
+                if (meta.type=='FieldId')
+                    return;
+
+                //create clones for these keys
+                clone_sources.each(function()
+                {
+                    var clone=$(this).clone();
+                    clone.addClass("clone");
+                    clone.insertAfter(this);
+                    clone.attr("field-key", key);
+                });
+            });
+
+//            clone_sources.remove();
+
+            //now create the actual list control
+            new ControlList({
+                'view'              : view,
+                'class'             : cls,
+                'title'             : 'Database viewer',
+                'endless_scrolling' : true,
+            });
+
+        });
+
+    });
+
+
+</script>
+
+<fieldset>
+    Model class: <input type='text' id='model_class' value='core.Users'>
+
+    <div class='viewErrorClass'>
+        <button id='model_get_meta' >Get metadata</button>
+        <span class='viewErrorText'></span>
+    </div>
+</fieldset>
+
+
+<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+<input type='text' class='control-on-change-search control-default-focus' control-search-keys='username module_name text' >
+
+<table >
+<tr class='ui-widget-header'>
+	<th class='field-meta-put control-on-click-order clone-source' field-key='' field-meta-key='desc'>
+</tr>
+
+
+<tr class='colorRows field-list-source ui-widget-content' field-key=''>
+    <td class='field-put clone-source' field-key='' >
+</tr>
+</table>
+

@@ -25,9 +25,7 @@ class Users(models.mongodb.MongoDB):
                                                       "finance": "Finance"
                                                     }),
 
-                'companies': fields.Relation(desc="Companies",
-                                             class=core.Companies
-                                             ),
+
 
                 'fullname': fields.String(desc='Full name'),
                 'emails': fields.List(

@@ -1,0 +1,15 @@
+{
+	"system":{
+		"title":"System",
+		"items":[
+			{
+				"title":"Database",
+				"view":
+					{ 
+						"name":"core.Database.list",
+						"mode":"main"
+						}
+			}
+		]
+	}
+}
