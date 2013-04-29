@@ -1,6 +1,8 @@
 
 <script>
-    var clone_sources=$(".clone-source", view.context);
+    //the clone stuff is actually a kind of meta-meta data. e.g. templates to create the actual meta dom objects from , which in turn can be used by the normal Control classes.
+
+    var clone_list_source=$(".clone-list-source", view.context).dettach();
 
     $("#model_get_meta").click(function()
     {
@@ -10,27 +12,43 @@
         {
             viewShowError(result, view.context);
 
-            //remove old stuff
-            $(".clone", view.context).remove();
+            //remove old crap
+            $(".clone-context", view.context).empty();
 
-            //traverse the fields
-            $.each(result.data.meta.meta, function (key, meta)
+            //recursive cloner that traverses the metadata and does the actual cloning
+            function cloner(key_str, meta, context)
             {
                 if (meta.type=='List')
-                    return;
-
-                if (meta.type=='FieldId')
-                    return;
-
-                //create clones for these keys
-                clone_sources.each(function()
                 {
-                    var clone=$(this).clone();
-                    clone.addClass("clone");
-                    clone.insertAfter(this);
-                    clone.attr("field-key", key);
+                    clone_list_source.clone();   
+                }
+
+
+                //traverse the fields
+                $.each(result.data.meta.meta, function (key, meta)
+                {
+                    if (meta.type=='List')
+                        return;
+
+                    if (meta.type=='FieldId')
+                        return;
+
+                    //create clones for these keys
+                    clone_sources.each(function()
+                    {
+                        var clone=$(this).clone();
+                        clone.addClass("clone");
+                        clone.insertAfter(this);
+                        clone.attr("field-key", key);
+                    });
                 });
-            });
+
+            }
+            var clone_sources=$(".clone-source", view.context);
+
+            cloner('', result.data.meta, $(".clone-context", view.context));
+
+
 
 //            clone_sources.remove();
 
@@ -62,14 +80,15 @@
 <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
 <input type='text' class='control-on-change-search control-default-focus' control-search-keys='username module_name text' >
 
-<table >
-<tr class='ui-widget-header'>
-	<th class='field-meta-put control-on-click-order clone-source' field-key='' field-meta-key='desc'>
-</tr>
+<div id='clone-context'>
+    <table id='clone-list-source'>
+        <tr class='ui-widget-header'>
+        	<th class='field-meta-put control-on-click-order clone-source' field-key='' field-meta-key='desc'>
+        </tr>
 
 
-<tr class='colorRows field-list-source ui-widget-content' field-key=''>
-    <td class='field-put clone-source' field-key='' >
-</tr>
-</table>
-
+        <tr class='colorRows field-list-source ui-widget-content' field-key=''>
+            <td class='field-put clone-source' field-key='' >
+        </tr>
+    </table>
+</div>
