@@ -2,7 +2,7 @@
 <script>
     //the clone stuff is actually a kind of meta-meta data. e.g. templates to create the actual meta dom objects from , which in turn can be used by the normal Control classes.
 
-    var clone_list_source=$(".clone-list-source", view.context).dettach();
+    var clone_list_source=$(".clone-list-source", view.context).clone(true);
 
     $("#model_get_meta").click(function()
     {
@@ -16,40 +16,74 @@
             $(".clone-context", view.context).empty();
 
             //recursive cloner that traverses the metadata and does the actual cloning
-            function cloner(key_str, meta, context)
+            function cloner(key_str, main_meta, context)
             {
-                if (meta.type=='List')
+
+//                else if (meta.type=='Dict')
                 {
-                    clone_list_source.clone();   
-                }
 
-
-                //traverse the fields
-                $.each(result.data.meta.meta, function (key, meta)
-                {
-                    if (meta.type=='List')
-                        return;
-
-                    if (meta.type=='FieldId')
-                        return;
-
-                    //create clones for these keys
-                    clone_sources.each(function()
+                    //traverse the fields
+                    $.each(main_meta.meta, function (key, meta)
                     {
-                        var clone=$(this).clone();
-                        clone.addClass("clone");
-                        clone.insertAfter(this);
-                        clone.attr("field-key", key);
+                        var this_key=''
+                        if (key_str!='')
+                            this_key=key_str+'.'+key;
+                        else
+                            this_key=key;
+
+                        console.log(key,meta);
+
+                        if (meta.type=='Dict')
+                        {
+                            //just stay in the same context
+                            cloner(this_key, meta, context);
+                        }
+                        else if (meta.type!='FieldId')
+                        {
+                            //clone description
+                            var clone_meta_source=$(".clone-meta-source:first", context);
+                            var clone=clone_meta_source.clone(true);
+                            clone.attr("field-key", this_key);
+                            clone_meta_source.after(clone);
+
+                            //is it a list?
+                            if (meta.type=='List')
+                            {
+                                //clone data field, without setting fieldkey
+                                var clone_data_source=$(".clone-data-source:first", context);
+                                var clone=clone_data_source.clone(true);
+                                clone_data_source.after(clone);
+                                
+                                //put a new list in it, and set the field-key of the field-list-source instead
+                                clone.append(clone_list_source.clone(true).attr("field-key", this_key)); 
+                                $(".field-list-source", clone).attr("field-key", this_key);
+
+                                //recurse into it
+                                cloner(this_key, meta.meta, clone);
+                            }
+                            else
+                            {
+                                //clone data
+                                var clone_data_source=$(".clone-data-source:first", context);
+                                var clone=clone_data_source.clone(true);
+                                clone.attr("field-key", this_key)
+                                clone_data_source.after(clone);
+                                //clone.insertBefore(clone_data_source);
+                            }
+
+                        }
+
                     });
-                });
 
+                }
             }
-            var clone_sources=$(".clone-source", view.context);
 
+            
+            $(".clone-context", view.context).append(clone_list_source.clone(true));
             cloner('', result.data.meta, $(".clone-context", view.context));
 
 
-
+//return;
 //            clone_sources.remove();
 
             //now create the actual list control
@@ -64,6 +98,7 @@
 
     });
 
+    $("#model_get_meta").click();
 
 </script>
 
@@ -80,15 +115,15 @@
 <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
 <input type='text' class='control-on-change-search control-default-focus' control-search-keys='username module_name text' >
 
-<div id='clone-context'>
-    <table id='clone-list-source'>
+<div class='clone-context'>
+    <table class='clone-list-source field-meta-put'>
         <tr class='ui-widget-header'>
-        	<th class='field-meta-put control-on-click-order clone-source' field-key='' field-meta-key='desc'>
+        	<th class='field-meta-put control-on-click-order clone-meta-source' field-key='' field-meta-key='desc'>
         </tr>
 
 
-        <tr class='colorRows field-list-source ui-widget-content' field-key=''>
-            <td class='field-put clone-source' field-key='' >
+        <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key=''>
+            <td class='field-put clone-data-source' field-key='' >
         </tr>
     </table>
 </div>

@@ -1065,7 +1065,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
     
     //generic $or filter to do quick searches in multiple fields 
-    $(".control-on-change-search", context).on('change keypress paste focus textInput input', function()
+    $(".control-on-change-search", context).on('change keypress paste textInput input', function()
     {
         var search_txt=$(this).val();
 
