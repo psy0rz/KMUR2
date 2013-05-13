@@ -830,6 +830,8 @@ ControlList.prototype.attach_event_handlers=function()
                 creator: element
             },
             editView);
+
+        return(false);
     });
 
     //delete the element, after confirmation

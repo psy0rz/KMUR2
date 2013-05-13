@@ -42,6 +42,8 @@ class Users(models.mongodb.MongoDB):
                         }),
                     desc="Phone numbers"
                 ),
+                'company_ids': models.mongodb.FieldRelation(
+                    model=models.core.Companies.Companies)
             }),
             list_key='_id'
         )
@@ -77,9 +79,7 @@ class Users(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def get_all(self, **params):
-        #NOTE: dont forget to explicitly set collection to None!
-        #otherwise the user can look in every collection!
-        return(self._get_all(collection=None, **params))
+        return(self._get_all(**params))
 
     @Acl(groups=["everyone"])
     def login(self, username, password):

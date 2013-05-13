@@ -92,6 +92,11 @@
                 'class'             : cls,
                 'title'             : 'Database viewer',
                 'endless_scrolling' : true,
+                'edit_view'       : {
+                    name:   'core.Database.edit',
+                    mode:   'main',
+                    params: { cls: cls }
+                }         
             });
 
         });
@@ -123,7 +128,7 @@
 
 
         <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key=''>
-            <td class='field-put clone-data-source' field-key='' >
+            <td class='field-put clone-data-source control-on-click-edit' field-key='' >
         </tr>
     </table>
 </div>

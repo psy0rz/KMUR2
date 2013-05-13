@@ -82,7 +82,7 @@ class Base(object):
                 raise FieldException("required should be a bool")
             self.meta['required'] = required
 
-    def check(self, data):
+    def check(self, context, data):
         '''does basic checking.
 
         returns false if there shouldn't be any more checks done by subclasses.
@@ -104,7 +104,7 @@ class Nothing(Base):
     def __init__(self, **kwargs):
         super(Nothing, self).__init__(**kwargs)
 
-    def check(self, data):
+    def check(self, context, data):
         raise FieldException("This field cant be set")
 
 
@@ -138,9 +138,9 @@ class Dict(Base):
 
         self.meta['meta'] = meta
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Dict, self).check(data):
+        if not super(Dict, self).check(context, data):
             return
 
         if not isinstance(data, dict):
@@ -153,7 +153,7 @@ class Dict(Base):
 
             try:
                 #recurse into sub data
-                self.meta['meta'][key].check(value)
+                self.meta['meta'][key].check(context, value)
             except FieldException as e:
                 #record the key that throwed the exception:
                 e.fields.insert(0, key)
@@ -192,9 +192,9 @@ class List(Base):
 
         self.meta['meta'] = meta
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(List, self).check(data):
+        if not super(List, self).check(context, data):
             return
 
         if not isinstance(data, list):
@@ -203,7 +203,7 @@ class List(Base):
         for index, value in enumerate(data):
             try:
                 #recurse into sub data
-                self.meta['meta'].check(value)
+                self.meta['meta'].check(context, value)
             except FieldException as e:
                 #record the key that throwed the exception:
                 if ('list_key' in self.meta) and (self.meta['list_key'] in value):
@@ -248,9 +248,9 @@ class String(Base):
                 raise FieldException("Max cant be smaller than 0")
             self.meta['max'] = max
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(String, self).check(data):
+        if not super(String, self).check(context, data):
             return
 
         if not isinstance(data, str):
@@ -290,8 +290,8 @@ class Number(Base):
         if (max != None):
             self.meta['max'] = max
 
-    def check(self, data):
-        if not super(Number, self).check(data):
+    def check(self, context, data):
+        if not super(Number, self).check(context, data):
             return
 
         if not isinstance(data, (float, int)):
@@ -313,9 +313,9 @@ class Timestamp(Base):
     def __init__(self, **kwargs):
         super(Timestamp, self).__init__(**kwargs)
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Timestamp, self).check(data):
+        if not super(Timestamp, self).check(context, data):
             return
 
         if not isinstance(data, (int)) and not isinstance(data, (float)):
@@ -333,9 +333,9 @@ class Bool(Base):
         self.meta['true_desc']=true_desc
         self.meta['false_desc']=false_desc
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Bool, self).check(data):
+        if not super(Bool, self).check(context, data):
             return
 
         if not isinstance(data, (bool)):
@@ -354,9 +354,9 @@ class Select(Base):
 
         self.meta['choices'] = choices
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Select, self).check(data):
+        if not super(Select, self).check(context, data):
             return
 
         if not data in self.meta['choices']:
@@ -375,9 +375,9 @@ class MultiSelect(Base):
 
         self.meta['choices'] = choices
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(MultiSelect, self).check(data):
+        if not super(MultiSelect, self).check(context, data):
             return
 
         if not isinstance(data, list):
@@ -400,9 +400,9 @@ class Anything(Base):
 
         super(Anything, self).__init__(**kwargs)
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Anything, self).check(data):
+        if not super(Anything, self).check(context, data):
             return
 
 
@@ -417,9 +417,9 @@ class Email(String):
 
         self.meta['type']='String';
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(Email, self).check(data):
+        if not super(Email, self).check(context, data):
             return
 
         #NOTE: correct checking is hard, see http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
@@ -439,7 +439,7 @@ class Phone(String):
 
     def check(self, data):
 
-        if not super(Phone, self).check(data):
+        if not super(Phone, self).check(context, data):
             return
 
         #For now we do a very crude check

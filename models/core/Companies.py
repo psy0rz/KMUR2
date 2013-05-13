@@ -47,6 +47,4 @@ class Companies(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def get_all(self, **params):
-        #NOTE: dont forget to explicitly set collection to None!
-        #otherwise the user can look in every collection!
-        return(self._get_all(collection=None, **params))
+        return(self._get_all(**params))

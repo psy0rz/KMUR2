@@ -16,9 +16,9 @@ class FieldId(fields.Base):
 
         super(FieldId, self).__init__(**kwargs)
 
-    def check(self, data):
+    def check(self, context, data):
 
-        if not super(FieldId, self).check(data):
+        if not super(FieldId, self).check(context, data):
             return
 
         if not isinstance(data, (str, bson.objectid.ObjectId)):
@@ -26,6 +26,49 @@ class FieldId(fields.Base):
 
         if str(bson.objectid.ObjectId(data)) != data:
             raise fields.FieldException("invalid id")
+
+
+class FieldRelation(fields.Base):
+    '''A relation field that contains one or more id's that point objects in another model
+
+    All ids will be checked to see if they exist in the other model
+    '''
+
+
+    def __init__(self, model, **kwargs):
+        """model: the forgein model that is related to. this will be used for checking if the id's exist"""
+
+
+        if not issubclass(model, MongoDB):
+            raise fields.FieldException("model should be a subclass of MongoDB")
+
+        self.model=model
+
+        super(FieldRelation, self).__init__(**kwargs)
+
+
+    def check(self, context, data):
+
+        if not super(FieldId, self).check(context, data):
+            return
+
+        if not isinstance(data, list):
+            raise fields.FieldException("this field should be a list of ids")
+
+        for id in data:
+            if str(bson.objectid.ObjectId(id)) != id:
+                raise fields.FieldException("the list contains an invalid id")
+
+        #query the other model to see if all the id's are valid
+        foreign_object=self.model(context)
+        result=foreign_object._get_all(fields='_id', spec={
+                '_id': {
+                        '$in': data
+                    }
+                })
+
+        if len(result)!=len(data):
+            raise fields.FieldException("a item in the list doesnt exist")
 
 
 class MongoDB(models.common.Base):
@@ -38,13 +81,10 @@ class MongoDB(models.common.Base):
     self.db is also stored in the context so that multiple models can use the same database instance,
     instead of using seperate connections to the database.
     
-    Use default_collection to specify a collection, otherwise self.__class__.__module__ is used.
 
-    Usually its advised that a model operates only on its own collection(s). Expand the api of other models if you need
-    data from their collection. (to prevent bypassing acls by accident)
     """
 
-    def __init__(self, context=None, default_collection=None):
+    def __init__(self, context=None):
         super(MongoDB, self).__init__(context=context)
 
         if not hasattr(context, 'mongodb_connection'):
@@ -52,15 +92,10 @@ class MongoDB(models.common.Base):
 
         self.db = context.mongodb_connection[context.db_name]
 
-        if not default_collection:
-            self.default_collection = self.__class__.__module__
-        else:
-            self.default_collection = default_collection
+        self.default_collection = self.__class__.__module__
 
-    def _put(self, doc, collection=None, meta=None, replace=False):
+    def _put(self, doc, meta=None, replace=False):
         """Checks document with field and replaces, updates or inserts it into collection
-
-        If collection is not set, the self.default_collection will be used.
 
         If meta is set, the check function of that object will be used.
         Otherwise self.get_meta(doc) will be called to get the default meta.
@@ -76,13 +111,12 @@ class MongoDB(models.common.Base):
 
         """
 
-        if not collection:
-            collection = self.default_collection
+        collection = self.default_collection
 
         if meta:
-            meta.meta['meta'].check(doc)
+            meta.meta['meta'].check(self.context, doc)
         else:
-            self.get_meta(doc).meta['meta'].check(doc)
+            self.get_meta(doc).meta['meta'].check(self.context, doc)
 
         #add new
         if not '_id' in doc:
@@ -107,9 +141,9 @@ class MongoDB(models.common.Base):
 
         return(doc)
 
-    def _get(self, _id=None, match={}, filter={}, collection=None):
+
+    def _get(self, _id=None, match={}, filter={}):
         '''get a document from the collection.
-        collection: name of the collection to perform the search on. If not set, the self.default_collection is used.
         _id: The id-string of the object to get (if this is specified , filter and match are ignored)
         filter: a dict containing keys and regular expression strings.
         match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
@@ -117,8 +151,7 @@ class MongoDB(models.common.Base):
         throws exeception if not found
         '''
 
-        if not collection:
-            collection = self.default_collection
+        collection = self.default_collection
 
         regex_filters = {}
 
@@ -143,10 +176,9 @@ class MongoDB(models.common.Base):
         return doc
 
 
-    def _get_all(self, collection=None, spec=None, fields=None, skip=0, limit=0, sort={}):
+    def _get_all(self, spec=None, fields=None, skip=0, limit=0, sort={}):
         '''gets one or more users according to search options
 
-        collection: name of the collection to perform the search on.  If collection is not set, the self.default_collection will be used.
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
         spec: specify which documents to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
         skip: number of items to skip
@@ -156,8 +188,7 @@ class MongoDB(models.common.Base):
 
         '''
 
-        if not collection:
-            collection = self.default_collection
+        collection = self.default_collection
 
         #NOTE: we choose to expose the pymongo api here for spec and fields. 
         #is it safe? 
@@ -174,22 +205,21 @@ class MongoDB(models.common.Base):
                             sort=list(sort.items())))
 
 
-    def _delete(self, _id, collection=None):
+    def _delete(self, _id):
         '''deletes _id from collection
-
-        If collection is not set, the self.default_collection will be used.
 
         throws exeception if not found
 
         returns a document with only _id set to the deleted id
         '''
 
-        if not collection:
-            collection = self.default_collection
+        collection = self.default_collection
 
         result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
         if result['n'] == 0:
             raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
         return({ '_id': _id })
+
+
 

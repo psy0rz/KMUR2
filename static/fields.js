@@ -301,7 +301,8 @@ Field.Dict.meta_put=function(key, meta, context)
              //traverse the field-meta-put elements for this key:
             $(selector, context).each(function()
             {
-                Field[thismeta.type].meta_put(key_str, thismeta, $(this));
+                if (thismeta.type in Field)
+                    Field[thismeta.type].meta_put(key_str, thismeta, $(this));
             });
         }
     }); //meta data
