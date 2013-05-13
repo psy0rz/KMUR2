@@ -3,6 +3,49 @@
 
 //$('#_id', view.context).val(view.params._id)
 
+
+$(".control-on-click-save", view.context).click(function()
+{
+    $(".viewErrorText", view.context).text("saving...");
+    rpc(
+        view.params.cls+".put", 
+        JSON.parse($("#data", view.context).val()), 
+        function(result)
+        {
+            var txt="OK";
+            if (result.error)
+            {
+                txt=result.error.message;
+                if (result.error.fields)
+                    txt=txt+" ("+result.error.fields.join(".")+")";
+
+            }
+
+            $(".viewErrorText", view.context).text(txt);
+        }
+        );
+
+});
+
+$(".control-on-click-del", view.context).click(function()
+{
+    $(".viewErrorText", view.context).text("deleting...");
+    rpc(
+        view.params.cls+".delete", 
+        { _id: view.params._id }, 
+        function(result)
+        {
+            var txt="deleted";
+            if (result.error)
+                $(".viewErrorText", view.context).text(result.error.message);
+            else
+                $(".viewErrorText", view.context).text("deleted");
+        }
+        );
+
+});
+
+
 rpc(view.params.cls+".get", { '_id': view.params._id }, function(result)
 {
     viewReady({ 
@@ -10,8 +53,8 @@ rpc(view.params.cls+".get", { '_id': view.params._id }, function(result)
         'title': ControlBase.prototype.format("Class {cls}, object _id {_id} ", view.params)
     });
 
-    //viewShowError(data.result, view.context);
-
+    if (result.error)
+        $(".viewErrorText", view.context).text(result.error.message);
 
     $("#data", view.context).val(JSON.stringify(result.data, null, ' '));
 
@@ -22,11 +65,9 @@ rpc(view.params.cls+".get", { '_id': view.params._id }, function(result)
 
 </script>
 
-
-
-data:
-<textarea id='data' cols='100' rows='20'>
+<textarea id='data' cols='100' rows='100'>
 </textarea>
+
 
 <div class='floatingBar viewErrorClass'>
     <button class='control-on-click-save' >Save</button>

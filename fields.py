@@ -437,7 +437,7 @@ class Phone(String):
 
         self.meta['type']='String';
 
-    def check(self, data):
+    def check(self, context, data):
 
         if not super(Phone, self).check(context, data):
             return
