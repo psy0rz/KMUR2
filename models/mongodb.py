@@ -9,6 +9,20 @@ class NotFound(Exception):
     pass
 
 
+
+
+#add function to bson objectid class, so that the json converter can convert them to a string
+def _to_builtin(self):
+    return str(self)
+bson.objectid.ObjectId._to_builtin=_to_builtin
+
+
+#add function to pymongo cursor, so that the json converter can convert them to a string
+def _to_builtin(self):
+    return list(self)
+pymongo.cursor.Cursor._to_builtin=_to_builtin
+
+
 class FieldId(fields.Base):
     '''A mongodb ObjectId field. May be respresented in string form or as real ObjectId'''
 
@@ -26,6 +40,10 @@ class FieldId(fields.Base):
 
         if str(bson.objectid.ObjectId(data)) != data:
             raise fields.FieldException("invalid id")
+
+    def convert(self, context, data):
+        """converts input data to an actual internal bson objectid"""
+        return(bson.objectid.ObjectId(data))
 
 
 class FieldRelation(fields.Base):
@@ -49,26 +67,41 @@ class FieldRelation(fields.Base):
 
     def check(self, context, data):
 
-        if not super(FieldId, self).check(context, data):
+        if not super(FieldRelation, self).check(context, data):
             return
 
         if not isinstance(data, list):
             raise fields.FieldException("this field should be a list of ids")
 
+        #check mongo ID's validity
+        mongo_ids=[]
         for id in data:
-            if str(bson.objectid.ObjectId(id)) != id:
+            mongo_id=bson.objectid.ObjectId(id)
+            if str(mongo_id) != id:
                 raise fields.FieldException("the list contains an invalid id")
 
-        #query the other model to see if all the id's are valid
+            mongo_ids.append(mongo_id)
+
+        #query the other model to see if all the id's are existing
         foreign_object=self.model(context)
         result=foreign_object._get_all(fields='_id', spec={
                 '_id': {
-                        '$in': data
+                        '$in': mongo_ids
                     }
                 })
 
-        if len(result)!=len(data):
+        if result.count()!=len(data):
             raise fields.FieldException("a item in the list doesnt exist")
+
+
+    def convert(self, context, data):
+        """convert a list of object ids from input data to actual bson objectids"""
+        mongo_ids=[]
+        for id in data:
+            mongo_id=bson.objectid.ObjectId(id)
+            mongo_ids.append(mongo_id)
+
+        return(mongo_ids)
 
 
 class MongoDB(models.common.Base):
@@ -113,10 +146,14 @@ class MongoDB(models.common.Base):
 
         collection = self.default_collection
 
+        #check and convert data
         if meta:
             meta.meta['meta'].check(self.context, doc)
+            doc=meta.meta['meta'].convert(self.context, doc)
         else:
             self.get_meta(doc).meta['meta'].check(self.context, doc)
+            doc=self.get_meta(doc).meta['meta'].convert(self.context, doc)
+            
 
         #add new
         if not '_id' in doc:
@@ -125,7 +162,7 @@ class MongoDB(models.common.Base):
         #use existing document
         else:
             #remove _id from document and store it in _id
-            _id = bson.objectid.ObjectId(doc.pop('_id'))
+            _id = doc.pop('_id')
 
             if replace:
                 result = self.db[collection].update({'_id': _id}, doc, multi=False, safe=True)

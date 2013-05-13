@@ -23,26 +23,20 @@ class FieldException(Exception):
             self.fields = []
 
 
-class JSONEncoder(json.JSONEncoder):
-    """JSON encoder that can also encode stuff thats inherited from field.Base
 
-    Currently this stuff also can encode other things, like mongodb IDs and iterators
+
+class JSONEncoder(json.JSONEncoder):
+    """JSON encoder extention that can convert all convert an object to built in types.
+
+    Add a _to_builtin function to an existing class that returns a builtin type. this way it can be converted to json.
+    (look at mongodb.py  or fields.py for an example)
+
     """
     def default(self, o):
+        if hasattr(o, "_to_builtin"):
+            return(o._to_builtin())
 
-        #TODO: This mongodb stuff shouldnt be here but in models.mongodb.
-        #Create some kind of hooking meganism that registers to this class or something.
-
-        if isinstance(o, Base):
-            return(o.meta)
-        elif isinstance(o, bson.objectid.ObjectId):
-            return(str(o))
-        elif isinstance(o, pymongo.cursor.Cursor):
-            #the reason we dont require model-functions to do this by themself is
-            #because models can call other models and still use the iterators.
-            return(list(o))
-        else:
-            return json.JSONEncoder.default(self, o)
+        raise(Exception("Cannot encode this object to json. Please add a _to_builtin function to it."))
 
 
 class Base(object):
@@ -82,6 +76,12 @@ class Base(object):
                 raise FieldException("required should be a bool")
             self.meta['required'] = required
 
+
+    #for json encoding:
+    def _to_builtin(self):
+        return(self.meta)
+
+
     def check(self, context, data):
         '''does basic checking.
 
@@ -98,6 +98,15 @@ class Base(object):
 
         return True
 
+    def convert(self, context, data):
+        '''converts user data input to internal data formats
+
+        only used when strings need to be converted to mongodb-ids for example.
+
+        look at JSONEncoder above, how to convert internal data formats back to user data output.
+        '''
+
+        return(data)
 
 class Nothing(Base):
     '''Special type that allows nothing.'''
@@ -165,6 +174,13 @@ class Dict(Base):
             if missing:
                 raise FieldException("Required field {} is missing".format(missing[0]), missing[0])
 
+    def convert(self, context, data):
+        ret={}
+        for key,value in data.items():
+            ret[key]=self.meta['meta'][key].convert(context, value)
+
+        return(ret)
+
 
 class List(Base):
     """Data that contains a list of other field-objects
@@ -214,6 +230,13 @@ class List(Base):
                     e.fields.insert(0, index)
 
                 raise
+
+    def convert(self, context, data):
+        ret=[]
+        for value in data:
+            ret.append(self.meta['meta'].convert(context, value))
+
+        return (ret)
 
 
 # seems to make things more complicated..                
