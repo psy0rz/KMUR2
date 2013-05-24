@@ -42,7 +42,8 @@ class Users(models.mongodb.MongoDB):
                         }),
                     desc="Phone numbers"
                 ),
-                'company_ids': models.mongodb.FieldRelation(
+                'company_ids': models.mongodb.Relation(
+                    desc='Companies this user belongs to'
                     model=models.core.Companies.Companies)
             }),
             list_key='_id'

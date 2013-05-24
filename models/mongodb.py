@@ -46,28 +46,32 @@ class FieldId(fields.Base):
         return(bson.objectid.ObjectId(data))
 
 
-class FieldRelation(fields.Base):
+class Relation(fields.Base):
     '''A relation field that contains one or more id's that point objects in another model
 
     All ids will be checked to see if they exist in the other model
+
+    NOTE: In the future there can be other database relation-implementations with the same name in a different module. The gui shouldnt note a difference theoretically. 
     '''
 
 
-    def __init__(self, model, **kwargs):
-        """model: the forgein model that is related to. this will be used for checking if the id's exist"""
+    def __init__(self, module, class, get_meta, get_all, **kwargs):
+        """module, class, get_meta, get_all: strings that name the respective model and the functions to get metadata and get all valid id's
 
+        Any GUIs also use this information to present the user with lists to choose the id's from.
+        """
 
-        if not issubclass(model, MongoDB):
-            raise fields.FieldException("model should be a subclass of MongoDB")
+        self.meta['module']=module
+        self.meta['class']=class
+        self.meta['get_meta']=get_meta
+        self.meta['get_all']=get_all
 
-        self.model=model
-
-        super(FieldRelation, self).__init__(**kwargs)
+        super(Relation, self).__init__(**kwargs)
 
 
     def check(self, context, data):
 
-        if not super(FieldRelation, self).check(context, data):
+        if not super(Relation, self).check(context, data):
             return
 
         if not isinstance(data, list):
@@ -91,7 +95,7 @@ class FieldRelation(fields.Base):
                 })
 
         if result.count()!=len(data):
-            raise fields.FieldException("a item in the list doesnt exist")
+            raise fields.FieldException("an item in the list doesnt exist")
 
 
     def convert(self, context, data):
