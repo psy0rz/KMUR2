@@ -1193,47 +1193,34 @@ Field.Relation.meta_put=function(key, meta, context)
         return;
 
 
-    //get the 
-
-
-}
-
-
-Field.Timestamp.get=function(key, meta, context)
-{
-    if (context.attr("field-allow-null")=="" && context.val()=="")
-        return(null);
-
-    //var dateStr=$(element).val().split()
-    //var date=new Date($(element).datepicker("getDate"));
-    //return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);
-    //return(Date.parse()/1000);
-    return(Date.parse(
-            $.datepicker.parseDateTime(Field.Timestamp.defaultDateFormat, Field.Timestamp.defaultTimeFormat, context.val())
-        )/1000);
-}
-
-Field.Timestamp.put=function(key, meta, context, data, options)
-{
-    var dateStr="";
-
-    if (data!='')
-    {
-        var date=new Date(data*1000);
-        dateStr=$.datepicker.formatDate( Field.Timestamp.defaultDateFormat, date );
-
-        if (context.attr("field-timestamp-allow-time")!=null)
+    //get the metadata from the foreign model
+    rpc(meta['module']+'.'+meta['class']+'.'+meta['get_all'],
+        {}.
+        function(result)
         {
-            dateStr+=" "+$.datepicker.formatTime( Field.Timestamp.defaultTimeFormat, 
-                    {
-                        hour:   date.getHours(),
-                        minute: date.getMinutes(),
-                        second: date.getSeconds()
-                    });
-        }
-    }
+            console.log("chuchhh");
+        },
+        "getting metadata for related model");
 
-    if (context.hasClass("field-input"))
+
+    //...also make a event handler in controls.js that creates a jquery autocomplete widget that calls get_all, and use this to add new items to the list?
+
+    //or should all the rpc stuff be in controls.js somehow? 
+    //we could even make a special relation-control that looks at the field-key of stuff that has the css control-relation-class 
+}
+
+
+Field.Relation.get=function(key, meta, context)
+{
+    //...call field.list.get and transform..?
+
+
+}
+
+Field.Relation.put=function(key, meta, context, data, options)
+{
+    //...call get_all on forgein model with corrent ids and then fill list?
+/*    if (context.hasClass("field-input"))
     {
         context.val(dateStr);
     }
@@ -1241,6 +1228,7 @@ Field.Timestamp.put=function(key, meta, context, data, options)
     {
         Field.Base.html_append(key, meta, context, data, options, dateStr);
     }
+    */
 }
 
 

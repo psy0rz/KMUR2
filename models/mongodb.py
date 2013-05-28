@@ -55,7 +55,7 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, module, class, get_meta, get_all, **kwargs):
+    def __init__(self, module, class, get_meta="get_meta", get_all="get_all", **kwargs):
         """module, class, get_meta, get_all: strings that name the respective model and the functions to get metadata and get all valid id's
 
         Any GUIs also use this information to present the user with lists to choose the id's from.
@@ -86,13 +86,14 @@ class Relation(fields.Base):
 
             mongo_ids.append(mongo_id)
 
-        #query the other model to see if all the id's are existing
-        foreign_object=self.model(context)
-        result=foreign_object._get_all(fields='_id', spec={
+
+        #call foreign model to check if all id's exist
+        result=call_rpc(self.context, self.meta['module'], self.meta['class'], self.meta['get_all'], 
+                fields='_id', spec={
                 '_id': {
                         '$in': mongo_ids
                     }
-                })
+                });
 
         if result.count()!=len(data):
             raise fields.FieldException("an item in the list doesnt exist")

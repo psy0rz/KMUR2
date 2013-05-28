@@ -1,6 +1,21 @@
 """Base classes and decorators for all models"""
 
 
+def call_rpc(context, module, cls, method, **kwargs, *args):
+    """resolve and call rpc models from strings, almost like rpc.py would do 
+
+    (mostly used internally)
+    """
+
+    rpc_models = __import__('models.' + module + '.' + cls)
+    rpc_module = getattr(rpc_models, module)
+    rpc_package = getattr(rpc_module, cls)
+    rpc_class = getattr(rpc_package, cls)
+    rpc_class_instance = rpc_class(context)
+    rpc_method = getattr(rpc_class_instance, method)
+    return(rpc_method(**kwargs, *args))
+
+
 class Acl(object):
     """access control decorator.
 
