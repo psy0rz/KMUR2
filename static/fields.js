@@ -1207,6 +1207,35 @@ Field.Relation.meta_put=function(key, meta, context)
 
     //or should all the rpc stuff be in controls.js somehow? 
     //we could even make a special relation-control that looks at the field-key of stuff that has the css control-relation-class 
+
+
+/*
+ 1. do all the rpc stuff here
+    -also the autocomplete jquery widget? we could reattach eventhandlers in meta_put
+    -straigh forward, but seems hackish
+      -a field.put will result in another rpc call to get the foreign data
+
+ 2. do all the rpc stuff in form-control
+    -Field.Relation can basically ignore put and meta_put 
+    -seems less hackish somehow ?
+    -ield.js only should handle local data and does do rpc calls itself?
+
+ 3. create a seperate control-class for relations
+    -seems a cleaner solution
+    -where/how to create and update the control-class?
+      -in the control? 
+        -need to implement it for both controllist and controlform that way
+        -how to handle all relation objects?
+          -traverse all meta data?
+          -create a seperate css control-relation class?
+      -in field.relation?
+        -create in meta_put
+        -on field.put, call control.get_result  (control.get doesnt actually exist in that case)
+        -on field.get, call control....? 
+          so this is also kind of hackish since its no real subcontrol
+          option 1. seems less hackish now :)
+
+*/
 }
 
 
