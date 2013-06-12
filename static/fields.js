@@ -1195,7 +1195,7 @@ Field.Relation.meta_put=function(key, meta, context)
 
     //get the metadata from the foreign model
     rpc(meta['module']+'.'+meta['class']+'.'+meta['get_all'],
-        {}.
+        {},
         function(result)
         {
             console.log("chuchhh");

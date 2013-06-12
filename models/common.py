@@ -1,7 +1,7 @@
 """Base classes and decorators for all models"""
 
 
-def call_rpc(context, module, cls, method, **kwargs, *args):
+def call_rpc(context, module, cls, method, *args, **kwargs):
     """resolve and call rpc models from strings, almost like rpc.py would do 
 
     (mostly used internally)
@@ -13,7 +13,7 @@ def call_rpc(context, module, cls, method, **kwargs, *args):
     rpc_class = getattr(rpc_package, cls)
     rpc_class_instance = rpc_class(context)
     rpc_method = getattr(rpc_class_instance, method)
-    return(rpc_method(**kwargs, *args))
+    return(rpc_method(*args,**kwargs))
 
 
 class Acl(object):

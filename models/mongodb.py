@@ -55,18 +55,21 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, module, class, get_meta="get_meta", get_all="get_all", **kwargs):
+    def __init__(self, module, cls, get_meta="get_meta", get_all="get_all", **kwargs):
         """module, class, get_meta, get_all: strings that name the respective model and the functions to get metadata and get all valid id's
 
         Any GUIs also use this information to present the user with lists to choose the id's from.
+
+        get_meta is probably only used by GUIs to render the data 
         """
 
+        super(Relation, self).__init__(**kwargs)
+
         self.meta['module']=module
-        self.meta['class']=class
+        self.meta['class']=cls
         self.meta['get_meta']=get_meta
         self.meta['get_all']=get_all
 
-        super(Relation, self).__init__(**kwargs)
 
 
     def check(self, context, data):
