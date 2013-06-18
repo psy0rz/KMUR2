@@ -361,7 +361,7 @@ Field.Dict.get=function(key, meta, context)
         {
             var selector='.field-get[field-key="'+key_str+'"]';
 
-            //traverse the field-meta-put elements for this key:
+            //traverse the field-get elements for this key:
             $(selector, context).each(function()
             {
                 ret[sub_key]=Field[thismeta.type].get(key_str, thismeta, $(this));
@@ -1192,15 +1192,8 @@ Field.Relation.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-
-    //get the metadata from the foreign model
-    rpc(meta['module']+'.'+meta['class']+'.'+meta['get_all'],
-        {},
-        function(result)
-        {
-            console.log("chuchhh");
-        },
-        "getting metadata for related model");
+    //recurse into related meta
+    Field[meta.meta.type].meta_put(key, meta.meta, context);
 
 
     //...also make a event handler in controls.js that creates a jquery autocomplete widget that calls get_all, and use this to add new items to the list?
@@ -1241,23 +1234,20 @@ Field.Relation.meta_put=function(key, meta, context)
 
 Field.Relation.get=function(key, meta, context)
 {
-    //...call field.list.get and transform..?
-
-
+    //recurse into related model
+    if (meta.resolve==true)
+        return(Field[meta.meta.type].get(key, meta.meta, context));
+    else
+        return(null)
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
-    //...call get_all on forgein model with corrent ids and then fill list?
-/*    if (context.hasClass("field-input"))
-    {
-        context.val(dateStr);
-    }
-    else
-    {
-        Field.Base.html_append(key, meta, context, data, options, dateStr);
-    }
-    */
+
+    //recurse into related model
+    if (meta.resolve==true)
+        Field[meta.meta.type].put(key, meta.meta, context, data, options);
+
 }
 
 

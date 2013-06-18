@@ -44,8 +44,7 @@ class Users(models.mongodb.MongoDB):
                 ),
                 'company_ids': models.mongodb.Relation(
                     desc='Companies this user belongs to',
-                    module="core",
-                    cls="Companies")
+                    model=models.core.Companies.Companies)
             }),
             list_key='_id'
         )

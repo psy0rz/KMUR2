@@ -85,6 +85,8 @@ class Base(object):
     def check(self, context, data):
         '''does basic checking.
 
+        note that check is called before converting data to the internal format.
+
         returns false if there shouldn't be any more checks done by subclasses.
         (usually in case required is set to  False and the data is set to None)'''
 
@@ -98,15 +100,30 @@ class Base(object):
 
         return True
 
-    def convert(self, context, data):
+    def to_internal(self, context, data):
         '''converts user data input to internal data formats
 
-        only used when strings need to be converted to mongodb-ids for example.
+        used when strings need to be converted to mongodb-ids for example, or when related data needs to converted back.
+
+        this is always called before putting data into the database.
 
         look at JSONEncoder above, how to convert internal data formats back to user data output.
         '''
 
         return(data)
+
+    def to_external(self, context, data):
+        '''used for data that needs special conversions to user data output.
+
+        mostly usefull for things like relations. 
+
+        to_external is NOT always called for efficiency reasons. for example: we wouldnt use it to resolve all related data when doing a get_all on a mongodb object.
+
+        so for stuff that just needs to be json-encodable you should look at the JSONEncoder above.'''
+
+        return(data)
+
+
 
 class Nothing(Base):
     '''Special type that allows nothing.'''
@@ -174,10 +191,17 @@ class Dict(Base):
             if missing:
                 raise FieldException("Required field {} is missing".format(missing[0]), missing[0])
 
-    def convert(self, context, data):
+    def to_internal(self, context, data):
         ret={}
         for key,value in data.items():
-            ret[key]=self.meta['meta'][key].convert(context, value)
+            ret[key]=self.meta['meta'][key].to_internal(context, value)
+
+        return(ret)
+
+    def to_external(self, context, data):
+        ret={}
+        for key,value in data.items():
+            ret[key]=self.meta['meta'][key].to_external(context, value)
 
         return(ret)
 
@@ -231,10 +255,17 @@ class List(Base):
 
                 raise
 
-    def convert(self, context, data):
+    def to_internal(self, context, data):
         ret=[]
         for value in data:
-            ret.append(self.meta['meta'].convert(context, value))
+            ret.append(self.meta['meta'].to_internal(context, value))
+
+        return (ret)
+
+    def to_external(self, context, data):
+        ret=[]
+        for value in data:
+            ret.append(self.meta['meta'].to_external(context, value))
 
         return (ret)
 
