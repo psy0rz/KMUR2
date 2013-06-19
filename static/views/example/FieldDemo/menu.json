@@ -11,7 +11,7 @@
             },
 		"items":[
             {
-                "title":"New item",
+                "title":"New fielddemo item",
                 "view":
                     { 
                         "name":"example.FieldDemo.edit",
@@ -20,13 +20,13 @@
                     }
             },
             {
-                "title":"Item list (slow)",
+                "title":"List fielddemo (slow)",
                 "view":
                     { 
                         "name":"example.FieldDemo.list",
                         "mode":"main",
                         "params": {
-                            "sleep": 2,
+                            "sleep": 1,
                             "limit": 10
                         }
                     }

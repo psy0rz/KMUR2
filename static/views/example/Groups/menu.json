@@ -1,0 +1,16 @@
+{
+	"example":{
+		"title":"Examples",
+		"items":[
+            {
+                "title":"Group demo list",
+                "view":
+                    { 
+                        "name":"example.Groups.list",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}

@@ -1,0 +1,46 @@
+
+<script>
+
+var form=new ControlForm({
+    'view'            : view,
+    'class'           : 'example.Members',
+    'default_focus'   : ['name'],
+    'title'           : 'Edit member {name}',
+    'title_new'       : 'New member',
+    'favorite_menu'   : 'example'
+});
+
+
+
+</script>
+
+<fieldset style='display:inline-block;'>
+    <table>
+    	<tr>
+    		<td class='field-meta-put' field-key='name' field-meta-key='desc'>
+    		<td class='field-meta-put' field-key='name'>
+    	</tr>
+    </table>
+</fieldset>
+
+<fieldset style='display:inline-block;'>
+    <label>Groups this user belongs to</label>
+    <table class='field-meta-put' field-key='group_ids'>
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='group_ids.name' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source ui-widget-content' field-key=''>
+            <td class='control-on-click-edit field-put' field-key='group_ids.name' >
+            <td class='control-on-click-del ui-icon ui-icon-trash'>
+        </tr>
+    </table>
+</fieldset>
+
+<div class='floatingBar viewErrorClass'>
+	<button class='control-on-click-save' >Save</button>
+	<button class='control-on-click-del control-hide-on-new' >Delete</button>
+	<button class='control-on-click-cancel' >Cancel</button>
+	<span class='viewErrorText'></span>
+</div>
