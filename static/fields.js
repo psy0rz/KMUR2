@@ -1195,6 +1195,55 @@ Field.Relation.meta_put=function(key, meta, context)
     //recurse into related meta
     Field[meta.meta.type].meta_put(key, meta.meta, context);
 
+    $(".field-relation-search", context).autocomplete({
+        //focus of selected suggestion has been changed
+        focus: function( event, ui ) {
+            return(false);
+        },
+        //suggestion has been selected, add it to the list
+        select: function (event, ui) {
+            $(this).val("");
+
+//            if (meta.resolve==true)
+            console.log("in ", $(".field-list-source", context));
+            Field[meta.meta.type].put(key, meta.meta, $(".field-list-source", context), [ ui.item.value ], {
+                list_no_remove: true,
+                show_changes: true
+
+            });
+///todo: meer field-specific eventhandlers hier heen verplaatsen??
+            return(false);
+        },
+        //data source
+        source: function(request, response)
+        {
+            //perform case insensitive regex search
+            params={
+                spec: {}
+            }
+            params.spec['name']={
+                '$regex': request.term,
+                '$options': "i"
+            }
+
+            rpc(meta.model+".get_all",
+                params,
+                function (result)
+                {
+                    viewShowError(result,context,meta);
+                    choices=[]
+                    for (i in result.data)
+                    {
+                        choices[i]={
+                            label: result.data[i]['name'],
+                            value: result.data[i]
+                        }
+                    }
+                    response(choices);
+                },
+                'relation autocomplete search');
+        }
+    })
 
     //...also make a event handler in controls.js that creates a jquery autocomplete widget that calls get_all, and use this to add new items to the list?
 

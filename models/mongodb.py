@@ -69,6 +69,7 @@ class Relation(fields.Base):
             self.meta['meta']=model.meta
 
         self.meta['resolve']=resolve
+        self.meta['model']=model.__module__.replace("models.","") #TODO: use regex
         self.model=model
 
 
