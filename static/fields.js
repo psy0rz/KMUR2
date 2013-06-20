@@ -1286,7 +1286,7 @@ Field.Relation.get=function(key, meta, context)
     //recurse into related model
     if (meta.resolve==true)
         return(Field[meta.meta.type].get(key, meta.meta, context));
-    else
+    else //TODO: get the data via an rpc call in this case?
         return(null)
 }
 

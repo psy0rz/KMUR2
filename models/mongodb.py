@@ -51,6 +51,9 @@ class Relation(fields.Base):
 
     All ids will be checked to see if they exist in the other model
 
+    Its important that the forgein model has a get_all calls that works in the standard fasion. 
+    (this function will be used internally and by guis to resolve and search for related data)
+
     NOTE: In the future there can be other database relation-implementations with the same name in a different module. The gui shouldnt note a difference theoretically. 
     '''
 
@@ -59,7 +62,10 @@ class Relation(fields.Base):
         """
             model: specifies the related model (as a python object)
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
-            resolve: resolve ids to foreign data and back. (when calling _get and _put)
+            resolve: resolve ids to foreign data and back. (when calling _get and _put) 
+                set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself. 
+                (the stuff in field.js will take care of extra rpc-calls to the foreign model)
+                this is a tradeoff the developer has to make, depending on the application.
 
         """
 
