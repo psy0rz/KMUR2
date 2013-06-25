@@ -575,15 +575,22 @@ Field.List.get=function(key, meta, context)
 {
     console.log("Field.List.get", key, meta, context);
 
-    var value=new Array();
+    var values=new Array();
     var parent=context.parent();
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
         console.log("Field.List.get item", this);
-        value.push(Field[meta.meta.type].get(key, meta.meta, $(this)));
+        var value=Field[meta.meta.type].get(key, meta.meta, $(this));
+        if (meta.list_key)
+        {
+            //TODO: store raw data in elements so that get also works nicely on other fields than field-input
+            value[meta.list_key]=$(this).attr("field-list-id");
+        }
+
+        values.push(value);
     });
-    return(value);    
+    return(values);    
 }
 
 /*** Gets a reference to the list-item-element, by resolving the specified element.
@@ -1208,6 +1215,7 @@ Field.Relation.meta_put=function(key, meta, context)
             console.log("in ", $(".field-list-source", context));
             Field[meta.meta.type].put(key, meta.meta, $(".field-list-source", context), [ ui.item.value ], {
                 list_no_remove: true,
+                list_update: true,
                 show_changes: true
 
             });
@@ -1217,20 +1225,50 @@ Field.Relation.meta_put=function(key, meta, context)
         //data source
         source: function(request, response)
         {
-            //perform case insensitive regex search
-            params={
-                spec: {}
-            }
-            params.spec['name']={
-                '$regex': request.term,
-                '$options': "i"
+
+            //contruct or-based case insensitive regex search, excluding all the already selected id's
+            var params={
+                spec: {
+                    '$or': []
+                }
             }
 
+            //get currently selected ids
+            var current_items=Field[meta.meta.type].get(key, meta.meta, $(".field-list-source", context));
+            console.log("currentitems", current_items);
+
+            //filter those ids out
+            params.spec[meta.meta.list_key]={
+                '$nin':[]
+            };
+
+            $.each(current_items, function(i, item)
+            {
+                console.log("disse is ", item);
+                params.spec[meta.meta.list_key]['$nin'].push(item[meta.meta.list_key]);
+                console.log("dus", params);
+            });
+
+
+            var search_keys=$(".field-relation-search", context).attr("search-keys").split(" ");
+            $.each(search_keys, function(i, key_str)
+            {
+                var search_exp={}
+                search_exp[key_str]={
+                        '$regex': request.term,
+                        '$options': "i"                    
+                } 
+               params.spec['$or'].push(search_exp);
+            });
+
+
+            //call the foreign model to do the actual search
             rpc(meta.model+".get_all",
                 params,
                 function (result)
                 {
                     viewShowError(result,context,meta);
+                    //construct list of search-result-choices for autocomplete
                     choices=[]
                     for (i in result.data)
                     {
