@@ -48,5 +48,6 @@ class Members(models.mongodb.MongoDB):
 
     @Acl(groups="admin")
     def get_all(self, **params):
+        '''get all the members'''
         return(self._get_all(**params))
 

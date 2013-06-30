@@ -245,10 +245,10 @@ class MongoDB(models.common.Base):
         return(doc)
 
 
-    def _get(self, _id=None, match={}, filter={}):
+    def _get(self, _id=None, match={}, regex={}):
         '''get a document from the collection.
         _id: The id-string of the object to get (if this is specified , filter and match are ignored)
-        filter: a dict containing keys and regular expression strings.
+        regex: a dict containing keys and regular expression strings.
         match: a dict containing keys with value that should exactly match (this overrules filters with the same key)
 
         throws exeception if not found
@@ -265,8 +265,8 @@ class MongoDB(models.common.Base):
                 raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
         else:
-            for key in filter:
-                regex_filters[key] = re.compile(filter[key], re.IGNORECASE)
+            for key in regex:
+                regex_filters[key] = re.compile(regex[key], re.IGNORECASE)
 
             for key in match:
                 regex_filters[key] = match[key]
@@ -282,29 +282,102 @@ class MongoDB(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, spec=None, fields=None, skip=0, limit=0, sort={}):
+    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=[], id_nin=[], match={}, regex={}, regex_or={}, gte={}, lte={}):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
-        spec: specify which documents to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
         skip: number of items to skip
         limit: number of maximum items to return
         sort: a dict containing keys and sort directions (-1 descending, +1 ascending)
 
+        Filter options:
+
+        Filters are all anded together. (the result of regex_or is also anded with the rest of the filters)
+
+        id_in: list_key (usually _id) should be in this list
+        id_nin: list_key (usually _id) should be not in this list
+        regex_or: dict with keys and values to case insensitive regex match, OR based
+        regex: dict with keys and values to case insensitive regex match
+        gte:    dict of keys that should be greater than or equal to value
+        lte:    dict of keys that should be less than or equal to value 
+        match: dict with keys and values to exactly match
+
 
         '''
 
-        collection = self.default_collection
+        meta=self.get_meta()
 
-        #NOTE: we choose to expose the pymongo api here for spec and fields. 
-        #is it safe? 
-        #should we wrap our own database agnostic wrapper around it, 
-        #so that somebody can choose to use a differt data base backend? 
-        #perhaps... time will tell, maybe i will refactor this later.
-        #or maybe the stuff thats most used (like $gt, $lt, $regex) is generic enough already to be ported to other
-        #database backends.
+        spec_and=[]
+        spec_or=[]
 
-        return(self.db[collection].find(spec=spec,
+        if regex_or:
+            for (key,value) in regex_or.items():
+                spec_or.append({
+                    key : re.compile(value, re.IGNORECASE)
+                    })
+
+        if gte:
+            for (key,value) in gte.items():
+                spec_and.append({
+                        '$gte': value 
+                        })
+
+        if lte:
+            for (key,value) in lte.items():
+                spec_and.append({
+                        '$lte': value 
+                        })
+
+        if regex:
+            for (key,value) in regex.items():
+                spec_and.append({
+                    key : re.compile(value, re.IGNORECASE)
+                    })
+
+        if match:
+            for (key,value) in match.items():
+                spec_and.append({
+                    key : value
+                    })
+
+        if id_in or id_nin:
+
+            list_key=meta.meta['list_key']
+
+
+            if id_in:
+                ids=[]
+                for id in id_in:
+                    ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
+                spec_and.append({
+                    list_key: {
+                        '$in': ids
+                        }
+                    })
+
+            if id_nin:
+                ids=[]
+                for id in id_nin:
+                    ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
+                spec_and.append({
+                    list_key: {
+                        '$nin': ids
+                        }
+                    })
+
+
+        #combine the ands and ors. 
+        #(note that the or-result is anded together with the other ands by mongodb)
+        spec={}
+
+        if spec_and:
+            spec['$and']=spec_and
+
+        if spec_or:
+            spec['$or']=spec_or
+
+
+        return(self.db[self.default_collection].find(spec=spec,
                             fields=fields,
                             skip=skip,
                             limit=limit,
