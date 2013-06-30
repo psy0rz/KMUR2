@@ -936,9 +936,11 @@ ControlList.prototype.attach_event_handlers=function()
     //The input element should be the only input element in the parent.
     //The parent element can have special attirbutes to hint about the type of filtering we want:
     //When no special attribute is set, return all records that contain the string.
-    //When _filterMatch is set on the parent, the value should match exactly.
-    //When _filterGt is set, filter on values that are greater than or equal to it.
-    //When _filterLt is set, filter on values that are less than or equal to.
+
+    //When filter-match is set on the parent, filter on items that exactly match the value
+    //When filter-gte is set, filter on items that are greater than or equal to the value
+    //When filter-lte is set, filter on items that are less than or equal to the value
+    //When filter-in is set, filter on items that match any of the values (used with multiselect filtering)
     $(".control-on-change-filter", context).on('change keypress paste focus textInput input', ':input', function()
     {
 
@@ -1066,7 +1068,7 @@ ControlList.prototype.attach_event_handlers=function()
 
     });
     
-    //generic $or filter to do quick searches in multiple fields 
+    //generic regex_or filter to do quick searches in multiple fields 
     $(".control-on-change-search", context).on('change keypress paste textInput input', function()
     {
         var search_txt=$(this).val();
@@ -1076,12 +1078,12 @@ ControlList.prototype.attach_event_handlers=function()
 
         this_control.last_search_txt=search_txt;
 
-        if (!this_control.params.get_params.spec)
-            this_control.params.get_params.spec={};
+        if (!this_control.params.get_params.regex_or)
+            this_control.params.get_params.regex_or={};
 
         if (search_txt=="")
         {
-            delete this_control.params.get_params.spec['$or'];
+            delete this_control.params.get_params.regex_or;
             $(this).removeClass("ui-state-highlight");
         }
         else
@@ -1090,16 +1092,9 @@ ControlList.prototype.attach_event_handlers=function()
 
             $(this).addClass("ui-state-highlight");
 
-            this_control.params.get_params.spec['$or']=[];
-
             $.each(search_keys, function(i, key_str)
             {
-                var search_exp={}
-                search_exp[key_str]={
-                        '$regex': search_txt,
-                        '$options': "i"                    
-                }
-                this_control.params.get_params.spec['$or'].push(search_exp);
+                this_control.params.get_params.regex_or[key_str]=search_txt;
 
             });
 
