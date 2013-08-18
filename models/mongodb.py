@@ -93,34 +93,32 @@ class Relation(fields.Base):
         mongo_ids=[]
         if self.meta['resolve']==False:
             #data is just a list of id's in string format:
-            for id in data:
-                mongo_id=bson.objectid.ObjectId(id)
-                if str(mongo_id) != id:
-                    raise fields.FieldException("the list contains an invalid id")
+            # for id in data:
+            #     mongo_id=bson.objectid.ObjectId(id)
+            #     if str(mongo_id) != id:
+            #         raise fields.FieldException("the list contains an invalid id")
 
-                mongo_ids.append(mongo_id)
+            #     mongo_ids.append(mongo_id)
+            mongo_ids=data
 
         else:
             #data is a list of foreign documents
             list_key=self.meta['meta'].meta['list_key']
 
             for doc in data:
-                mongo_id=bson.objectid.ObjectId(doc[list_key])
-                if str(mongo_id) != doc[list_key]:
-                    raise fields.FieldException("the list contains an invalid id")
+                # mongo_id=bson.objectid.ObjectId(doc[list_key])
+                # if str(mongo_id) != doc[list_key]:
+                #     raise fields.FieldException("the list contains an invalid id")
 
-                mongo_ids.append(mongo_id)
+                mongo_ids.append(doc[list_key])
 
 
         #call foreign model to check if all id's exist
         foreign_object=self.model(context)
-        result=foreign_object._get_all(
-                fields='_id', 
-                spec={
-                '_id': {
-                        '$in': mongo_ids
-                    }
-                });
+        result=foreign_object.get_all(
+                fields='_id',
+                id_in=mongo_ids
+                );
 
         #TODO: specify which id in case resolve is true? (altough this error should never happen)
         if result.count()!=len(data):
@@ -160,12 +158,7 @@ class Relation(fields.Base):
             return(data)
 
         foreign_object=self.model(context)
-        result=foreign_object._get_all(
-                spec={
-                '_id': {
-                        '$in': data
-                    }
-                });
+        result=foreign_object.get_all(id_in=data)
 
         return(result)
 
@@ -282,7 +275,7 @@ class MongoDB(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=[], id_nin=[], match={}, regex={}, regex_or={}, gte={}, lte={}):
+    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=None, id_nin=None, match=None, regex=None, regex_or=None, gte=None, lte=None):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
@@ -310,42 +303,42 @@ class MongoDB(models.common.Base):
         spec_and=[]
         spec_or=[]
 
-        if regex_or:
+        if regex_or!=None:
             for (key,value) in regex_or.items():
                 spec_or.append({
                     key : re.compile(value, re.IGNORECASE)
                     })
 
-        if gte:
+        if gte!=None:
             for (key,value) in gte.items():
                 spec_and.append({
                         '$gte': value 
                         })
 
-        if lte:
+        if lte!=None:
             for (key,value) in lte.items():
                 spec_and.append({
                         '$lte': value 
                         })
 
-        if regex:
+        if regex!=None:
             for (key,value) in regex.items():
                 spec_and.append({
                     key : re.compile(value, re.IGNORECASE)
                     })
 
-        if match:
+        if match!=None:
             for (key,value) in match.items():
                 spec_and.append({
                     key : value
                     })
 
-        if id_in or id_nin:
+        if id_in!=None or id_nin!=None:
 
             list_key=meta.meta['list_key']
 
 
-            if id_in:
+            if id_in!=None:
                 ids=[]
                 for id in id_in:
                     ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
@@ -355,7 +348,7 @@ class MongoDB(models.common.Base):
                         }
                     })
 
-            if id_nin:
+            if id_nin!=None:
                 ids=[]
                 for id in id_nin:
                     ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))

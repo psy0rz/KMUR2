@@ -1227,38 +1227,27 @@ Field.Relation.meta_put=function(key, meta, context)
         {
 
             //contruct or-based case insensitive regex search, excluding all the already selected id's
-            var params={
-                spec: {
-                    '$or': []
-                }
-            }
+            var params={}
 
             //get currently selected ids
             var current_items=Field[meta.meta.type].get(key, meta.meta, $(".field-list-source", context));
             console.log("currentitems", current_items);
 
             //filter those ids out
-            params.spec[meta.meta.list_key]={
-                '$nin':[]
-            };
-
+            params['id_nin']=[]
             $.each(current_items, function(i, item)
             {
                 console.log("disse is ", item);
-                params.spec[meta.meta.list_key]['$nin'].push(item[meta.meta.list_key]);
+                params['id_nin'].push(item[meta.meta.list_key]);
                 console.log("dus", params);
             });
 
 
             var search_keys=$(".field-relation-search", context).attr("search-keys").split(" ");
+            params['regex_or']={}
             $.each(search_keys, function(i, key_str)
             {
-                var search_exp={}
-                search_exp[key_str]={
-                        '$regex': request.term,
-                        '$options': "i"                    
-                } 
-               params.spec['$or'].push(search_exp);
+                params['regex_or'][key_str]=request.term;
             });
 
 
