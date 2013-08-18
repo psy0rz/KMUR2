@@ -8,7 +8,7 @@
 {
 }
 
-.control-on-click-edit, .control-on-click-del, .control-on-click-add
+.control-on-click-edit, .control-on-click-del, .control-on-click-add, .field-list-on-click-view
 {
 	cursor:pointer;
 }

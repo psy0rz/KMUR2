@@ -304,50 +304,7 @@ ControlForm.prototype.attach_event_handlers=function()
     var this_control=this;
     var context=this.context;
 
-    //create an add-handler to add items to lists
-    $(".control-on-click-list-add", context).off().click(function(){
-        Field.List.from_element_add(null, this);
-    });
-    
-    //create an add-handler if the source-element of a list is focussed
-    $(".control-on-focus-list-add :input", context).focus(function(){
-        //only add an item if the user focusses a field in the listsource..
-        //console.error(from_element_get(null, $(this)));
-        if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
-        {
-            var added_item=Field.List.from_element_add(null, this);
-
-            //refocus the same input on the new item 
-            $('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
-        }
-    });
-    
-    //create a handler to delete a list item
-    $(".control-on-click-list-del", context).off().click(function()
-    {
-        var clicked_element=Field.List.from_element_get(null, this);
-        if (clicked_element.hasClass("field-list-item"))
-        {
-            $(this).confirm(function()
-            {
-                clicked_element.hide('fast',function()
-                {
-                    clicked_element.remove();
-                });
-            });
-        }
-    });
-    
-    //make lists sortable
-    $(".control-list-sortable", context).off().sortable({
-        //placeholder: "",
-        handle: ".control-on-drag-sort",
-        cancel: ".field-list-source",
-        items:"> .field-list-item",
-        forceHelperSize: true,
-        forcePlaceholderSize: true
-    });
-
+ 
 
     $(".control-on-click-save", context).off().click(function()
     {
@@ -627,8 +584,7 @@ ControlList.prototype.get_meta_result=function(result, request_params)
 
     this.meta=result['data'];
 
-    //call meta_put on the whole view, with the subdict:
-    Field.Dict.meta_put('',this.meta.meta, this.context);
+    Field[this.meta.type].meta_put('',this.meta, this.context);
 
     this.attach_event_handlers();   
     this.get(request_params);
@@ -797,42 +753,6 @@ ControlList.prototype.attach_event_handlers=function()
     });
  
 
-    //open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
-    $(".control-on-click-edit", context).off().click(function(event)
-    {
-        if (this_control.meta.list_key==undefined)
-        {
-            console.error("Cant edit list item, since there is no list_key defined in the metadata",this );
-            return;
-        }
-
-        var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
-
-        var element=$(this);
-        //element.addClass("ui-state-highlight");
-    
-        //create the view to edit the clicked item
-        var editView={};
-        $.extend( editView, this_control.params.edit_view );
-        if (! editView.params)
-            editView.params={};
-
-        //determine focus field:
-        var keys=Field.Base.keys($(this).attr("field-key"));
-        editView.focus=Field.Base.find_data_keys(keys, this_control.meta.meta, $(this));
-
-        editView.params[this_control.meta.list_key]=list_id;
-        editView.x=event.clientX;
-        editView.y=event.clientY;
- 
-        viewCreate(
-            {
-                creator: element
-            },
-            editView);
-
-        return(false);
-    });
 
     //delete the element, after confirmation
     $(".control-on-click-del", context).off().click(function(event)

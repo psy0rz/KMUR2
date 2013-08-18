@@ -453,23 +453,118 @@ Field.List.clone=function(source_element)
 
 Field.List.meta_put=function(key, meta, context)
 {
-    //console.log("list metaput", key, meta, context);
+//    console.log("list metaput", key, meta, context);
     if (Field.Base.meta_put(key, meta, context))
         return;
 
-//DONT:    context.addClass("field-list-source");
-//sometimes we want to meta-put a list-header without making it the list source!
+    var list_source;
+    if (context.hasClass("field-list-source"))
+        list_source=context;
+    else
+        list_source=$(".field-list-source",context);
 
     //only listsources can get these:
-    if (context.hasClass("field-list-source"))
+    if (list_source)
     {
         if (!meta.readonly)
-            context.addClass("field-get");
+            list_source.addClass("field-get");
 
-        context.addClass("field-put field-input");
+        list_source.addClass("field-put field-input");
     }
+
     //recurse into submeta
     Field[meta.meta.type].meta_put(key, meta.meta, context);
+
+    //after the submeta data is done, attach event handlers for listsources
+    if (list_source)
+    {
+        //create an add-handler to add items to lists
+        $(".field-list-on-click-add", list_source).off().click(function(){
+            Field.List.from_element_add(null, this);
+        });
+        
+        //create an add-handler if the source-element of a list is focussed
+        $(".field-list-on-focus-list-add :input", list_source).focus(function(){
+            //only add an item if the user focusses a field in the listsource..
+            //console.error(from_element_get(null, $(this)));
+            if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
+            {
+                var added_item=Field.List.from_element_add(null, this);
+
+                //refocus the same input on the new item 
+                $('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
+            }
+        });
+        
+        //create a handler to delete a list item
+        $(".field-list-on-click-del", list_source).off().click(function()
+        {
+            var clicked_element=Field.List.from_element_get(null, this);
+            if (clicked_element.hasClass("field-list-item"))
+            {
+                $(this).confirm(function()
+                {
+                    clicked_element.hide('fast',function()
+                    {
+                        clicked_element.remove();
+                    });
+                });
+            }
+        });
+        
+        //create handlers to make lists sortable
+        $(".field-list-sortable", list_source).off().sortable({
+            //placeholder: "",
+            handle: ".control-on-drag-sort",
+            cancel: ".field-list-source",
+            items:"> .field-list-item",
+            forceHelperSize: true,
+            forcePlaceholderSize: true
+        });
+
+        //create handler to open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
+        $(".field-list-on-click-view", list_source).off().click(function(event)
+        {
+            if (meta.list_key==undefined)
+            {
+                console.error("Cant view list item, since there is no list_key defined in the metadata",this );
+                return;
+            }
+
+            var list_id=Field.List.from_element_get_id(list_source.attr("field-key"), this);
+
+            var element=$(this);
+            //element.addClass("ui-state-highlight");
+        
+            //create the view to edit the clicked item
+            var editView={};
+            editView.params={};
+
+            //determine focus field:
+            var keys=Field.Base.keys($(this).attr("field-key"));
+            editView.focus=Field.Base.find_data_keys(keys, meta.meta, $(this));
+
+            editView.params[meta.list_key]=list_id;
+            editView.x=event.clientX;
+            editView.y=event.clientY;
+
+            editView.name=list_source.attr("field-list-view");
+            editView.mode=list_source.attr("field-list-view-mode");
+            if (!editView.mode)
+                editView.mode="main";
+     
+            viewCreate(
+                {
+                    creator: element
+                },
+                editView);
+
+            return(false);
+        });
+
+
+    }
+
 };
 
 /*
@@ -1202,7 +1297,21 @@ Field.Relation.meta_put=function(key, meta, context)
     //recurse into related meta
     Field[meta.meta.type].meta_put(key, meta.meta, context);
 
-    $(".field-relation-search", context).autocomplete({
+    $(".field-relation-on-click-add", context).click(function()
+    {
+        $(".field-relation-on-change-search", context).autocomplete("search", $(this).val());
+//        $(".field-relation-on-change-search", context).focus();
+    })
+
+    // $(".field-relation-on-change-search", context).focus(function()
+    // {
+    //     $(".field-relation-on-change-search", context).autocomplete("search", $(this).val());
+    // });
+
+
+    $(".field-relation-on-change-search", context).autocomplete({
+        minLength: 0,
+        autoFocus: true,
         //focus of selected suggestion has been changed
         focus: function( event, ui ) {
             return(false);
@@ -1243,7 +1352,7 @@ Field.Relation.meta_put=function(key, meta, context)
             });
 
 
-            var search_keys=$(".field-relation-search", context).attr("search-keys").split(" ");
+            var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
             params['regex_or']={}
             $.each(search_keys, function(i, key_str)
             {
@@ -1311,10 +1420,11 @@ Field.Relation.meta_put=function(key, meta, context)
 Field.Relation.get=function(key, meta, context)
 {
     //recurse into related model
-    if (meta.resolve==true)
-        return(Field[meta.meta.type].get(key, meta.meta, context));
-    else //TODO: get the data via an rpc call in this case?
-        return(null)
+    data=Field[meta.meta.type].get(key, meta.meta, context);
+    if (meta.resolve)
+        return(data);
+//    else
+        //TODO: convert data to array of id's        
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
@@ -1323,6 +1433,7 @@ Field.Relation.put=function(key, meta, context, data, options)
     //recurse into related model
     if (meta.resolve==true)
         Field[meta.meta.type].put(key, meta.meta, context, data, options);
+    //else //TODO: implement
 
 }
 
