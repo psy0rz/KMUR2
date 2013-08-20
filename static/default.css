@@ -151,8 +151,7 @@ border-color: #bbbbbb;
 
 .debug
 {
-	background:#000000;
-	color:#ffffff;
+	color:gray;
 	margin:2px;
 	font-size:small;
 	padding:2px;

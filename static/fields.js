@@ -222,7 +222,7 @@ Field.Base.resolve_meta=function(meta, keys)
     if (this_key in meta.meta)
     {
         var sub_meta=meta.meta[this_key];
-        var sub_keys=keys.concat().splice(1);
+        var sub_keys=keys.slice(1);
         return(Field[sub_meta.type].resolve_meta(sub_meta, sub_keys));
     }
     else
@@ -377,8 +377,18 @@ Field.Dict.find_element=function(key, meta, context, data_keys)
 //    console.log("Dict.find_element", key, meta, context, data_keys);
 
     var this_key=data_keys[0];
-    var sub_keys=data_keys.splice(1);
+    var sub_keys=data_keys.slice(1);
     var sub_meta=meta.meta[this_key];
+
+    //non existing key
+    if (sub_meta==undefined)
+    {
+        if (sub_keys.length==0)
+            return(context);
+
+        //ignore non-existing keys. this happens due to relations. 
+        return(Field.Dict.find_element(key_str, meta, context, sub_keys ));
+    }
 
     var key_str=Field.Base.concat_keys(key, this_key);
     var selector='.field-put[field-key="'+key_str+'"]';
@@ -772,7 +782,7 @@ Field.List.find_element=function(key, meta, context, data_keys)
 //    console.log("Field.List.find_element", key, meta, context, data_keys);
 
     var list_item_id=data_keys[0];
-    var sub_keys=data_keys.splice(1);
+    var sub_keys=data_keys.slice(1);
     var sub_meta=meta.meta; //(usually a dict)
     var list_context=context.parent();
 

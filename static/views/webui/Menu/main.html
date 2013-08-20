@@ -6,7 +6,7 @@
 	var debugTxt=view.id+" "+view.name+" ";
 
 	//(re)load the menu
-	$(document).on("menu.reload", function(event, params)
+	$(context).on("menu_reload", function(event, params)
 	{
 		rpc(
 			"webui.Menu.get",
@@ -22,38 +22,42 @@
 			},
 			debugTxt+"menu reload data"
 			);
+
+		return(false);
 	});
 
 	/* add/update a 'favorite' to the specified menu. automaticly keeps count of most used items.
      Look in Menu.py for more info.
     */
-    $(document).on("menu.put_favorite", function(event, params)
+    $(context).on("menu_put_favorite", function(event, params)
+    {
+        rpc(
+            "webui.Menu.put_favorite",
+            params,
+            function(result)
             {
-                rpc(
-                    "webui.Menu.put_favorite",
-                    params,
-                    function(result)
-                    {
-                        $(document).trigger("menu.reload", {update: true});
-                    },
-                    debugTxt+"menu adding favorite"
-                );
-            
-            });
+                $.event.trigger("menu_reload", {update: true});
+            },
+            debugTxt+"menu adding favorite"
+        );
+    
+		return(false);
+    });
 
-    $(document).on("menu.delete_favorite", function(event, params)
+    $(context).on("menu_delete_favorite", function(event, params)
+    {   
+        rpc(
+            "webui.Menu.delete_favorite",
+            params,
+            function(result)
             {
-                rpc(
-                    "webui.Menu.delete_favorite",
-                    params,
-                    function(result)
-                    {
-                        $(document).trigger("menu.reload", {update: true});
-                    },
-                    debugTxt+"menu adding favorite"
-                );
-            
-            });
+                $.event.trigger("menu_reload", {update: true});
+            },
+            debugTxt+"menu deleting favorite"
+        );
+    
+		return(false);
+    });
 
 
 	//a menu item was clicked:
@@ -86,7 +90,7 @@
 		function (result)
 		{
 			meta=result.data;
-			$(document).trigger("menu.reload", { update: false });
+			$.event.trigger("menu_reload", { update: false });
 		},
 		debugTxt+"menu getting meta data"
 	);
