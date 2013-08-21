@@ -364,7 +364,7 @@ ControlForm.prototype.attach_event_handlers=function()
 
 
     //some  control changed/added an item in our class, so update the form
-    $(context).on(this.params.class+'_changed', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -386,7 +386,7 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
     //a control deleted something in our class
-    $(context).on(this.params.class+'_deleted', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -463,7 +463,7 @@ ControlForm.prototype.put_result=function(result, request_params)
 
         //broadcast a changed-event to update all the views, except ourselfs
 //      $(".view").not(this.context).trigger(this.params.class+'.changed', result);
-        $.event.trigger(this.params.class+'_changed', result);
+        $.event.trigger(this.params.class.replace(".","_")+'_changed', result);
 
         if (this.params.favorite_menu)
         {
@@ -511,7 +511,7 @@ ControlForm.prototype.delete_result=function(result, request_params)
 
         //broadcast the deleted event to update other views
 //        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
-        $.event.trigger(this.params.class+'_deleted', result);
+        $.event.trigger(this.params.class.replace(".","_")+'_deleted', result);
 
         if (this.params.favorite_menu)
         {
@@ -697,7 +697,7 @@ ControlList.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //some  control changed/added an item in our class, so update the list
-    $(context).on(this.params.class+'_changed', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -739,7 +739,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
-    $(context).on(this.params.class+'_deleted', function(e, result)
+    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e, result)
     {
         if (this!=e.target)
             return false;
@@ -784,7 +784,7 @@ ControlList.prototype.attach_event_handlers=function()
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
 //                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
-                        $.event.trigger(this_control.params.class+'_deleted', result);
+                        $.event.trigger(this_control.params.class.replace(".","_")+'_deleted', result);
 
                         if (this_control.params.favorite_menu)
                         {
