@@ -120,7 +120,7 @@ $(".on-click-filler", "#"+view.id).click(function(){
 	<p>This list is completely dynamic: the user can add, delete and move rows. New rows are added by focussing a field in the 'gray row'. Notice this is all client side: The data will only be send to the server once the user clicks save.</p>
 	<table >
 		<thead >
-			<tr class='field-meta-put' field-key='listTest'>
+			<tr class='field-meta-put ui-widget-header' field-key='listTest'>
 				<td>
 				<td class='field-meta-put' field-key='listTest.stringTest' field-meta-key='desc'>
 				<td class='field-meta-put' field-key='listTest.multiselectTest' field-meta-key='desc'>
@@ -137,16 +137,16 @@ $(".on-click-filler", "#"+view.id).click(function(){
 		<tbody class='control-list-sortable'>
 			<tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key='listTest'  >
 				<td class='control-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.stringTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.multiselectTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.passwordTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.booleanTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.numberIntTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.numberFloatTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.selectTest'>
-				<td class='field-meta-put control-on-focus-list-add' field-key='listTest.timestampTest'>
-				<td class='control-on-click-list-del ui-icon ui-icon-trash'>
-				<td class='control-on-click-list-add ui-icon ui-icon-plus'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.stringTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.multiselectTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.passwordTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.booleanTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.numberIntTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.numberFloatTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.selectTest'>
+				<td class='field-meta-put field-list-on-focus-add' field-key='listTest.timestampTest'>
+				<td class='field-list-on-click-del ui-icon ui-icon-trash'>
+				<td class='field-list-on-click-add ui-icon ui-icon-plus'>
 			</tr>
 		</tbody>
 	</table>

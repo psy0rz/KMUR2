@@ -25,6 +25,9 @@
 	background-repeat:no-repeat;
 	background-position: right center;
 	padding-right: 16px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: transparent;
 	
 	
 }
@@ -33,11 +36,14 @@
 .control-order-asc
 {
 	background-image: url("../icons/orderAsc.png");
+	border-color: black;
 }
 
 .control-order-desc
 {
 	background-image: url("../icons/orderDesc.png");
+	border-color: black;
+	border-style: solid;
 }
 
 .control-sort-placeholder 
@@ -77,7 +83,7 @@
 
 .field-list-source
 {
-	background: #DDD  !important;
+	background: #eeeeee  !important;
 }
 
 .field-list-source-hide

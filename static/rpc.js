@@ -71,8 +71,8 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                         "message":"Error while contacting server: "+request.responseText
                     }
                 };
-                callback(error);
                 rpcEnd();
+                callback(error);
 
             },
         "success":  
@@ -138,8 +138,8 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                     });
                 }
                 
-                callback(result);
                 rpcEnd();
+                callback(result);
 
             },
         "type": "post",

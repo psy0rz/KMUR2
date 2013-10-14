@@ -6,11 +6,6 @@
         'title'           	: 'field demo overview',
         'endless_scrolling'	: true,
         'favorite_menu'     : 'example',
-        'edit_view'       : {
-            name: 	'example.FieldDemo.edit',
-            mode: 	'main',
-            params: { }
-        }
     });
 
 </script>
@@ -70,40 +65,45 @@
     <td>    
 </tr>
 
-<tr class='colorRows field-list-source ui-widget-content' field-key=''>
-	<td class='control-on-click-edit field-put' field-key='stringTest' >
-	<td class='control-on-click-edit field-put' field-key='multiselectTest' >
-	<td class='control-on-click-edit field-put' field-key='passwordTest' >
-	<td class='control-on-click-edit field-put' field-key='booleanTest' >
-	<td class='control-on-click-edit field-put' field-key='numberIntTest' >
-	<td class='control-on-click-edit field-put' field-key='numberFloatTest' >
-	<td class='control-on-click-edit field-put' field-key='selectTest' >
-	<td class='control-on-click-edit field-put' field-key='timestampTest' >
+<tr class='colorRows field-list-source ui-widget-content' field-list-view='example.FieldDemo.edit' field-key=''>
+	<td class='field-list-on-click-view field-put' field-key='stringTest' >
+	<td class='field-list-on-click-view field-put' field-key='multiselectTest' >
+	<td class='field-list-on-click-view field-put' field-key='passwordTest' >
+	<td class='field-list-on-click-view field-put' field-key='booleanTest' >
+	<td class='field-list-on-click-view field-put' field-key='numberIntTest' >
+	<td class='field-list-on-click-view field-put' field-key='numberFloatTest' >
+	<td class='field-list-on-click-view field-put' field-key='selectTest' >
+	<td class='field-list-on-click-view field-put' field-key='timestampTest' >
 	<td>
 		<ul>
-			<li class='control-on-click-edit field-put' field-key='dictTest.stringTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.multiselectTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.passwordTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.booleanTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.numberIntTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.numberFloatTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.selectTest' >
-			<li class='control-on-click-edit field-put' field-key='dictTest.timestampTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.stringTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.multiselectTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.passwordTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.booleanTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.numberIntTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.numberFloatTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.selectTest' >
+			<li class='field-list-on-click-view field-put' field-key='dictTest.timestampTest' >
 		</ul>
 	<td>
 		<table>
 			<tr class='field-put field-list-source field-list-source-hide' field-key='listTest'>
-				<td class='control-on-click-edit field-put' field-key='listTest.stringTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.multiselectTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.passwordTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.booleanTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.numberIntTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.numberFloatTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.selectTest' >
-				<td class='control-on-click-edit field-put' field-key='listTest.timestampTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.stringTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.multiselectTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.passwordTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.booleanTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.numberIntTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.numberFloatTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.selectTest' >
+				<td class='field-list-on-click-view field-put' field-key='listTest.timestampTest' >
 			</tr>
 		</table>
 	<td class='control-on-click-del ui-icon ui-icon-trash'>
 </tr>
 </table>
 
+
+
+<div class='floatingBar viewErrorClass'>
+	<button class='control-on-click-edit' >Add</button>
+</div>

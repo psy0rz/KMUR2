@@ -162,10 +162,11 @@ border-color: #bbbbbb;
 .floatingBar
 {
 	position: fixed;
-	left: 8em;
+	left: 10em;
 	right: 0em;
 	bottom:0em;
-	background: #ffffff;
+	background: #dddddd;
+
 	padding-top:0.5em;
 	padding-left:1em;
 	border-width:2px;
@@ -176,7 +177,7 @@ border-color: #bbbbbb;
 
 .floatingBar *
 {
-	float:right;
+	float:left;
 }
 
 

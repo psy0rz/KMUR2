@@ -494,7 +494,7 @@ Field.List.meta_put=function(key, meta, context)
         });
         
         //create an add-handler if the source-element of a list is focussed
-        $(".field-list-on-focus-list-add :input", list_source).focus(function(){
+        $(".field-list-on-focus-add :input", list_source).focus(function(){
             //only add an item if the user focusses a field in the listsource..
             //console.error(from_element_get(null, $(this)));
             if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
