@@ -275,7 +275,7 @@ class MongoDB(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=None, id_nin=None, match=None, regex=None, regex_or=None, gte=None, lte=None):
+    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=None, id_nin=None, match=None, regex=None, regex_or=None, gte=None, lte=None, key_in=None):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
@@ -294,6 +294,7 @@ class MongoDB(models.common.Base):
         gte:    dict of keys that should be greater than or equal to value
         lte:    dict of keys that should be less than or equal to value 
         match: dict with keys and values to exactly match
+        key_in: dict with key and list of values. (match any of the values in the list)
 
 
         '''
@@ -312,13 +313,25 @@ class MongoDB(models.common.Base):
         if gte!=None:
             for (key,value) in gte.items():
                 spec_and.append({
-                        '$gte': value 
+                        key: {
+                            '$gte': value 
+                            }
                         })
 
         if lte!=None:
             for (key,value) in lte.items():
                 spec_and.append({
-                        '$lte': value 
+                        key: {
+                           '$lte': value 
+                            }
+                        })
+
+        if key_in!=None:
+            for (key,value) in key_in.items():
+                spec_and.append({
+                        key: {
+                           '$in': value 
+                            }
                         })
 
         if regex!=None:

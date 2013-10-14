@@ -910,81 +910,42 @@ ControlList.prototype.attach_event_handlers=function()
             attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight control-filter-highlight");
 
 
-        if (!this_control.params.get_params.spec)
-            this_control.params.get_params.spec={};
+        //default filter is regex_or
+        var filter_type="regex_or";
 
-        if (!this_control.params.get_params.spec[key_str])
-            this_control.params.get_params.spec[key_str]={};
-
-        var changed=false;
-
-        //simple exact match?
         if (attribute_element.attr("filter-match")=="")
+            filter_type="match";
+
+        if (attribute_element.attr("filter-gte")=="")
+            filter_type="gte";
+
+        if (attribute_element.attr("filter-lte")=="")
+            filter_type="lte";
+
+        if (attribute_element.attr("filter-in")=="")
+            filter_type="key_in";
+
+        //make sure it exists
+        if (!this_control.params.get_params[filter_type])
+            this_control.params.get_params[filter_type]={};
+
+        
+        var changed=false;        
+
+        if (value==null)
         {
-            if (value!=this_control.params.get_params.spec[key_str])
+            if (key_str in this_control.params.get_params[filter_type])
             {
-                if (value==null)
-                    delete(this_control.params.get_params.spec[key_str])
-                else
-                    this_control.params.get_params.spec[key_str]=value;
+                delete(this_control.params.get_params[filter_type][key_str]);
                 changed=true;
             }
         }
-        //advanced querys:
-        else 
+        else
         {
-            var changed_filters={};
-
-            //greather-than-or-equal
-            if (attribute_element.attr("filter-gte")=="")
-                changed_filters["$gte"]=value;
-            //less-than-or-equal
-            else if (attribute_element.attr("filter-lte")=="")
-                changed_filters["$lte"]=value;
-            //value is IN specified value-array (used with multiselect filtering)
-            else if (attribute_element.attr("filter-in")=="")
-                changed_filters["$in"]=value;
-            else 
-            //default to a case insensitive regex match:
+            if (this_control.params.get_params[filter_type][key_str]!=value)
             {
-                changed_filters["$regex"]=value;
-                changed_filters["$options"]="i";
-            }
-
-            //delete the changes, since its null now?
-            if (value==null)
-            {
-                $.each(changed_filters, function(k,v)
-                {
-                    if (k in this_control.params.get_params.spec[key_str])
-                    {
-                        changed=true;
-                        delete(this_control.params.get_params.spec[key_str][k]);
-                    }
-                });
-            }
-            else
-            //add/overwrite values
-            {
-
-                //make sure its a object:
-                // if (typeof this_control.params.get_params.spec[key_str] != "object")
-                //     this_control.params.get_params.spec[key_str]={};
-
-                $.each(changed_filters, function(k,v)
-                {
-                    if (this_control.params.get_params.spec[key_str][k]!=v)
-                    {
-                        this_control.params.get_params.spec[key_str][k]=v
-                        changed=true;
-                    }
-                });
-            }
-
-            //delete the entry if its empty
-            if ($.isEmptyObject(this_control.params.get_params.spec[key_str]))
-            {
-                delete (this_control.params.get_params.spec[key_str]);
+                this_control.params.get_params[filter_type][key_str]=value;
+                changed=true;
             }
         }
 
