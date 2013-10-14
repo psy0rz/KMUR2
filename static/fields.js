@@ -543,6 +543,7 @@ Field.List.meta_put=function(key, meta, context)
             //determine focus field:
             var keys=Field.Base.keys($(this).attr("field-key"));
             editView.focus=Field.Base.find_data_keys(keys, meta.meta, $(this));
+            //TODO: option to strip focus keys in case of relations?
 
             editView.params[meta.list_key]=list_id;
             editView.x=event.clientX;
@@ -1328,7 +1329,6 @@ Field.Relation.meta_put=function(key, meta, context)
                 show_changes: true
 
             });
-///todo: meer field-specific eventhandlers hier heen verplaatsen??
             return(false);
         },
         //data source
