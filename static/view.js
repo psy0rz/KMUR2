@@ -75,11 +75,18 @@ function viewSwitch(viewStatus)
         //traverse the new views, and compare to old
         $.each(newViewStatus.views, function(viewId, view)
         {
+
+            // if ((viewId in oldViewStatus.views)) 
+            // {
+            //     console.log("old view params",  JSON.stringify(oldViewStatus.views[viewId].params) );
+            //     console.log("new view params",  JSON.stringify(view.params) );
+            // }
+
             //new or changed
             if (
                 (! (viewId in oldViewStatus.views)) || //new
                 oldViewStatus.views[viewId].name!=view.name || //different view name or params?
-                JSON.stringify(oldViewStatus.views[viewId].params)!=JSON.stringify(view.params) 
+                ! _.isEqual(oldViewStatus.views[viewId].params, view.params) 
             )
             {
                 //viewId doesnt exist yet?
@@ -423,7 +430,7 @@ function viewReady(params)
 //( use viewCreate instead, if you want to update browser history and create popups etc)
 function viewLoad(view)
 {
-    logDebug("viewLoad", view);
+    logDebug("viewLoad loading: "+view.name, view);
 
     //clear/unbind old stuff
     $("#"+view.id).unbind();
@@ -432,7 +439,7 @@ function viewLoad(view)
     //add nice debugging 
     if (gDebuggingEnabled)
     {
-        document.getElementById(view.id).innerHTML="<div class='debug'>"+JSON.stringify(view,null,' ')+"</div>";                
+        document.getElementById(view.id).innerHTML="<div class='debug'>"+view.id+": "+view.name+"</div>";  //JSON.stringify(view,null,' ')
     }
     
     $.ajax({
@@ -441,7 +448,7 @@ function viewLoad(view)
         "success":  
             function (result, status, XMLHttpRequest)
             {
-                console.debug("viewLoad success ",view);
+                // console.debug("viewLoad success ",view);
                 
                                 
                 //just set innerHTML, without having jquery executing the scripts:

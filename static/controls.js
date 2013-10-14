@@ -30,37 +30,39 @@ Other items in params documented in the subclasses below.
 function ControlBase(params)
 {
     //constructor
-    this.params=params;
+    this.params={};
+    $.extend( true, this.params, params);
+
     this.context=$("#"+params.view.id);
     this.debug_txt=params.view.id+" "+params.view.name+" ";
 
-    if (!('get_meta' in params))
-        params.get_meta=params.class+".get_meta";
+    if (!('get_meta' in this.params))
+        this.params.get_meta=this.params.class+".get_meta";
 
-    if (!('get_meta_params' in params))
-        params.get_meta_params=params.view.params;
+    if (!('get_meta_params' in this.params))
+        this.params.get_meta_params=this.params.view.params;
 
-    if (! params.get_meta_result)
-        params.get_meta_result=function(){};
+    if (! this.params.get_meta_result)
+        this.params.get_meta_result=function(){};
 
 
-    if (!('get' in params))
-        params.get=params.class+".get";
+    if (!('get' in this.params))
+        this.params.get=this.params.class+".get";
 
-    if (!('get_params' in params))
-        params.get_params=params.view.params;
+    if (!('get_params' in this.params))
+        this.params.get_params=this.params.view.params;
 
-    if (! params.get_result)
-        params.get_result=function(){};
+    if (! this.params.get_result)
+        this.params.get_result=function(){};
 
-    if (!('title' in params))
-        params.title="Edit item {_id}";
+    if (!('title' in this.params))
+        this.params.title="Edit item {_id}";
 
-    if (!('delete' in params))
-        params.delete=params.class+".delete";
+    if (!('delete' in this.params))
+        this.params.delete=this.params.class+".delete";
 
-    if (!('delete_params' in params))
-        params.delete_params=params.view.params;
+    if (!('delete_params' in this.params))
+        this.params.delete_params=this.params.view.params;
 
 
 
@@ -172,29 +174,29 @@ function ControlForm(params)
     ControlBase.call(this,params);
 
 
-    if (!('close_after_save' in params))
-        params.close_after_save=true;
+    if (!('close_after_save' in this.params))
+        this.params.close_after_save=true;
 
-    if (!('put' in params))
-        params.put=params.class+".put";
+    if (!('put' in this.params))
+        this.params.put=this.params.class+".put";
 
-    if (!('put_params' in params))
-        params.put_params=params.view.params;
+    if (!('put_params' in this.params))
+        this.params.put_params=this.params.view.params;
 
-    if (! params.put_result)
-        params.put_result=function(){};
+    if (! this.params.put_result)
+        this.params.put_result=function(){};
 
-    if (! params.create_ok)
-        params.create_ok=function(){};
+    if (! this.params.create_ok)
+        this.params.create_ok=function(){};
 
-    if (! params.delete_result)
-        params.delete_result=function(){};
+    if (! this.params.delete_result)
+        this.params.delete_result=function(){};
 
-    if (! params.favorite_key)
-        params.favorite_key='_id';
+    if (! this.params.favorite_key)
+        this.params.favorite_key='_id';
 
-    if (!('title_new' in params))
-        params.title_new="New item";
+    if (!('title_new' in this.params))
+        this.params.title_new="New item";
 
     this.get_meta({});
 }
@@ -254,7 +256,8 @@ ControlForm.prototype.get_result=function(result, request_params)
 
         if (this.params.favorite_menu)
         {
-            $(document).trigger('menu.put_favorite', {
+//            $(document).trigger('menu.put_favorite', {
+            $.event.trigger('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
                 'title':     this.format(this.params.title, result.data),
                 'view':      this.params.view,
@@ -289,7 +292,8 @@ ControlForm.prototype.get_result=function(result, request_params)
     if ('error' in result && this.params.favorite_menu && (this.params.favorite_key in this.params.view.params))
     {
         console.log("deleting stale entry from favorites menu");
-        $(document).trigger('menu.delete_favorite', {
+//        $(document).trigger('menu.delete_favorite', {
+        $.event.trigger('menu_delete_favorite', {
             'menu':      this.params.favorite_menu,
             'favorite_id': this.params.view.params[this.params.favorite_key]
         });
@@ -360,7 +364,7 @@ ControlForm.prototype.attach_event_handlers=function()
 
 
     //some  control changed/added an item in our class, so update the form
-    $(context).on(this.params.class+'.changed', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -382,7 +386,7 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
     //a control deleted something in our class
-    $(context).on(this.params.class+'.deleted', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -399,7 +403,8 @@ ControlForm.prototype.attach_event_handlers=function()
         if (this_control.params.favorite_menu && (this_control.params.favorite_key in result.data))
         {
             console.log("deleting entry from favorites menu");
-            $(document).trigger('menu.delete_favorite', {
+//            $(document).trigger('menu.delete_favorite', {
+            $.event.trigger('menu_delete_favorite', {
                 'menu':      this_control.params.favorite_menu,
                 'favorite_id': result.data[this_control.params.favorite_key]
             });
@@ -457,7 +462,8 @@ ControlForm.prototype.put_result=function(result, request_params)
             viewClose(this.params.view);
 
         //broadcast a changed-event to update all the views, except ourselfs
-        $(".view").not(this.context).trigger(this.params.class+'.changed', result);
+//      $(".view").not(this.context).trigger(this.params.class+'.changed', result);
+        $.event.trigger(this.params.class.replace(".","_")+'_changed', result);
 
         if (this.params.favorite_menu)
         {
@@ -465,7 +471,8 @@ ControlForm.prototype.put_result=function(result, request_params)
             $.extend(menu_view, this.params.view);
             menu_view.params[this.params.favorite_key]=result.data[this.params.favorite_key];
 
-            $(document).trigger('menu.put_favorite', {
+//          $(document).trigger('menu.put_favorite', {
+            $.event.trigger('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
                 'title':     this.format(this.params.title, result.data),
                 'view':      menu_view,
@@ -498,16 +505,18 @@ ControlForm.prototype.delete_result=function(result, request_params)
     {
         if (this.params.close_after_save)
         {
-            console.error("closing dah shit", this.params.view);
+            //console.error("closing dah shit", this.params.view);
             viewClose(this.params.view);
         }
 
         //broadcast the deleted event to update other views
-        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
+//        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
+        $.event.trigger(this.params.class.replace(".","_")+'_deleted', result);
 
         if (this.params.favorite_menu)
         {
-            $(document).trigger('menu.delete_favorite', {
+//            $(document).trigger('menu.delete_favorite', {
+            $.event.trigger('menu_delete_favorite', {
                 'menu':      this.params.favorite_menu,
                 'favorite_id': result.data[this.params.favorite_key]
             });
@@ -540,26 +549,27 @@ params:
 */
 function ControlList(params)
 {
-    if (!('get' in params))
-        params.get=params.class+".get_all";
 
     ControlBase.call(this, params);
 
-    if (! params.favorite_key)
-        params.favorite_key='_id';
+    if (!('get' in params))
+        this.params.get=this.params.class+".get_all";
 
-    if (! params.on_change)
-        params.on_change='put';
+    if (! this.params.favorite_key)
+        this.params.favorite_key='_id';
 
-    if (typeof (params.get_params) ==='undefined')
-        params.get_params={};
+    if (! this.params.on_change)
+        this.params.on_change='put';
 
-    if (params.endless_scrolling)
+    if (typeof (this.params.get_params) ==='undefined')
+        this.params.get_params={};
+
+    if (this.params.endless_scrolling)
     {
-        if (!('limit' in params.get_params))
-            params.get_params.limit=25;
+        if (!('limit' in this.params.get_params))
+            this.params.get_params.limit=25;
 
-        params.get_params.skip=0;
+        this.params.get_params.skip=0;
     }
 
     this.list_source_element=$(".field-list-source:first", this.context);
@@ -687,7 +697,7 @@ ControlList.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //some  control changed/added an item in our class, so update the list
-    $(context).on(this.params.class+'.changed', function(e,result)
+    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
     { 
         if (this!=e.target)
             return false;
@@ -729,7 +739,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
-    $(context).on(this.params.class+'.deleted', function(e, result)
+    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e, result)
     {
         if (this!=e.target)
             return false;
@@ -773,11 +783,13 @@ ControlList.prototype.attach_event_handlers=function()
                 {
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
-                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
+//                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
+                        $.event.trigger(this_control.params.class.replace(".","_")+'_deleted', result);
 
                         if (this_control.params.favorite_menu)
                         {
-                            $(document).trigger('menu.delete_favorite', {
+//                            $(document).trigger('menu.delete_favorite', {
+                            $.event.trigger('menu_delete_favorite', {
                                 'menu':      this_control.params.favorite_menu,
                                 'favorite_id': result.data[this_control.params.favorite_key]
                             });

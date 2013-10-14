@@ -23,6 +23,8 @@ def loadmenus():
                     #update existing menu
                     menus[name]['title'] = menudata['title']
                     menus[name]['items'].extend(menudata['items'])
+                    if 'view' in menudata:
+                      menus[name]['view']=menudata['view']
     return menus
 
 static_menus = loadmenus()
