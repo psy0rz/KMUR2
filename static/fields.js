@@ -1399,7 +1399,10 @@ Field.Relation.meta_put=function(key, meta, context)
     //data in related model was changed
     $(context).on(meta.model.replace(".","_")+'_changed', function(e,result)
     { 
-        console.log("relation: data on server has changed",result);
+        if (this!=e.target)
+            return false;
+
+        console.log("relation: data on server has changed",result, context);
 
         Field.List.put(
             key, 
@@ -1420,6 +1423,9 @@ Field.Relation.meta_put=function(key, meta, context)
     //data in related model was deleted
     $(context).on(meta.model.replace(".","_")+'_deleted', function(e, result)
     {
+        if (this!=e.target)
+            return false;
+
         console.log("relation: data on server has been deleted", result);
 
         var list_key=meta.meta.list_key;
