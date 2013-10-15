@@ -461,8 +461,7 @@ ControlForm.prototype.put_result=function(result, request_params)
         if (this.params.close_after_save)
             viewClose(this.params.view);
 
-        //broadcast a changed-event to update all the views, except ourselfs
-//      $(".view").not(this.context).trigger(this.params.class+'.changed', result);
+        //broadcast a changed-event to everyone who is listening to it.
         $.event.trigger(this.params.class.replace(".","_")+'_changed', result);
 
         if (this.params.favorite_menu)
@@ -509,7 +508,7 @@ ControlForm.prototype.delete_result=function(result, request_params)
             viewClose(this.params.view);
         }
 
-        //broadcast the deleted event to update other views
+        //broadcast the deleted event to everyone who is listening
 //        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
         $.event.trigger(this.params.class.replace(".","_")+'_deleted', result);
 

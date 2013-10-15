@@ -583,6 +583,8 @@ Field.List.meta_put=function(key, meta, context)
  usefull with options.show_changes, to give user feedback of changes, or with endless scrolling.
 
  options.list_no_remove: dont remove existing items. usefull for endless scrolling.
+
+ options.list_no_add: dont add new items. only update existing items.
 */
 
 Field.List.put=function(key, meta, context, data, options)
@@ -642,6 +644,10 @@ Field.List.put=function(key, meta, context, data, options)
             //not found? clone new element
             if (update_element==undefined)
             {
+                //we dont want to add new items
+                if (options.list_no_add)
+                    return (true); //continue with next item ($.each)
+
                 //deep clone the prepared clone
                 update_element=clone.clone(true);
 
@@ -1332,8 +1338,8 @@ Field.Relation.meta_put=function(key, meta, context)
             $(this).val("");
 
 //            if (meta.resolve==true)
-            console.log("in ", $(".field-list-source", context));
-            Field[meta.meta.type].put(key, meta.meta, $(".field-list-source", context), [ ui.item.value ], {
+            //console.log("in ", $(".field-list-source", context));
+            Field.List.put(key, meta.meta, $(".field-list-source", context), [ ui.item.value ], {
                 list_no_remove: true,
                 list_update: true,
                 show_changes: true
@@ -1356,9 +1362,7 @@ Field.Relation.meta_put=function(key, meta, context)
             params['id_nin']=[]
             $.each(current_items, function(i, item)
             {
-                console.log("disse is ", item);
                 params['id_nin'].push(item[meta.meta.list_key]);
-                console.log("dus", params);
             });
 
 
@@ -1391,10 +1395,50 @@ Field.Relation.meta_put=function(key, meta, context)
         }
     })
 
-    //...also make a event handler in controls.js that creates a jquery autocomplete widget that calls get_all, and use this to add new items to the list?
 
-    //or should all the rpc stuff be in controls.js somehow? 
-    //we could even make a special relation-control that looks at the field-key of stuff that has the css control-relation-class 
+    //data in related model was changed
+    $(context).on(meta.model.replace(".","_")+'_changed', function(e,result)
+    { 
+        console.log("relation: data on server has changed",result);
+
+        Field.List.put(
+            key, 
+            meta.meta, 
+            $(".field-list-source", context),
+            [ result.data ],
+            {
+                list_no_remove: true,
+                list_no_add: false, //NOTE: here we assume we want new items to be added to our list right away. 
+                list_update: true,
+                show_changes: true
+            }
+        );
+
+        return(false);
+    });
+
+    //data in related model was deleted
+    $(context).on(meta.model.replace(".","_")+'_deleted', function(e, result)
+    {
+        console.log("relation: data on server has been deleted", result);
+
+        var list_key=meta.meta.list_key;
+
+        var element=Field.List.find_element(
+            key,
+            meta.meta,
+            $(".field-list-source", context),
+            [ result.data[list_key] ]
+        );
+
+        element.hide(1000, function()
+        {
+            element.remove();
+        });
+
+        return(false);
+    });
+
 
 
 /*
@@ -1423,6 +1467,12 @@ Field.Relation.meta_put=function(key, meta, context)
           so this is also kind of hackish since its no real subcontrol
           option 1. seems less hackish now :)
 
+
+choosen solution: we have 2 modes to chose from:
+    when meta.resolve is true, the server resolves and returns the related metadata.
+    when its false, Field.Relation will have to call the meta_data and actual data from the forgein model itself.
+
+    during auto-completion, Field.Relation will ALWAYS call the foreign model.
 */
 }
 
