@@ -44,6 +44,7 @@ Field.Base.key_str=function(keys)
     return(keys.join("."));
 }
 
+
 /*** generic function thats used when something is not implemented. 
 
     tries to make the error visible and logs it to the console.
@@ -494,7 +495,7 @@ Field.List.meta_put=function(key, meta, context)
         });
         
         //create an add-handler if the source-element of a list is focussed
-        $(".field-list-on-focus-add :input", list_source).focus(function(){
+        $(".field-list-on-focus-add :input", list_source).off().focus(function(){
             //only add an item if the user focusses a field in the listsource..
             //console.error(from_element_get(null, $(this)));
             if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
@@ -1311,8 +1312,22 @@ Field.Relation.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
+
+    //a relation is a more complex type, so among other things i should have a field-list-source inside the context. 
+    var list_context=$(".field-list-source[field-key="+key+"]", context);
+
+    //a common mistake would be to give the field-list-source a field-meta-put, so catch it here:
+    if (list_context.hasClass("field-meta-put"))
+    {
+        list_context.append($("<span class='ui-state-highlight'>program error: the list-source of a relation should not have a field-meta-put class!</span>"));
+        console.error("program error: the list-source of a relation should not have a field-meta-put class!");
+        return;
+    }
+
+
+
     //recurse into related meta
-    Field[meta.meta.type].meta_put(key, meta.meta, context);
+    Field.List.meta_put(key, meta.meta, context);
 
     $(".field-relation-on-click-add", context).click(function()
     {
@@ -1339,7 +1354,7 @@ Field.Relation.meta_put=function(key, meta, context)
 
 //            if (meta.resolve==true)
             //console.log("in ", $(".field-list-source", context));
-            Field.List.put(key, meta.meta, $(".field-list-source", context), [ ui.item.value ], {
+            Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
                 list_no_remove: true,
                 list_update: true,
                 show_changes: true
@@ -1355,7 +1370,7 @@ Field.Relation.meta_put=function(key, meta, context)
             var params={}
 
             //get currently selected ids
-            var current_items=Field[meta.meta.type].get(key, meta.meta, $(".field-list-source", context));
+            var current_items=Field.List.get(key, meta.meta, list_context);
             console.log("currentitems", current_items);
 
             //filter those ids out
@@ -1385,7 +1400,7 @@ Field.Relation.meta_put=function(key, meta, context)
                     for (i in result.data)
                     {
                         choices[i]={
-                            label: result.data[i]['name'],
+                            label: result.data[i]['name'], //FIXME
                             value: result.data[i]
                         }
                     }
@@ -1395,19 +1410,16 @@ Field.Relation.meta_put=function(key, meta, context)
         }
     })
 
-
     //data in related model was changed
-    $(context).on(meta.model.replace(".","_")+'_changed', function(e,result)
+    $(context).subscribe(meta.model+'.changed', "fields", function(e,result)
     { 
-        if (this!=e.target)
-            return false;
 
         console.log("relation: data on server has changed",result, context);
 
         Field.List.put(
             key, 
             meta.meta, 
-            $(".field-list-source", context),
+            list_context,
             [ result.data ],
             {
                 list_no_remove: true,
@@ -1421,10 +1433,8 @@ Field.Relation.meta_put=function(key, meta, context)
     });
 
     //data in related model was deleted
-    $(context).on(meta.model.replace(".","_")+'_deleted', function(e, result)
+    $(context).subscribe(meta.model+'.deleted', "fields", function(e, result)
     {
-        if (this!=e.target)
-            return false;
 
         console.log("relation: data on server has been deleted", result);
 
@@ -1433,7 +1443,7 @@ Field.Relation.meta_put=function(key, meta, context)
         var element=Field.List.find_element(
             key,
             meta.meta,
-            $(".field-list-source", context),
+            list_context,
             [ result.data[list_key] ]
         );
 

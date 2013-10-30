@@ -6,8 +6,11 @@
 	var debugTxt=view.id+" "+view.name+" ";
 
 	//(re)load the menu
-	$(context).on("menu_reload", function(event, params)
+	$(context).subscribe("menu_reload", "menu", function(event, params)
 	{
+        if (this!=event.target)
+            return false;
+
 		rpc(
 			"webui.Menu.get",
 			{},
@@ -29,14 +32,14 @@
 	/* add/update a 'favorite' to the specified menu. automaticly keeps count of most used items.
      Look in Menu.py for more info.
     */
-    $(context).on("menu_put_favorite", function(event, params)
+    $(context).subscribe("menu_put_favorite", "menu", function(event, params)
     {
         rpc(
             "webui.Menu.put_favorite",
             params,
             function(result)
             {
-                $.event.trigger("menu_reload", {update: true});
+                $.publish("menu_reload", {update: true});
             },
             debugTxt+"menu adding favorite"
         );
@@ -44,14 +47,14 @@
 		return(false);
     });
 
-    $(context).on("menu_delete_favorite", function(event, params)
+    $(context).subscribe("menu_delete_favorite", "menu", function(event, params)
     {   
         rpc(
             "webui.Menu.delete_favorite",
             params,
             function(result)
             {
-                $.event.trigger("menu_reload", {update: true});
+                $.publish("menu_reload", {update: true});
             },
             debugTxt+"menu deleting favorite"
         );
@@ -90,7 +93,7 @@
 		function (result)
 		{
 			meta=result.data;
-			$.event.trigger("menu_reload", { update: false });
+			$.publish("menu_reload", { update: false });
 		},
 		debugTxt+"menu getting meta data"
 	);

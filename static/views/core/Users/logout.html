@@ -15,7 +15,7 @@ $(".logOut", context).click(function()
 {
 	rpc("users.logout",{},function()
 	{
-		$(document).trigger("menu.reload");
+		$.publish("menu.reload");
 		viewCloseAll();
 	});
 });

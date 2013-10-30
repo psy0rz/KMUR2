@@ -442,9 +442,10 @@ function viewLoad(view)
         document.getElementById(view.id).innerHTML="<div class='debug'>"+view.id+": "+view.name+"</div>";  //JSON.stringify(view,null,' ')
     }
     
+    var view_url="views/"+view.name.replace(/\./g,"/")+".html";
     $.ajax({
         "dataType":     "html",
-        "url":          "views/"+view.name.replace(/\./g,"/")+".html",
+        "url":          view_url,
         "success":  
             function (result, status, XMLHttpRequest)
             {
@@ -461,11 +462,9 @@ function viewLoad(view)
                 }
                 catch(e)
                 {
-                    //is there anyway to give the developer more info about where it was thrown exactly??
-                    console.debug("Following code throwed an exception somewhere:");
-                    console.debug($("#"+view.id+" script").text());
-
-                    throw(e);
+                    console.error("Exception in view : "+"views/"+view_url);
+                    //NOTE: is there anyway to give the developer more info about where it was thrown exactly?
+                    throw e;
                 }
                 
             },

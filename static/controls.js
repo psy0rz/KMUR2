@@ -257,7 +257,7 @@ ControlForm.prototype.get_result=function(result, request_params)
         if (this.params.favorite_menu)
         {
 //            $(document).trigger('menu.put_favorite', {
-            $.event.trigger('menu_put_favorite', {
+            $.publish('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
                 'title':     this.format(this.params.title, result.data),
                 'view':      this.params.view,
@@ -293,7 +293,7 @@ ControlForm.prototype.get_result=function(result, request_params)
     {
         console.log("deleting stale entry from favorites menu");
 //        $(document).trigger('menu.delete_favorite', {
-        $.event.trigger('menu_delete_favorite', {
+        $.publish('menu_delete_favorite', {
             'menu':      this.params.favorite_menu,
             'favorite_id': this.params.view.params[this.params.favorite_key]
         });
@@ -364,10 +364,10 @@ ControlForm.prototype.attach_event_handlers=function()
 
 
     //some  control changed/added an item in our class, so update the form
-    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
+    $(context).subscribe(this.params.class+'.changed', "form", function(e,result)
     { 
-        if (this!=e.target)
-            return false;
+        // if (this!=e.target)
+        //     return false;
 
         console.log("form: data on server has changed",this_control);
 
@@ -386,10 +386,10 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
     //a control deleted something in our class
-    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e,result)
+    $(context).subscribe(this.params.class+'.deleted', "form", function(e,result)
     { 
-        if (this!=e.target)
-            return false;
+        // if (this!=e.target)
+        //     return false;
 
         //NOTE: we just assume we can compare the _id here. maybe we should make this more generic?
         if (result.data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
@@ -404,7 +404,7 @@ ControlForm.prototype.attach_event_handlers=function()
         {
             console.log("deleting entry from favorites menu");
 //            $(document).trigger('menu.delete_favorite', {
-            $.event.trigger('menu_delete_favorite', {
+            $.publish('menu_delete_favorite', {
                 'menu':      this_control.params.favorite_menu,
                 'favorite_id': result.data[this_control.params.favorite_key]
             });
@@ -462,7 +462,7 @@ ControlForm.prototype.put_result=function(result, request_params)
             viewClose(this.params.view);
 
         //broadcast a changed-event to everyone who is listening to it.
-        $.event.trigger(this.params.class.replace(".","_")+'_changed', result);
+        $.publish(this.params.class+'.changed', result);
 
         if (this.params.favorite_menu)
         {
@@ -471,7 +471,7 @@ ControlForm.prototype.put_result=function(result, request_params)
             menu_view.params[this.params.favorite_key]=result.data[this.params.favorite_key];
 
 //          $(document).trigger('menu.put_favorite', {
-            $.event.trigger('menu_put_favorite', {
+            $.publish('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
                 'title':     this.format(this.params.title, result.data),
                 'view':      menu_view,
@@ -510,12 +510,12 @@ ControlForm.prototype.delete_result=function(result, request_params)
 
         //broadcast the deleted event to everyone who is listening
 //        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
-        $.event.trigger(this.params.class.replace(".","_")+'_deleted', result);
+        $.publish(this.params.class+'.deleted', result);
 
         if (this.params.favorite_menu)
         {
 //            $(document).trigger('menu.delete_favorite', {
-            $.event.trigger('menu_delete_favorite', {
+            $.publish('menu_delete_favorite', {
                 'menu':      this.params.favorite_menu,
                 'favorite_id': result.data[this.params.favorite_key]
             });
@@ -696,10 +696,10 @@ ControlList.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //some  control changed/added an item in our class, so update the list
-    $(context).on(this.params.class.replace(".","_")+'_changed', function(e,result)
+    $(context).subscribe(this.params.class+'.changed', "list", function(e,result)
     { 
-        if (this!=e.target)
-            return false;
+        // if (this!=e.target)
+        //     return false;
 
         console.log("list: data on server has changed",this_control);
 
@@ -738,7 +738,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
-    $(context).on(this.params.class.replace(".","_")+'_deleted', function(e, result)
+    $(context).subscribe(this.params.class+'.deleted', "list", function(e, result)
     {
         if (this!=e.target)
             return false;
@@ -783,12 +783,12 @@ ControlList.prototype.attach_event_handlers=function()
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
 //                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
-                        $.event.trigger(this_control.params.class.replace(".","_")+'_deleted', result);
+                        $.publish(this_control.params.class+'.deleted', result);
 
                         if (this_control.params.favorite_menu)
                         {
 //                            $(document).trigger('menu.delete_favorite', {
-                            $.event.trigger('menu_delete_favorite', {
+                            $.publish('menu_delete_favorite', {
                                 'menu':      this_control.params.favorite_menu,
                                 'favorite_id': result.data[this_control.params.favorite_key]
                             });

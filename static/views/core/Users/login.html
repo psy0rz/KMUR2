@@ -8,7 +8,7 @@ new ControlForm({
     'put'             : 'core.Users.login',
     'put_result' : function()
     {
-        $(document).trigger("menu.reload");
+        $.publish("menu.reload");
     }
 });
 
