@@ -1388,6 +1388,7 @@ Field.Relation.meta_put=function(key, meta, context)
                 params['regex_or'][key_str]=request.term;
             });
 
+            var result_format=$(".field-relation-on-change-search", context).attr("result-format");
 
             //call the foreign model to do the actual search
             rpc(meta.model+".get_all",
@@ -1400,7 +1401,7 @@ Field.Relation.meta_put=function(key, meta, context)
                     for (i in result.data)
                     {
                         choices[i]={
-                            label: result.data[i]['name'], //FIXME
+                            label: ControlBase.prototype.format(result_format, result.data[i]),
                             value: result.data[i]
                         }
                     }
