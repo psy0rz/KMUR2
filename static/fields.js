@@ -1307,13 +1307,38 @@ Field.Timestamp.put=function(key, meta, context, data, options)
 /////////////////////////////////////////////////////////////////////////
 Field.Relation=Object.create(Field.Base);
 
+
 Field.Relation.meta_put=function(key, meta, context)
+{
+    //meta-data is already resolved
+    if (meta.resolve==true)
+        Field.Relation.meta_put_resolved(key, meta, context)
+    else
+    {
+        //asyncroniously resolve metadata
+        var meta_resolved={};
+        $.extend( true, meta_resolved, meta );
+
+        rpc(
+            meta.model+".get_meta",
+            {},
+            function(result)
+            {
+                meta_resolved.meta=result.data;
+                Field.Relation.meta_put_resolved(key, meta_resolved, context)        
+            },
+            "getting metadata from related model"
+        );
+    }
+}
+
+Field.Relation.meta_put_resolved=function(key, meta, context)
 {
     if (Field.Base.meta_put(key, meta, context))
         return;
 
 
-    //a relation is a more complex type, so among other things i should have a field-list-source inside the context. 
+    //a relation is a more complex type, so among other things it should have a field-list-source inside the context. 
     var list_context=$(".field-list-source[field-key="+key+"]", context);
 
     //a common mistake would be to give the field-list-source a field-meta-put, so catch it here:
@@ -1323,7 +1348,6 @@ Field.Relation.meta_put=function(key, meta, context)
         console.error("program error: the list-source of a relation should not have a field-meta-put class!");
         return;
     }
-
 
 
     //recurse into related meta

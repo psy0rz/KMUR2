@@ -72,7 +72,10 @@ class Relation(fields.Base):
         super(Relation, self).__init__(**kwargs)
 
         if meta==None:
-            self.meta['meta']=model.meta
+            if resolve:
+                self.meta['meta']=model.meta
+        else:
+            self.meta['meta']=meta
 
         self.meta['resolve']=resolve
         self.meta['model']=model.__module__.replace("models.","") #TODO: use regex

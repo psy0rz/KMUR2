@@ -13,7 +13,11 @@ class Members(models.mongodb.MongoDB):
                 'name': fields.String(desc='Name'),
                 'group_ids': models.mongodb.Relation(
                     desc='Groups this member belongs to',
-                    model=models.example.Groups.Groups)
+                    model=models.example.Groups.Groups),
+                'group_ids2': models.mongodb.Relation(
+                    desc='Groups this member belongs to (without resolving)',
+                    model=models.example.Groups.Groups,
+                    resolve=False)
             }),
             list_key='_id'
         )

@@ -22,7 +22,7 @@ var form=new ControlForm({
 </fieldset>
 
 <fieldset style='display:inline-block;'>
-    <label>Groups this user belongs to</label>
+    <label class='field-meta-put' field-key='group_ids' field-meta-key='desc'></label>
     <table class='field-meta-put' field-key='group_ids'>
         <tr class='ui-widget-header'>
             <th class='field-meta-put' field-key='group_ids.name' field-meta-key='desc'>
@@ -31,6 +31,25 @@ var form=new ControlForm({
 
         <tr class='colorRows field-list-source ui-widget-content' field-key='group_ids' field-list-view="example.Groups.edit">
             <td class='field-put field-list-on-click-view' field-key='group_ids.name'>
+            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+        </tr>
+        <tr class='ui-widget-content'>
+            <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+        </tr>
+    </table>
+</fieldset>
+
+<fieldset style='display:inline-block;'>
+    <label class='field-meta-put' field-key='group_ids2' field-meta-key='desc'></label>
+    <table class='field-meta-put' field-key='group_ids2'>
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put' field-key='group_ids2.name' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source ui-widget-content' field-key='group_ids2' field-list-view="example.Groups.edit">
+            <td class='field-put field-list-on-click-view' field-key='group_ids2.name'>
             <td class='field-list-on-click-del ui-icon ui-icon-minus'>
         </tr>
         <tr class='ui-widget-content'>

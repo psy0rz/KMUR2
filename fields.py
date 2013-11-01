@@ -158,7 +158,7 @@ class Dict(Base):
 
             missing = [key for key in required_fields if key not in meta]
             if missing:
-                raise FieldException("Field '{}' is defined as required, but is missing from metadata".format(missing[0]), missing[0])
+                raise FieldException("Field '{}' is required, but is missing from metadata".format(missing[0]), missing[0])
 
             self.meta['required'] = required_fields
 
