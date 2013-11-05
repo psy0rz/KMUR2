@@ -1307,25 +1307,30 @@ Field.Timestamp.put=function(key, meta, context, data, options)
 /////////////////////////////////////////////////////////////////////////
 Field.Relation=Object.create(Field.Base);
 
-
 Field.Relation.meta_put=function(key, meta, context)
 {
-    //meta-data is already resolved
+   if (Field.Base.meta_put(key, meta, context))
+        return;
+
+   //sub-meta-data is already resolved
     if (meta.resolve==true)
         Field.Relation.meta_put_resolved(key, meta, context)
     else
     {
-        //asyncroniously resolve metadata
-        var meta_resolved={};
-        $.extend( true, meta_resolved, meta );
+        //asyncroniously resolve sub-metadata
+        if (!meta.get_meta_cache)
+            meta.get_meta_cache={};
 
-        rpc(
+        rpc_cached(
+            meta.get_meta_cache,
+            10,
             meta.model+".get_meta",
             {},
             function(result)
             {
-                meta_resolved.meta=result.data;
-                Field.Relation.meta_put_resolved(key, meta_resolved, context)        
+                //complete the submeta data and call actual function
+                meta.meta=result.data;
+                Field.Relation.meta_put_resolved(key, meta, context)
             },
             "getting metadata from related model"
         );
@@ -1334,10 +1339,7 @@ Field.Relation.meta_put=function(key, meta, context)
 
 Field.Relation.meta_put_resolved=function(key, meta, context)
 {
-    if (Field.Base.meta_put(key, meta, context))
-        return;
-
-
+ 
     //a relation is a more complex type, so among other things it should have a field-list-source inside the context. 
     var list_context=$(".field-list-source[field-key="+key+"]", context);
 
@@ -1350,8 +1352,15 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     }
 
 
-    //recurse into related meta
+    //recurse into list with sub-meta
+    //use our context here: there are probably things like table headers that need meta-data descriptions
+    //and list.meta_put can handle parent contexts as well as the list_context.
     Field.List.meta_put(key, meta.meta, context);
+
+    //make sure the list doesnt have a field-put and field-input, and we do. 
+    //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
+    list_context.removeClass("field-put field-input");
+    context.addClass("field-put field-input");
 
     $(".field-relation-on-click-add", context).click(function()
     {
@@ -1520,8 +1529,10 @@ choosen solution: we have 2 modes to chose from:
 
 Field.Relation.get=function(key, meta, context)
 {
-    //recurse into related model
-    data=Field[meta.meta.type].get(key, meta.meta, context);
+    var list_context=$(".field-list-source[field-key="+key+"]", context);
+
+    //recurse into sub-meta list
+    data=Field.List.get(key, meta.meta, list.context);
     if (meta.resolve)
         return(data);
 //    else
@@ -1530,10 +1541,11 @@ Field.Relation.get=function(key, meta, context)
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
+    var list_context=$(".field-list-source[field-key="+key+"]", context);
 
-    //recurse into related model
-    if (meta.resolve==true)
-        Field[meta.meta.type].put(key, meta.meta, context, data, options);
+    //recurse into sub-meta list
+    if (meta.resolve)
+        Field.List.put(key, meta.meta, list_context, data, options);
     //else //TODO: implement
 
 }

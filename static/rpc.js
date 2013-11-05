@@ -150,6 +150,74 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
     });
 }
 
+/*
+    Does a rpc and caches result and solves raceconditions.
+
+    cache should be a object, used to store all kinds of neccesary data of THIS rpc call. 
+    the caller should make sure this object is unique for every rpc/parameter combo.
+
+    ttl is the maximum time (in seconds) to store results, after that a new call will be made. 
+
+    if a new call is made while another call is already in progress, then the callback will be queued and called as soon as the 
+    orginal call is ready.
+
+*/
+function rpc_cached(cache, ttl, moduleClassMethod, params, callback, debugTxt)
+{
+
+    var debugTxtcached;
+    if (!debugTxt)
+        debugTxtcached="rpc cached "+moduleClassMethod;
+    else
+        debugTxtcached="< "+debugTxt+" > rpc cached "+moduleClassMethod;
+
+    if (cache.in_progress)
+    {
+        console.debug(debugTxtcached, "already in progress, queued callback");
+        cache.callbacks.unshift(callback);
+    }
+    else
+    {
+        var now=new Date().getTime()/1000;
+        //do we already have a result which is fresh enough?
+        if (
+            ('request_time' in cache) &&
+            ((now-cache.request_time)<ttl)
+            )
+        {
+            //return cached copy
+            console.debug(debugTxtcached, "returning cached copy");
+            callback(cache.result);            
+        }
+        else
+        {
+            //make new call
+            console.debug(debugTxtcached, "no cached copy, requesting new one");
+
+            cache.in_progress=true;
+            cache.callbacks=[callback];
+
+            rpc(
+                moduleClassMethod,
+                params,
+                function(result)
+                {
+                    cache.result=result;
+                    cache.request_time=now;
+                    cache.in_progress=false;                    
+                    console.debug(debugTxtcached, "returning result to callbacks: ",cache.callbacks.length);
+                    while(cache.callbacks.length)
+                    {
+                        cache.callbacks.pop()(result);
+                    }
+                },
+                debugTxt
+                );
+        }
+    }
+}
+
+
 $(document).ready(function(){
     $("#viewDebug").click(function()
             {
