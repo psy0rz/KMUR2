@@ -1457,7 +1457,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
             [ result.data ],
             {
                 list_no_remove: true,
-                list_no_add: false, //NOTE: here we assume we want new items to be added to our list right away. 
+                list_no_add: true, 
                 list_update: true,
                 show_changes: true
             }
@@ -1532,7 +1532,7 @@ Field.Relation.get=function(key, meta, context)
     var list_context=$(".field-list-source[field-key="+key+"]", context);
 
     //recurse into sub-meta list
-    data=Field.List.get(key, meta.meta, list.context);
+    data=Field.List.get(key, meta.meta, list_context);
     if (meta.resolve)
         return(data);
 //    else
