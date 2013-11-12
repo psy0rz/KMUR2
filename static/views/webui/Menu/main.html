@@ -74,8 +74,8 @@
 		$.extend( view, $(this).data("field-data").view);
 		view.x=event.clientX;
 		view.y=event.clientY;
-		if (view.highlight)
-			delete view.highlight;
+		// if (view.highlight)
+		// 	delete view.highlight;
 
 		if (view.mode=='main')
 			viewCreate({clear:true},view);

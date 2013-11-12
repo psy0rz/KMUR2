@@ -533,6 +533,26 @@ Field.List.meta_put=function(key, meta, context)
             forcePlaceholderSize: true
         });
 
+        //the view that was opened by us has changed something to our item
+        //NOTE:new items will be added instead of ignored. the global changed handler for the model will ignore adds.
+        $(list_source).off("control_form_changed").on("control_form_changed",function(event,result)
+        {
+            //XXX somehow combine specific-change-handlers and global-model change handlers?
+            console.log("view opened by us has changed the data", result);
+            return(false);
+        });
+
+        //the view that was opened by us has deleted our item
+        $(list_source).off("control_form_deleted").on("control_form_deleted",function(event)
+        {
+            console.log("view opened by us has deleted the data");
+             $(this).hide(1000,function()
+             {
+                 $(this).remove();
+             });
+            return(false);
+        });
+
         //create handler to open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
         $(".field-list-on-click-view", list_source).off().click(function(event)
         {
@@ -1445,6 +1465,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     })
 
     //data in related model was changed
+    //NOTE: control_form_changed is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
     $(context).subscribe(meta.model+'.changed', "fields", function(e,result)
     { 
 
@@ -1467,6 +1488,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     });
 
     //data in related model was deleted
+    //NOTE: control_form_deleted is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
     $(context).subscribe(meta.model+'.deleted', "fields", function(e, result)
     {
 

@@ -461,6 +461,9 @@ ControlForm.prototype.put_result=function(result, request_params)
         if (this.params.close_after_save)
             viewClose(this.params.view);
 
+        //send a changed-event to the creator of this view
+        $(this.params.view.creator).trigger("control_form_changed", result);
+
         //broadcast a changed-event to everyone who is listening to it.
         $.publish(this.params.class+'.changed', result);
 
@@ -480,7 +483,9 @@ ControlForm.prototype.put_result=function(result, request_params)
         }
 
         if (this.new_item==true)
+        {
             this.params.create_ok(result, request_params);
+        }
     }
 }
 
@@ -507,6 +512,9 @@ ControlForm.prototype.delete_result=function(result, request_params)
             //console.error("closing dah shit", this.params.view);
             viewClose(this.params.view);
         }
+
+        //send a deleted-event to the creator of this view
+        $(this.params.view.creator).trigger("control_form_deleted", result);
 
         //broadcast the deleted event to everyone who is listening
 //        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);

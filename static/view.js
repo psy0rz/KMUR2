@@ -140,7 +140,12 @@ function viewUpdateUrl(id, viewData)
 /* creates a new view of specified type, and calls viewLoad to load the view in it.
     params:
         clear: set to true to delete all other main-windows before adding the new one.
-        creator: element-object that was responsible for creating the view. Will be highlighted and scrolled to on close. (will create view.highlight)
+        
+        creator: 
+            jquery-object that was responsible for creating the view.
+            A unique class will be added automaticly to it, and the selector-string for this class will be stored in view.creator 
+            Will be scrolled to when view is closed.
+            Usually this is used by controlls to pass back events when something has happend that the creator should know. (like adding a newly created item to a list in the creator form)
 
     view:
         name: name of    the view. e.g. 'core.Users.list' (will load static/views/core/Users/list.html)
@@ -150,9 +155,10 @@ function viewUpdateUrl(id, viewData)
             'popup': create a new popup window to load the view. 
             'existing': load view into an existing element id (see below)
         x,y: (for mode 'popup') coordinates for popup
-        id: id of the element to load the view in (auto set in case of main and popup)
-        highlight: a field to highlight during open and scroll-to after close
-        focus: which field to focus after view is openend. (its the view's responsibility to actually focus the field)
+        id: id of the element to load the view in. if not specified, in case of main and popup, its automaticly set to #viewX where X is the view number)
+        creator: see above, automaticly set to .cviewX where X is the viewnumber. class is added to params.creator on creation and deleted when view is deleted.
+
+        other view-parameters are just passed along. (view.focus is one thats frequently used by controls for example)
 
 Loading views this way also ensures correct browser url and history updating.
 
@@ -184,9 +190,19 @@ function viewCreate(params, view)
     viewStatus.views[id]={};
     $.extend(true, viewStatus.views[id], view);
 
-    //add id field
-    viewStatus.views[id].id=id;
+    //add id field, if its not set
+    if (!view.id)
+        viewStatus.views[id].id=id;
 
+    //add unique class to creator, so that we can find it back later. 
+    if (params.creator)
+    {
+        viewStatus.views[id].creator=".c"+id;
+        params.creator.addClass("c"+id);
+    }
+
+
+/* 
     //highlight a creator?
     if (params.creator)
     {
@@ -194,6 +210,7 @@ function viewCreate(params, view)
         $(params.creator).addClass(id);
         viewStatus.views[id].highlight="."+id;
     }
+*/    
     
     viewSetUrl(viewStatus);
 }
@@ -293,8 +310,8 @@ function viewPathUpdate()
 //adds a new view to the DOM tree
 function viewDOMadd(view)
 {
-    if (view.highlight)
-        $(view.highlight).addClass("ui-state-highlight");
+    // if (view.highlight)
+    //     $(view.highlight).addClass("ui-state-highlight");
 
     
     if (view.mode=='main')
@@ -374,11 +391,11 @@ function viewDOMdel(view)
         $("#"+view.id).empty();
     }
 
-    //remove highlight and scroll to it?
+    //scroll to it?
     if ($(view.highlight).length!=0)
     {
         $("body").scrollTop($(view.highlight).offset().top-100);
-        $(view.highlight).removeClass("ui-state-highlight");
+        //$(view.highlight).removeClass("ui-state-highlight");
         //NO: goes wrong when adding stuff to formlists
         //$(view.highlight).effect('highlight',2000);
 
