@@ -12,10 +12,10 @@ class Members(models.mongodb.MongoDB):
                 '_id': models.mongodb.FieldId(),
                 'name': fields.String(desc='Name'),
                 'group_ids': models.mongodb.Relation(
-                    desc='Groups this member belongs to',
+                    desc='Groups this member belongs to (resolved server side)',
                     model=models.example.Groups.Groups),
                 'group_ids2': models.mongodb.Relation(
-                    desc='Groups this member belongs to (without resolving)',
+                    desc='Groups2 this member belongs to (resolved client side)',
                     model=models.example.Groups.Groups,
                     resolve=False)
             }),

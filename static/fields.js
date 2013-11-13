@@ -1342,11 +1342,14 @@ Field.Relation=Object.create(Field.Base);
 
 Field.Relation.meta_put=function(key, meta, context)
 {
+
    if (Field.Base.meta_put(key, meta, context))
         return;
 
-   //sub-meta-data is already resolved
-    if (meta.resolve==true)
+    context.addClass("field-put field-input field-get");
+
+   //sub-meta-data is already resolved?
+    if ('meta' in meta)
         Field.Relation.meta_put_resolved(key, meta, context)
     else
     {
@@ -1363,7 +1366,8 @@ Field.Relation.meta_put=function(key, meta, context)
             {
                 //complete the submeta data and call actual function
                 meta.meta=result.data;
-                Field.Relation.meta_put_resolved(key, meta, context)
+                Field.Relation.meta_put_resolved(key, meta, context);
+                context.trigger("meta_put_done");
             },
             "getting metadata from related model"
         );
@@ -1398,7 +1402,6 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     //make sure the list doesnt have a field-put and field-input, and we do. 
     //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
     list_context.removeClass("field-put field-input field-get");
-    context.addClass("field-put field-input field-get");
 
     $(".field-relation-on-click-add", context).click(function()
     {
@@ -1575,8 +1578,16 @@ Field.Relation.get=function(key, meta, context)
     data=Field.List.get(key, meta.meta, list_context);
     if (meta.resolve)
         return(data);
-//    else
-        //TODO: convert data to array of id's        
+    else
+    {
+        //"de-resolve" data, by converting it to an array of id's
+        var ids=[];
+        $.each(data, function(key, value)
+        {
+            ids.push(value[meta.meta.list_key]);
+        });
+        return(ids);
+    }
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
@@ -1586,7 +1597,28 @@ Field.Relation.put=function(key, meta, context, data, options)
     //recurse into sub-meta list
     if (meta.resolve)
         Field.List.put(key, meta.meta, list_context, data, options);
-    //else //TODO: implement
+    else 
+    {
+        //get related data
+        rpc(
+            meta.model+".get_all",
+            { 'id_in': data },
+            function(result)
+            {
+                //add a handler that gets triggered as soon as metadata is resolved
+                context.off("meta_put_done").on("meta_put_done", function()
+                {
+                    Field.List.put(key, meta.meta, list_context, result.data, options);
+                });
+
+                //metadata already resolved?
+                if ('meta' in meta)
+                    context.trigger("meta_put_done");
+            },
+            "getting data from related model"
+        );
+
+    }
 
 }
 
