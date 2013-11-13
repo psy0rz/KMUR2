@@ -534,11 +534,24 @@ Field.List.meta_put=function(key, meta, context)
         });
 
         //the view that was opened by us has changed something to our item
-        //NOTE:new items will be added instead of ignored. the global changed handler for the model will ignore adds.
+        //NOTE:new items will be added. this in contrary to the the global changed-handler, which will ignore adds since it doesnt know if the new item should be added or not
         $(list_source).off("control_form_changed").on("control_form_changed",function(event,result)
         {
-            //XXX somehow combine specific-change-handlers and global-model change handlers?
             console.log("view opened by us has changed the data", result);
+
+            Field.List.put(
+                key,
+                meta,
+                list_source,
+                [ result.data ],
+                {
+                    list_no_remove: true,
+                    list_update: true,
+                    show_changes: true
+
+                }
+            );
+
             return(false);
         });
 
@@ -1357,11 +1370,16 @@ Field.Relation.meta_put=function(key, meta, context)
     }
 }
 
+Field.Relation.list_context=function(key, context)
+{
+    return($('.field-list-source[field-key="'+key+'"]', context));
+}
+
 Field.Relation.meta_put_resolved=function(key, meta, context)
 {
  
     //a relation is a more complex type, so among other things it should have a field-list-source inside the context. 
-    var list_context=$(".field-list-source[field-key="+key+"]", context);
+    var list_context=Field.Relation.list_context(key, context);
 
     //a common mistake would be to give the field-list-source a field-meta-put, so catch it here:
     if (list_context.hasClass("field-meta-put"))
@@ -1379,8 +1397,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //make sure the list doesnt have a field-put and field-input, and we do. 
     //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
-    list_context.removeClass("field-put field-input");
-    context.addClass("field-put field-input");
+    list_context.removeClass("field-put field-input field-get");
+    context.addClass("field-put field-input field-get");
 
     $(".field-relation-on-click-add", context).click(function()
     {
@@ -1551,7 +1569,7 @@ choosen solution: we have 2 modes to chose from:
 
 Field.Relation.get=function(key, meta, context)
 {
-    var list_context=$(".field-list-source[field-key="+key+"]", context);
+    var list_context=Field.Relation.list_context(key, context);
 
     //recurse into sub-meta list
     data=Field.List.get(key, meta.meta, list_context);
@@ -1563,7 +1581,7 @@ Field.Relation.get=function(key, meta, context)
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
-    var list_context=$(".field-list-source[field-key="+key+"]", context);
+    var list_context=Field.Relation.list_context(key, context);
 
     //recurse into sub-meta list
     if (meta.resolve)
