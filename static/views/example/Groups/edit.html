@@ -3,13 +3,25 @@
 
 var form=new ControlForm({
     'view'            : view,
+    'context'		  : 
     'class'           : 'example.Groups',
     'default_focus'   : ['name'],
     'title'           : 'Edit group {name}',
     'title_new'       : 'New group',
     'favorite_menu'   : 'example'
 });
-
+0
+new ControlList({
+    'view'            	: view,
+    'get_params'		: {
+    	'key_in': {
+    		'group_ids': view.params._id
+    	}
+    }
+    'class'        		: 'example.Members',
+    'title'           	: 'members of this group',
+    'endless_scrolling'	: true,
+});
 
 
 </script>

@@ -7,7 +7,8 @@ Contrary to fields.js, we DO intent to emultate classes by using javascript prot
 be instantiated and will have lots of member variables that contain parameters and retrieved meta-data.
 
 params:
-    view:                view to operate on. view.id is used to determine jquery this.context. 
+    view:                view to operate on. view.id is used in combination with context, to determine the jquery this.context object.
+    context:             selector for a sub-context to operate on. this way you can use multiple controls in 1 view.             
     class:               rpc-class-name to call (used to fill in default values)
 
     get_meta:            rpc-method called to get metadata (default: class+".get_meta")
@@ -22,7 +23,6 @@ params:
     delete:              rpc-method called to delete data (default: class+".delete")
     delete_params        parameters to pass to put (default: view.params)
 
-    edit_view            View that is opened when a user clicks an element with class .control-on-click-edit
 
 Other items in params documented in the subclasses below.
 
@@ -33,7 +33,11 @@ function ControlBase(params)
     this.params={};
     $.extend( true, this.params, params);
 
-    this.context=$("#"+params.view.id);
+    if (params.context)
+        this.context=$(params.context, "#"+params.view.id);
+    else
+        this.context=$("#"+params.view.id);
+
     this.debug_txt=params.view.id+" "+params.view.name+" ";
 
     if (!('get_meta' in this.params))
@@ -336,6 +340,7 @@ ControlForm.prototype.attach_event_handlers=function()
         viewClose(this_control.params.view);
     });
 
+/* DEPRECATED
     //some forms are just showing data or are readonly. in those cases there usually will be some edit-button or elements to click.
     $(".control-on-click-edit", context).off().click(function(event)
     {
@@ -361,7 +366,7 @@ ControlForm.prototype.attach_event_handlers=function()
             },
             editView);
     });
-
+*/
 
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(e,result)
