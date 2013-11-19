@@ -94,27 +94,19 @@ class Relation(fields.Base):
 
         #check mongo ID's validity
         mongo_ids=[]
-        if self.meta['resolve']==False:
-            #data is just a list of id's in string format:
-            # for id in data:
-            #     mongo_id=bson.objectid.ObjectId(id)
-            #     if str(mongo_id) != id:
-            #         raise fields.FieldException("the list contains an invalid id")
 
-            #     mongo_ids.append(mongo_id)
-            mongo_ids=data
+        if len(data)>0:
+            #try to handle resolved and unresolved data inteligently. 
+            #we always just want to endup with a list of mongo-id's
+            if isinstance(data[0], dict):
+                #data is a list of foreign documents
+                list_key=self.meta['meta'].meta['list_key']
 
-        else:
-            #data is a list of foreign documents
-            list_key=self.meta['meta'].meta['list_key']
+                for doc in data:
+                    mongo_ids.append(doc[list_key])
 
-            for doc in data:
-                # mongo_id=bson.objectid.ObjectId(doc[list_key])
-                # if str(mongo_id) != doc[list_key]:
-                #     raise fields.FieldException("the list contains an invalid id")
-
-                mongo_ids.append(doc[list_key])
-
+            else:
+                mongo_ids=data
 
         #call foreign model to check if all id's exist
         foreign_object=self.model(context)
@@ -131,27 +123,39 @@ class Relation(fields.Base):
 
 
     def to_internal(self, context, data):
-        """convert a list of object ids from input data to actual bson objectids
+        """convert object ids from input data to actual bson objectids
 
-        if resolve is True then we 'unresolve' the relation back to normal object ids.
+        there are 3 posibilities:
+            1. data is a string and is interpreted as a single bson object id. (usefull when doing a get_all 'match' or 'match_in')
+            2. data is a list of strings.
+            3. data is a list of dicts. (in this case all the 'list_key' will be converted to a list of bson objectids)
         """
 
-        mongo_ids=[]
-        if self.meta['resolve']==False:
-            #data is just a list of id's in string format:
-            for id in data:
-                mongo_id=bson.objectid.ObjectId(id)
-                mongo_ids.append(mongo_id)
 
+        if isinstance(data, list):
+            if len(data)>0:
+                if isinstance(data[0], dict):
+                    #data is a list of foreign documents (e.g. dicts)
+                    list_key=self.meta['meta'].meta['list_key']
+                    mongo_ids=[]
+        
+                    for doc in data:
+                        mongo_id=bson.objectid.ObjectId(doc[list_key])
+                        mongo_ids.append(mongo_id)
+
+                    return(mongo_ids)
+
+                else:
+                    #data is just a list of id's in string format:
+                    mongo_ids=[]
+                    for id in data:
+                        mongo_id=bson.objectid.ObjectId(id)
+                        mongo_ids.append(mongo_id)
+
+                    return(mongo_ids)
         else:
-            #data is a list of foreign documents
-            list_key=self.meta['meta'].meta['list_key']
-
-            for doc in data:
-                mongo_id=bson.objectid.ObjectId(doc[list_key])
-                mongo_ids.append(mongo_id)
-
-        return(mongo_ids)
+            #probaly a string, so convert it to single objectid
+            return(bson.objectid.ObjectId(data))
 
 
     def to_external(self, context, data):
@@ -348,7 +352,6 @@ class MongoDB(models.common.Base):
 
         if match!=None:
             for (key,value) in match.items():
-                self.context.debug(meta)
                 spec_and.append({
                     key: meta.meta['meta'].meta['meta'][key].to_internal(self.context, value)
                     })

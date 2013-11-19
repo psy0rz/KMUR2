@@ -1,37 +1,64 @@
 
 <script>
 
-var form=new ControlForm({
+new ControlForm({
     'view'            : view,
-    'context'		  : 
+    'context'         : '.group',
     'class'           : 'example.Groups',
     'default_focus'   : ['name'],
     'title'           : 'Edit group {name}',
     'title_new'       : 'New group',
     'favorite_menu'   : 'example'
 });
-0
+
 new ControlList({
     'view'            	: view,
+    'context'           : '.members',
     'get_params'		: {
-    	'key_in': {
-    		'group_ids': view.params._id
-    	}
-    }
+    	'match':  {
+            'group_ids': view.params._id 
+        }
+    },
     'class'        		: 'example.Members',
     'title'           	: 'members of this group',
-    'endless_scrolling'	: true,
+    'endless_scrolling'	: true
 });
 
 
 </script>
 
-<table>
+<table class='group'>
 	<tr>
 		<td class='field-meta-put' field-key='name' field-meta-key='desc'>
 		<td class='field-meta-put' field-key='name'>
 	</tr>
 </table>
+
+
+<fieldset class='members'>
+    <label>Members of this group</label>
+    <table >
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='group_ids2' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+            <td class='field-list-on-click-view field-put' field-key='name' >
+            <td >
+                <table class='field-meta-put field-list-on-click-view' field-key='group_ids2'>
+
+                    <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids2'>
+                        <td class='field-put' field-key='group_ids2.name'>(create new)
+                    </tr>
+                </table>
+
+
+            <td class='control-on-click-del ui-icon ui-icon-trash'>
+        </tr>
+    </table>
+</fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
