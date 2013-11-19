@@ -1448,10 +1448,13 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
             console.log("currentitems", current_items);
 
             //filter those ids out
-            params['id_nin']=[]
+            var list_key=meta.meta.list_key;
+            params['match_nin']={}
+            params['match_nin'][list_key]=[];
+
             $.each(current_items, function(i, item)
             {
-                params['id_nin'].push(item[meta.meta.list_key]);
+                params['match_nin'][list_key].push(item[list_key]);
             });
 
 
@@ -1599,10 +1602,14 @@ Field.Relation.put=function(key, meta, context, data, options)
         Field.List.put(key, meta.meta, list_context, data, options);
     else 
     {
+        var get_params={
+            'match_in': {}
+        };
+        get_params['match_in'][meta.meta.list_key]=data;
         //get related data
         rpc(
             meta.model+".get_all",
-            { 'id_in': data },
+            get_params,
             function(result)
             {
                 //add a handler that gets triggered as soon as metadata is resolved

@@ -120,7 +120,9 @@ class Relation(fields.Base):
         foreign_object=self.model(context)
         result=foreign_object.get_all(
                 fields='_id',
-                id_in=mongo_ids
+                match_in={
+                    foreign_object.meta.meta['list_key']: mongo_ids
+                    }
                 );
 
         #TODO: specify which id in case resolve is true? (altough this error should never happen)
@@ -161,7 +163,9 @@ class Relation(fields.Base):
             return(data)
 
         foreign_object=self.model(context)
-        result=foreign_object.get_all(id_in=data)
+        result=foreign_object.get_all(match_in={
+                self.meta['meta'].meta['list_key']: data
+            })
 
         return(result)
 
@@ -278,7 +282,7 @@ class MongoDB(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, fields=None, skip=0, limit=0, sort={}, id_in=None, id_nin=None, match=None, regex=None, regex_or=None, gte=None, lte=None, key_in=None):
+    def _get_all(self, fields=None, skip=0, limit=0, sort={}, match=None, match_in=None, match_nin=None,regex=None, regex_or=None, gte=None, lte=None):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
@@ -290,14 +294,13 @@ class MongoDB(models.common.Base):
 
         Filters are all anded together. (the result of regex_or is also anded with the rest of the filters)
 
-        id_in: list_key (usually _id) should be in this list
-        id_nin: list_key (usually _id) should be not in this list
+        match: dict with keys and values to exactly match
+        match_in: dict with key and list of values. (match any record that matches any of the values in the list)
+        match_nin: dict with key and list of values. (match any record that matches non of the values in the list)
         regex_or: dict with keys and values to case insensitive regex match, OR based
         regex: dict with keys and values to case insensitive regex match
         gte:    dict of keys that should be greater than or equal to value
         lte:    dict of keys that should be less than or equal to value 
-        match: dict with keys and values to exactly match
-        key_in: dict with key and list of values. (match any of the values in the list)
 
 
         '''
@@ -329,50 +332,81 @@ class MongoDB(models.common.Base):
                             }
                         })
 
-        if key_in!=None:
-            for (key,value) in key_in.items():
-                spec_and.append({
-                        key: {
-                           '$in': value 
-                            }
-                        })
+        # if key_in!=None:
+        #     for (key,value) in key_in.items():
+        #         spec_and.append({
+        #                 key: {
+        #                    '$in': value 
+        #                     }
+        #                 })
 
         if regex!=None:
             for (key,value) in regex.items():
                 spec_and.append({
-                    key : re.compile(value, re.IGNORECASE)
+                    key: re.compile(value, re.IGNORECASE)
                     })
 
         if match!=None:
             for (key,value) in match.items():
+                self.context.debug(meta)
                 spec_and.append({
-                    key : value
+                    key: meta.meta['meta'].meta['meta'][key].to_internal(self.context, value)
                     })
 
-        if id_in!=None or id_nin!=None:
 
-            list_key=meta.meta['list_key']
+        if match_in!=None:
+            for (key,values) in match_in.items():
+                converted_values=[];
 
+                #FIXME: to_internal conversion only works for toplevel keys, since we use dot-notation
+                for value in values:
+                    converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
-            if id_in!=None:
-                ids=[]
-                for id in id_in:
-                    ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
                 spec_and.append({
-                    list_key: {
-                        '$in': ids
-                        }
-                    })
+                    key: {
+                        '$in': converted_values
+                    }
+                })
 
-            if id_nin!=None:
-                ids=[]
-                for id in id_nin:
-                    ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
+        if match_nin!=None:
+            for (key,values) in match_nin.items():
+                converted_values=[];
+
+                #FIXME: to_internal conversion only works for toplevel keys, since we use dot-notation
+                for value in values:
+                    converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
+
                 spec_and.append({
-                    list_key: {
-                        '$nin': ids
-                        }
-                    })
+                    key : {
+                        '$nin': converted_values
+                    }
+                })
+
+
+        # if id_in!=None or id_nin!=None:
+
+        #     list_key=meta.meta['list_key']
+
+
+        #     if id_in!=None:
+        #         ids=[]
+        #         for id in id_in:
+        #             ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
+        #         spec_and.append({
+        #             list_key: {
+        #                 '$in': ids
+        #                 }
+        #             })
+
+        #     if id_nin!=None:
+        #         ids=[]
+        #         for id in id_nin:
+        #             ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
+        #         spec_and.append({
+        #             list_key: {
+        #                 '$nin': ids
+        #                 }
+        #             })
 
 
         #combine the ands and ors. 

@@ -1,5 +1,6 @@
 <script>
 	var context=$("#"+view.id);
+    var list_source_element=$(".field-list-source:first", context);
 
 	var meta;
 	
@@ -17,7 +18,7 @@
 			function (result)
 			{
 				viewShowError(result, context)
-                Field[meta.type].put('', meta, context, result["data"], { 
+                Field[meta.type].put('', meta, list_source_element, result["data"], { 
                     'list_update':params.update,
                     'show_changes':params.update
                 } );
@@ -123,18 +124,18 @@
 
 <div class='viewError'></div>
 <div>
-	<div class='field-put field-list-source field-list-source-hide menuMain menuMain_Passive field-dict-raw' field-key='main'>
+	<div class='field-put field-list-source field-list-source-hide menuMain menuMain_Passive field-dict-raw' field-key=''>
 		<div class='menuMainTitle' >
 			<span class='ui-icon ui-icon-triangle-1-e menuMain_ActiveHide' style='float:left'></span>
 			<span class='ui-icon ui-icon-triangle-1-s menuMain_PassiveHide' style='float:left'></span>
-			<span class='field-put' field-key='main.title'></span>
+			<span class='field-put' field-key='title'></span>
 		</div>
 		<div class='menuMainSubs'>
-			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuSub' field-key='main.items' >
-				<div class='field-put' field-key='main.items.title' ></div>
+			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuSub' field-key='items' >
+				<div class='field-put' field-key='items.title' ></div>
 			</div>
-			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuFavorite' field-key='main.favorites' >
-				<div class='field-put' field-key='main.favorites.title'></div>
+			<div class='field-put field-list-source field-list-source-hide field-dict-raw menuFavorite' field-key='favorites'>
+				<div class='field-put' field-key='favorites.title'></div>
 			</div>
 		</div>
 	</div>

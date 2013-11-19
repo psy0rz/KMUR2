@@ -33,21 +33,19 @@ static_menus = loadmenus()
 class Menu(models.mongodb.MongoDB):
     '''Manages menu items and favorites for webui interface'''
 
-    meta = fields.Dict({
-                        'main':fields.List(fields.Dict({
-                                                'title': fields.String(),
-                                                'items': fields.List(fields.Dict({
-                                                                          'title': fields.String(),
-                                                                          'view': fields.Anything({'desc': 'View parameters'}),
-                                                                          })),
-                                                'favorites': fields.List(fields.Dict({
-                                                                                'title': fields.String(),
-                                                                                'view': fields.Anything({'desc': 'View parameters'}),
-                                                                            }),
-                                                                            list_key='_id'
-                                                                        ),
-                                                }))
-                        })
+    meta = fields.List(fields.Dict({
+      'title': fields.String(),
+      'items': fields.List(fields.Dict({
+                                'title': fields.String(),
+                                'view': fields.Anything({'desc': 'View parameters'}),
+                                })),
+      'favorites': fields.List(fields.Dict({
+                                      'title': fields.String(),
+                                      'view': fields.Anything({'desc': 'View parameters'}),
+                                  }),
+                                  list_key='_id'
+                              ),
+      }))
                           
     @Acl(groups="user")
     def put_favorite(self, menu, title, view, favorite_id=None):
@@ -113,12 +111,15 @@ class Menu(models.mongodb.MongoDB):
 
         note: not formatted as defined in get_meta
         '''
-        return self._get_all(match={
-                                    'user_id': self.context.user_id
-                                    },
-                             sort={
-                                   'title':1
-                                   })
+
+        return(self.db[self.default_collection].find(
+          spec={ 
+            'user_id': self.context.user_id,
+          },
+          sort=[ ( 'title',1 ) ]
+        ));
+
+
 
     @Acl(groups="everyone")
     def get_static(self):
@@ -148,6 +149,5 @@ class Menu(models.mongodb.MongoDB):
                                                              'view': favorite['view']
                                                              })
 
-        return {
-                'main': list(menus.values())
-                }
+        return list(menus.values())
+                
