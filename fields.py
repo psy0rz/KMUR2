@@ -77,7 +77,7 @@ class Base(object):
             self.meta['required'] = required
 
 
-    #for json encoding:
+    #for json encoding, convert the field-object meta-data to json encodable form.
     def _to_builtin(self):
         return(self.meta)
 

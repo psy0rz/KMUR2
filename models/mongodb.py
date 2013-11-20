@@ -166,6 +166,9 @@ class Relation(fields.Base):
         if self.meta['resolve']==False:
             return(data)
 
+        if not isinstance(data,list):
+            return (data)
+
         foreign_object=self.model(context)
         result=foreign_object.get_all(match_in={
                 self.meta['meta'].meta['list_key']: data
@@ -423,11 +426,15 @@ class MongoDB(models.common.Base):
             spec['$or']=spec_or
 
 
-        return(self.db[self.default_collection].find(spec=spec,
+        cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,
                             skip=skip,
                             limit=limit,
-                            sort=list(sort.items())))
+                            sort=list(sort.items()))
+
+        #TODO: optimize, make external-conversion optional? especially some way to make resolving optional. or is it up to the user to use spec to only as for relevant fields?
+        return self.get_meta().to_external(self.context, list(cursor))
+
 
 
     def _delete(self, _id):

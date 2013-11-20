@@ -489,6 +489,8 @@ Field.List.meta_put=function(key, meta, context)
     //after the submeta data is done, attach event handlers for listsources
     if (list_source)
     {
+        //TODO: optimize, parent should have these handlers so they dont get cloned?
+
         //create an add-handler to add items to lists
         $(".field-list-on-click-add", list_source).off().click(function(){
             Field.List.from_element_add(null, this);
@@ -524,6 +526,7 @@ Field.List.meta_put=function(key, meta, context)
         });
         
         //create handlers to make lists sortable
+        //FIXME, should be on parent
         $(".field-list-sortable", list_source).off().sortable({
             //placeholder: "",
             handle: ".control-on-drag-sort",
