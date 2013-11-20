@@ -9,7 +9,7 @@ class Groups(models.mongodb.MongoDB):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'name': fields.String(desc='Name'),
+                'name': fields.String(desc='Group name'),
             }),
             list_key='_id'
         )

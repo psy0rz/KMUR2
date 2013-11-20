@@ -16,12 +16,12 @@ params:
     get_meta_result      called with results of get_meta
 
     get:                 rpc-method called to get data (default: class+".get")
-    get_params           parameters to pass to get (default: view.params)
+    get_params           parameters to pass to get 
     get_result           called with results of get data 
     title:               title to set after get. (will be processed by format(..,result))
 
     delete:              rpc-method called to delete data (default: class+".delete")
-    delete_params        parameters to pass to put (default: view.params)
+    delete_params        parameters to pass to put (default: same as get_params)
 
 
 Other items in params documented in the subclasses below.
@@ -54,19 +54,19 @@ function ControlBase(params)
         this.params.get=this.params.class+".get";
 
     if (!('get_params' in this.params))
-        this.params.get_params=this.params.view.params;
+        this.params.get_params={}; //too ambigious: this.params.view.params;
 
     if (! this.params.get_result)
         this.params.get_result=function(){};
 
-    if (!('title' in this.params))
-        this.params.title="Edit item {_id}";
+//    if (!('title' in this.params))
+//        this.params.title="Edit item {_id}";
 
     if (!('delete' in this.params))
         this.params.delete=this.params.class+".delete";
 
     if (!('delete_params' in this.params))
-        this.params.delete_params=this.params.view.params;
+        this.params.delete_params=this.params.get_params;
 
 
 
@@ -199,8 +199,8 @@ function ControlForm(params)
     if (! this.params.favorite_key)
         this.params.favorite_key='_id';
 
-    if (!('title_new' in this.params))
-        this.params.title_new="New item";
+//    if (!('title_new' in this.params))
+//        this.params.title_new="New item";
 
     this.get_meta({});
 }
@@ -269,10 +269,13 @@ ControlForm.prototype.get_result=function(result, request_params)
             });
         }
 
-        viewReady({
-            'view': this.params.view,
-            'title': this.format(this.params.title, result.data)
-        });
+        if (this.params.title)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.format(this.params.title, result.data)
+            });
+        }
 
         $(".control-hide-on-edit", this.context).hide();
     }
@@ -281,11 +284,13 @@ ControlForm.prototype.get_result=function(result, request_params)
     {
         this.new_item=true;
 
-        viewReady({
-            'view': this.params.view,
-            'title': this.params.title_new
-        });
-
+        if (this.params.title_new)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.params.title_new
+            });
+        }
 
         $(".control-hide-on-new", this.context).hide();
     }
@@ -678,10 +683,13 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if (!this.view_ready)
     {
-        viewReady({
-            'view': this.params.view,
-            'title': this.format(this.params.title, result.data)
-        });
+        if (this.params.title)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.format(this.params.title, result.data)
+            });
+        }
         this.view_ready=true;
 
         this.focus();
@@ -702,7 +710,6 @@ ControlList.prototype.focus=function()
 }
 
 
-//TODO: just handle this in get_meta_result
 ControlList.prototype.attach_event_handlers=function()
 {   
     var this_control=this;
@@ -879,7 +886,7 @@ ControlList.prototype.attach_event_handlers=function()
     //The parent element should have the .control-on-change-filter class as well as any other options.
     //The input element should be the only input element in the parent.
     //The parent element can have special attirbutes to hint about the type of filtering we want:
-    //When no special attribute is set, return all records that contain the string.
+    //When no special attribute is set, return all documents that contain the string.
 
     //When filter-match is set on the parent, filter on items that exactly match the value
     //When filter-gte is set, filter on items that are greater than or equal to the value
@@ -1030,4 +1037,115 @@ ControlList.prototype.attach_event_handlers=function()
 }
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//list controller for relations
+//this is the 'reverse' of field.Relation. 
+/*
+params:
+    (look in the baseclasses for the basic documentation)
+
+    related_key: field to match relations on
+    related_value: value to match relations on    
+    related_get: rpc function to call to get related data (default class.get)
+    related_put: rpc function to call to get related data (default class.put)
+    relate_confirm: text to show when relating an object (will be processed by format(..,result))
+    unrelate_confirm: text to show when unrelating an object (will be processed by format(..,result))
+
+    no confirm-text means no confirmation required. (delete/add at once)
+*/
+function ControlListRelated(params)
+{
+
+    ControlList.call(this, params);
+
+    //make sure we only list documents which have relations that point to "us"
+    this.params.get_params['match']={};
+    this.params.get_params['match'][params.related_key]=params.related_value;
+
+    if (!('related_get' in params))
+        this.params.related_get=this.params.class+".get";
+
+    if (!('related_put' in params))
+        this.params.related_put=this.params.class+".put";
+
+    if (!('relate_confirm' in params))
+        this.params.relate_confirm="";
+
+    if (!('unrelate_confirm' in params))
+        this.params.unrelate_confirm="";
+
+
+}
+ControlListRelated.prototype=Object.create(ControlList.prototype);
+
+
+ControlListRelated.prototype.attach_event_handlers=function()
+{
+    //attach the default list event handlers
+    ControlList.prototype.attach_event_handlers.call(this);
+
+
+
+    //attach some extra event handlers to modify relations
+    var this_control=this;
+    var context=this.context;
+
+    //remove the relation to us
+    $(".control-on-click-unrelate", context).off().click(function(event)
+    {
+        var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
+
+        if (list_id===undefined)
+            return;
+
+        var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
+        var highlight_element=this;
+
+        //first GET the data of the document that points to us
+        rpc(
+            this_control.params.related_get,
+            {
+                '_id': list_id
+            },
+            function(result)
+            {
+                if (!viewShowError(result, this_control.context, this_control.meta))
+                {
+                    $(highlight_element).confirm({
+                        'text': this_control.format(this_control.params.unrelate_confirm, result.data),
+                        'callback': function()
+                        {
+                            //now remove the item from the document and put it 
+                            var i=result.data[this_control.params.related_key].indexOf(this_control.params.related_value);
+                            result.data[this_control.params.related_key].splice(i,1);
+                            rpc(
+                                this_control.params.related_put,
+                                result.data,
+                                function(result)
+                                {
+                                    if (!viewShowError(result, this_control.context, this_control.meta))
+                                    {
+                                        list_element.hide(1000, function()
+                                        {
+                                            list_element.remove();
+                                        });
+                                    }
+                                },
+                                this_control.debug_txt+"unrelating: putting updated document"
+                            );                            
+                        }
+
+                    });
+                }
+            },
+            this_control.debug_txt+"unrelating: getting"
+        );
+
+    });
+
+
+
+}
 

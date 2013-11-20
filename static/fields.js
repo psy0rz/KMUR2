@@ -1605,26 +1605,29 @@ Field.Relation.put=function(key, meta, context, data, options)
         var get_params={
             'match_in': {}
         };
-        get_params['match_in'][meta.meta.list_key]=data;
-        //get related data
-        rpc(
-            meta.model+".get_all",
-            get_params,
-            function(result)
-            {
-                //add a handler that gets triggered as soon as metadata is resolved
-                context.off("meta_put_done").on("meta_put_done", function()
+
+        if (data && data.length>0)
+        {
+            get_params['match_in'][meta.meta.list_key]=data;
+            //get related data
+            rpc(
+                meta.model+".get_all",
+                get_params,
+                function(result)
                 {
-                    Field.List.put(key, meta.meta, list_context, result.data, options);
-                });
+                    //add a handler that gets triggered as soon as metadata is resolved
+                    context.off("meta_put_done").on("meta_put_done", function()
+                    {
+                        Field.List.put(key, meta.meta, list_context, result.data, options);
+                    });
 
-                //metadata already resolved?
-                if ('meta' in meta)
-                    context.trigger("meta_put_done");
-            },
-            "getting data from related model"
-        );
-
+                    //metadata already resolved?
+                    if ('meta' in meta)
+                        context.trigger("meta_put_done");
+                },
+                "getting data from related model"
+            );
+        }
     }
 
 }

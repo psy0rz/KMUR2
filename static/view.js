@@ -504,8 +504,8 @@ function viewLoad(view)
     $.fn.confirm = function( options ) {  
         
         var settings = {
-            'title'     : 'Bevestiging',
-            'text'      : 'Weet u het zeker?'
+            'title'     : 'Confirmation',
+            'text'      : 'Are you sure?'
         };
         
         if ( typeof options == 'function' ) 
@@ -517,6 +517,13 @@ function viewLoad(view)
             $.extend( settings, options );
         }
         
+        //no text, means no confirmation needed
+        if (!settings.text)
+        {
+            settings.callback();
+            return;
+        }
+
         var div=$("<div>");
         div.text(settings.text);
         div.append('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>');
@@ -556,8 +563,8 @@ function viewLoad(view)
     $.fn.error = function( options ) {  
         
         var settings = {
-            'title'     : 'Fout',
-            'text'      : 'Onbekende fout opgetreden'
+            'title'     : 'Error',
+            'text'      : 'An unexpected error has occured'
         };
         
         if ( typeof options == 'function' ) 
@@ -568,7 +575,8 @@ function viewLoad(view)
         {
             $.extend( settings, options );
         }
-        
+
+
         var div=$("<div>");
         div.text(settings.text);
         div.append('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>');
