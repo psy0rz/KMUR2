@@ -538,7 +538,7 @@ Field.List.meta_put=function(key, meta, context)
 
         //the view that was opened by us has changed something to our item
         //NOTE:new items will be added. this in contrary to the the global changed-handler, which will ignore adds since it doesnt know if the new item should be added or not
-        $(list_source).off("control_form_changed").on("control_form_changed",function(event,result)
+        $(list_source).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
             console.log("view opened by us has changed the data", result);
 

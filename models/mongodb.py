@@ -118,7 +118,7 @@ class Relation(fields.Base):
                 );
 
         #TODO: specify which id in case resolve is true? (altough this error should never happen)
-        if result.count()!=len(data):
+        if len(result)!=len(data):
             raise fields.FieldException("an item in the list doesnt exist")
 
 
