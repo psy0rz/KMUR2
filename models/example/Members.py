@@ -22,6 +22,14 @@ class Members(models.mongodb.MongoDB):
             list_key='_id'
         )
 
+
+    def __init__(self, context=None):
+        super(Members, self).__init__(context=context)
+
+        #name should be unique..let db enforce this.
+        self.db[self.default_collection].ensure_index( 'name', unique=True )
+
+
     @Acl(groups="admin")
     def put(self, **doc):
 
