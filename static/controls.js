@@ -1079,6 +1079,8 @@ function ControlListRelated(params)
     if (!('unrelate_confirm' in params))
         this.params.unrelate_confirm="";
 
+    this.params.on_change='get';
+
 
 }
 ControlListRelated.prototype=Object.create(ControlList.prototype);
@@ -1124,6 +1126,7 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
                             {
                                 if (!viewShowError(result, context, this_control.meta))
                                 {
+                                    $.publish(this_control.params.class+'.changed', result);
                                     ok_callback(result);         
                                 }
                             },
@@ -1176,6 +1179,7 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
                             {
                                 if (!viewShowError(result, context, this_control.meta))
                                 {
+                                    $.publish(this_control.params.class+'.changed', result);
                                     ok_callback(result);         
                                 }
                             },
@@ -1208,7 +1212,7 @@ ControlListRelated.prototype.attach_event_handlers=function()
         console.log("view opened by us has created an item", result);
         this_control.relate(result.data[this_control.meta.list_key],"",function(result)
         {
-            //if the relation fails some, we also wont update the list, so everything stays consistent.
+            //if the relation fails for some reason, we also wont update the list, so everything stays consistent.
             //ist it awesome? :)        
             Field.List.put(
                 key,
@@ -1240,56 +1244,94 @@ ControlListRelated.prototype.attach_event_handlers=function()
 
         this_control.unrelate(list_id, this_control.params.unrelate_confirm, function(result)
         {
-           list_element.hide(1000, function()
+/*           list_element.hide(1000, function()
             {
                 list_element.remove();
             });
+*/
 
         });
 
-        //first GET the data of the document that points to us
-/*        rpc(
-            this_control.params.related_get,
-            {
-                '_id': list_id
-            },
-            function(result)
-            {
-                if (!viewShowError(result, this_control.context, this_control.meta))
-0                {
-                    $(highlight_element).confirm({
-                        'text': this_control.format(this_control.params.unrelate_confirm, result.data),
-                        'callback': function()
-                        {
-                            //now remove the item from the document and put it 
-                            var i=result.data[this_control.params.related_key].indexOf(this_control.params.related_value);
-                            result.data[this_control.params.related_key].splice(i,1);
-                            rpc(
-                                this_control.params.related_put,
-                                result.data,
-                                function(result)
-                                {
-                                    if (!viewShowError(result, this_control.context, this_control.meta))
-                                    {
-                                        list_element.hide(1000, function()
-                                        {
-                                            list_element.remove();
-                                        });
-                                    }
-                                },
-                                this_control.debug_txt+"unrelating: putting updated document"
-                            );                            
-                        }
-
-                    });
-                }
-            },
-            this_control.debug_txt+"unrelating: getting"
-        );
-*/
-
     });
 
+
+/*    $(".control-on-click-relate", context).off("click").on("click",function()
+    {
+        $(".control-on-change-relate", context).autocomplete("search", $(this).val());
+    })
+
+
+    $(".control-on-change-relate", context).autocomplete({
+        minLength: 0,
+        autoFocus: true,
+        //focus of selected suggestion has been changed
+        focus: function( event, ui ) {
+            return(false);
+        },
+        //suggestion has been selected, create relation
+        select: function (event, ui) {
+            $(this).val("");
+
+            Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
+                list_no_remove: true,
+                list_update: true,
+                show_changes: true
+
+            });
+            return(false);
+        },
+        //data source
+        source: function(request, response)
+        {
+
+            //contruct or-based case insensitive regex search, excluding all the already selected id's
+            var params={}
+
+            //get currently selected ids
+            var current_items=Field.List.get(key, meta.meta, list_context);
+            console.log("currentitems", current_items);
+
+            //filter those ids out
+            var list_key=meta.meta.list_key;
+            params['match_nin']={}
+            params['match_nin'][list_key]=[];
+
+            $.each(current_items, function(i, item)
+            {
+                params['match_nin'][list_key].push(item[list_key]);
+            });
+
+
+            var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
+            params['regex_or']={}
+            $.each(search_keys, function(i, key_str)
+            {
+                params['regex_or'][key_str]=request.term;
+            });
+
+            var result_format=$(".field-relation-on-change-search", context).attr("result-format");
+
+            //call the foreign model to do the actual search
+            rpc(meta.model+".get_all",
+                params,
+                function (result)
+                {
+                    viewShowError(result,context,meta);
+                    //construct list of search-result-choices for autocomplete
+                    choices=[]
+                    for (i in result.data)
+                    {
+                        choices[i]={
+                            label: ControlBase.prototype.format(result_format, result.data[i]),
+                            value: result.data[i]
+                        }
+                    }
+                    response(choices);
+                },
+                'relation autocomplete search');
+        }
+    })
+*/
 
 }
 
