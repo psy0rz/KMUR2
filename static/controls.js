@@ -16,12 +16,12 @@ params:
     get_meta_result      called with results of get_meta
 
     get:                 rpc-method called to get data (default: class+".get")
-    get_params           parameters to pass to get (default: view.params)
+    get_params           parameters to pass to get 
     get_result           called with results of get data 
     title:               title to set after get. (will be processed by format(..,result))
 
     delete:              rpc-method called to delete data (default: class+".delete")
-    delete_params        parameters to pass to put (default: view.params)
+    delete_params        parameters to pass to put (default: same as get_params)
 
 
 Other items in params documented in the subclasses below.
@@ -54,19 +54,19 @@ function ControlBase(params)
         this.params.get=this.params.class+".get";
 
     if (!('get_params' in this.params))
-        this.params.get_params=this.params.view.params;
+        this.params.get_params={}; //too ambigious: this.params.view.params;
 
     if (! this.params.get_result)
         this.params.get_result=function(){};
 
-    if (!('title' in this.params))
-        this.params.title="Edit item {_id}";
+//    if (!('title' in this.params))
+//        this.params.title="Edit item {_id}";
 
     if (!('delete' in this.params))
         this.params.delete=this.params.class+".delete";
 
     if (!('delete_params' in this.params))
-        this.params.delete_params=this.params.view.params;
+        this.params.delete_params=this.params.get_params;
 
 
 
@@ -199,8 +199,8 @@ function ControlForm(params)
     if (! this.params.favorite_key)
         this.params.favorite_key='_id';
 
-    if (!('title_new' in this.params))
-        this.params.title_new="New item";
+//    if (!('title_new' in this.params))
+//        this.params.title_new="New item";
 
     this.get_meta({});
 }
@@ -269,10 +269,13 @@ ControlForm.prototype.get_result=function(result, request_params)
             });
         }
 
-        viewReady({
-            'view': this.params.view,
-            'title': this.format(this.params.title, result.data)
-        });
+        if (this.params.title)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.format(this.params.title, result.data)
+            });
+        }
 
         $(".control-hide-on-edit", this.context).hide();
     }
@@ -281,11 +284,13 @@ ControlForm.prototype.get_result=function(result, request_params)
     {
         this.new_item=true;
 
-        viewReady({
-            'view': this.params.view,
-            'title': this.params.title_new
-        });
-
+        if (this.params.title_new)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.params.title_new
+            });
+        }
 
         $(".control-hide-on-new", this.context).hide();
     }
@@ -466,8 +471,11 @@ ControlForm.prototype.put_result=function(result, request_params)
         if (this.params.close_after_save)
             viewClose(this.params.view);
 
-        //send a changed-event to the creator of this view
-        $(this.params.view.creator).trigger("control_form_changed", result);
+        //send a event to the creator of this view
+        if (this.new_item)
+            $(this.params.view.creator).trigger("control_form_created", result);
+        else
+            $(this.params.view.creator).trigger("control_form_changed", result);
 
         //broadcast a changed-event to everyone who is listening to it.
         $.publish(this.params.class+'.changed', result);
@@ -678,10 +686,13 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if (!this.view_ready)
     {
-        viewReady({
-            'view': this.params.view,
-            'title': this.format(this.params.title, result.data)
-        });
+        if (this.params.title)
+        {
+            viewReady({
+                'view': this.params.view,
+                'title': this.format(this.params.title, result.data)
+            });
+        }
         this.view_ready=true;
 
         this.focus();
@@ -702,7 +713,6 @@ ControlList.prototype.focus=function()
 }
 
 
-//TODO: just handle this in get_meta_result
 ControlList.prototype.attach_event_handlers=function()
 {   
     var this_control=this;
@@ -879,7 +889,7 @@ ControlList.prototype.attach_event_handlers=function()
     //The parent element should have the .control-on-change-filter class as well as any other options.
     //The input element should be the only input element in the parent.
     //The parent element can have special attirbutes to hint about the type of filtering we want:
-    //When no special attribute is set, return all records that contain the string.
+    //When no special attribute is set, return all documents that contain the string.
 
     //When filter-match is set on the parent, filter on items that exactly match the value
     //When filter-gte is set, filter on items that are greater than or equal to the value
@@ -1030,4 +1040,298 @@ ControlList.prototype.attach_event_handlers=function()
 }
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//list controller for relations
+//this is the 'reverse' of field.Relation. 
+/*
+params:
+    (look in the baseclasses for the basic documentation)
+
+    related_key: field to match relations on
+    related_value: value to match relations on    
+    related_get: rpc function to call to get related data (default class.get)
+    related_put: rpc function to call to get related data (default class.put)
+    relate_confirm: text to show when relating an object (will be processed by format(..,result))
+    unrelate_confirm: text to show when unrelating an object (will be processed by format(..,result))
+
+    no confirm-text means no confirmation required. (delete/add at once)
+*/
+function ControlListRelated(params)
+{
+
+    ControlList.call(this, params);
+
+    //make sure we only list documents which have relations that point to "us"
+    this.params.get_params['match']={};
+    this.params.get_params['match'][params.related_key]=params.related_value;
+
+    if (!('related_get' in params))
+        this.params.related_get=this.params.class+".get";
+
+    if (!('related_put' in params))
+        this.params.related_put=this.params.class+".put";
+
+    if (!('relate_confirm' in params))
+        this.params.relate_confirm="";
+
+    if (!('unrelate_confirm' in params))
+        this.params.unrelate_confirm="";
+
+    this.params.on_change='get';
+
+
+}
+ControlListRelated.prototype=Object.create(ControlList.prototype);
+
+
+//remove a relation to "us" in the related class
+//this is a multistep process (get, confirm, put)
+ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_callback)
+{
+    var this_control=this;
+    var context=this.context;
+
+    //first GET the data of the document that points to us
+    var get_params={}
+    get_params[this_control.meta.list_key]=related_id;
+    rpc(
+        this_control.params.related_get,
+        get_params,
+        function(result)
+        {
+            if (!result.data[this_control.params.related_key])
+                return;
+
+            var id_index=result.data[this_control.params.related_key].indexOf(this_control.params.related_value);
+            //there is no relation to remove?
+            if (id_index==-1)
+            {
+                return;
+            }
+
+            if (!viewShowError(result, context, this_control.meta))
+            {
+                $(context).confirm({
+                    'text': this_control.format(confirm_text, result.data),
+                    'callback': function()
+                    {
+                        //now remove the item from the document and put it 
+                        result.data[this_control.params.related_key].splice(id_index,1);
+                        rpc(
+                            this_control.params.related_put,
+                            result.data,
+                            function(result)
+                            {
+                                if (!viewShowError(result, context, this_control.meta))
+                                {
+                                    $.publish(this_control.params.class+'.changed', result);
+                                    ok_callback(result);         
+                                }
+                            },
+                            this_control.debug_txt+"unrelating: putting updated document"
+                        );                            
+                    }
+
+                });
+            }
+        },
+        this_control.debug_txt+"unrelating: getting"
+    );
+
+
+}
+
+//add a relation to "us" in the related class
+//this is a multistep process (get, confirm, put)
+ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callback)
+{
+    var this_control=this;
+    var context=this.context;
+
+    //first GET the data of the document that points to us
+    var get_params={}
+    get_params[this_control.meta.list_key]=related_id;
+    rpc(
+        this_control.params.related_get,
+        get_params,
+        function(result)
+        {
+            //its already related?
+            if (result.data[this_control.params.related_key] && result.data[this_control.params.related_key].indexOf(this_control.params.related_value)!=-1)
+            {
+                return;
+            }
+
+            if (!viewShowError(result, context, this_control.meta))
+            {
+                $(context).confirm({
+                    'text': this_control.format(confirm_text, result.data),
+                    'callback': function()
+                    {
+                        //now add the item to the document and put it 
+                        result.data[this_control.params.related_key].push(this_control.params.related_value)
+                        rpc(
+                            this_control.params.related_put,
+                            result.data,
+                            function(result)
+                            {
+                                if (!viewShowError(result, context, this_control.meta))
+                                {
+                                    $.publish(this_control.params.class+'.changed', result);
+                                    ok_callback(result);         
+                                }
+                            },
+                            this_control.debug_txt+"relating: putting updated document"
+                        );                            
+                    }
+
+                });
+            }
+        },
+        this_control.debug_txt+"relating: getting"
+    );
+}
+
+
+ControlListRelated.prototype.attach_event_handlers=function()
+{
+    //attach the default list event handlers
+    ControlList.prototype.attach_event_handlers.call(this);
+
+    var this_control=this;
+    var context=this.context;
+    //attach some extra event handlers to modify relations
+
+
+    //the view that was opened by us has created a new item. relate to it automaticly 
+    //NOTE: we overrule handler that was created by Field.List 
+    $(this_control.list_source_element).off("control_form_created").on("control_form_created",function(event, result)
+    {
+        console.log("view opened by us has created an item", result);
+        this_control.relate(result.data[this_control.meta.list_key],"",function(result)
+        {
+            //if the relation fails for some reason, we also wont update the list, so everything stays consistent.
+            //ist it awesome? :)        
+            Field.List.put(
+                key,
+                meta,
+                this_control.list_source_element,
+                [ result.data ],
+                {
+                    list_no_remove: true,
+                    list_update: true,
+                    show_changes: true
+
+                }
+            );
+        });
+        return(false);
+    });
+
+
+    //remove the relation to us
+    $(".control-on-click-unrelate", context).off().click(function(event)
+    {
+        var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
+
+        if (list_id===undefined)
+            return;
+
+        var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
+//        var highlight_element=this;
+
+        this_control.unrelate(list_id, this_control.params.unrelate_confirm, function(result)
+        {
+/*           list_element.hide(1000, function()
+            {
+                list_element.remove();
+            });
+*/
+
+        });
+
+    });
+
+
+/*    $(".control-on-click-relate", context).off("click").on("click",function()
+    {
+        $(".control-on-change-relate", context).autocomplete("search", $(this).val());
+    })
+
+
+    $(".control-on-change-relate", context).autocomplete({
+        minLength: 0,
+        autoFocus: true,
+        //focus of selected suggestion has been changed
+        focus: function( event, ui ) {
+            return(false);
+        },
+        //suggestion has been selected, create relation
+        select: function (event, ui) {
+            $(this).val("");
+
+            Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
+                list_no_remove: true,
+                list_update: true,
+                show_changes: true
+
+            });
+            return(false);
+        },
+        //data source
+        source: function(request, response)
+        {
+
+            //contruct or-based case insensitive regex search, excluding all the already selected id's
+            var params={}
+
+            //get currently selected ids
+            var current_items=Field.List.get(key, meta.meta, list_context);
+            console.log("currentitems", current_items);
+
+            //filter those ids out
+            var list_key=meta.meta.list_key;
+            params['match_nin']={}
+            params['match_nin'][list_key]=[];
+
+            $.each(current_items, function(i, item)
+            {
+                params['match_nin'][list_key].push(item[list_key]);
+            });
+
+
+            var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
+            params['regex_or']={}
+            $.each(search_keys, function(i, key_str)
+            {
+                params['regex_or'][key_str]=request.term;
+            });
+
+            var result_format=$(".field-relation-on-change-search", context).attr("result-format");
+
+            //call the foreign model to do the actual search
+            rpc(meta.model+".get_all",
+                params,
+                function (result)
+                {
+                    viewShowError(result,context,meta);
+                    //construct list of search-result-choices for autocomplete
+                    choices=[]
+                    for (i in result.data)
+                    {
+                        choices[i]={
+                            label: ControlBase.prototype.format(result_format, result.data[i]),
+                            value: result.data[i]
+                        }
+                    }
+                    response(choices);
+                },
+                'relation autocomplete search');
+        }
+    })
+*/
+
+}
 

@@ -489,6 +489,8 @@ Field.List.meta_put=function(key, meta, context)
     //after the submeta data is done, attach event handlers for listsources
     if (list_source)
     {
+        //TODO: optimize, parent should have these handlers so they dont get cloned?
+
         //create an add-handler to add items to lists
         $(".field-list-on-click-add", list_source).off().click(function(){
             Field.List.from_element_add(null, this);
@@ -524,6 +526,7 @@ Field.List.meta_put=function(key, meta, context)
         });
         
         //create handlers to make lists sortable
+        //FIXME, should be on parent
         $(".field-list-sortable", list_source).off().sortable({
             //placeholder: "",
             handle: ".control-on-drag-sort",
@@ -535,7 +538,7 @@ Field.List.meta_put=function(key, meta, context)
 
         //the view that was opened by us has changed something to our item
         //NOTE:new items will be added. this in contrary to the the global changed-handler, which will ignore adds since it doesnt know if the new item should be added or not
-        $(list_source).off("control_form_changed").on("control_form_changed",function(event,result)
+        $(list_source).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
             console.log("view opened by us has changed the data", result);
 
@@ -1605,26 +1608,29 @@ Field.Relation.put=function(key, meta, context, data, options)
         var get_params={
             'match_in': {}
         };
-        get_params['match_in'][meta.meta.list_key]=data;
-        //get related data
-        rpc(
-            meta.model+".get_all",
-            get_params,
-            function(result)
-            {
-                //add a handler that gets triggered as soon as metadata is resolved
-                context.off("meta_put_done").on("meta_put_done", function()
+
+        if (data && data.length>0)
+        {
+            get_params['match_in'][meta.meta.list_key]=data;
+            //get related data
+            rpc(
+                meta.model+".get_all",
+                get_params,
+                function(result)
                 {
-                    Field.List.put(key, meta.meta, list_context, result.data, options);
-                });
+                    //add a handler that gets triggered as soon as metadata is resolved
+                    context.off("meta_put_done").on("meta_put_done", function()
+                    {
+                        Field.List.put(key, meta.meta, list_context, result.data, options);
+                    });
 
-                //metadata already resolved?
-                if ('meta' in meta)
-                    context.trigger("meta_put_done");
-            },
-            "getting data from related model"
-        );
-
+                    //metadata already resolved?
+                    if ('meta' in meta)
+                        context.trigger("meta_put_done");
+                },
+                "getting data from related model"
+            );
+        }
     }
 
 }

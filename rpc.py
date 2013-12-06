@@ -102,7 +102,10 @@ def rpc():
             result['help']['method'] = rpc_method.__doc__
 
         #call method with specified parameters
-        result['data'] = rpc_method(**request['params'])
+        result['data']=rpc_method(**request['params'])
+
+        if 'context' in session:
+            result.update(session['context'].get_results())
 
     except (fields.FieldException, Exception) as e:
         traceback.print_exc()
@@ -113,11 +116,17 @@ def rpc():
 
     session.save()
 
-    if 'context' in session:
-        result.update(session['context'].get_results())
+    #return JSON string. this can throw exceptions as well during conversion of some objects (like mongo cursors)
+    try:
+        return(json.dumps(result, cls=fields.JSONEncoder, indent=None, separators=(',', ':'), ensure_ascii=False))
+    except (Exception) as e:
+        traceback.print_exc()
+        result['error'] = { 'message': str(e) }
+        #remove data from the result, hoping that this solves it
+        del(result['data'])
+        #try again, hopefully without throwing more exceptions
+        return(json.dumps(result, cls=fields.JSONEncoder, indent=None, separators=(',', ':'), ensure_ascii=False))
 
-    #return JSON string;
-    return(json.dumps(result, cls=fields.JSONEncoder, indent=1, ensure_ascii=False))
 
 
 #serve other urls from the static dir

@@ -118,7 +118,7 @@ class Relation(fields.Base):
                 );
 
         #TODO: specify which id in case resolve is true? (altough this error should never happen)
-        if result.count()!=len(data):
+        if len(result)!=len(data):
             raise fields.FieldException("an item in the list doesnt exist")
 
 
@@ -127,8 +127,8 @@ class Relation(fields.Base):
 
         there are 3 posibilities:
             1. data is a string and is interpreted as a single bson object id. (usefull when doing a get_all 'match' or 'match_in')
-            2. data is a list of strings.
-            3. data is a list of dicts. (in this case all the 'list_key' will be converted to a list of bson objectids)
+            2. data is a list of strings. (unresolved relation)
+            3. data is a list of dicts. (resolved relation, in this case all the 'list_key's will be converted to a list of bson objectids)
         """
 
 
@@ -153,6 +153,9 @@ class Relation(fields.Base):
                         mongo_ids.append(mongo_id)
 
                     return(mongo_ids)
+            else:
+                return ([])
+
         else:
             #probaly a string, so convert it to single objectid
             return(bson.objectid.ObjectId(data))
@@ -165,6 +168,9 @@ class Relation(fields.Base):
 
         if self.meta['resolve']==False:
             return(data)
+
+        if not isinstance(data,list):
+            return (data)
 
         foreign_object=self.model(context)
         result=foreign_object.get_all(match_in={
@@ -218,6 +224,7 @@ class MongoDB(models.common.Base):
 
         #check and convert data
         if meta:
+            #NOTE:is this ever used?
             meta.meta['meta'].check(self.context, doc)
             doc=meta.meta['meta'].to_internal(self.context, doc)
         else:
@@ -225,26 +232,28 @@ class MongoDB(models.common.Base):
             doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
             
 
-        #add new
-        if not '_id' in doc:
-            self.db[collection].insert(doc, manipulate=True, safe=True, check_keys=True)
+        try:
+            #add new
+            if not '_id' in doc:
+                self.db[collection].insert(doc, manipulate=True, safe=True, check_keys=True)
 
-        #use existing document
-        else:
-            #remove _id from document and store it in _id
-            _id = doc.pop('_id')
-
-            if replace:
-                result = self.db[collection].update({'_id': _id}, doc, multi=False, safe=True)
+            #use existing document
             else:
-                result = self.db[collection].update({'_id': _id}, {'$set': doc}, multi=False, safe=True)
+                #remove _id from document and store it in _id
+                _id = doc.pop('_id')
 
-            if result['n'] == 0:
-                raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+                if replace:
+                    result = self.db[collection].update({'_id': _id}, doc, multi=False, safe=True)
+                else:
+                    result = self.db[collection].update({'_id': _id}, {'$set': doc}, multi=False, safe=True)
 
-            #restore _id, so we return a complete doc again
-            doc['_id'] = _id
+                if result['n'] == 0:
+                    raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
+                #restore _id, so we return a complete doc again
+                doc['_id'] = _id
+        except (pymongo.errors.DuplicateKeyError) as e:
+                raise fields.FieldException("An object with this name already exists. ("+str(e)+")")
 
         return(doc)
 
@@ -423,11 +432,15 @@ class MongoDB(models.common.Base):
             spec['$or']=spec_or
 
 
-        return(self.db[self.default_collection].find(spec=spec,
+        cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,
                             skip=skip,
                             limit=limit,
-                            sort=list(sort.items())))
+                            sort=list(sort.items()))
+
+        #TODO: optimize, make external-conversion optional? especially some way to make resolving optional. or is it up to the user to use field to only ask for relevant fields?
+        return self.get_meta().to_external(self.context, list(cursor))
+
 
 
     def _delete(self, _id):

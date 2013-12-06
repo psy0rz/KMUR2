@@ -3,8 +3,9 @@
     new ControlList({
         'view'            	: view,
         'class'        		: 'example.Members',
+        'get_params'        : view.params,
         'title'           	: 'members demo overview',
-        'endless_scrolling'	: true,
+        'endless_scrolling'	: false,
         'favorite_menu'     : 'example',
     });
 
@@ -14,12 +15,20 @@
 <table >
     <tr class='ui-widget-header'>
     	<th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order control-order-asc' field-key='group_ids2' field-meta-key='desc'>
+        <th class='field-meta-put control-on-click-order' field-key='group_ids' field-meta-key='desc'>
+        <th class='field-meta-put control-on-click-order' field-key='group_ids2' field-meta-key='desc'>
     	<th>
     </tr>
 
     <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
     	<td class='field-list-on-click-view field-put' field-key='name' >
+        <td >
+            <table class='field-meta-put field-list-on-click-view' field-key='group_ids'>
+
+                <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids'>
+                    <td class='field-put' field-key='group_ids.name'>(create new)
+                </tr>
+            </table>
         <td >
             <table class='field-meta-put field-list-on-click-view' field-key='group_ids2'>
 

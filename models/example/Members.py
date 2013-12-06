@@ -10,7 +10,7 @@ class Members(models.mongodb.MongoDB):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'name': fields.String(desc='Name'),
+                'name': fields.String(desc='Member name'),
                 'group_ids': models.mongodb.Relation(
                     desc='Groups this member belongs to (resolved server side)',
                     model=models.example.Groups.Groups),
@@ -21,6 +21,14 @@ class Members(models.mongodb.MongoDB):
             }),
             list_key='_id'
         )
+
+
+    def __init__(self, context=None):
+        super(Members, self).__init__(context=context)
+
+        #name should be unique..let db enforce this.
+        self.db[self.default_collection].ensure_index( 'name', unique=True )
+
 
     @Acl(groups="admin")
     def put(self, **doc):

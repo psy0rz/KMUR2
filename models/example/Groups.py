@@ -9,10 +9,16 @@ class Groups(models.mongodb.MongoDB):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'name': fields.String(desc='Name'),
+                'name': fields.String(desc='Group name'),
             }),
             list_key='_id'
         )
+
+    def __init__(self, context=None):
+        super(Groups, self).__init__(context=context)
+
+        #name should be unique..let db enforce this.
+        self.db[self.default_collection].ensure_index( 'name', unique=True )
 
     @Acl(groups="admin")
     def put(self, **doc):
