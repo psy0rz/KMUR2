@@ -654,6 +654,7 @@ Field.List.put=function(key, meta, context, data, options)
     //traverse all the new list items
     if (data)
     {
+        var prev_element=undefined;
         $.each(data, function (item_nr, item_value) {
             
             //this will become a new or existing item that needs to be filled with data
@@ -696,7 +697,15 @@ Field.List.put=function(key, meta, context, data, options)
 
                 //we append before we do other stuff with the element. This is because effects and stuff dont work otherwise.
                 //NOTE: can we improve performance a lot by appending after the put on cloned items?
-                update_element.insertBefore(context);
+                if (prev_element)
+                {
+                    //keep the right order if we're adding new items when updating an existing list:
+                    update_element.insertAfter(prev_element);
+                }
+                else
+                {
+                    update_element.insertBefore(context);
+                }
             }
             //found, make sure its not deleted
             else
@@ -707,6 +716,8 @@ Field.List.put=function(key, meta, context, data, options)
             
             //finally put data into it
             Field[meta.meta.type].put(key, meta.meta, update_element, item_value, options);
+
+            prev_element=update_element;
         });
     }
     
