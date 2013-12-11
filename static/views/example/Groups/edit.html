@@ -17,11 +17,20 @@ new ControlListRelated({
     'context'           : '.members',
     'class'        		: 'example.Members',
     'endless_scrolling'	: true,
-    'related_key'       : 'group_ids2',
+    'related_key'       : 'group_ids',
     'related_value'     : view.params._id,
     'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
 });
 
+new ControlListRelated({
+    'view'              : view,
+    'context'           : '.members2',
+    'class'             : 'example.Members',
+    'endless_scrolling' : true,
+    'related_key'       : 'group_ids2',
+    'related_value'     : view.params._id,
+    'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
+});
 
 </script>
 
@@ -57,4 +66,19 @@ new ControlListRelated({
     </table>
 </fieldset>
 
+<fieldset class='members2'>
+    <legend>Members of this group2</legend>
+    <table >
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+            <td class='field-list-on-click-view field-put' field-key='name' >
+            <td >
+            <td class='control-on-click-unrelate ui-icon ui-icon-minus'>
+        </tr>
+    </table>
+</fieldset>
 

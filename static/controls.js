@@ -1162,6 +1162,13 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
         get_params,
         function(result)
         {
+            XXX
+            //unresolve the data, its easier for this routine
+            if (result.data[this_control.params.related_key])
+            {
+
+            }
+
             //its already related?
             if (result.data[this_control.params.related_key] && result.data[this_control.params.related_key].indexOf(this_control.params.related_value)!=-1)
             {

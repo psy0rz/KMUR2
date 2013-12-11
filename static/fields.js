@@ -1388,6 +1388,7 @@ Field.Relation.meta_put=function(key, meta, context)
     }
 }
 
+//get the context of the contained list of this relation
 Field.Relation.list_context=function(key, context)
 {
     return($('.field-list-source[field-key="'+key+'"]', context));
