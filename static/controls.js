@@ -738,7 +738,11 @@ ControlList.prototype.attach_event_handlers=function()
             if (this_control.params.endless_scrolling)
                 this_control.params.get_params.skip=0;
 
-            this_control.get_delayed({});
+            this_control.get_delayed({
+                    list_no_remove: false,
+                    list_update: true,
+                    show_changes: true
+            });
         }
         //only put the new data into the list
         else if (this_control.params.on_change=='put')
