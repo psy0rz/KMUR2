@@ -1105,6 +1105,19 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
         get_params,
         function(result)
         {
+
+            //unresolve the data, its easier for this routine
+            var related_meta=this_control.meta.meta.meta[this_control.params.related_key];
+            if (related_meta.resolve)
+            {
+                var unresolved=[];
+                $.each(result.data[this_control.params.related_key], function(key,value)
+                {
+                    unresolved.push(value[related_meta.meta.list_key]);
+                });
+                result.data[this_control.params.related_key]=unresolved;
+            }
+
             if (!result.data[this_control.params.related_key])
                 return;
 
@@ -1162,11 +1175,16 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
         get_params,
         function(result)
         {
-            XXX
             //unresolve the data, its easier for this routine
-            if (result.data[this_control.params.related_key])
+            var related_meta=this_control.meta.meta.meta[this_control.params.related_key];
+            if (related_meta.resolve)
             {
-
+                var unresolved=[];
+                $.each(result.data[this_control.params.related_key], function(key,value)
+                {
+                    unresolved.push(value[related_meta.meta.list_key]);
+                });
+                result.data[this_control.params.related_key]=unresolved;
             }
 
             //its already related?
@@ -1243,7 +1261,7 @@ ControlListRelated.prototype.attach_event_handlers=function()
 
 
     //remove the relation to us
-    $(".control-on-click-unrelate", context).off().click(function(event)
+    $(".control-relation-on-click-del", context).off().click(function(event)
     {
         var list_id=Field.List.from_element_get_id(this_control.list_source_element.attr("field-key"), this);
 
@@ -1266,9 +1284,9 @@ ControlListRelated.prototype.attach_event_handlers=function()
     });
 
 
-/*    $(".control-on-click-relate", context).off("click").on("click",function()
+    $(".control-relation-click-add", context).off("click").on("click",function()
     {
-        $(".control-on-change-relate", context).autocomplete("search", $(this).val());
+        $(".control-relation-on-change-add", context).autocomplete("search", $(this).val());
     })
 
 
@@ -1342,7 +1360,6 @@ ControlListRelated.prototype.attach_event_handlers=function()
                 'relation autocomplete search');
         }
     })
-*/
 
 }
 
