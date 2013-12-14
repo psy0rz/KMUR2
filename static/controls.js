@@ -1290,23 +1290,19 @@ ControlListRelated.prototype.attach_event_handlers=function()
     })
 
 
-    $(".control-on-change-relate", context).autocomplete({
+    $(".control-relation-on-change-search", context).autocomplete({
         minLength: 0,
         autoFocus: true,
         //focus of selected suggestion has been changed
         focus: function( event, ui ) {
             return(false);
         },
-        //suggestion has been selected, create relation
+        //item has been selected, create relation
         select: function (event, ui) {
+            console.log("geert1");
             $(this).val("");
-
-            Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
-                list_no_remove: true,
-                list_update: true,
-                show_changes: true
-
-            });
+            this_control.relate(ui.item.value[this_control.meta.list_key], this_control.params.relate_confirm, function() {});
+            console.log("geert1");
             return(false);
         },
         //data source
@@ -1317,35 +1313,35 @@ ControlListRelated.prototype.attach_event_handlers=function()
             var params={}
 
             //get currently selected ids
-            var current_items=Field.List.get(key, meta.meta, list_context);
+            var current_items=Field.List.get('', this_control.meta, this_control.list_source_element);
             console.log("currentitems", current_items);
 
             //filter those ids out
-            var list_key=meta.meta.list_key;
             params['match_nin']={}
-            params['match_nin'][list_key]=[];
+            params['match_nin'][this_control.meta.list_key]=[];
 
             $.each(current_items, function(i, item)
             {
-                params['match_nin'][list_key].push(item[list_key]);
+                params['match_nin'][this_control.meta.list_key].push(item[this_control.meta.list_key]);
+
             });
 
 
-            var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
+            var search_keys=$(".control-relation-on-change-search", context).attr("search-keys").split(" ");
             params['regex_or']={}
             $.each(search_keys, function(i, key_str)
             {
                 params['regex_or'][key_str]=request.term;
             });
 
-            var result_format=$(".field-relation-on-change-search", context).attr("result-format");
+            var result_format=$(".control-relation-on-change-search", context).attr("result-format");
 
-            //call the foreign model to do the actual search
-            rpc(meta.model+".get_all",
+            //do the actual search
+            rpc(this_control.params.get, //in a controList this is actuall a get_all..a bit hackish..maybe change it?
                 params,
                 function (result)
                 {
-                    viewShowError(result,context,meta);
+                    viewShowError(result, context, this_control.meta);
                     //construct list of search-result-choices for autocomplete
                     choices=[]
                     for (i in result.data)
