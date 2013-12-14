@@ -1048,7 +1048,7 @@ ControlList.prototype.attach_event_handlers=function()
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 //list controller for relations
-//this is the 'reverse' of field.Relation. 
+//this is the 'reverse' of field.Relation. look in the example-module for more info.
 /*
 params:
     (look in the baseclasses for the basic documentation)
@@ -1064,7 +1064,9 @@ params:
 */
 function ControlListRelated(params)
 {
-
+    if (params.related_value==undefined)
+        return(false);
+    
     ControlList.call(this, params);
 
     //make sure we only list documents which have relations that point to "us"
@@ -1271,22 +1273,14 @@ ControlListRelated.prototype.attach_event_handlers=function()
         var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
 //        var highlight_element=this;
 
-        this_control.unrelate(list_id, this_control.params.unrelate_confirm, function(result)
-        {
-/*           list_element.hide(1000, function()
-            {
-                list_element.remove();
-            });
-*/
-
-        });
+        this_control.unrelate(list_id, this_control.params.unrelate_confirm, function(result) {});
 
     });
 
 
-    $(".control-relation-click-add", context).off("click").on("click",function()
+    $(".control-relation-on-click-add", context).off("click").on("click",function()
     {
-        $(".control-relation-on-change-add", context).autocomplete("search", $(this).val());
+        $(".control-relation-on-change-search", context).autocomplete("search", "");
     })
 
 

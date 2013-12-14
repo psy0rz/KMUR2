@@ -33,7 +33,7 @@ new ControlListRelated({
 });
 
 </script>
-
+<p>This example demonstrates how edit a group and add members to it. Since a member points to a group, and not the other way around, we need to use two ControlLists that handle all the complexeties involved.
 <fieldset class='group'>
     <legend>Group settings</legend>
     <table>
@@ -51,7 +51,7 @@ new ControlListRelated({
 </fieldset>
 
 <fieldset class='members'>
-    <legend>Members of this group</legend>
+    <legend>Members of this group (resolved server side)</legend>
     <table >
         <tr class='ui-widget-header'>
             <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
@@ -59,7 +59,7 @@ new ControlListRelated({
         </tr>
 
         <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
-            <td class='field-list-on-click-view field-put' field-key='name' >
+            <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
             <td >
             <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
         </tr>
@@ -71,7 +71,7 @@ new ControlListRelated({
 </fieldset>
 
 <fieldset class='members2'>
-    <legend>Members of this group2</legend>
+    <legend>Members of this group2 (resolved client side)</legend>
     <table >
         <tr class='ui-widget-header'>
             <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
@@ -79,7 +79,7 @@ new ControlListRelated({
         </tr>
 
         <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
-            <td class='field-list-on-click-view field-put' field-key='name' >
+            <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
             <td >
             <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
         </tr>

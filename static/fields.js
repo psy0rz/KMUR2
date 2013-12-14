@@ -515,13 +515,14 @@ Field.List.meta_put=function(key, meta, context)
             var clicked_element=Field.List.from_element_get(null, this);
             if (clicked_element.hasClass("field-list-item"))
             {
-                $(this).confirm(function()
-                {
+//NOTE: annoying. maybe make a undo function?
+//                $(this).confirm(function()
+//                {
                     clicked_element.hide('fast',function()
                     {
                         clicked_element.remove();
                     });
-                });
+//                });
             }
         });
         
