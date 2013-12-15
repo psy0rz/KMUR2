@@ -3,7 +3,7 @@
 		"title":"Examples",
 		"items":[
             {
-                "title":"Group demo list",
+                "title":"Relations: Groups",
                 "view":
                     { 
                         "name":"example.Groups.list",

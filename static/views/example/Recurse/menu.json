@@ -3,7 +3,7 @@
         "title":"Examples",
 		"items":[
             {
-                "title":"Recursive relation",
+                "title":"Relations: Recursive",
                 "view":
                     { 
                         "name":"example.Recurse.list",

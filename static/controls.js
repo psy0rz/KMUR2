@@ -278,6 +278,8 @@ ControlForm.prototype.get_result=function(result, request_params)
         }
 
         $(".control-hide-on-edit", this.context).hide();
+        if (this.context.hasClass("control-hide-on-edit"))
+            this.context.hide();
     }
     //its a new item
     else
@@ -293,6 +295,8 @@ ControlForm.prototype.get_result=function(result, request_params)
         }
 
         $(".control-hide-on-new", this.context).hide();
+        if (this.context.hasClass("control-hide-on-new"))
+            this.context.hide();
     }
 
     viewShowError(result, this.context, this.meta);
@@ -1054,10 +1058,26 @@ params:
 */
 function ControlListRelated(params)
 {
+    //undefined related value means the item its going to relate to is still new. so we cant do anything.
     if (params.related_value==undefined)
+    {
+        //call base to get the context
+        ControlBase.call(this, params);
+
+        //hide stuff if neccesary
+        $(".control-hide-on-new", this.context).hide();
+        if (this.context.hasClass("control-hide-on-new"))
+            this.context.hide();
+
         return(false);
+    }
 
     ControlList.call(this, params);
+
+    $(".control-hide-on-edit", this.context).hide();
+    if (this.context.hasClass("control-hide-on-edit"))
+        this.context.hide();
+
 
     //make sure we only list documents which have relations that point to "us"
     this.params.get_params['match']={};
