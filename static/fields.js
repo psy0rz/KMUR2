@@ -455,7 +455,7 @@ Field.List=Object.create(Field.Base);
 // source should be a jquery object
 Field.List.clone=function(source_element)
 {
-    var clone=source_element.clone(true);
+    var clone=source_element.clone(true, true);
     clone.removeClass("field-input-create field-get field-put field-meta-put field-list-source field-list-source-hide");
     clone.addClass("field-list-item");
     return(clone);
@@ -473,6 +473,7 @@ Field.List.meta_put=function(key, meta, context)
         list_source=context;
     else
         list_source=$(".field-list-source:first",context);
+
 
     //only listsources can get these:
     if (list_source)
@@ -543,11 +544,10 @@ Field.List.meta_put=function(key, meta, context)
         $(list_source).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
             console.log("field.list: view opened by us has changed the data", result);
-
             Field.List.put(
                 key,
                 meta,
-                list_source,
+                $(this),
                 [ result.data ],
                 {
                     list_no_remove: true,
@@ -572,12 +572,12 @@ Field.List.meta_put=function(key, meta, context)
         });
 
         //create handler to open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
-        $(".field-list-on-click-view", list_source).off().click(function(event)
+        $(list_source.parent()).on("click",".field-list-on-click-view",  function(event)
         {
             if (meta.list_key==undefined)
             {
                 console.error("Cant view list item, since there is no list_key defined in the metadata",this );
-                return;
+                return(true);
             }
 
             var list_id=Field.List.from_element_get_id(list_source.attr("field-key"), this);
@@ -1507,15 +1507,15 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //data in related model was changed
     //NOTE: control_form_changed is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
-    $(context).subscribe(meta.model+'.changed', "fields", function(result)
+    $(list_context).subscribe(meta.model+'.changed', "fields", function(result)
     { 
 
-        console.log("field.relation: data on server has changed",result, context);
+        console.log("field.relation: data on server has changed",result, this);
 
         Field.List.put(
             key, 
             meta.meta, 
-            list_context,
+            $(this),
             [ result.data ],
             {
                 list_no_remove: true,
@@ -1530,7 +1530,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //data in related model was deleted
     //NOTE: control_form_deleted is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
-    $(context).subscribe(meta.model+'.deleted', "fields", function(result)
+    $(list_context).subscribe(meta.model+'.deleted', "fields", function(result)
     {
 
         console.log("field.relation: data on server has been deleted", result);
@@ -1540,7 +1540,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         var element=Field.List.find_element(
             key,
             meta.meta,
-            list_context,
+            $(this),
             [ result.data[list_key] ]
         );
 

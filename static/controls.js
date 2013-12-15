@@ -760,7 +760,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.deleted', "list", function(result)
     {
 
-        console.log("list: data on server has been deleted", this_control);
+        console.log("ControlList: data on server has been deleted", this_control);
 
         var key=result.data[this_control.meta.list_key];
         var element=Field.List.find_element(
