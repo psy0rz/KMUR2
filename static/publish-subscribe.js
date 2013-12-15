@@ -4,39 +4,62 @@
 
 (function ( $ ) {
  
-    /*** Subscribes the handler to an event
+    /*** Subscribes the handler to an global event. 
+        (this is different from jquery's system which is context based and has bubbling up)
 
         Namespace is the namespace of the handler: only one handler per event per dom-object is allowed for each namespace. existing handlers will be replaced.
-    
-        Dots in the event_name and namespace are replaced to prevent jquery namespace confusion.
-        
-        A helper class is used to allow jquery to trigger the handlers more efficient.
-
+         
         If the jquery-dom-object is deleted correctly (using jquery functions), the handler will be gone as well. 
 
     */
     $.fn.subscribe = function(event_name, namespace, handler) {
-        var jquery_namespaced_event=event_name.replace(".","/")+"."+namespace.replace(".","/");
-        this.addClass("jquery-subscriber");
-        this.off(jquery_namespaced_event);
-        this.on(jquery_namespaced_event, handler);
+        namespace=namespace.replace(".","_");
+        var class_event_name="subscribe_"+event_name.replace(".","_");
+        this.addClass(class_event_name);
+        if (!this.data(class_event_name))
+        {
+            this.data(class_event_name,{});
+        }
+        this.data(class_event_name)[namespace]=handler;
         return this;
     };
 
     /*** Unsubscribes handler "id" from "event_name".
     */
     $.fn.unsubscribe = function(event_name, namespace) {
-        var jquery_namespaced_event=event_name.replace(".","/")+"."+namespace.replace(".","/");
-        this.off(jquery_namespaced_event);
+        namespace=namespace.replace(".","_");
+        var class_event_name="subscribe_"+event_name.replace(".","_");
+        if (this.data(class_event_name))
+        {
+            if (namespace in this.data(class_event_name))
+            {
+                delete(this.data(class_event_name)[namespace]);
+                if (this.data(class_event_name).length==0)
+                {
+                    this.removeClass(class_event_name);
+                }
+            }
+        }
         return this;
     };
 
     /*** Trigger all handlers that are subscribed to "event_name".
     */
     $.publish = function( event_name, data ) {
-        var jquery_namespaced_event=event_name.replace(".","/");
-        $(".jquery-subscriber").trigger(jquery_namespaced_event, data);
-
+        var class_event_name="subscribe_"+event_name.replace(".","_");
+        //traverse all the dom objects that have A subscription to this event
+        $("."+class_event_name).each(function()
+        {
+            //traverse all the handlers for this event
+            if ($(this).data(class_event_name))
+            {
+                var this_element=this;
+                $.each($(this).data(class_event_name), function(namespace, handler)
+                {
+                    handler.call(this_element,data);
+                });
+            }
+        });
     };
  
  

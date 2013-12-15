@@ -7,10 +7,8 @@
 	var debugTxt=view.id+" "+view.name+" ";
 
 	//(re)load the menu
-	$(context).subscribe("menu_reload", "menu", function(event, params)
+	$(context).subscribe("menu_reload", "menu", function(params)
 	{
-        if (this!=event.target)
-            return false;
 
 		rpc(
 			"webui.Menu.get",
@@ -33,7 +31,7 @@
 	/* add/update a 'favorite' to the specified menu. automaticly keeps count of most used items.
      Look in Menu.py for more info.
     */
-    $(context).subscribe("menu_put_favorite", "menu", function(event, params)
+    $(context).subscribe("menu_put_favorite", "menu", function(params)
     {
         rpc(
             "webui.Menu.put_favorite",
@@ -48,7 +46,7 @@
 		return(false);
     });
 
-    $(context).subscribe("menu_delete_favorite", "menu", function(event, params)
+    $(context).subscribe("menu_delete_favorite", "menu", function(params)
     {   
         rpc(
             "webui.Menu.delete_favorite",

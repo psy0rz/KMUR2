@@ -374,11 +374,8 @@ ControlForm.prototype.attach_event_handlers=function()
 */
 
     //some  control changed/added an item in our class, so update the form
-    $(context).subscribe(this.params.class+'.changed', "form", function(e,result)
+    $(context).subscribe(this.params.class+'.changed', "form", function(result)
     { 
-        // if (this!=e.target)
-        //     return false;
-
         console.log("form: data on server has changed",this_control);
 
         //reload the whole view
@@ -719,10 +716,8 @@ ControlList.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //some  control changed/added an item in our class, so update the list
-    $(context).subscribe(this.params.class+'.changed', "list", function(e,result)
+    $(context).subscribe(this.params.class+'.changed', "list", function(result)
     { 
-        // if (this!=e.target)
-        //     return false;
 
         console.log("list: data on server has changed",this_control);
 
@@ -765,10 +760,8 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
-    $(context).subscribe(this.params.class+'.deleted', "list", function(e, result)
+    $(context).subscribe(this.params.class+'.deleted', "list", function(result)
     {
-        if (this!=e.target)
-            return false;
 
         console.log("list: data on server has been deleted", this_control);
 
@@ -1066,7 +1059,7 @@ function ControlListRelated(params)
 {
     if (params.related_value==undefined)
         return(false);
-    
+
     ControlList.call(this, params);
 
     //make sure we only list documents which have relations that point to "us"

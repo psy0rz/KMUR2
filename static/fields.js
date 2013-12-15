@@ -1506,7 +1506,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //data in related model was changed
     //NOTE: control_form_changed is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
-    $(context).subscribe(meta.model+'.changed', "fields", function(e,result)
+    $(context).subscribe(meta.model+'.changed', "fields", function(result)
     { 
 
         console.log("relation: data on server has changed",result, context);
@@ -1529,7 +1529,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //data in related model was deleted
     //NOTE: control_form_deleted is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
-    $(context).subscribe(meta.model+'.deleted', "fields", function(e, result)
+    $(context).subscribe(meta.model+'.deleted', "fields", function(result)
     {
 
         console.log("relation: data on server has been deleted", result);
