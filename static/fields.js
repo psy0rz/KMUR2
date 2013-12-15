@@ -472,7 +472,7 @@ Field.List.meta_put=function(key, meta, context)
     if (context.hasClass("field-list-source"))
         list_source=context;
     else
-        list_source=$(".field-list-source",context);
+        list_source=$(".field-list-source:first",context);
 
     //only listsources can get these:
     if (list_source)
@@ -538,10 +538,11 @@ Field.List.meta_put=function(key, meta, context)
         });
 
         //the view that was opened by us has changed something to our item
-        //NOTE:new items will be added. this in contrary to the the global changed-handler, which will ignore adds since it doesnt know if the new item should be added or not
+        //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.
+        //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
         $(list_source).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
-            console.log("view opened by us has changed the data", result);
+            console.log("field.list: view opened by us has changed the data", result);
 
             Field.List.put(
                 key,
@@ -1509,7 +1510,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     $(context).subscribe(meta.model+'.changed', "fields", function(result)
     { 
 
-        console.log("relation: data on server has changed",result, context);
+        console.log("field.relation: data on server has changed",result, context);
 
         Field.List.put(
             key, 
@@ -1532,7 +1533,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     $(context).subscribe(meta.model+'.deleted', "fields", function(result)
     {
 
-        console.log("relation: data on server has been deleted", result);
+        console.log("field.relation: data on server has been deleted", result);
 
         var list_key=meta.meta.list_key;
 
@@ -1613,8 +1614,9 @@ Field.Relation.put=function(key, meta, context, data, options)
 {
     var list_context=Field.Relation.list_context(key, context);
 
-    //recurse into sub-meta list
-    if (meta.resolve)
+    //if its empty or already resolved, directly recurse into sub-meta list
+    //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
+    if ((data.length==0) || (typeof(data[0])=='object'))
         Field.List.put(key, meta.meta, list_context, data, options);
     else 
     {
@@ -1622,7 +1624,7 @@ Field.Relation.put=function(key, meta, context, data, options)
             'match_in': {}
         };
 
-        if (data && data.length>0)
+//        if (data && data.length>0)
         {
             get_params['match_in'][meta.meta.list_key]=data;
             //get related data

@@ -376,7 +376,7 @@ ControlForm.prototype.attach_event_handlers=function()
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(result)
     { 
-        console.log("form: data on server has changed",this_control);
+        console.log("ControlForm: data on server has changed",this_control);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
@@ -716,7 +716,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.changed', "list", function(result)
     { 
 
-        console.log("list: data on server has changed",this_control);
+        console.log("ControlList: data on server has changed",this_control, result);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')

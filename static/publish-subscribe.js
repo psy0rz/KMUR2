@@ -21,7 +21,7 @@
             this.data(class_event_name,{});
         }
         this.data(class_event_name)[namespace]=handler;
-        console.log("subscriptions",class_event_name, this.data(class_event_name));
+        // console.log("subscriptions",class_event_name, this.data(class_event_name));
         return this;
     };
 
