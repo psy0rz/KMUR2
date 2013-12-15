@@ -393,11 +393,8 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
     //a control deleted something in our class
-    $(context).subscribe(this.params.class+'.deleted', "form", function(e,result)
+    $(context).subscribe(this.params.class+'.deleted', "form", function(result)
     { 
-        // if (this!=e.target)
-        //     return false;
-
         //NOTE: we just assume we can compare the _id here. maybe we should make this more generic?
         if (result.data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
         {
@@ -790,7 +787,7 @@ ControlList.prototype.attach_event_handlers=function()
 
         if (list_id===undefined)
             return;
-
+        //TODO: code duplication? move this to a higher class?
         $(this).confirm(function()
         {
             var rpc_params={};
@@ -1234,23 +1231,7 @@ ControlListRelated.prototype.attach_event_handlers=function()
     $(this_control.list_source_element).off("control_form_created").on("control_form_created",function(event, result)
     {
         console.log("view opened by us has created an item", result);
-        this_control.relate(result.data[this_control.meta.list_key],"",function(result)
-        {
-            //if the relation fails for some reason, we also wont update the list, so everything stays consistent.
-            //ist it awesome? :)        
-            Field.List.put(
-                key,
-                meta,
-                this_control.list_source_element,
-                [ result.data ],
-                {
-                    list_no_remove: true,
-                    list_update: true,
-                    show_changes: true
-
-                }
-            );
-        });
+        this_control.relate(result.data[this_control.meta.list_key],"",function(result){        });
         return(false);
     });
 

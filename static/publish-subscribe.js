@@ -13,22 +13,23 @@
 
     */
     $.fn.subscribe = function(event_name, namespace, handler) {
-        namespace=namespace.replace(".","_");
-        var class_event_name="subscribe_"+event_name.replace(".","_");
+        namespace=namespace.replace(/[^a-zA-Z0-9]/g,"_");
+        var class_event_name="subscribe_"+event_name.replace(/[^a-zA-Z0-9]/g,"_");
         this.addClass(class_event_name);
         if (!this.data(class_event_name))
         {
             this.data(class_event_name,{});
         }
         this.data(class_event_name)[namespace]=handler;
+        console.log("subscriptions",class_event_name, this.data(class_event_name));
         return this;
     };
 
     /*** Unsubscribes handler "id" from "event_name".
     */
     $.fn.unsubscribe = function(event_name, namespace) {
-        namespace=namespace.replace(".","_");
-        var class_event_name="subscribe_"+event_name.replace(".","_");
+        namespace=namespace.replace(/[^a-zA-Z0-9]/g,"_");
+        var class_event_name="subscribe_"+event_name.replace(/[^a-zA-Z0-9]/g,"_");
         if (this.data(class_event_name))
         {
             if (namespace in this.data(class_event_name))
@@ -46,7 +47,7 @@
     /*** Trigger all handlers that are subscribed to "event_name".
     */
     $.publish = function( event_name, data ) {
-        var class_event_name="subscribe_"+event_name.replace(".","_");
+        var class_event_name="subscribe_"+event_name.replace(/[^a-zA-Z0-9]/g,"_");
         //traverse all the dom objects that have A subscription to this event
         $("."+class_event_name).each(function()
         {
