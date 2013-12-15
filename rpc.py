@@ -116,16 +116,20 @@ def rpc():
 
     session.save()
 
+    indent=None
+    if ('debug' in request and request['debug']):
+        indent=' '
+
     #return JSON string. this can throw exceptions as well during conversion of some objects (like mongo cursors)
     try:
-        return(json.dumps(result, cls=fields.JSONEncoder, indent=None, separators=(',', ':'), ensure_ascii=False))
+        return(json.dumps(result, cls=fields.JSONEncoder, indent=indent, separators=(',', ':'), ensure_ascii=False))
     except (Exception) as e:
         traceback.print_exc()
         result['error'] = { 'message': str(e) }
         #remove data from the result, hoping that this solves it
         del(result['data'])
         #try again, hopefully without throwing more exceptions
-        return(json.dumps(result, cls=fields.JSONEncoder, indent=None, separators=(',', ':'), ensure_ascii=False))
+        return(json.dumps(result, cls=fields.JSONEncoder, indent=indent, separators=(',', ':'), ensure_ascii=False))
 
 
 

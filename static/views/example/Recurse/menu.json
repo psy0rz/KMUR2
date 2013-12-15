@@ -1,0 +1,16 @@
+{
+	"example":{
+        "title":"Examples",
+		"items":[
+            {
+                "title":"Recursive relation",
+                "view":
+                    { 
+                        "name":"example.Recurse.list",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}

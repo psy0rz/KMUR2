@@ -1,0 +1,85 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'context'         : '.item',
+    'class'           : 'example.Recurse',
+    'get_params'      : view.params,
+    'default_focus'   : ['name'],
+    'title'           : 'Edit item {name}',
+    'title_new'       : 'New item',
+    'favorite_menu'   : 'example'
+});
+
+new ControlListRelated({
+    'view'            	: view,
+    'context'           : '.subitems',
+    'class'        		: 'example.Recurse',
+    'endless_scrolling'	: true,
+    'related_key'       : 'item_ids',
+    'related_value'     : view.params._id,
+    'unrelate_confirm'  : 'Do you want to remove {name} from this item?'
+});
+
+</script>
+
+<p>This demonstrates an item that has a relation to itself. We can create tree-like structures with this: This way items can have items and subitems.
+
+<fieldset class='item'>
+    <legend>Item settings</legend>
+    <table>
+    	<tr>
+    		<td class='field-meta-put' field-key='name' field-meta-key='desc'>
+    		<td class='field-meta-put' field-key='name'>
+    	</tr>
+    </table>
+
+    <fieldset style='display:inline-block;'>
+        <legend class='field-meta-put' field-key='item_ids' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='item_ids'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='item_ids.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source ui-widget-content' field-key='item_ids' field-list-view="example.Recurse.edit">
+                <td class='field-put field-list-on-click-view' field-key='item_ids.name'>(create new parent item)
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </table>
+    </fieldset>
+
+    <div class='viewErrorClass'>
+        <button class='control-on-click-save' >Save</button>
+        <button class='control-on-click-del control-hide-on-new' >Delete</button>
+        <button class='control-on-click-cancel' >Cancel</button>
+        <span class='viewErrorText'></span>
+    </div>
+</fieldset>
+
+<fieldset class='subitems'>
+    <legend>Subitems of this item</legend>
+    <table >
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Recurse.edit">
+            <td class='field-list-on-click-view field-put' field-key='name' >(create sub item)
+            <td >
+            <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+        </tr>
+        <tr class='ui-widget-content'>
+            <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+            <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+        </tr>
+    </table>
+</fieldset>
+
+
