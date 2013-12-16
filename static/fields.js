@@ -619,11 +619,20 @@ Field.List.meta_put=function(key, meta, context)
  options.list_no_remove: dont remove existing items. usefull for endless scrolling.
 
  options.list_no_add: dont add new items. only update existing items.
+
+ NOTE: no_remove and no_add are usually used when the data is incomplete. e.g. the data is just the one item that changed.
 */
 
 Field.List.put=function(key, meta, context, data, options)
 {
 //    console.log("Field.List.put: ", key ,meta, context, data, options);
+
+    //we dont want all the list-specific options to recurse, since there might be sublists or sub-relationlists that get confused.
+    var recursive_options={}
+    $.extend(recursive_options, options);
+    //since sublists get complete data, we dont want the no_add and no_delete options there:
+    delete recursive_options.list_no_add;
+    delete recursive_options.list_no_remove;
 
     var parent=context.parent();
 
@@ -712,7 +721,7 @@ Field.List.put=function(key, meta, context, data, options)
             }
             
             //finally put data into it
-            Field[meta.meta.type].put(key, meta.meta, update_element, item_value, options);
+            Field[meta.meta.type].put(key, meta.meta, update_element, item_value, recursive_options);
 
             prev_element=update_element;
         });
@@ -1607,9 +1616,6 @@ Field.Relation.get=function(key, meta, context)
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
-
-    options.list_no_remove=false;
-    options.list_no_add=false;
 
     var list_context=Field.Relation.list_context(key, context);
 
