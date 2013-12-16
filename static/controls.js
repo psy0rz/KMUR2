@@ -154,7 +154,7 @@ params:
 
 
     put:                 rpc-method called to put data (default: class+".delete")
-    put_params           parameters to pass to put (default: view.params)
+    put_params           parameters to pass to put (default: get_params)
     put_result           called with results of put data 
     create_ok            called when putting a new item went ok. use this to call a new view after creating somehting.
 
@@ -185,7 +185,7 @@ function ControlForm(params)
         this.params.put=this.params.class+".put";
 
     if (!('put_params' in this.params))
-        this.params.put_params=this.params.view.params;
+        this.params.put_params=this.params.get_params;
 
     if (! this.params.put_result)
         this.params.put_result=function(){};
@@ -349,7 +349,7 @@ ControlForm.prototype.attach_event_handlers=function()
         viewClose(this_control.params.view);
     });
 
-/* DEPRECATED
+/* DEPRECATED/CHANGE
     //some forms are just showing data or are readonly. in those cases there usually will be some edit-button or elements to click.
     $(".control-on-click-edit", context).off().click(function(event)
     {
@@ -1020,6 +1020,30 @@ ControlList.prototype.attach_event_handlers=function()
 
     });
 
+    //create a handler to open a arbitrary view
+    $(".control-on-click-view",context).click(function(event)
+    {
+        var editView={};
+        editView.params={};
+
+        editView.x=event.clientX;
+        editView.y=event.clientY;
+
+        editView.name=$(this).attr("control-view");
+        editView.mode=$(this).attr("control-view-mode");
+        if (!editView.mode)
+            editView.mode="main";
+ 
+        viewCreate(
+            {
+                creator: $(this)
+            },
+            editView);
+
+        return(false);
+    });
+
+
     //enable endless scrolling?
     if (this_control.params.endless_scrolling)
     {
@@ -1034,6 +1058,8 @@ ControlList.prototype.attach_event_handlers=function()
             });
         });
     }
+
+
 
 }
 

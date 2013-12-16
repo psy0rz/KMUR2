@@ -490,15 +490,13 @@ Field.List.meta_put=function(key, meta, context)
     //after the submeta data is done, attach event handlers for listsources
     if (list_source)
     {
-        //TODO: optimize, parent should have these handlers so they dont get cloned?
-
         //create an add-handler to add items to lists
-        $(".field-list-on-click-add", list_source).off().click(function(){
+        list_source.parent().off("click", ".field-list-on-click-add").on("click", ".field-list-on-click-add", function(){
             Field.List.from_element_add(null, this);
         });
         
         //create an add-handler if the source-element of a list is focussed
-        $(".field-list-on-focus-add :input", list_source).off().focus(function(){
+        list_source.parent().off("focus", ".field-list-on-focus-add :input").on("focus", ".field-list-on-focus-add :input", function(){
             //only add an item if the user focusses a field in the listsource..
             //console.error(from_element_get(null, $(this)));
             if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
@@ -511,32 +509,29 @@ Field.List.meta_put=function(key, meta, context)
         });
         
         //create a handler to delete a list item
-        $(".field-list-on-click-del", list_source).off().click(function()
-        {
+        list_source.parent().off("click", ".field-list-on-click-del").on("click", ".field-list-on-click-del", function(){
             var clicked_element=Field.List.from_element_get(null, this);
             if (clicked_element.hasClass("field-list-item"))
             {
-//NOTE: annoying. maybe make a undo function?
-//                $(this).confirm(function()
-//                {
                     clicked_element.hide('fast',function()
                     {
                         clicked_element.remove();
                     });
-//                });
             }
         });
         
         //create handlers to make lists sortable
-        //FIXME, should be on parent
-        $(".field-list-sortable", list_source).off().sortable({
-            //placeholder: "",
-            handle: ".control-on-drag-sort",
-            cancel: ".field-list-source",
-            items:"> .field-list-item",
-            forceHelperSize: true,
-            forcePlaceholderSize: true
-        });
+        if (list_source.hasClass("field-list-sortable"))
+        {
+            list_source.parent().sortable({
+                placeholder: "",
+                handle: ".field-list-on-drag-sort",
+                cancel: ".field-list-source",
+                items:"> .field-list-item",
+                forceHelperSize: true,
+                forcePlaceholderSize: true
+            });
+        };
 
         //the view that was opened by us has changed something to our item
         //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.

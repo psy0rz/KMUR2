@@ -57,7 +57,7 @@
 	border-width: 1px;
 	border-bottom-style: solid;
 	border-top-style: solid;
-border-color: #bbbbbb;
+	border-color: #bbbbbb;
 	padding: 0em;
 	padding-left:1.5em;
 	background: #eeeeee;
@@ -78,7 +78,7 @@ border-color: #bbbbbb;
 /* A favorite item in a submenu */
 .menuFavorite
 {
-	font-size: small;	
+	color: blue;
 }
 
 .menuFavorite:hover
@@ -92,7 +92,8 @@ border-color: #bbbbbb;
 {
 	border-width:1px;
 	border-style:solid;
-	margin:10px;
+	border-color: #dddddd;
+	margin:0.5em;
 	padding:0px;
 	
 }
@@ -112,13 +113,13 @@ border-color: #bbbbbb;
 /* Stuff with the class .menuMain_AcitiveHide is hidden when it becomes active */
 .menuMain_Active .menuMain_ActiveHide
 {
-	display:none;
+	display:none !important; 
 }
 
 /* Stuff with the class .menuMain_PassiveHide is hidden when it becomes passive */
 .menuMain_Passive .menuMain_PassiveHide
 {
-	display:none;
+	display:none !important;
 }
 
 .viewTitle
@@ -162,7 +163,7 @@ border-color: #bbbbbb;
 .floatingBar
 {
 	position: fixed;
-	left: 10em;
+	left: 15em;
 	right: 0em;
 	bottom:0em;
 	background: #dddddd;

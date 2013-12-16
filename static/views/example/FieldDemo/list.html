@@ -2,6 +2,7 @@
 <script>
     new ControlList({
         'view'            	: view,
+	    'get_params'      : view.params,
         'class'        		: 'example.FieldDemo',
         'title'           	: 'field demo overview',
         'endless_scrolling'	: true,
@@ -19,6 +20,8 @@
 <p>The browsers back/forward button will be working in a consistent way. Its also possible to refresh the whole page, or to bookmark it. (try it while editting a form for example)</p>
 
 <p>For the special Relation-field look in the member/group demo and recursive demo.
+
+<p>
 
 <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
 <input type='text' class='control-on-change-search control-default-focus' control-search-keys='stringTest numberIntTest numberFloatTest dictTest.stringTest listTest.stringTest dictTest.numberIntTest dictTest.numberFloatTest listTest.numberIntTest listTest.numberFloatTest'>
@@ -106,5 +109,5 @@
 
 
 <div class='floatingBar viewErrorClass'>
-	<button class='control-on-click-edit' >Add</button>
+	<button class='control-on-click-view' control-view='example.FieldDemo.edit'>Add</button>
 </div>
