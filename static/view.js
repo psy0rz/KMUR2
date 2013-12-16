@@ -392,9 +392,9 @@ function viewDOMdel(view)
     }
 
     //scroll to it?
-    if ($(view.highlight).length!=0)
+    if (view.creator)
     {
-        $("body").scrollTop($(view.highlight).offset().top-100);
+        $("body").scrollTop($(view.creator).offset().top-100);
         //$(view.highlight).removeClass("ui-state-highlight");
         //NO: goes wrong when adding stuff to formlists
         //$(view.highlight).effect('highlight',2000);
