@@ -19,7 +19,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
     if (!debugTxt)
         debugTxt="rpc "+moduleClassMethod;
     else
-        debugTxt="< "+debugTxt+" > rpc "+moduleClassMethod;
+        debugTxt="[ "+debugTxt+" ] rpc "+moduleClassMethod;
 
 
     var moduleClassMethodArray=moduleClassMethod.split(".");
@@ -47,7 +47,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 "params":params
             };
     console.debug(debugTxt, "REQUEST", request);
-
+    var start_time=new Date().getTime();
     $.ajax({
         "dataType":     "json",
         "url":          "rpc",
@@ -79,7 +79,8 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
             function (result, status, XMLHttpRequest)
             {
                 
-                console.debug(debugTxt, "RESULT", result);
+                console.debug(debugTxt + " RESULT ("+((new Date().getTime())-start_time)+"ms)", result);
+                start_time=new Date().getTime();
 
                 if (gDebuggingEnabled && ('error' in result))
                 {
@@ -140,6 +141,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 
                 rpcEnd();
                 callback(result);
+                console.debug(debugTxt+ " PROCESSED ("+((new Date().getTime())-start_time)+"ms)");
 
             },
         "type": "post",

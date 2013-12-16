@@ -18,7 +18,7 @@ $(document).ready(function()
             hash="('count':0,'views':())";
 
         // hash changed, update views:
-        logDebug("view detected new url hash:", hash);
+        console.debug("view detected new url hash:", hash);
         
         var viewStatus=rison.decode(hash);
 
@@ -33,7 +33,7 @@ $(document).ready(function()
     var prevHeight=0;
     $(window).scroll(function()
     {
-        console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
+        // console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
         var height=$(document).height();
         if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
         {
@@ -447,7 +447,7 @@ function viewReady(params)
 //( use viewCreate instead, if you want to update browser history and create popups etc)
 function viewLoad(view)
 {
-    logDebug("viewLoad loading: "+view.name, view);
+    console.debug("viewLoad loading: "+view.name, view);
 
     //clear/unbind old stuff
     $("#"+view.id).unbind();

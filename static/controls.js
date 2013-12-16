@@ -591,7 +591,7 @@ function ControlList(params)
     }
 
     this.list_source_element=$(".field-list-source:first", this.context);
-    console.log("list_source_element=", this.list_source_element);
+    //console.log("list_source_element=", this.list_source_element);
     this.list_begin_length=this.list_source_element.parent().children().length;
 
     this.view_ready=false;
@@ -662,7 +662,8 @@ ControlList.prototype.get_result=function(result, request_params)
             request_params
         );
 
-        if (this.params.endless_scrolling)
+        //only if enabled and when we're visible
+        if (this.params.endless_scrolling && this.context.css("display")!="none")
         {
             //console.log("checking", result.data.length, $(window).scrollTop(), $(document).scrollTop());
             //we dont have enough items to overflow the window enough, and there are still items left on the server?
@@ -672,7 +673,7 @@ ControlList.prototype.get_result=function(result, request_params)
                 )
             {
                 this.params.get_params.skip+=this.params.get_params.limit;
-                logDebug("endless scroll getting more data because document height is not reached yet ", this.params.get_params.skip);
+                console.debug("endless scroll getting more data because document height is not reached yet ", this.params.get_params.skip);
                 this.get_delayed({
                     list_no_remove: true,
                     list_update: true
@@ -1051,7 +1052,7 @@ ControlList.prototype.attach_event_handlers=function()
         {
             this_control.params.get_params.skip+=this_control.params.get_params.limit;
             //NOTE: maybe we should create a small overlap to allow for deleted items on the server?
-            logDebug("endless scroll skip is ", this_control.params.get_params.skip);
+            console.debug("endless scroll skip is ", this_control.params.get_params.skip);
             this_control.get_delayed({
                 list_no_remove: true,
                 list_update: true

@@ -39,15 +39,13 @@ function randomStr(length) {
 if (window.location.search.indexOf('kmur.debug') != -1)
 {
     gDebuggingEnabled=true;
-    logDebug=function () { 
-        console.debug( arguments );     
-    };
     console.debug("enabled kmur debugging");
 }
 else
 {
+    console.debug=function(){};
     gDebuggingEnabled=false;
-    logDebug=function () { };
+    
 }
 
 //get a random unguessable client identifier that stays the same accross javascript instances and browser sessions
