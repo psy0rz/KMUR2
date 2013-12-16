@@ -392,7 +392,7 @@ function viewDOMdel(view)
     }
 
     //scroll to it?
-    if (view.creator)
+    if ($(view.creator).length!=0)
     {
         $("body").scrollTop($(view.creator).offset().top-100);
         //$(view.highlight).removeClass("ui-state-highlight");
