@@ -235,8 +235,9 @@ Field.Base.resolve_meta=function(meta, keys)
 /** 
  * Determines the data-key-array of the specified element.
  *
- * The first time you call it you have to specify keys_left by using Field.Base.keys on the field-key of the element.
+ * The first time you call it you have to specify keys by using Field.Base.keys on the field-key of the element.
  *
+ * Meta is always the full-meta data from the "root". keys starts at the deepest level and traverses up.
  */
 Field.Base.find_data_keys=function(keys, meta, element)
 {
@@ -586,8 +587,9 @@ Field.List.meta_put=function(key, meta, context)
 
             //determine focus field:
             var keys=Field.Base.keys($(this).attr("field-key"));
-            editView.focus=Field.Base.find_data_keys(keys, meta.meta, $(this));
+            editView.focus=Field.Base.find_data_keys(keys, meta, $(this));
             //TODO: option to strip focus keys in case of relations?
+            console.log("focus", editView.focus);
 
             editView.params[meta.list_key]=list_id;
             editView.x=event.clientX;
@@ -885,7 +887,7 @@ Field.List.find_element=function(key, meta, context, data_keys)
 Field.List.find_data_keys=function(keys, meta, element)
 {
     //determine the list_id of the specified element:
-    var key_str=Field.Base.concat_keys('',keys);
+    var key_str=Field.Base.key_str(keys);
     console.log("list keystr", keys, key_str);
     var list_id=Field.List.from_element_get_id(key_str, element);
     var data_keys=[list_id];
@@ -894,6 +896,7 @@ Field.List.find_data_keys=function(keys, meta, element)
     var parent_keys=Field.Base.find_data_keys(keys, meta, element);
 
     //append our list_id to the parent_keys and return that
+    console.log("concatting", parent_keys ,"en", data_keys);
     data_keys=parent_keys.concat(data_keys);
 
     return(data_keys);
