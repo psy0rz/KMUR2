@@ -215,21 +215,9 @@ Field.Base.find_element=function(key, meta, context, data_keys)
 */
 Field.Base.resolve_meta=function(meta, keys)
 {
-    if (keys.length==0)
-        return(meta);
+    //reached base, we cant resolve and furhter submeta data
+    return(meta);
 
-    var this_key=keys[0];
-
-    if (this_key in meta.meta)
-    {
-        var sub_meta=meta.meta[this_key];
-        var sub_keys=keys.slice(1);
-        return(Field[sub_meta.type].resolve_meta(sub_meta, sub_keys));
-    }
-    else
-    {
-        return(meta);
-    }
 }
 
 /** 
@@ -239,8 +227,14 @@ Field.Base.resolve_meta=function(meta, keys)
  *
  * Meta is always the full-meta data from the "root". keys starts at the deepest level and traverses up.
  */
+
+/* XXX dit werkt niet...een field.list heeft niet de volledige meta vanaf root die nodig is.
+ opnieuw implementeren door gewoon dom traversal te doen en field-list-id te adden.
+ eventueel field-list-id renamen naar field-id?
+
 Field.Base.find_data_keys=function(keys, meta, element)
 {
+    console.log("field.base.find_data_keys", keys, meta);
     var this_key=keys.pop();
 
     var data_keys=[this_key];
@@ -249,8 +243,8 @@ Field.Base.find_data_keys=function(keys, meta, element)
     if (keys.length!=0)
     {
         //resolve the metadata of the parent
-        var this_meta=Field.Base.resolve_meta(meta, keys);
-        console.log("this meta", keys, this_meta);
+        var this_meta=Field[meta.type].resolve_meta(meta, keys);
+        console.log("field.base.find_data_keys this meta", meta, keys, this_meta);
 
         //call the find_keys function of the parents datatype
         var parent_keys=Field[this_meta['type']].find_data_keys(keys, meta, element);
@@ -262,7 +256,25 @@ Field.Base.find_data_keys=function(keys, meta, element)
     return(data_keys);
 
 }
+*/
+Field.Base.from_element_get_data_keys=function(element)
+{
+    var meta_keys=Field.Base.keys(element.attr("field-key"));
+    var data_keys=[];
 
+    while(meta_keys.length>0)
+    {
+        //NOTE: this seems hackish since its list-stuff. maybe change name to a more generic id?
+        if (element.attr("field-list-id"))
+            data_keys.unshift(element.attr("field-list-id"));
+
+        data_keys.unshift(meta_keys.pop());
+
+        //find next parent element
+        element=element.closest('[field-key="'+Field.Base.key_str(meta_keys)+'"]');
+    }   
+    return (Field.Base.key_str(data_keys));
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /*** Dictonary type. This is usually the base fieldtype we start with. (the "root" of the meta-data)
@@ -404,6 +416,27 @@ Field.Dict.find_element=function(key, meta, context, data_keys)
     return(Field[sub_meta.type].find_element(key_str, sub_meta, sub_context, sub_keys ));
 }
 
+
+Field.Dict.resolve_meta=function(meta, keys)
+{
+    if (keys.length==0)
+        return(meta);
+
+    var this_key=keys[0];
+
+    if (this_key in meta.meta)
+    {
+        var sub_meta=meta.meta[this_key];
+        var sub_keys=keys.slice(1);
+        return(Field[sub_meta.type].resolve_meta(sub_meta, sub_keys));
+    }
+    else
+    {
+        return(meta);
+    }
+}
+
+
 /*
 //-options.show_changes: highlight changed data 
 Field.Dict.html_create=function(key, meta, context, data, options)
@@ -430,6 +463,8 @@ Field.Dict.html_create=function(key, meta, context, data, options)
 
 };
 */
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -585,10 +620,13 @@ Field.List.meta_put=function(key, meta, context)
             var editView={};
             editView.params={};
 
-            //determine focus field:
-            var keys=Field.Base.keys($(this).attr("field-key"));
-            editView.focus=Field.Base.find_data_keys(keys, meta, $(this));
-            //TODO: option to strip focus keys in case of relations?
+            ///// determine focus field (these routines are pretty hard :)
+            //this the metadata is on the current 'level', we need to renormalize the keys to this level as well:
+            var clicked_keys=Field.Base.keys($(this).attr("field-key")); //complete key the user clicked, from rootlevel
+            var keys=Field.Base.keys(key); //current key from root level
+            var sub_keys=clicked_keys.splice(keys.length); //relative key from current level
+            editView.focus=Field.Base.from_element_get_data_keys($(this));
+            //TODO: option to strip keys in case of relations?
             console.log("focus", editView.focus);
 
             editView.params[meta.list_key]=list_id;
@@ -884,29 +922,31 @@ Field.List.find_element=function(key, meta, context, data_keys)
  * This one is for the special case of the List-type. Usually you call Field.Base.
  *
  */
-Field.List.find_data_keys=function(keys, meta, element)
-{
-    //determine the list_id of the specified element:
-    var key_str=Field.Base.key_str(keys);
-    console.log("list keystr", keys, key_str);
-    var list_id=Field.List.from_element_get_id(key_str, element);
-    var data_keys=[list_id];
+// Field.List.find_data_keys=function(keys, meta, element)
+// {
+//     //determine the list_id of the specified element:
+//     var key_str=Field.Base.key_str(keys);
+//     console.log("list keystr", keys, key_str);
+//     var list_id=Field.List.from_element_get_id(key_str, element);
+//     var data_keys=[list_id];
 
-    //let the base class handle the rest
-    var parent_keys=Field.Base.find_data_keys(keys, meta, element);
+//     //let the base class handle the rest
+//     var parent_keys=Field.Base.find_data_keys(keys, meta, element);
 
-    //append our list_id to the parent_keys and return that
-    console.log("concatting", parent_keys ,"en", data_keys);
-    data_keys=parent_keys.concat(data_keys);
+//     //append our list_id to the parent_keys and return that
+//     console.log("concatting", parent_keys ,"en", data_keys);
+//     data_keys=parent_keys.concat(data_keys);
 
-    return(data_keys);
+//     return(data_keys);
 
-}
+// }
 
 Field.List.resolve_meta=function(meta, keys)
 {
-//    console.error("resolve in list", meta, keys);
-    return(Field.Base.resolve_meta(meta.meta, keys));
+    if (keys.length==0)
+        return(meta);
+//    console.error("resolve in list", meta, keys)f;
+    return(Field[meta.meta.type].resolve_meta(meta.meta, keys));
 }
 
 
@@ -1659,6 +1699,28 @@ Field.Relation.put=function(key, meta, context, data, options)
 }
 
 
+Field.Relation.resolve_meta=function(meta, keys)
+{
+    if (keys.length==0)
+        return(meta);
+//    console.error("resolve in list", meta, keys)f;
+    return(Field[meta.meta.type].resolve_meta(meta.meta, keys));
+}
+
+/** 
+ * Determines the data-key-array of the specified element.
+ *
+ * This one is for the special case of the Relation: 
+ * We dont want to concat the parent keys, since the data_key path is usually used for focussing the field in a new view.
+ *
+ */
+/*Field.Relation.find_data_keys=function(keys, meta, element)
+{
+
+    console.log("njeg");
+    //return(keys);
+
+}*/
 
 
 
