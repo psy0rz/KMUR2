@@ -428,9 +428,11 @@ ControlForm.prototype.attach_event_handlers=function()
 ControlForm.prototype.focus=function()
 {
     if (this.params.view && this.params.view.focus)
-        Field[this.meta.type].find_element('', this.meta, this.context, this.params.view.focus).focus();
+    {
+        Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.view.focus)).focus();
+    }
     else if (this.params.default_focus)
-        Field[this.meta.type].find_element('', this.meta, this.context, this.params.default_focus).focus();
+        Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.default_focus)).focus();
     else
         $(".control-default-focus", this.context).focus();
 }
@@ -704,9 +706,9 @@ ControlList.prototype.get_result=function(result, request_params)
 ControlList.prototype.focus=function()
 {
     if (this.params.view && this.params.view.focus)
-        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, this.params.view.focus).focus();
+        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, Field.Base.keys(this.params.view.focus)).focus();
     else if (this.params.default_focus)
-        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, this.params.default_focus).focus();
+        Field[this.meta.meta.type].find_element('', this.meta.meta, this.context, Field.Base.keys(this.params.default_focus)).focus();
     else
         $(".control-default-focus", this.context).focus();
 }
