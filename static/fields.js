@@ -272,6 +272,10 @@ Field.Base.from_element_get_data_keys=function(element)
 
         //find next parent element
         element=element.closest('[field-key="'+Field.Base.key_str(meta_keys)+'"]');
+
+        //in case of relations
+        if (element.hasClass("field-key-root"))
+            break;
     }   
     return (Field.Base.key_str(data_keys));
 }
@@ -603,7 +607,7 @@ Field.List.meta_put=function(key, meta, context)
         });
 
         //create handler to open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
-        $(list_source.parent()).on("click",".field-list-on-click-view",  function(event)
+        $(list_source.parent()).off("click",".field-list-on-click-view").on("click",".field-list-on-click-view",  function(event)
         {
             if (meta.list_key==undefined)
             {
@@ -612,27 +616,16 @@ Field.List.meta_put=function(key, meta, context)
             }
 
             var list_id=Field.List.from_element_get_id(list_source.attr("field-key"), this);
-
             var element=$(this);
-            //element.addClass("ui-state-highlight");
         
             //create the view to edit the clicked item
             var editView={};
             editView.params={};
-
-            ///// determine focus field (these routines are pretty hard :)
-            //this the metadata is on the current 'level', we need to renormalize the keys to this level as well:
-            var clicked_keys=Field.Base.keys($(this).attr("field-key")); //complete key the user clicked, from rootlevel
-            var keys=Field.Base.keys(key); //current key from root level
-            var sub_keys=clicked_keys.splice(keys.length); //relative key from current level
             editView.focus=Field.Base.from_element_get_data_keys($(this));
-            //TODO: option to strip keys in case of relations?
-            console.log("focus", editView.focus);
-
+            //console.log(editView.focus);return(false);
             editView.params[meta.list_key]=list_id;
             editView.x=event.clientX;
             editView.y=event.clientY;
-
             editView.name=list_source.attr("field-list-view");
             editView.mode=list_source.attr("field-list-view-mode");
             if (!editView.mode)
@@ -1466,6 +1459,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     //make sure the list doesnt have a field-put and field-input, and we do. 
     //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
     list_context.removeClass("field-put field-input field-get");
+    list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
+
 
     $(".field-relation-on-click-add", context).click(function()
     {
@@ -1551,6 +1546,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                 'relation autocomplete search');
         }
     })
+
+
 
     //data in related model was changed
     //NOTE: control_form_changed is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
