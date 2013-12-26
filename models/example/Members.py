@@ -13,7 +13,9 @@ class Members(models.mongodb.MongoDB):
                 'name': fields.String(desc='Member name'),
                 'group_ids': models.mongodb.Relation(
                     desc='Groups this member belongs to (resolved server side)',
-                    model=models.example.Groups.Groups),
+                    model=models.example.Groups.Groups,
+                    min=1,
+                    max=3),
                 'group_ids2': models.mongodb.Relation(
                     desc='Groups2 this member belongs to (resolved client side)',
                     model=models.example.Groups.Groups,

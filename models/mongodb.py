@@ -58,10 +58,13 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, model, meta=None, resolve=True , **kwargs):
+    def __init__(self, model, meta=None, min=None, max=None, resolve=True , **kwargs):
         """
             model: specifies the related model (as a python object)
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
+            single: true: Relation to a single foreign object (N:1 relation). Otherwise a N:N relation, with a list of mongoid's.
+            min: Minimum number of relations (default 0)
+            max: Maximum number of relations. (ignored in case of single)
             resolve: resolve ids to foreign data and back. (when calling _get and _put) 
                 set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself. 
                 (the stuff in field.js will take care of extra rpc-calls to the foreign model)
@@ -71,6 +74,18 @@ class Relation(fields.Base):
 
         super(Relation, self).__init__(**kwargs)
 
+
+        if (min != None):
+            if (min < 0):
+                raise FieldException("Min cant be smaller than 0")
+            self.meta['min'] = min
+
+        if (max != None):
+            if (max < 0):
+                raise FieldException("Max cant be smaller than 0")
+            self.meta['max'] = max
+
+
         if meta==None:
             if resolve:
                 self.meta['meta']=model.meta
@@ -79,6 +94,9 @@ class Relation(fields.Base):
 
         self.meta['resolve']=resolve
         self.meta['model']=model.__module__.replace("models.","") #TODO: use regex
+
+
+
         self.model=model
 
 
@@ -120,6 +138,12 @@ class Relation(fields.Base):
         #TODO: specify which id in case resolve is true? (altough this error should never happen)
         if len(result)!=len(data):
             raise fields.FieldException("an item in the list doesnt exist")
+
+        if ('min' in self.meta) and len(result)<self.meta['min']:
+            raise fields.FieldException("should have at least {} item(s).".format(self.meta['min']))
+
+        if ('max' in self.meta) and len(result)>self.meta['max']:
+            raise fields.FieldException("should have at most {} item(s).".format(self.meta['max']))
 
 
     def to_internal(self, context, data):
