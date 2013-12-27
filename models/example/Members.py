@@ -12,14 +12,27 @@ class Members(models.mongodb.MongoDB):
                 '_id': models.mongodb.FieldId(),
                 'name': fields.String(desc='Member name'),
                 'group_ids': models.mongodb.Relation(
-                    desc='Groups this member belongs to (resolved server side)',
+                    desc='Group list, resolved server side',
                     model=models.example.Groups.Groups,
+                    resolve=True,
+                    list=True,
                     min=1,
                     max=3),
                 'group_ids2': models.mongodb.Relation(
-                    desc='Groups2 this member belongs to (resolved client side)',
+                    desc='Group2 list, resolved client side',
                     model=models.example.Groups.Groups,
-                    resolve=False)
+                    resolve=False,
+                    list=True),
+                'group_id': models.mongodb.Relation(
+                    desc='One group, resolved server side',
+                    model=models.example.Groups.Groups,
+                    resolve=True,
+                    list=False),
+                'group_id2': models.mongodb.Relation(
+                    desc='One group2, resolved client side',
+                    model=models.example.Groups.Groups,
+                    resolve=False,
+                    list=False)
             }),
             list_key='_id'
         )

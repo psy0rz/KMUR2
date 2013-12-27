@@ -58,11 +58,11 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, model, meta=None, min=None, max=None, resolve=True , **kwargs):
+    def __init__(self, model, meta=None, list=True, min=None, max=None, resolve=True , **kwargs):
         """
             model: specifies the related model (as a python object)
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
-            single: true: Relation to a single foreign object (N:1 relation). Otherwise a N:N relation, with a list of mongoid's.
+            list: false: Relation to a single foreign object (N:1 relation). Otherwise its a list of relations, hence a N:N relation
             min: Minimum number of relations (default 0)
             max: Maximum number of relations. (ignored in case of single)
             resolve: resolve ids to foreign data and back. (when calling _get and _put) 
@@ -85,6 +85,10 @@ class Relation(fields.Base):
                 raise FieldException("Max cant be smaller than 0")
             self.meta['max'] = max
 
+        if not isinstance(list, bool):
+            raise FieldException("list should be a bool")
+
+        self.meta['list'] = list
 
         if meta==None:
             if resolve:
@@ -92,13 +96,16 @@ class Relation(fields.Base):
         else:
             self.meta['meta']=meta
 
+
+        if 'meta' in self.meta:
+            if not isinstance(self.meta['meta'], fields.List):
+                FieldException("related metadata should be a list")
+
+
         self.meta['resolve']=resolve
         self.meta['model']=model.__module__.replace("models.","") #TODO: use regex
 
-
-
         self.model=model
-
 
 
     def check(self, context, data):
@@ -106,53 +113,76 @@ class Relation(fields.Base):
         if not super(Relation, self).check(context, data):
             return
 
-        if not isinstance(data, list):
-            raise fields.FieldException("this field should be a list")
+
+        if self.meta['list']:
+
+            if not isinstance(data, list):
+                raise fields.FieldException("this field should be a list")
 
 
-        #check mongo ID's validity
-        mongo_ids=[]
+            #check mongo ID's validity
+            mongo_ids=[]
 
-        if len(data)>0:
-            #try to handle resolved and unresolved data inteligently. 
-            #we always just want to endup with a list of mongo-id's
-            if isinstance(data[0], dict):
-                #data is a list of foreign documents
+            if len(data)>0:
+                #try to handle resolved and unresolved data inteligently. 
+                #we always just want to endup with a list of mongo-id's
+                if isinstance(data[0], dict):
+                    #data is a list of foreign documents
+                    list_key=self.meta['meta'].meta['list_key']
+
+                    for doc in data:
+                        mongo_ids.append(doc[list_key])
+
+                else:
+                    mongo_ids=data
+
+            #call foreign model to check if all id's exist
+            foreign_object=self.model(context)
+            result=foreign_object.get_all(
+                    fields='_id',
+                    match_in={
+                        foreign_object.meta.meta['list_key']: mongo_ids
+                        }
+                    );
+
+            #TODO: specify which id in case resolve is true? (altough this error should never happen)
+            if len(result)!=len(data):
+                raise fields.FieldException("an item in the list doesnt exist")
+
+            if ('min' in self.meta) and len(result)<self.meta['min']:
+                raise fields.FieldException("should have at least {} item(s).".format(self.meta['min']))
+
+            if ('max' in self.meta) and len(result)>self.meta['max']:
+                raise fields.FieldException("should have at most {} item(s).".format(self.meta['max']))
+
+        else:
+            mongo_id=None
+            if isinstance(data, dict):
                 list_key=self.meta['meta'].meta['list_key']
-
-                for doc in data:
-                    mongo_ids.append(doc[list_key])
-
+                if list_key in data:
+                    mongo_id=data[list_key]
             else:
-                mongo_ids=data
+                mongo_id=data
 
-        #call foreign model to check if all id's exist
-        foreign_object=self.model(context)
-        result=foreign_object.get_all(
-                fields='_id',
-                match_in={
-                    foreign_object.meta.meta['list_key']: mongo_ids
-                    }
-                );
+            #check if None is allowed:
+            if mongo_id==None:
+                if ('min' in self.meta) and self.meta['min']>0:
+                    raise fields.FieldException("should be related to exactly one item")
+            else:
+                #check if item exists in forgein model:
+                foreign_object=self.model(context)
+                foreign_object.get(mongo_id)
 
-        #TODO: specify which id in case resolve is true? (altough this error should never happen)
-        if len(result)!=len(data):
-            raise fields.FieldException("an item in the list doesnt exist")
-
-        if ('min' in self.meta) and len(result)<self.meta['min']:
-            raise fields.FieldException("should have at least {} item(s).".format(self.meta['min']))
-
-        if ('max' in self.meta) and len(result)>self.meta['max']:
-            raise fields.FieldException("should have at most {} item(s).".format(self.meta['max']))
 
 
     def to_internal(self, context, data):
         """convert object ids from input data to actual bson objectids
 
-        there are 3 posibilities:
-            1. data is a string and is interpreted as a single bson object id. (usefull when doing a get_all 'match' or 'match_in')
-            2. data is a list of strings. (unresolved relation)
-            3. data is a list of dicts. (resolved relation, in this case all the 'list_key's will be converted to a list of bson objectids)
+        there are 4 posibilities:
+            1. data is a string and is interpreted as a single bson object id. (when list==false and also usefull when doing a get_all 'match' or 'match_in')
+            2. data is a dict (resolved relation)
+            3. data is a list of strings. (unresolved relation)
+            4. data is a list of dicts. (resolved relation, in this case all the 'list_key's will be converted to a list of bson objectids)
         """
 
 
@@ -180,6 +210,10 @@ class Relation(fields.Base):
             else:
                 return ([])
 
+        elif isinstance(data, dict):
+            list_key=self.meta['meta'].meta['list_key']
+            return(bson.objectid.ObjectId(data[list_key]))
+
         else:
             #probaly a string, so convert it to single objectid
             return(bson.objectid.ObjectId(data))
@@ -193,15 +227,23 @@ class Relation(fields.Base):
         if self.meta['resolve']==False:
             return(data)
 
-        if not isinstance(data,list):
-            return (data)
+        if self.meta['list']:
+            if not isinstance(data,list):
+                return (data)
 
-        foreign_object=self.model(context)
-        result=foreign_object.get_all(match_in={
-                self.meta['meta'].meta['list_key']: data
-            })
+            foreign_object=self.model(context)
+            result=foreign_object.get_all(match_in={
+                    self.meta['meta'].meta['list_key']: data
+                })
 
-        return(result)
+            return(result)
+        else:
+            if data==None:
+                return(data)
+            
+            foreign_object=self.model(context)
+            return(foreign_object.get(data))
+
 
 
 class MongoDB(models.common.Base):

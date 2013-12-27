@@ -63,6 +63,23 @@ var form=new ControlForm({
     </table>
 </fieldset>
 
+<fieldset style='display:inline-block;'>
+    <legend class='field-meta-put' field-key='group_id' field-meta-key='desc'></legend>
+    <table class='field-meta-put' field-key='group_id'>
+        <tr>
+            <td class='field-meta-put' field-key='group_id.name' field-meta-key='desc'>
+            <td class='field-put value' field-key='group_id.name'>
+        </tr>
+        <tr>
+        <td colspan=2> 
+        <input class='field-relation-on-change-search field-put field-input' field-key='group_id.name' search-keys='name' result-format='{name} ({_id})' />
+        <button class='field-relation-on-click-add'>Select...</button>
+
+    </table>
+
+</fieldset>
+
+
 <div class='floatingBar viewErrorClass'>
 	<button class='control-on-click-save' >Save</button>
 	<button class='control-on-click-del control-hide-on-new' >Delete</button>
