@@ -1486,23 +1486,35 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         select: function (event, ui) {
             $(this).val("");
 
-//            if (meta.resolve==true)
-            //console.log("in ", $(".field-list-source", context));
-            if (meta.list)
-            {
-                Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
-                    list_no_remove: true,
-                    list_update: true,
-                    show_changes: true
+            var data;
 
-                });
-            }
+            if (meta.list)
+                data =[ ui.item.value ];
             else
-            {
-                Field.Dict.put(key, meta.meta.meta, context, ui.item.value, {
-                    show_changes: true
-                });
-            }
+                data=ui.item.value;
+
+            Field.Relation.put(key, meta, context, data, {
+                list_no_remove: true,
+                list_update: true,
+                relation_update: false,
+                show_changes: true
+            });
+
+            // if (meta.list)
+            // {
+            //     Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
+            //         list_no_remove: true,
+            //         list_update: true,
+            //         show_changes: true
+
+            //     });
+            // }
+            // else
+            // {
+            //     Field.Dict.put(key, meta.meta.meta, context, ui.item.value, {
+            //         show_changes: true
+            //     });
+            // }
             return(false);
         },
         //data source
@@ -1568,18 +1580,27 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
         console.log("field.relation: data on server has changed",result, this);
 
-        Field.List.put(
+        var data;
+        if (meta.list)
+            data=[ result.data ];
+        else
+            data=result.data;
+
+        Field.Relation.put(
             key, 
-            meta.meta, 
-            $(this),
-            [ result.data ],
+            meta, 
+            context, 
+            data, 
             {
                 list_no_remove: true,
                 list_no_add: true, 
                 list_update: true,
+                relation_update: true,
                 show_changes: true
             }
         );
+
+
 
         return(false);
     });
@@ -1591,19 +1612,27 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
         console.log("field.relation: data on server has been deleted", result, this);
 
-        var list_key=meta.meta.list_key;
 
-        var element=Field.List.find_element(
-            key,
-            meta.meta,
-            $(this),
-            [ result.data[list_key] ]
-        );
-
-        element.hide(1000, function()
+        if (meta.list)
         {
-            element.remove();
-        });
+            var list_key=meta.meta.list_key;
+
+            var element=Field.List.find_element(
+                key,
+                meta.meta,
+                $(this),
+                [ result.data[list_key] ]
+            );
+
+            element.hide(1000, function()
+            {
+                element.remove();
+            });
+        }
+        else
+        {
+            console.log("TODO: implement me");
+        }
 
         return(false);
     });
@@ -1650,19 +1679,23 @@ Field.Relation.get=function(key, meta, context)
 {
     var list_context=Field.Relation.list_context(key, context);
 
-    //recurse into sub-meta list
-    data=Field.List.get(key, meta.meta, list_context);
-    if (meta.resolve)
-        return(data);
-    else
+    if (meta.list)
     {
-        //"de-resolve" data, by converting it to an array of id's
+        //recurse into sub-meta list
+        data=Field.List.get(key, meta.meta, list_context);
+     
+        //always "de-resolve" data, by converting it to an array of id's
+        //(the put-call on the server is able to automagically handle resolved and deresolved data anyway, so spare the overhead)
         var ids=[];
         $.each(data, function(key, value)
         {
             ids.push(value[meta.meta.list_key]);
         });
         return(ids);
+    }
+    else
+    {
+        return(context.attr("field-relation-id"))
     }
 }
 
@@ -1709,9 +1742,18 @@ Field.Relation.put=function(key, meta, context, data, options)
         //if its empty or already resolved, directly recurse into sub-meta dict
         //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
         if (typeof(data)=='object')
+        {
+            if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
+                return;
+
             Field.Dict.put(key, meta.meta.meta, context, data, options);
+            context.attr("field-relation-id", data[meta.meta.list_key]);
+        }
         else 
         {
+            if (options.relation_update && context.attr("field-relation-id")!=data)
+                return;
+
             var get_params={};
             get_params[meta.meta.list_key]=data;
             //get related data
@@ -1724,6 +1766,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                     context.off("meta_put_done").on("meta_put_done", function()
                     {
                         Field.Dict.put(key, meta.meta.meta, context, result.data, options);
+                        context.attr("field-relation-id", result.data[meta.meta.list_key]);
                     });
 
                     //metadata already resolved?

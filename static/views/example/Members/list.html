@@ -11,12 +11,17 @@
 
 </script>
 
+<p>Note that showing a long list like this with lots client-side-resolved items requires a get_all request to the server for every item. If its resolved server side its a little bit better, but it still requires a database-getall for every item. So beware of performance issues.
+
+<p>We also use these overly complex examples as a regression test to test every possible relation-type.
 
 <table >
     <tr class='ui-widget-header'>
     	<th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
         <th class='field-meta-put' field-key='group_ids' field-meta-key='desc'>
         <th class='field-meta-put' field-key='group_ids2' field-meta-key='desc'>
+        <th class='field-meta-put' field-key='group_id' field-meta-key='desc'>
+        <th class='field-meta-put' field-key='group_id2' field-meta-key='desc'>
     	<th>
     </tr>
 
@@ -36,6 +41,11 @@
                     <td class='field-put field-list-on-click-view' field-key='group_ids2.name'>
                 </tr>
             </table>
+
+
+        <td class='field-put' field-key='group_id'><span class='field-put' field-key='group_id.name'>
+
+        <td class='field-put' field-key='group_id2'><span class='field-put' field-key='group_id2.name'>
 
 
     	<td class='control-on-click-del ui-icon ui-icon-trash'>
