@@ -337,10 +337,10 @@ Field.Dict.put=function(key, meta, context, data, options)
         context.data("field-data",data);
     }
 
-    //traverse the data
-    $.each(data, function(sub_key, thisdata){
+    //traverse the meta-data
+    $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Base.concat_keys(key, sub_key);
-        var thismeta=meta.meta[sub_key];
+        var thisdata=data[sub_key];
         if (thismeta!=undefined)
         {
 
@@ -361,7 +361,7 @@ Field.Dict.put=function(key, meta, context, data, options)
                 });
             }
         }
-    }); //meta data
+    }); // data
 };
 
 Field.Dict.get=function(key, meta, context)
@@ -1361,6 +1361,7 @@ Field.Timestamp.get=function(key, meta, context)
 
 Field.Timestamp.put=function(key, meta, context, data, options)
 {
+    //FIXME: recalculate to local-time, store UTC on server
     var dateStr="";
 
     if (data!='')
@@ -1469,10 +1470,27 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         Field.Dict.meta_put(key, meta.meta.meta, context);
     }
 
+    $(".field-relation-on-click-clear", context).click(function()
+    {
+        //clear the data
+        var data;
+        if (meta.list)
+            data=[];
+        else
+            data={};
+
+        Field.Relation.put(key, meta, context, data, {
+            list_no_remove: false,
+            list_update: true,
+            relation_update: false,
+            show_changes: true
+        });
+    })
+
+
     $(".field-relation-on-click-add", context).click(function()
     {
         $(".field-relation-on-change-search", context).autocomplete("search", $(this).val());
-//        $(".field-relation-on-change-search", context).focus();
     })
 
     $(".field-relation-on-change-search", context).autocomplete({
@@ -1589,7 +1607,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         Field.Relation.put(
             key, 
             meta, 
-            context, 
+            $(this), 
             data, 
             {
                 list_no_remove: true,
@@ -1695,12 +1713,21 @@ Field.Relation.get=function(key, meta, context)
     }
     else
     {
-        return(context.attr("field-relation-id"))
+        var id=context.attr("field-relation-id");
+        if (!id)
+            id=null; //undefined isnt valid json..
+
+        return(id);
     }
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
+    console.log("field.relation.put key:", key);
+    console.log("field.relation.put meta:", meta);
+    console.log("field.relation.put context:", context);
+    console.log("field.relation.put data:", data);
+    console.log("field.relation.put options:", options);
 
     if (meta.list)
     {
@@ -1747,7 +1774,11 @@ Field.Relation.put=function(key, meta, context, data, options)
                 return;
 
             Field.Dict.put(key, meta.meta.meta, context, data, options);
-            context.attr("field-relation-id", data[meta.meta.list_key]);
+            if (data[meta.meta.list_key])
+                context.attr("field-relation-id", data[meta.meta.list_key]);
+            else
+                context.removeAttr("field-relation-id");
+
         }
         else 
         {
