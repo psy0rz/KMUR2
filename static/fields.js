@@ -1723,93 +1723,88 @@ Field.Relation.get=function(key, meta, context)
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
-    console.log("field.relation.put key:", key);
-    console.log("field.relation.put meta:", meta);
-    console.log("field.relation.put context:", context);
-    console.log("field.relation.put data:", data);
-    console.log("field.relation.put options:", options);
-
-    if (meta.list)
+    //add a handler that gets triggered as soon as metadata is resolved
+    context.off("meta_put_done").on("meta_put_done", function()
     {
-        var list_context=Field.Relation.list_context(key, context);
+        console.log("field.relation.put key:", key);
+        console.log("field.relation.put meta:", meta);
+        console.log("field.relation.put context:", context);
+        console.log("field.relation.put data:", data);
+        console.log("field.relation.put options:", options);
 
-        //if its empty or already resolved, directly recurse into sub-meta list
-        //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
-        if ((data.length==0) || (typeof(data[0])=='object'))
-            Field.List.put(key, meta.meta, list_context, data, options);
-        else 
+        if (meta.list)
         {
-            var get_params={
-                'match_in': {}
-            };
+            var list_context=Field.Relation.list_context(key, context);
 
-            get_params['match_in'][meta.meta.list_key]=data;
-            //get related data
-            rpc(
-                meta.model+".get_all",
-                get_params,
-                function(result)
-                {
-                    //add a handler that gets triggered as soon as metadata is resolved
-                    context.off("meta_put_done").on("meta_put_done", function()
+            //if its empty or already resolved, directly recurse into sub-meta list
+            //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
+            if ((data.length==0) || (typeof(data[0])=='object'))
+                Field.List.put(key, meta.meta, list_context, data, options);
+            else 
+            {
+                var get_params={
+                    'match_in': {}
+                };
+
+                get_params['match_in'][meta.meta.list_key]=data;
+                //get related data
+                rpc(
+                    meta.model+".get_all",
+                    get_params,
+                    function(result)
                     {
                         Field.List.put(key, meta.meta, list_context, result.data, options);
-                    });
-
-                    //metadata already resolved?
-                    if ('meta' in meta)
-                        context.trigger("meta_put_done");
-                },
-                "getting data from related model"
-            );
+     
+                    },
+                    "getting data from related model"
+                );
+            }
         }
-    }
-    else
-    {
-        //if its empty or already resolved, directly recurse into sub-meta dict
-        //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
-        if (typeof(data)=='object')
+        else
         {
-            if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
-                return;
+            //if its empty or already resolved, directly recurse into sub-meta dict
+            //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
+            if (typeof(data)=='object')
+            {
+                if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
+                    return;
 
-            Field.Dict.put(key, meta.meta.meta, context, data, options);
-            if (data[meta.meta.list_key])
-                context.attr("field-relation-id", data[meta.meta.list_key]);
-            else
-                context.removeAttr("field-relation-id");
+                Field.Dict.put(key, meta.meta.meta, context, data, options);
+                if (data[meta.meta.list_key])
+                    context.attr("field-relation-id", data[meta.meta.list_key]);
+                else
+                    context.removeAttr("field-relation-id");
 
-        }
-        else 
-        {
-            if (options.relation_update && context.attr("field-relation-id")!=data)
-                return;
+            }
+            else 
+            {
+                if (options.relation_update && context.attr("field-relation-id")!=data)
+                    return;
 
-            var get_params={};
-            get_params[meta.meta.list_key]=data;
-            //get related data
-            rpc(
-                meta.model+".get",
-                get_params,
-                function(result)
-                {
-                    //add a handler that gets triggered as soon as metadata is resolved
-                    context.off("meta_put_done").on("meta_put_done", function()
+                var get_params={};
+                get_params[meta.meta.list_key]=data;
+                //get related data
+                rpc(
+                    meta.model+".get",
+                    get_params,
+                    function(result)
                     {
+                        console.log("relastion gaat puttn", result);
                         Field.Dict.put(key, meta.meta.meta, context, result.data, options);
                         context.attr("field-relation-id", result.data[meta.meta.list_key]);
-                    });
 
-                    //metadata already resolved?
-                    if ('meta' in meta)
-                        context.trigger("meta_put_done");
-                },
-                "getting data from related model"
-            );
+                    },
+                    "getting data from related model"
+                );
+            }
+
         }
 
-    }
+    });
 
+    //metadata already resolved?
+    if ('meta' in meta)
+        context.trigger("meta_put_done");
 }
 
 
