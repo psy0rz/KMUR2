@@ -1695,10 +1695,11 @@ choosen solution: we have 2 modes to chose from:
 
 Field.Relation.get=function(key, meta, context)
 {
-    var list_context=Field.Relation.list_context(key, context);
 
     if (meta.list)
     {
+        var list_context=Field.Relation.list_context(key, context);
+
         //recurse into sub-meta list
         data=Field.List.get(key, meta.meta, list_context);
      
@@ -1716,6 +1717,8 @@ Field.Relation.get=function(key, meta, context)
         var id=context.attr("field-relation-id");
         if (!id)
             id=null; //undefined isnt valid json..
+
+        console.error("id is ",id);
 
         return(id);
     }
@@ -1781,21 +1784,31 @@ Field.Relation.put=function(key, meta, context, data, options)
                 if (options.relation_update && context.attr("field-relation-id")!=data)
                     return;
 
-                var get_params={};
-                get_params[meta.meta.list_key]=data;
-                //get related data
-                rpc(
-                    meta.model+".get",
-                    get_params,
-                    function(result)
-                    {
-                        console.log("relastion gaat puttn", result);
-                        Field.Dict.put(key, meta.meta.meta, context, result.data, options);
-                        context.attr("field-relation-id", result.data[meta.meta.list_key]);
+                if (data!=undefined)
+                {
 
-                    },
-                    "getting data from related model"
-                );
+                    var get_params={};
+                    get_params[meta.meta.list_key]=data;
+                    //get related data
+                    rpc(
+                        meta.model+".get",
+                        get_params,
+                        function(result)
+                        {
+                            console.log("relastion gaat puttn", result);
+                            Field.Dict.put(key, meta.meta.meta, context, result.data, options);
+                            context.attr("field-relation-id", result.data[meta.meta.list_key]);
+
+                        },
+                        "getting data from related model"
+                    );
+                }
+                else
+                {
+                    //clear
+                    Field.Dict.put(key, meta.meta.meta, context, {}, options);
+                    context.removeAttr("field-relation-id");                    
+                }
             }
 
         }

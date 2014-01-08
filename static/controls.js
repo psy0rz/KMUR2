@@ -723,7 +723,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.changed', "list", function(result)
     { 
 
-        console.log("ControlList: data on server has changed",this_control, result);
+        console.log("ControlList: data on server has changed", result);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
