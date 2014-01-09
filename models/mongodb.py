@@ -214,10 +214,10 @@ class Relation(fields.Base):
             list_key=self.meta['meta'].meta['list_key']
             return(bson.objectid.ObjectId(data[list_key]))
 
-        else:
-            #probaly a string, so convert it to single objectid
+        elif isinstance(data, str):
             return(bson.objectid.ObjectId(data))
-
+        else:
+            return(data)
 
     def to_external(self, context, data):
         """resolve a list of bson objectids by calling the external model to get the corresponding data
