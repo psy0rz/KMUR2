@@ -399,6 +399,8 @@ Field.Dict.find_element=function(key, meta, context, data_keys)
     var sub_keys=data_keys.slice(1);
     var sub_meta=meta.meta[this_key];
 
+    var key_str=Field.Base.concat_keys(key, this_key);
+
     //non existing key
     if (sub_meta==undefined)
     {
@@ -409,11 +411,10 @@ Field.Dict.find_element=function(key, meta, context, data_keys)
         return(Field.Dict.find_element(key_str, meta, context, sub_keys ));
     }
 
-    var key_str=Field.Base.concat_keys(key, this_key);
     var selector='.field-put[field-key="'+key_str+'"]';
     var sub_context=$(selector, context);
 
-    //if the key is not found, just keep looking in the same context for the next one
+    //if the selector is not found, just keep looking in the same context for the next one
     if (sub_context.length==0)
         sub_context=context;
 
@@ -1718,7 +1719,7 @@ Field.Relation.get=function(key, meta, context)
         if (!id)
             id=null; //undefined isnt valid json..
 
-        console.error("id is ",id);
+        // console.error("id is ",id);
 
         return(id);
     }
@@ -1765,9 +1766,9 @@ Field.Relation.put=function(key, meta, context, data, options)
         }
         else
         {
-            //if its empty or already resolved, directly recurse into sub-meta dict
+            //if already resolved, directly recurse into sub-meta dict
             //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
-            if (typeof(data)=='object')
+            if (data!=null && typeof(data)=='object')
             {
                 if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
                     return;
@@ -1784,7 +1785,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                 if (options.relation_update && context.attr("field-relation-id")!=data)
                     return;
 
-                if (data!=undefined)
+                if (data!=null)
                 {
 
                     var get_params={};
