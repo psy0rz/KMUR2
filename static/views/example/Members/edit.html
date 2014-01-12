@@ -86,20 +86,23 @@ var form=new ControlForm({
     <a class='field-list-on-click-view' field-key='group_id.name' href='#'>Create new group</a>
 </fieldset>
 
-<fieldset style='display:inline-block;' class='field-meta-put' field-key='group_id2'>
+<fieldset style='display:inline-block;' >
     <legend class='field-meta-put' field-key='group_id2' field-meta-key='desc'></legend>
-    <table class='field-list-source field-list-source-hide' field-key='group_id2' field-list-view="example.Groups.edit">
-        <tr>
-            <td class='field-meta-put' field-key='group_id2.name' field-meta-key='desc'>
-            <td class='value field-put field-list-on-click-view' field-key='group_id2.name'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-    </table>
+    <!-- FIXME: if we remove this div and put the class in fieldset, the <legend> will be overwritten by the dict.meta_put, because of the client side resolving and the order in which the partent dict travserses the keys? fixme -->
+    <div class='field-meta-put' field-key='group_id2'>
+        <table class='field-list-source field-list-source-hide' field-key='group_id2' field-list-view="example.Groups.edit">
+            <tr>
+                <td class='field-meta-put' field-key='group_id2.name' field-meta-key='desc'>
+                <td class='value field-put field-list-on-click-view' field-key='group_id2.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+        </table>
 
-    <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-    <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-    <br>
-    <a class='field-list-on-click-view' field-key='group_id2.name' href='#'>Create new group</a>
+        <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+        <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+        <br>
+        <a class='field-list-on-click-view' field-key='group_id2.name' href='#'>Create new group</a>
+    </div>
 </fieldset>
 
 

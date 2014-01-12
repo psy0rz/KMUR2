@@ -64,7 +64,7 @@ class Relation(fields.Base):
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
             list: false: Relation to a single foreign object (N:1 relation). Otherwise its a list of relations, hence a N:N relation
             min: Minimum number of relations (default 0)
-            max: Maximum number of relations. (ignored in case of single)
+            max: Maximum number of relations. (only used when list=true)
             resolve: resolve ids to foreign data and back. (when calling _get and _put) 
                 set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself. 
                 (the stuff in field.js will take care of extra rpc-calls to the foreign model)

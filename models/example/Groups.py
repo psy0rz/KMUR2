@@ -7,10 +7,13 @@ class Groups(models.mongodb.MongoDB):
     '''Demonstrates relations: A Group is a thing Members can point to. (look there for the actual relation definition) '''
     
     meta = fields.List(
-            fields.Dict({
-                '_id': models.mongodb.FieldId(),
-                'name': fields.String(desc='Group name'),
-            }),
+                fields.Dict({
+                    '_id': models.mongodb.FieldId(),
+                    'name': fields.String(desc='Group name'),
+
+                },
+                desc='One group'),
+            desc='List of groups',
             list_key='_id'
         )
 
