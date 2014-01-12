@@ -341,7 +341,7 @@ Field.Dict.put=function(key, meta, context, data, options)
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Base.concat_keys(key, sub_key);
         var thisdata=data[sub_key];
-        if (thismeta!=undefined)
+//      if (thismeta!=undefined)
         {
 
             if (thismeta.type=='Dict')
@@ -1412,7 +1412,7 @@ Field.Relation.meta_put=function(key, meta, context)
         Field.Relation.meta_put_resolved(key, meta, context)
     else
     {
-        //asyncroniously resolve sub-metadata
+        //asyncroniously resolve sub-metadata and cache the result in case another field needs it. (happens when displaying a list of client-resolved relations for example)
         if (!meta.get_meta_cache)
             meta.get_meta_cache={};
 
@@ -1730,11 +1730,11 @@ Field.Relation.put=function(key, meta, context, data, options)
     //add a handler that gets triggered as soon as metadata is resolved
     context.off("meta_put_done").on("meta_put_done", function()
     {
-        console.log("field.relation.put key:", key);
-        console.log("field.relation.put meta:", meta);
-        console.log("field.relation.put context:", context);
-        console.log("field.relation.put data:", data);
-        console.log("field.relation.put options:", options);
+        // console.log("field.relation.put key:", key);
+        // console.log("field.relation.put meta:", meta);
+        // console.log("field.relation.put context:", context);
+        // console.log("field.relation.put data:", data);
+        // console.log("field.relation.put options:", options);
 
         if (meta.list)
         {
@@ -1796,7 +1796,6 @@ Field.Relation.put=function(key, meta, context, data, options)
                         get_params,
                         function(result)
                         {
-                            console.log("relastion gaat puttn", result);
                             Field.Dict.put(key, meta.meta.meta, context, result.data, options);
                             context.attr("field-relation-id", result.data[meta.meta.list_key]);
 
@@ -1819,6 +1818,14 @@ Field.Relation.put=function(key, meta, context, data, options)
     //metadata already resolved?
     if ('meta' in meta)
         context.trigger("meta_put_done");
+    else
+    {
+        if (! ('get_meta_cache' in meta))
+        {
+            //NOTE: maybe change this to do it automaticly? 
+            console.error("relation.put: no meta-data resolved. use field-put-meta instead of field-put.");
+        }
+    }
 }
 
 

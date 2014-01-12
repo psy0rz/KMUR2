@@ -43,9 +43,11 @@
             </table>
 
 
-        <td class='field-put' field-key='group_id'><span class='field-put' field-key='group_id.name'>
+        <!-- here we also could have used a simple field-put, but for consistency we use field-meta-put -->
+        <td class='field-meta-put' field-key='group_id'><span class='field-put' field-key='group_id.name'>
 
-        <td class='field-put' field-key='group_id2'><span class='field-put' field-key='group_id2.name'>
+        <!-- note that you MUST use field-meta-put here, in order to resolve the metadata -->
+        <td class='field-meta-put' field-key='group_id2'><span class='field-put' field-key='group_id2.name'>
 
 
     	<td class='control-on-click-del ui-icon ui-icon-trash'>
