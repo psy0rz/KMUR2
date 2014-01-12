@@ -239,14 +239,14 @@ class Relation(fields.Base):
             return(result)
         else:
             if data==None:
-                return({})
+                return(None)
             
             foreign_object=self.model(context)
             try:
                 return(foreign_object.get(data))
             except:
-                #non existing or non allowed data will simply return empty result (not None but dict!).
-                return({}) 
+                #non existing or non allowed data will simply None
+                return(None) 
 
 
 

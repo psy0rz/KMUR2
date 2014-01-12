@@ -578,13 +578,13 @@ Field.List.meta_put=function(key, meta, context)
         //the view that was opened by us has changed something to our item
         //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.
         //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
-        $(list_source).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
+        $(list_source.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
             console.log("field.list: view opened by us has changed the data", result);
             Field.List.put(
                 key,
                 meta,
-                $(this),
+                list_source,
                 [ result.data ],
                 {
                     list_no_remove: true,
@@ -765,10 +765,17 @@ Field.List.put=function(key, meta, context, data, options)
     //delete stuff that still has the delete-marker in it:
     if (options.list_update)
     {
-        $('.field-list-delete[field-key="'+key+'"]', parent).hide(1000, function()
-                {
-                    $(this).remove();
-                });
+        if (options.show_changes)
+        {
+            $('.field-list-delete[field-key="'+key+'"]', parent).hide(1000, function()
+                    {
+                        $(this).remove();
+                    });
+        }
+        else
+        {
+            $('.field-list-delete[field-key="'+key+'"]', parent).remove();
+        }
     }
 }
 
@@ -1442,6 +1449,8 @@ Field.Relation.list_context=function(key, context)
 Field.Relation.meta_put_resolved=function(key, meta, context)
 {
  
+    console.error("relation.meta_put_resolved: ", key ,meta,context);
+    
     //a relation with a list is a more complex type, so among other things it should have a field-list-source inside the context. 
     var list_context=Field.Relation.list_context(key, context);
 
@@ -1504,7 +1513,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                     list_no_remove: true,
                     list_no_add: false,
                     list_update: true,
-                    show_changes: true
+                    show_changes: false
                 });
             }
             else
@@ -1513,7 +1522,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                     list_no_remove: false, //we only want one item in the list, since this is not a list ;)
                     list_no_add: false,
                     list_update: true,
-                    show_changes: true
+                    show_changes: false
                 });
             }
 
@@ -1586,10 +1595,33 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         }
     })
 
+    //field.list also catches this, but we need some special treatment so we overrule it
+    $(list_context.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
+    {
+        console.log("field.relation: view opened by us has changed the data", result);
 
+        var data;
+        if (meta.list)
+            data=[ result.data ];
+        else
+            data=result.data;
+
+        Field.Relation.put(
+            key, 
+            meta, 
+            context, 
+            data, 
+            {
+                list_no_remove: meta.list,
+                list_no_add: false, 
+                list_update: true,
+                show_changes: true
+            }
+        );
+        return(false);
+    });
 
     //data in related model was changed
-    //NOTE: control_form_changed is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
     $(context).subscribe(meta.model+'.changed', "fields", function(result)
     { 
 
@@ -1610,7 +1642,6 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                 list_no_remove: true,
                 list_no_add: true, 
                 list_update: true,
-                relation_update: true,
                 show_changes: true
             }
         );
