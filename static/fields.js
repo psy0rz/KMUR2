@@ -1442,51 +1442,44 @@ Field.Relation.list_context=function(key, context)
 Field.Relation.meta_put_resolved=function(key, meta, context)
 {
  
-    if (meta.list)
+    //a relation with a list is a more complex type, so among other things it should have a field-list-source inside the context. 
+    var list_context=Field.Relation.list_context(key, context);
+
+    //a common mistake would be to give the field-list-source a field-meta-put, so catch it here:
+    if (list_context.hasClass("field-meta-put"))
     {
-        //a relation with a list is a more complex type, so among other things it should have a field-list-source inside the context. 
-        var list_context=Field.Relation.list_context(key, context);
-
-        //a common mistake would be to give the field-list-source a field-meta-put, so catch it here:
-        if (list_context.hasClass("field-meta-put"))
-        {
-            list_context.append($("<span class='ui-state-highlight'>program error: the list-source of a relation should not have a field-meta-put class!</span>"));
-            console.error("program error: the list-source of a relation should not have a field-meta-put class!");
-            return;
-        }
-
-
-        //recurse into list with sub-meta
-        //use our context here: there are probably things like table headers that need meta-data descriptions
-        //and list.meta_put can handle parent contexts as well as the list_context.
-        Field.List.meta_put(key, meta.meta, context);
-
-        //make sure the list doesnt have a field-put and field-input, and we do. 
-        //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
-        list_context.removeClass("field-put field-input field-get");
-        list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
-    }
-    else
-    {
-        Field.Dict.meta_put(key, meta.meta.meta, context);
+        list_context.append($("<span class='ui-state-highlight'>program error: the list-source of a relation should not have a field-meta-put class!</span>"));
+        console.error("program error: the list-source of a relation should not have a field-meta-put class!");
+        return;
     }
 
-    $(".field-relation-on-click-clear", context).click(function()
-    {
-        //clear the data
-        var data;
-        if (meta.list)
-            data=[];
-        else
-            data={};
 
-        Field.Relation.put(key, meta, context, data, {
-            list_no_remove: false,
-            list_update: true,
-            relation_update: false,
-            show_changes: true
-        });
-    })
+    //recurse into list with sub-meta
+    //use our context here: there are probably things like table headers that need meta-data descriptions
+    //and list.meta_put can handle parent contexts as well as the list_context.
+    Field.List.meta_put(key, meta.meta, context);
+
+    //make sure the list doesnt have a field-put and field-input, and we do. 
+    //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.
+    list_context.removeClass("field-put field-input field-get");
+    list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
+
+    // $(".field-relation-on-click-clear", context).click(function()
+    // {
+    //     //clear the data
+    //     var data;
+    //     if (meta.list)
+    //         data=[];
+    //     else
+    //         data={};
+
+    //     Field.Relation.put(key, meta, context, data, {
+    //         list_no_remove: false,
+    //         list_update: true,
+    //         relation_update: false,
+    //         show_changes: true
+    //     });
+    // })
 
 
     $(".field-relation-on-click-add", context).click(function()
@@ -1505,19 +1498,25 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         select: function (event, ui) {
             $(this).val("");
 
-            var data;
-
             if (meta.list)
-                data =[ ui.item.value ];
+            {
+                Field.Relation.put(key, meta, context, [ ui.item.value ], {
+                    list_no_remove: true,
+                    list_no_add: false,
+                    list_update: true,
+                    show_changes: true
+                });
+            }
             else
-                data=ui.item.value;
+            {
+                Field.Relation.put(key, meta, context, ui.item.value, {
+                    list_no_remove: false, //we only want one item in the list, since this is not a list ;)
+                    list_no_add: false,
+                    list_update: true,
+                    show_changes: true
+                });
+            }
 
-            Field.Relation.put(key, meta, context, data, {
-                list_no_remove: true,
-                list_update: true,
-                relation_update: false,
-                show_changes: true
-            });
 
             // if (meta.list)
             // {
@@ -1543,22 +1542,19 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
             //contruct or-based case insensitive regex search, excluding all the already selected id's
             var params={}
 
-            if (meta.list)
+            //get currently selected ids
+            var current_items=Field.List.get(key, meta.meta, list_context);
+            console.log("currentitems", current_items);
+
+            //filter those ids out
+            var list_key=meta.meta.list_key;
+            params['match_nin']={}
+            params['match_nin'][list_key]=[];
+
+            $.each(current_items, function(i, item)
             {
-                //get currently selected ids
-                var current_items=Field.List.get(key, meta.meta, list_context);
-                console.log("currentitems", current_items);
-
-                //filter those ids out
-                var list_key=meta.meta.list_key;
-                params['match_nin']={}
-                params['match_nin'][list_key]=[];
-
-                $.each(current_items, function(i, item)
-                {
-                    params['match_nin'][list_key].push(item[list_key]);
-                });
-            }
+                params['match_nin'][list_key].push(item[list_key]);
+            });
 
             var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
             params['regex_or']={}
@@ -1632,26 +1628,19 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         console.log("field.relation: data on server has been deleted", result, this);
 
 
-        if (meta.list)
-        {
-            var list_key=meta.meta.list_key;
+        var list_key=meta.meta.list_key;
 
-            var element=Field.List.find_element(
-                key,
-                meta.meta,
-                $(this),
-                [ result.data[list_key] ]
-            );
+        var element=Field.List.find_element(
+            key,
+            meta.meta,
+            $(this),
+            [ result.data[list_key] ]
+        );
 
-            element.hide(1000, function()
-            {
-                element.remove();
-            });
-        }
-        else
+        element.hide(1000, function()
         {
-            console.log("TODO: implement me");
-        }
+            element.remove();
+        });
 
         return(false);
     });
@@ -1697,32 +1686,40 @@ choosen solution: we have 2 modes to chose from:
 Field.Relation.get=function(key, meta, context)
 {
 
-    if (meta.list)
-    {
-        var list_context=Field.Relation.list_context(key, context);
+    var list_context=Field.Relation.list_context(key, context);
 
-        //recurse into sub-meta list
-        data=Field.List.get(key, meta.meta, list_context);
-     
-        //always "de-resolve" data, by converting it to an array of id's
-        //(the put-call on the server is able to automagically handle resolved and deresolved data anyway, so spare the overhead)
-        var ids=[];
-        $.each(data, function(key, value)
-        {
-            ids.push(value[meta.meta.list_key]);
-        });
-        return(ids);
-    }
+    //recurse into sub-meta list
+    data=Field.List.get(key, meta.meta, list_context);
+ 
+    //always "de-resolve" data, by converting it to an array of id's
+    //(the put-call on the server is able to automagically handle resolved and deresolved data anyway, so spare the overhead)
+    var ids=[];
+    $.each(data, function(key, value)
+    {
+        ids.push(value[meta.meta.list_key]);
+    });
+
+    if (meta.list)
+        return(ids)
     else
     {
-        var id=context.attr("field-relation-id");
-        if (!id)
-            id=null; //undefined isnt valid json..
-
-        // console.error("id is ",id);
-
-        return(id);
+        if (ids.length>0)
+            return(ids[0]);
+        else
+            return(null);
     }
+    // return(ids);
+    // }
+    // else
+    // {
+    //     var id=context.attr("field-relation-id");
+    //     if (!id)
+    //         id=null; //undefined isnt valid json..
+
+    //     // console.error("id is ",id);
+
+    //     return(id);
+    // }
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
@@ -1736,9 +1733,9 @@ Field.Relation.put=function(key, meta, context, data, options)
         // console.log("field.relation.put data:", data);
         // console.log("field.relation.put options:", options);
 
+        var list_context=Field.Relation.list_context(key, context);
         if (meta.list)
         {
-            var list_context=Field.Relation.list_context(key, context);
 
             //if its empty or already resolved, directly recurse into sub-meta list
             //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
@@ -1766,49 +1763,46 @@ Field.Relation.put=function(key, meta, context, data, options)
         }
         else
         {
-            //if already resolved, directly recurse into sub-meta dict
-            //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
-            if (data!=null && typeof(data)=='object')
+            if (data==null)
             {
-                if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
-                    return;
+                Field.List.put(key, meta.meta, list_context, [  ], options);
+            }
+            //if already resolved, directly recurse into the list
+            //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
+            else if (typeof(data)=='object')
+            {
+                // if (options.relation_update && context.attr("field-relation-id")!=data[meta.meta.list_key])
+                //     return;
 
-                Field.Dict.put(key, meta.meta.meta, context, data, options);
-                if (data[meta.meta.list_key])
-                    context.attr("field-relation-id", data[meta.meta.list_key]);
-                else
-                    context.removeAttr("field-relation-id");
+                // Field.Dict.put(key, meta.meta.meta, context, data, options);
+                Field.List.put(key, meta.meta, list_context, [ data ], options);
+                // if (data[meta.meta.list_key])
+                //     context.attr("field-relation-id", data[meta.meta.list_key]);
+                // else
+                //     context.removeAttr("field-relation-id");
 
             }
             else 
             {
-                if (options.relation_update && context.attr("field-relation-id")!=data)
-                    return;
+                // if (options.relation_update && context.attr("field-relation-id")!=data)
+                //     return;
 
-                if (data!=null)
-                {
 
-                    var get_params={};
-                    get_params[meta.meta.list_key]=data;
-                    //get related data
-                    rpc(
-                        meta.model+".get",
-                        get_params,
-                        function(result)
-                        {
-                            Field.Dict.put(key, meta.meta.meta, context, result.data, options);
-                            context.attr("field-relation-id", result.data[meta.meta.list_key]);
+                var get_params={};
+                get_params[meta.meta.list_key]=data;
+                //get related data
+                rpc(
+                    meta.model+".get",
+                    get_params,
+                    function(result)
+                    {
+                        // Field.Dict.put(key, meta.meta.meta, context, result.data, options);
+                        // context.attr("field-relation-id", result.data[meta.meta.list_key]);
+                        Field.List.put(key, meta.meta, list_context, [ result.data ], options);
 
-                        },
-                        "getting data from related model"
-                    );
-                }
-                else
-                {
-                    //clear
-                    Field.Dict.put(key, meta.meta.meta, context, {}, options);
-                    context.removeAttr("field-relation-id");                    
-                }
+                    },
+                    "getting data from related model"
+                );
             }
 
         }
@@ -1822,7 +1816,6 @@ Field.Relation.put=function(key, meta, context, data, options)
     {
         if (! ('get_meta_cache' in meta))
         {
-            //NOTE: maybe change this to do it automaticly? 
             console.error("relation.put: no meta-data resolved. use field-put-meta instead of field-put.");
         }
     }
