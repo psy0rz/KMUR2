@@ -32,6 +32,27 @@ new ControlListRelated({
     'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
 });
 
+new ControlListRelated({
+    'view'              : view,
+    'context'           : '.member',
+    'class'             : 'example.Members',
+    'endless_scrolling' : true,
+    'related_key'       : 'group_id',
+    'related_value'     : view.params._id,
+    'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
+});
+
+new ControlListRelated({
+    'view'              : view,
+    'context'           : '.member2',
+    'class'             : 'example.Members',
+    'endless_scrolling' : true,
+    'related_key'       : 'group_id2',
+    'related_value'     : view.params._id,
+    'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
+});
+
+
 </script>
 <p>This example demonstrates how edit a group and add members to it. Since a member points to a group, and not the other way around, we need to use two ControlLists that handle all the complexeties involved.
 <fieldset class='group'>
@@ -50,43 +71,86 @@ new ControlListRelated({
     </div>
 </fieldset>
 
-<fieldset class='members control-hide-on-new'>
-    <legend>Members of this group (resolved server side)</legend>
-    <table >
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
-            <th>
-        </tr>
+<fieldset>
+    <legend>Members of this group</legend>
+    <fieldset class='members control-hide-on-new'>
+        <legend class='field-meta-put' field-key='group_ids' field-meta-key='desc'></legend>
+        <table >
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+                <th>
+            </tr>
 
-        <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
-            <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
-            <td >
-            <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-            <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
-        </tr>
-    </table>
-</fieldset>
+            <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+                <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
+                <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </table>
+    </fieldset>
 
-<fieldset class='members2 control-hide-on-new'>
-    <legend>Members of this group2 (resolved client side)</legend>
-    <table >
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
-            <th>
-        </tr>
+    <fieldset class='members2 control-hide-on-new'>
+        <legend class='field-meta-put' field-key='group_ids2' field-meta-key='desc'></legend>
+        <table >
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+                <th>
+            </tr>
 
-        <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
-            <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
-            <td >
-            <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-            <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
-        </tr>
-    </table>
+            <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+                <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
+                <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </table>
+    </fieldset>
+
+
+    <fieldset class='member control-hide-on-new'>
+        <legend class='field-meta-put' field-key='group_id' field-meta-key='desc'></legend>
+        <table >
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+                <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
+                <td >
+                <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </table>
+    </fieldset>
+
+
+    <fieldset class='member2 control-hide-on-new'>
+        <legend class='field-meta-put' field-key='group_id2' field-meta-key='desc'></legend>
+        <table >
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source ui-widget-content' field-key='' field-list-view="example.Members.edit">
+                <td class='field-list-on-click-view field-put' field-key='name' >(create new member)
+                <td >
+                <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='control-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </table>
+    </fieldset>
 </fieldset>
 

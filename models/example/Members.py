@@ -33,7 +33,8 @@ class Members(models.mongodb.MongoDB):
                     model=models.example.Groups.Groups,
                     resolve=False,
                     list=False)
-            }),
+            }, desc='A member'),
+            desc='A list of members',
             list_key='_id'
         )
 

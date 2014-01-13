@@ -295,7 +295,7 @@ Field.Dict=Object.create(Field.Base);
 Field.Dict.meta_put=function(key, meta, context)
 {
     //dict operates on a bigger context, but meta_put is expecting direct element, so give it that:
-    if (key)
+//    if (key)
     {
         var selector='.field-meta-put[field-key="'+key+'"]';
         $(selector, context).each(function()

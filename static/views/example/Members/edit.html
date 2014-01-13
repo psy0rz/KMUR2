@@ -25,83 +25,85 @@ var form=new ControlForm({
     </table>
 </fieldset>
 
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='group_ids' field-meta-key='desc'></legend>
-    <table class='field-meta-put' field-key='group_ids'>
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put' field-key='group_ids.name' field-meta-key='desc'>
-            <th>
-        </tr>
+<fieldset>
+    <legend>Groups this member belongs to</legend>
+    <fieldset style='display:inline-block;'>
+        <legend class='field-meta-put' field-key='group_ids' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='group_ids'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='group_ids.name' field-meta-key='desc'>
+                <th>
+            </tr>
 
-        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids' field-list-view="example.Groups.edit">
-            <td class='field-put field-list-on-click-view' field-key='group_ids.name'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
-        </tr>
-        <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='group_ids2.name'> <a href='#'>Create new group</a>
-        </tr>
-    </table>
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids' field-list-view="example.Groups.edit">
+                <td class='field-put field-list-on-click-view' field-key='group_ids.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='group_ids2.name'> <a href='#'>Create new group</a>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset style='display:inline-block;'>
+        <legend class='field-meta-put' field-key='group_ids2' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='group_ids2'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='group_ids2.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids2' field-list-view="example.Groups.edit">
+                <td class='field-put field-list-on-click-view' field-key='group_ids2.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='group_ids2.name'> <a href='#'>Create new group</a>
+            </tr>
+        </table>
+    </fieldset>
+
+
+    <fieldset style='display:inline-block;' class='field-meta-put' field-key='group_id'>
+        <legend class='field-meta-put' field-key='group_id' field-meta-key='desc'></legend>
+        <table class='field-list-source field-list-source-hide' field-key='group_id' field-list-view="example.Groups.edit">
+            <tr>
+                <td class='field-meta-put' field-key='group_id.name' field-meta-key='desc'>
+                <td class='value field-put field-list-on-click-view' field-key='group_id.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+        </table>
+
+        <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+        <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+        <br>
+        <a class='field-list-on-click-view' field-key='group_id.name' href='#'>Create new group</a>
+    </fieldset>
+
+    <fieldset style='display:inline-block;' class='field-meta-put' field-key='group_id2'>
+        <legend class='field-meta-put' field-key='group_id2' field-meta-key='desc'></legend>
+        <table class='field-list-source field-list-source-hide' field-key='group_id2' field-list-view="example.Groups.edit">
+            <tr>
+                <td class='field-meta-put' field-key='group_id2.name' field-meta-key='desc'>
+                <td class='value field-put field-list-on-click-view' field-key='group_id2.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+        </table>
+
+        <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
+        <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+        <br>
+        <a class='field-list-on-click-view' field-key='group_id2.name' href='#'>Create new group</a>
+    </fieldset>
 </fieldset>
-
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='group_ids2' field-meta-key='desc'></legend>
-    <table class='field-meta-put' field-key='group_ids2'>
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put' field-key='group_ids2.name' field-meta-key='desc'>
-            <th>
-        </tr>
-
-        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids2' field-list-view="example.Groups.edit">
-            <td class='field-put field-list-on-click-view' field-key='group_ids2.name'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
-        </tr>
-        <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='group_ids2.name'> <a href='#'>Create new group</a>
-        </tr>
-    </table>
-</fieldset>
-
-
-<fieldset style='display:inline-block;' class='field-meta-put' field-key='group_id'>
-    <legend class='field-meta-put' field-key='group_id' field-meta-key='desc'></legend>
-    <table class='field-list-source field-list-source-hide' field-key='group_id' field-list-view="example.Groups.edit">
-        <tr>
-            <td class='field-meta-put' field-key='group_id.name' field-meta-key='desc'>
-            <td class='value field-put field-list-on-click-view' field-key='group_id.name'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-    </table>
-
-    <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-    <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-    <br>
-    <a class='field-list-on-click-view' field-key='group_id.name' href='#'>Create new group</a>
-</fieldset>
-
-<fieldset style='display:inline-block;' class='field-meta-put' field-key='group_id2'>
-    <legend class='field-meta-put' field-key='group_id2' field-meta-key='desc'></legend>
-    <table class='field-list-source field-list-source-hide' field-key='group_id2' field-list-view="example.Groups.edit">
-        <tr>
-            <td class='field-meta-put' field-key='group_id2.name' field-meta-key='desc'>
-            <td class='value field-put field-list-on-click-view' field-key='group_id2.name'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-    </table>
-
-    <input  class='field-relation-on-change-search' search-keys='name' result-format='{name} ({_id})' />
-    <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-    <br>
-    <a class='field-list-on-click-view' field-key='group_id2.name' href='#'>Create new group</a>
-</fieldset>
-
 
 <div class='floatingBar viewErrorClass'>
 	<button class='control-on-click-save' >Save</button>

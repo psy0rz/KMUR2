@@ -616,6 +616,7 @@ ControlList.prototype.get_meta_result=function(result, request_params)
 
     Field[this.meta.type].meta_put('',this.meta, this.context);
 
+
     this.attach_event_handlers();   
     this.get(request_params);
 }
@@ -1147,26 +1148,36 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
         function(result)
         {
 
-            //unresolve the data, its easier for this routine
             var related_meta=this_control.meta.meta.meta[this_control.params.related_key];
-            if (related_meta.resolve)
+
+            if (related_meta.list)
             {
-                var unresolved=[];
-                $.each(result.data[this_control.params.related_key], function(key,value)
+                //unresolve the data, its easier for this routine
+                if (related_meta.resolve)
                 {
-                    unresolved.push(value[related_meta.meta.list_key]);
-                });
-                result.data[this_control.params.related_key]=unresolved;
+                    var unresolved=[];
+                    $.each(result.data[this_control.params.related_key], function(key,value)
+                    {
+                        unresolved.push(value[related_meta.meta.list_key]);
+                    });
+                    result.data[this_control.params.related_key]=unresolved;
+                }
+
+                if (!result.data[this_control.params.related_key])
+                    return;
+
+                var id_index=result.data[this_control.params.related_key].indexOf(this_control.params.related_value);
+                //there is no relation to remove?
+                if (id_index==-1)
+                {
+                    return;
+                }
             }
-
-            if (!result.data[this_control.params.related_key])
-                return;
-
-            var id_index=result.data[this_control.params.related_key].indexOf(this_control.params.related_value);
-            //there is no relation to remove?
-            if (id_index==-1)
+            else
             {
-                return;
+                //there is no relation to remove
+                if (result.data[this_control.params.related_key]==null)
+                    return;
             }
 
             if (!viewShowError(result, context, this_control.meta))
@@ -1175,8 +1186,12 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
                     'text': this_control.format(confirm_text, result.data),
                     'callback': function()
                     {
-                        //now remove the item from the document and put it 
-                        result.data[this_control.params.related_key].splice(id_index,1);
+                        //now unrelate the item
+                        if (related_meta.list)
+                            result.data[this_control.params.related_key].splice(id_index,1);
+                        else
+                            result.data[this_control.params.related_key]=null
+
                         rpc(
                             this_control.params.related_put,
                             result.data,
@@ -1216,22 +1231,38 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
         get_params,
         function(result)
         {
-            //unresolve the data, its easier for this routine
             var related_meta=this_control.meta.meta.meta[this_control.params.related_key];
-            if (related_meta.resolve)
+            if (related_meta.list)
             {
-                var unresolved=[];
-                $.each(result.data[this_control.params.related_key], function(key,value)
+                //unresolve the data, its easier for this routine
+                if (related_meta.resolve)
                 {
-                    unresolved.push(value[related_meta.meta.list_key]);
-                });
-                result.data[this_control.params.related_key]=unresolved;
-            }
+                    var unresolved=[];
+                    $.each(result.data[this_control.params.related_key], function(key,value)
+                    {
+                        unresolved.push(value[related_meta.meta.list_key]);
+                    });
+                    result.data[this_control.params.related_key]=unresolved;
+                }
 
-            //its already related?
-            if (result.data[this_control.params.related_key] && result.data[this_control.params.related_key].indexOf(this_control.params.related_value)!=-1)
+                //its already related?
+                if (result.data[this_control.params.related_key] && result.data[this_control.params.related_key].indexOf(this_control.params.related_value)!=-1)
+                {
+                    return;
+                }
+            }
+            else
             {
-                return;
+                //already related to this one?
+                if (result.data[this_control.params.related_key]!=null)
+                {
+                    if (related_meta.resolve && result.data[this_control.params.related_key][related_meta.meta.list_key]==this_control.params.related_value)
+                        return;
+
+                    if (!related_meta.resolve && result.data[this_control.params.related_key]==this_control.params.related_value)
+                        return;
+                }
+
             }
 
             if (!viewShowError(result, context, this_control.meta))
@@ -1241,7 +1272,11 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
                     'callback': function()
                     {
                         //now add the item to the document and put it 
-                        result.data[this_control.params.related_key].push(this_control.params.related_value)
+                        if (related_meta.list)
+                            result.data[this_control.params.related_key].push(this_control.params.related_value)
+                        else
+                            result.data[this_control.params.related_key]=this_control.params.related_value;
+
                         rpc(
                             this_control.params.related_put,
                             result.data,
@@ -1316,10 +1351,8 @@ ControlListRelated.prototype.attach_event_handlers=function()
         },
         //item has been selected, create relation
         select: function (event, ui) {
-            console.log("geert1");
             $(this).val("");
             this_control.relate(ui.item.value[this_control.meta.list_key], this_control.params.relate_confirm, function() {});
-            console.log("geert1");
             return(false);
         },
         //data source
