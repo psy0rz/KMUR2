@@ -510,6 +510,15 @@ Field.List.meta_put=function(key, meta, context)
     if (Field.Base.meta_put(key, meta, context))
         return;
 
+    //NO?
+    // //fill all other metadata with the same key within this context (usefull for headers and stuff)
+    // var selector='.field-meta-put[field-key="'+key+'"]';
+    // $(selector, context).each(function()
+    // {   
+    //     console.error("putting meta", meta, this);            
+    //     Field.Base.meta_put(key, meta, $(this));
+    // });
+
     var list_source;
     if (context.hasClass("field-list-source"))
         list_source=context;
@@ -1466,7 +1475,15 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     //use our context here: there are probably things like table headers that need meta-data descriptions
     //and list.meta_put can handle parent contexts as well as the list_context.
     Field.List.meta_put(key, meta.meta, context);
-    Field.Base.meta_put(key, meta, context); //make sure we restore any field-meta-key stuff that the list or sub-dict has overwritten.
+
+
+    //make sure we field-meta-put any headers or legends (overwrite stuff that the list or sub-dict has filled in)
+    var selector='.field-meta-put[field-key="'+key+'"]';
+    $(selector, context).each(function()
+    {
+        Field.Base.meta_put(key, meta, $(this));   
+    });
+
 
     //make sure the list doesnt have a field-put and field-input, and we do. 
     //this is neccesary because field.releation needs to handle puts, especially with non-resolved data.

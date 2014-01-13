@@ -1312,7 +1312,7 @@ ControlListRelated.prototype.attach_event_handlers=function()
 
     //the view that was opened by us has created a new item. relate to it automaticly 
     //NOTE: we overrule handler that was created by Field.List 
-    $(this_control.list_source_element).off("control_form_created").on("control_form_created",function(event, result)
+    $(this_control.list_source_element.parent()).off("control_form_created").on("control_form_created",function(event, result)
     {
         console.log("view opened by us has created an item", result);
         this_control.relate(result.data[this_control.meta.list_key],"",function(result){        });
