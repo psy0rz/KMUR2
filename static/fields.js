@@ -593,7 +593,7 @@ Field.List.meta_put=function(key, meta, context)
             Field.List.put(
                 key,
                 meta,
-                list_source,
+                $(this).closest('[field-key="'+key+'"]'),
                 [ result.data ],
                 {
                     list_no_remove: true,
@@ -1625,8 +1625,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
         Field.Relation.put(
             key, 
-            meta, 
-            context, 
+            meta,
+            $(this).closest('[field-key="'+key+'"]'),
             data, 
             {
                 list_no_remove: meta.list,
@@ -1653,7 +1653,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
         Field.Relation.put(
             key, 
             meta, 
-            $(this), 
+            $(this).closest('[field-key="'+key+'"]'),
             data, 
             {
                 list_no_remove: true,

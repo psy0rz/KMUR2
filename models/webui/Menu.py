@@ -21,8 +21,10 @@ def loadmenus():
                     menus[name]['menu']=name
                 else:
                     #update existing menu
-                    menus[name]['title'] = menudata['title']
-                    menus[name]['items'].extend(menudata['items'])
+                    if 'title' in menudata:
+                      menus[name]['title'] = menudata['title']
+                    if 'items' in menudata:
+                      menus[name]['items'].extend(menudata['items'])
                     if 'view' in menudata:
                       menus[name]['view']=menudata['view']
     return menus
