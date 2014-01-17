@@ -4,7 +4,7 @@ import models.mongodb
 
 import models.example.Groups
 
-class Members(models.mongodb.MongoDB):
+class Members(models.mongodb.Base):
     '''example that demonstrates relations. Members can point to one or more Groups. (N:N relation) '''
     
     meta = fields.List(

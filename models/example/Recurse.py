@@ -3,7 +3,7 @@ import fields
 import models.mongodb
 
 
-class Recurse(models.mongodb.MongoDB):
+class Recurse(models.mongodb.Base):
     '''example that demonstrates recursive relation.'''
     
 

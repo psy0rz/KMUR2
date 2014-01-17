@@ -5,7 +5,7 @@ from models import mongodb
 
 import models.core.Companies
 
-class Users(models.mongodb.MongoDB):
+class Users(models.mongodb.Base):
     '''user management'''
     
     meta = fields.List(

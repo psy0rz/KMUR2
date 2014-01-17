@@ -4,7 +4,7 @@ import models.mongodb
 import time
 
 
-class FieldDemo(models.mongodb.MongoDB):
+class FieldDemo(models.mongodb.Base):
     '''example class to demonstrate and test all data types'''
 
     primitiveFields = {

@@ -3,7 +3,7 @@ import fields
 import models.mongodb
 
 
-class Groups(models.mongodb.MongoDB):
+class Groups(models.mongodb.Base):
     '''Demonstrates relations: A Group is a thing Members can point to. (look there for the actual relation definition) '''
     
     meta = fields.List(

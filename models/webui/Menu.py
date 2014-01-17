@@ -32,7 +32,7 @@ def loadmenus():
 static_menus = loadmenus()
 
 
-class Menu(models.mongodb.MongoDB):
+class Menu(models.mongodb.Base):
     '''Manages menu items and favorites for webui interface'''
 
     meta = fields.List(fields.Dict({

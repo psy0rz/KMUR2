@@ -250,7 +250,7 @@ class Relation(fields.Base):
 
 
 
-class MongoDB(models.common.Base):
+class Base(models.common.Base):
     """Base class for models that use mongodb.
 
     Automatically sets self.db to the correct data, by parameters that are stored in the context object.
@@ -264,7 +264,7 @@ class MongoDB(models.common.Base):
     """
 
     def __init__(self, context=None):
-        super(MongoDB, self).__init__(context=context)
+        super(Base, self).__init__(context=context)
 
         if not hasattr(context, 'mongodb_connection'):
             context.mongodb_connection = pymongo.Connection(host=context.db_host, safe=True)

@@ -4,7 +4,7 @@ import models.mongodb
 from models import mongodb
 
 
-class Companies(models.mongodb.MongoDB):
+class Companies(models.mongodb.Base):
     '''company management'''
     
     meta = fields.List(
