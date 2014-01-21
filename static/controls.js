@@ -1338,11 +1338,11 @@ ControlListRelated.prototype.attach_event_handlers=function()
 
     $(".control-relation-on-click-add", context).off("click").on("click",function()
     {
-        $(".control-relation-on-change-search", context).autocomplete("search", "");
+        $(".control-relation-on-change-autocomplete", context).autocomplete("search", "");
     })
 
 
-    $(".control-relation-on-change-search", context).autocomplete({
+    $(".control-relation-on-change-autocomplete", context).autocomplete({
         minLength: 0,
         autoFocus: true,
         //focus of selected suggestion has been changed
@@ -1377,14 +1377,14 @@ ControlListRelated.prototype.attach_event_handlers=function()
             });
 
 
-            var search_keys=$(".control-relation-on-change-search", context).attr("search-keys").split(" ");
+            var search_keys=$(".control-relation-on-change-autocomplete", context).attr("search-keys").split(" ");
             params['regex_or']={}
             $.each(search_keys, function(i, key_str)
             {
                 params['regex_or'][key_str]=request.term;
             });
 
-            var result_format=$(".control-relation-on-change-search", context).attr("result-format");
+            var result_format=$(".control-relation-on-change-autocomplete", context).attr("result-format");
 
             //do the actual search
             rpc(this_control.params.get, //in a controList this is actuall a get_all..a bit hackish..maybe change it?
