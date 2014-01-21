@@ -1510,10 +1510,10 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     $(".field-relation-on-click-add", context).click(function()
     {
-        $(".field-relation-on-change-search", context).autocomplete("search", $(this).val());
+        $(".field-relation-on-change-autocomplete", context).autocomplete("search", $(this).val());
     })
 
-    $(".field-relation-on-change-search", context).autocomplete({
+    $(".field-relation-on-change-autocomplete", context).autocomplete({
         minLength: 0,
         autoFocus: true,
         //focus of selected suggestion has been changed
@@ -1582,14 +1582,14 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                 params['match_nin'][list_key].push(item[list_key]);
             });
 
-            var search_keys=$(".field-relation-on-change-search", context).attr("search-keys").split(" ");
+            var search_keys=$(".field-relation-on-change-autocomplete", context).attr("search-keys").split(" ");
             params['regex_or']={}
             $.each(search_keys, function(i, key_str)
             {
                 params['regex_or'][key_str]=request.term;
             });
 
-            var result_format=$(".field-relation-on-change-search", context).attr("result-format");
+            var result_format=$(".field-relation-on-change-autocomplete", context).attr("result-format");
 
             //call the foreign model to do the actual search
             rpc(meta.model+".get_all",
