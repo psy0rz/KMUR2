@@ -886,6 +886,7 @@ ControlList.prototype.attach_event_handlers=function()
         }
     });  
 
+   
     /// FILTER STUFF
     //handle filtering 
     //The parent element should have the .control-on-change-filter class as well as any other options.
@@ -897,31 +898,31 @@ ControlList.prototype.attach_event_handlers=function()
     //When filter-gte is set, filter on items that are greater than or equal to the value
     //When filter-lte is set, filter on items that are less than or equal to the value
     //When filter-in is set, filter on items that match any of the values (used with multiselect filtering)
-    $(".control-on-change-filter", context).on('change keypress paste focus textInput input', ':input', function()
+ //   $(".Xcontrol-on-change-filter", context).on('change keypress paste focus textInput input', ':input', function()
+    $(context).on('field_changed', '.control-on-change-filter', function(event, key, meta, context, data)
     {
 
-        //element to look in for the attributes:
-        var attribute_element;
-        if ($(this).hasClass("control-on-change-filter"))
-            attribute_element=$(this);
-        else
-            attribute_element=$(this).closest(".control-on-change-filter");
+        console.error("controlList field_changed", key, meta, context, data);
+        // //element to look in for the attributes:
+        // var attribute_element;
+        // if ($(this).hasClass("control-on-change-filter"))
+        //     attribute_element=$(this);
+        // else
+        //     attribute_element=$(this).closest(".control-on-change-filter");
+        var attribute_element=$(this);
 
+        var keys=Field.Base.keys(key);
 
-        //get the value via the correct data conversion routines:
-        var key_str=attribute_element.attr("field-key");
-        var keys=Field.Base.keys(key_str);
+        // console.log("resorlving", key, this_control.meta.meta);
+        // var meta=Field[this_control.meta.meta.type].resolve_meta(this_control.meta.meta, keys);
+        // console.log(key, meta);
 
-        console.log("resorlving", key_str, this_control.meta.meta);
-        var meta=Field[this_control.meta.meta.type].resolve_meta(this_control.meta.meta, keys);
-        console.log(key_str, meta);
+        // var get_element=$(".field-get", attribute_element);
+        // var value=Field[meta.type].get(key, meta, get_element);
 
-        var get_element=$(".field-get", attribute_element);
-        var value=Field[meta.type].get(key_str, meta, get_element);
+//        console.log("get_element, keystr, meta, value" , get_element, key, meta, value);
 
-        console.log("get_element, keystr, meta, value" , get_element, key_str, meta, value);
-
-        if (value!=null)
+        if (data!=null)
             attribute_element.addClass("control-filter-active");
         else
             attribute_element.removeClass("control-filter-active");
@@ -947,7 +948,7 @@ ControlList.prototype.attach_event_handlers=function()
             filter_type="lte";
 
         if (attribute_element.attr("filter-in")=="")
-            filter_type="key_in";
+            filter_type="match_in";
 
         //make sure it exists
         if (!this_control.params.get_params[filter_type])
@@ -956,19 +957,19 @@ ControlList.prototype.attach_event_handlers=function()
         
         var changed=false;        
 
-        if (value==null)
+        if (data==null)
         {
-            if (key_str in this_control.params.get_params[filter_type])
+            if (key in this_control.params.get_params[filter_type])
             {
-                delete(this_control.params.get_params[filter_type][key_str]);
+                delete(this_control.params.get_params[filter_type][key]);
                 changed=true;
             }
         }
         else
         {
-            if (this_control.params.get_params[filter_type][key_str]!=value)
+            if (this_control.params.get_params[filter_type][key]!=data)
             {
-                this_control.params.get_params[filter_type][key_str]=value;
+                this_control.params.get_params[filter_type][key]=data;
                 changed=true;
             }
         }
@@ -983,6 +984,7 @@ ControlList.prototype.attach_event_handlers=function()
             this_control.get_delayed({});
         }
 
+        return(false);
     });
     
     //generic regex_or filter to do quick searches in multiple fields 

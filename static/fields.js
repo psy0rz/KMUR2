@@ -672,7 +672,7 @@ Field.List.put=function(key, meta, context, data, options)
 //    console.log("Field.List.put: ", key ,meta, context, data, options);
 
     //we dont want all the list-specific options to recurse, since there might be sublists or sub-relationlists that get confused.
-    var recursive_options={}
+    var recursive_options={};
     $.extend(recursive_options, options);
     //since sublists get complete data, we dont want the no_add and no_delete options there:
     delete recursive_options.list_no_add;
@@ -985,6 +985,14 @@ Field.String.meta_put=function(key, meta, context)
     new_element.val(meta.default);
 
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('input', function()
+    {
+        context.trigger("field_changed",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
+
 }
 
 
@@ -1030,6 +1038,13 @@ Field.Password.meta_put=function(key, meta, context)
 
     new_element.val(meta.default);
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('input', function()
+    {
+        context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this))] );
+        return(false);
+    });
 }
 
 
@@ -1048,6 +1063,13 @@ Field.Number.meta_put=function(key, meta, context)
     new_element.val(meta.default);
 
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('input', function()
+    {
+        context.trigger("field_changed", [ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+        return(false);
+    });
 }
 
 
@@ -1098,6 +1120,14 @@ Field.Select.meta_put=function(key, meta, context)
     });
             
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('change', function()
+    {
+        context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+        return(false);
+    });
+
 }
 
 
@@ -1136,14 +1166,14 @@ Field.Bool.meta_put=function(key, meta, context)
     if (context.attr("field-allow-null")=="")
     {
         //if we allow null, we use a select box for it
-        Field.Select.meta_put(key,
-                {
-                    'choices':{
+        var select_meta={};
+        $.extend(select_meta, meta);
+        select_meta.type='Select';
+        select_meta.choices={
                         0:meta.false_desc,
                         1:meta.true_desc
-                    }
-                }, 
-                context);
+                    };
+        Field.Select.meta_put(key,select_meta,context);
     }
     else
     {
@@ -1152,7 +1182,16 @@ Field.Bool.meta_put=function(key, meta, context)
             .attr("value","")
         new_element.attr("checked", meta.default);
         Field.Base.input_append(key, meta, context, new_element);
+
+        //send changes as nice event with 'this' set to context
+        $(new_element).on('change', function()
+        {
+            context.trigger("field_changed", [ key , meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+            return(false);
+        });
     }
+
+
 }
 
 
@@ -1246,6 +1285,13 @@ Field.MultiSelect.meta_put=function(key, meta, context)
     });
 
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('change', function()
+    {
+        context.trigger("field_changed",[ key, meta, context, Field[meta.type].get(key,meta, new_element) ]); 
+        return(false);
+    });
 }
 
 
@@ -1359,6 +1405,14 @@ Field.Timestamp.meta_put=function(key, meta, context)
 
 
     Field.Base.input_append(key, meta, context, new_element);
+
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('input change', function()
+    {
+        context.trigger("field_changed",[ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+        return(false);
+    });
+
 }
 
 
@@ -1608,9 +1662,52 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                     }
                     response(choices);
                 },
-                'relation autocomplete search');
+                'relation autocomplete');
         }
     })
+
+
+    //special handler that is used for searching: it emits a field_change event with a list of _id's that match the search text.
+    var search_txt;
+    $(".field-relation-on-change-search", context).on('change keypress paste textInput input', function()
+    {
+        if (search_txt==$(this).val())
+            return;
+
+        search_txt=$(this).val();
+
+        //contruct or-based case insensitive regex search
+        var params={}
+
+        params['fields']=[ meta.meta.list_key ];
+
+
+        var search_keys=$(this).attr("search-keys").split(" ");
+        params['regex_or']={}
+        $.each(search_keys, function(i, key_str)
+        {
+            params['regex_or'][key_str]=search_txt;
+        });
+
+        //call the foreign model to do the actual search
+        rpc(meta.model+".get_all",
+            params,
+            function (result)
+            {
+                viewShowError(result,context,meta);
+                data=[]
+                for (i in result.data)
+                {
+                    data[i]=result.data[i][meta.meta.list_key];
+                }
+                context.trigger('field_changed', [ key, meta, context, data ]); 
+
+            },
+            'relation search');
+    });
+
+
+
 
     //field.list also catches this, but we need some special treatment so we overrule it
     $(list_context.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
