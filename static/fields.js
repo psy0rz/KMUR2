@@ -987,7 +987,7 @@ Field.String.meta_put=function(key, meta, context)
     Field.Base.input_append(key, meta, context, new_element);
 
     //send changes as nice event with 'this' set to context
-    $(new_element).on('input', function()
+    $(new_element).on('input change', function()
     {
         context.trigger("field_changed",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
         return(false);
@@ -1040,7 +1040,7 @@ Field.Password.meta_put=function(key, meta, context)
     Field.Base.input_append(key, meta, context, new_element);
 
     //send changes as nice event with 'this' set to context
-    $(new_element).on('input', function()
+    $(new_element).on('input change', function()
     {
         context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this))] );
         return(false);
@@ -1065,7 +1065,7 @@ Field.Number.meta_put=function(key, meta, context)
     Field.Base.input_append(key, meta, context, new_element);
 
     //send changes as nice event with 'this' set to context
-    $(new_element).on('input', function()
+    $(new_element).on('input change', function()
     {
         context.trigger("field_changed", [ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
         return(false);
@@ -1669,12 +1669,17 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
     //special handler that is used for searching: it emits a field_change event with a list of _id's that match the search text.
     var search_txt;
-    $(".field-relation-on-change-search", context).on('change keypress paste textInput input', function()
+    $(".field-relation-on-change-search", context).on('input change', function()
     {
         if (search_txt==$(this).val())
-            return;
+            return (false);
 
         search_txt=$(this).val();
+        if (search_txt=="" && context.attr("field-allow-null")=="")
+        {
+            context.trigger('field_changed', [ key, meta, context, null ]); 
+            return(false)           
+        }
 
         //contruct or-based case insensitive regex search
         var params={}
@@ -1704,6 +1709,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
 
             },
             'relation search');
+
+        return(false);
     });
 
 

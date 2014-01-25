@@ -876,6 +876,7 @@ ControlList.prototype.attach_event_handlers=function()
 
     $(".control-on-filter-highlight",context).on('click', function(e)
     {
+        //NOTE:maybe this needs a API in field.js?
         if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
             //reset all controls so that they return null, hence disabling the filter
@@ -902,7 +903,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).on('field_changed', '.control-on-change-filter', function(event, key, meta, context, data)
     {
 
-        console.error("controlList field_changed", key, meta, context, data);
+        // console.error("controlList field_changed", key, meta, context, data);
         // //element to look in for the attributes:
         // var attribute_element;
         // if ($(this).hasClass("control-on-change-filter"))
