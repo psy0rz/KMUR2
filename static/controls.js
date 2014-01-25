@@ -876,10 +876,10 @@ ControlList.prototype.attach_event_handlers=function()
 
     $(".control-on-filter-highlight",context).on('click', function(e)
     {
-        //NOTE:maybe this needs a API in field.js?
         if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
             //reset all controls so that they return null, hence disabling the filter
+            //NOTE:maybe this needs a API in field.js?
             $(':input[type="checkbox"]', this).attr("checked",false);
             $(':input[type!="checkbox"]', this).val("");
             $("select", this).prop("selectedIndex",0);
@@ -931,9 +931,9 @@ ControlList.prototype.attach_event_handlers=function()
         //look if there are any other filters active under the control-on-filter-highlight element, to determine
         //if we still need to highlight it.
         if ((attribute_element.hasClass("control-filter-active") || attribute_element.closest(".control-on-filter-highlight").find(".control-filter-active").length!=0))
-            attribute_element.closest(".control-on-filter-highlight").addClass("ui-state-highlight control-filter-highlight");
+            attribute_element.closest(".control-on-filter-highlight").addClass("control-filter-highlight");
         else
-            attribute_element.closest(".control-on-filter-highlight").removeClass("ui-state-highlight control-filter-highlight");
+            attribute_element.closest(".control-on-filter-highlight").removeClass("control-filter-highlight");
 
 
         //default filter is regex_or

@@ -53,8 +53,20 @@
 
 .control-filter-highlight
 {
+	/* jquery ui-highligh coloros */
+	background-color: #fbec88;
+    border: 1px solid #C0B584;
+
+	background-image: url("../icons/remove_filter.png");
+	background-repeat:no-repeat;
+	background-position: right center;
+	padding-right:1em;
+	margin-right:1em;
     cursor:  pointer;
+
 }
+
+
 
 /* one choice of a multiselect field */
 .field-multiselect
@@ -100,6 +112,10 @@
 	border-bottom-style: dashed;
 }
 
+.inline-block
+{
+	display:inline-block;
+}
 
 .autoProgramError
 {
