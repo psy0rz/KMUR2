@@ -1089,6 +1089,7 @@ params:
 
     no confirm-text means no confirmation required. (delete/add at once)
 */
+//FIXME: contro list only works for toplevel relations
 function ControlListRelated(params)
 {
     //undefined related value means the item its going to relate to is still new. so we cant do anything.
