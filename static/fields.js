@@ -556,7 +556,9 @@ Field.List.meta_put=function(key, meta, context)
 
                 //refocus the same input on the new item 
                 $('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
+                return(false);
             }
+            return(true);
         });
         
         //create a handler to delete a list item
@@ -1544,128 +1546,103 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     list_context.removeClass("field-put field-input field-get");
     list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
 
-    // $(".field-relation-on-click-clear", context).click(function()
-    // {
-    //     //clear the data
-    //     var data;
-    //     if (meta.list)
-    //         data=[];
-    //     else
-    //         data={};
-
-    //     Field.Relation.put(key, meta, context, data, {
-    //         list_no_remove: false,
-    //         list_update: true,
-    //         relation_update: false,
-    //         show_changes: true
-    //     });
-    // })
-
 
     $(".field-relation-on-click-add", context).click(function()
     {
         $(".field-relation-on-change-autocomplete", context).autocomplete("search", $(this).val());
     })
 
-    $(".field-relation-on-change-autocomplete", context).autocomplete({
-        minLength: 0,
-        autoFocus: true,
-        //focus of selected suggestion has been changed
-        focus: function( event, ui ) {
-            return(false);
-        },
-        //suggestion has been selected, add it to the list
-        select: function (event, ui) {
-            $(this).val("");
+    //this makes auto complete clonable
+//    $(".field-relation-on-change-autocomplete", context).on('focus.relation',function()
+//    {
+        //var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+        var this_context=context;
 
-            if (meta.list)
-            {
-                Field.Relation.put(key, meta, context, [ ui.item.value ], {
-                    list_no_remove: true,
-                    list_no_add: false,
-                    list_update: true,
-                    show_changes: false
-                });
-            }
-            else
-            {
-                Field.Relation.put(key, meta, context, ui.item.value, {
-                    list_no_remove: false, //we only want one item in the list, since this is not a list ;)
-                    list_no_add: false,
-                    list_update: true,
-                    show_changes: false
-                });
-            }
+         $(".field-relation-on-change-autocomplete", context).autocomplete({
+            minLength: 0,
+            autoFocus: true,
+            //focus of selected suggestion has been changed
+            focus: function( event, ui ) {
+                return(false);
+            },
+            //suggestion has been selected, add it to the list
+            select: function (event, ui) {
+                $(this).val("");
 
-
-            // if (meta.list)
-            // {
-            //     Field.List.put(key, meta.meta, list_context, [ ui.item.value ], {
-            //         list_no_remove: true,
-            //         list_update: true,
-            //         show_changes: true
-
-            //     });
-            // }
-            // else
-            // {
-            //     Field.Dict.put(key, meta.meta.meta, context, ui.item.value, {
-            //         show_changes: true
-            //     });
-            // }
-            return(false);
-        },
-        //data source
-        source: function(request, response)
-        {
-
-            //contruct or-based case insensitive regex search, excluding all the already selected id's
-            var params={}
-
-            //get currently selected ids
-            var current_items=Field.List.get(key, meta.meta, list_context);
-            console.log("currentitems", current_items);
-
-            //filter those ids out
-            var list_key=meta.meta.list_key;
-            params['match_nin']={}
-            params['match_nin'][list_key]=[];
-
-            $.each(current_items, function(i, item)
-            {
-                params['match_nin'][list_key].push(item[list_key]);
-            });
-
-            var search_keys=$(".field-relation-on-change-autocomplete", context).attr("search-keys").split(" ");
-            params['regex_or']={}
-            $.each(search_keys, function(i, key_str)
-            {
-                params['regex_or'][key_str]=request.term;
-            });
-
-            var result_format=$(".field-relation-on-change-autocomplete", context).attr("result-format");
-
-            //call the foreign model to do the actual search
-            rpc(meta.model+".get_all",
-                params,
-                function (result)
+                if (meta.list)
                 {
-                    viewShowError(result,context,meta);
-                    //construct list of search-result-choices for autocomplete
-                    choices=[]
-                    for (i in result.data)
-                    {
-                        choices[i]={
-                            label: ControlBase.prototype.format(result_format, result.data[i]),
-                            value: result.data[i]
-                        }
-                    }
-                    response(choices);
-                },
-                'relation autocomplete');
-        }
-    })
+                    Field.Relation.put(key, meta, this_context, [ ui.item.value ], {
+                        list_no_remove: true,
+                        list_no_add: false,
+                        list_update: true,
+                        show_changes: false
+                    });
+                }
+                else
+                {
+                    Field.Relation.put(key, meta, this_context, ui.item.value, {
+                        list_no_remove: false, //we only want one item in the list, since this is not a list ;)
+                        list_no_add: false,
+                        list_update: true,
+                        show_changes: false
+                    });
+                }
 
+                return(false);
+            },
+            //data source
+            source: function(request, response)
+            {
+
+                //contruct or-based case insensitive regex search, excluding all the already selected id's
+                var params={}
+
+                //get currently selected ids
+                var current_items=Field.Relation.get(key, meta, this_context);
+                console.log("currentitems", current_items);
+
+                //filter those ids out
+                var list_key=meta.meta.list_key;
+                params['match_nin']={}
+                if (meta.list)
+                    params['match_nin'][list_key]=current_items;
+                else
+                    params['match_nin'][list_key]=[ current_items ];
+
+                var search_keys=$(".field-relation-on-change-autocomplete", this_context).attr("search-keys").split(" ");
+                params['regex_or']={}
+                $.each(search_keys, function(i, key_str)
+                {
+                    params['regex_or'][key_str]=request.term;
+                });
+
+                var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
+
+                //call the foreign model to do the actual search
+                rpc(meta.model+".get_all",
+                    params,
+                    function (result)
+                    {
+                        viewShowError(result,this_context,meta);
+                        //construct list of search-result-choices for autocomplete
+                        choices=[]
+                        for (i in result.data)
+                        {
+                            choices[i]={
+                                label: ControlBase.prototype.format(result_format, result.data[i]),
+                                value: result.data[i]
+                            }
+                        }
+                        response(choices);
+                    },
+                    'relation autocomplete');
+            }
+        })
+     //   return(true);
+    //});
+
+
+    $(".field-relation-on-change-autocomplete", context).autocomplete("disable");
 
     //special handler that is used for searching: it emits a field_change event with a list of _id's that match the search text.
     var search_txt;

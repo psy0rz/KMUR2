@@ -201,7 +201,8 @@ class Dict(Base):
     def to_external(self, context, data):
         ret={}
         for key,value in data.items():
-            ret[key]=self.meta['meta'][key].to_external(context, value)
+            if key in self.meta['meta']:
+                ret[key]=self.meta['meta'][key].to_external(context, value)
 
         return(ret)
 

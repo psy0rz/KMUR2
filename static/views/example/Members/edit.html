@@ -105,6 +105,49 @@ var form=new ControlForm({
     </fieldset>
 </fieldset>
 
+<fieldset>
+    <legend>List of items which also point to groups</legend>
+    <table >
+        <thead >
+            <tr class='field-meta-put ui-widget-header' field-key='group_list'>
+                <td>
+                <td class='field-meta-put' field-key='group_list.relation_name' field-meta-key='desc'>
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class='colorRows field-meta-put field-list-source field-list-sortable ui-widget-content' field-key='group_list'  >
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='group_list.relation_name'>
+                <td>
+                    <table class='field-meta-put field-list-on-focus-add' field-key='group_list.group_ids2'>
+                        <tr class='ui-widget-header'>
+                            <th class='field-meta-put' field-key='group_list.group_ids2.name' field-meta-key='desc'>
+                            <th>
+                        </tr>
+
+                        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_list.group_ids2' field-list-view="example.Groups.edit">
+                            <td class='field-put field-list-on-click-view' field-key='group_list.group_ids2.name'>
+                            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+                        </tr>
+                        <tr class='ui-widget-content'>
+                            <td><input class='field-relation-on-change-autocomplete ' search-keys='name' result-format='{name} ({_id})' />
+                            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+                        </tr>
+                        <tr>
+                            <td colspan=2 class='field-list-on-click-view' field-key='group_list.group_ids2.name'> <a href='#'>Create new group</a>
+                        </tr>
+                    </table>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
+
+
+
 <div class='floatingBar viewErrorClass'>
 	<button class='control-on-click-save' >Save</button>
 	<button class='control-on-click-del control-hide-on-new' >Delete</button>

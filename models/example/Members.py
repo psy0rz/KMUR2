@@ -12,27 +12,38 @@ class Members(models.mongodb.Base):
                 '_id': models.mongodb.FieldId(),
                 'name': fields.String(desc='Member name'),
                 'group_ids': models.mongodb.Relation(
-                    desc='Group list, resolved server side',
+                    desc='N:N, resolved server side',
                     model=models.example.Groups.Groups,
                     resolve=True,
                     list=True,
                     min=1,
                     max=3),
                 'group_ids2': models.mongodb.Relation(
-                    desc='Group2 list, resolved client side',
+                    desc='N:N, resolved client side',
                     model=models.example.Groups.Groups,
                     resolve=False,
                     list=True),
                 'group_id': models.mongodb.Relation(
-                    desc='One group, resolved server side',
+                    desc='N:1, resolved server side',
                     model=models.example.Groups.Groups,
                     resolve=True,
                     list=False),
                 'group_id2': models.mongodb.Relation(
-                    desc='One group2, resolved client side',
+                    desc='N:1, resolved client side',
                     model=models.example.Groups.Groups,
                     resolve=False,
-                    list=False)
+                    list=False),
+                'group_list': fields.List(
+                        fields.Dict({
+                            'relation_name': fields.String(desc='Relation name'),
+                            'group_ids2': models.mongodb.Relation(
+                                desc='sub N:N, resolved client side',
+                                model=models.example.Groups.Groups,
+                                resolve=False,
+                                list=True)
+                            }),
+                        desc='List of relations'
+                        )
             }, desc='A member'),
             desc='A list of members',
             list_key='_id'
