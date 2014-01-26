@@ -552,10 +552,11 @@ Field.List.meta_put=function(key, meta, context)
             //console.error(from_element_get(null, $(this)));
             if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
             {
+                //most reliable way to move the focus to the correct field, since it also should work with relations (which uses different classes on its input box)
+                $(this).addClass("field-list-tmp-focus");
                 var added_item=Field.List.from_element_add(null, this);
-
-                //refocus the same input on the new item 
-                $('.field-input[field-key="'+$(this).attr("field-key")+'"]', added_item).focus();
+                $(this).removeClass("field-list-tmp-focus");
+                $(".field-list-tmp-focus", added_item).focus().removeClass("field-list-tmp-focus");
                 return(false);
             }
             return(true);
@@ -1374,7 +1375,7 @@ Field.Timestamp.meta_put=function(key, meta, context)
     //create datepicker on demand, to make it clonable:
     //(its probably more efficient as well on long lists)
     new_element.focus(function(){
-        //we probably never wabt activate inside of a list-source
+        //we probably never want to activate inside of a list-source
         if ($(this).closest(".field-list-source").length != 0)
             return;
         
@@ -1511,6 +1512,8 @@ Field.Relation.list_context=function(key, context)
     return($('.field-list-source[field-key="'+key+'"]', context));
 }
 
+
+
 Field.Relation.meta_put_resolved=function(key, meta, context)
 {
  
@@ -1547,18 +1550,18 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
 
 
-    $(".field-relation-on-click-add", context).click(function()
+
+    function create_autocomplete(this_context)
     {
-        $(".field-relation-on-change-autocomplete", context).autocomplete("search", $(this).val());
-    })
+  //      console.error("A");
+        //we probably never want to activate in a listsource
+        if (this_context.closest(".field-list-source").length != 0)
+            return(false);
 
-    //this makes auto complete clonable
-//    $(".field-relation-on-change-autocomplete", context).on('focus.relation',function()
-//    {
-        //var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
-        var this_context=context;
+//        var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+//        console.error("B", this);
 
-         $(".field-relation-on-change-autocomplete", context).autocomplete({
+         $(".field-relation-on-change-autocomplete", this_context).autocomplete({
             minLength: 0,
             autoFocus: true,
             //focus of selected suggestion has been changed
@@ -1638,11 +1641,36 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
                     'relation autocomplete');
             }
         })
-     //   return(true);
-    //});
+        return(true);
+    }
 
 
-    $(".field-relation-on-change-autocomplete", context).autocomplete("disable");
+    $(".field-relation-on-click-add", context).click(function()
+    {
+       var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+        if (create_autocomplete(this_context))
+        {
+            $(".field-relation-on-change-autocomplete", this_context).autocomplete("search", $(this).val());
+            return(false)
+        }
+        else
+        {
+            return(true);
+        }
+    })
+
+    //this makes auto complete clonable
+    $(".field-relation-on-change-autocomplete", context).on('focus',function()
+    {
+        var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+
+        if (create_autocomplete(this_context))
+            return(false)
+        else
+            return(true);
+    });
+
+
 
     //special handler that is used for searching: it emits a field_change event with a list of _id's that match the search text.
     var search_txt;
