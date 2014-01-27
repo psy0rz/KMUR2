@@ -1,0 +1,15 @@
+{
+	"users":{
+		"items":[
+            {
+                "title":"Groups",
+                "view":
+                    { 
+                        "name":"core.Groups.list",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}

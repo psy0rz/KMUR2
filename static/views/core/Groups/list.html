@@ -1,0 +1,29 @@
+
+<script>
+    new ControlList({
+        'view'            	: view,
+        'class'        		: 'core.Groups',
+        'get_params'        : view.params,
+        'title'           	: 'Group overview',
+        'endless_scrolling'	: true,
+        'favorite_menu'     : 'users',
+    });
+
+</script>
+
+
+<table >
+    <tr class='ui-widget-header'>
+    	<th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+    	<th>
+    </tr>
+
+    <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="core.Groups.edit">
+    	<td class='field-put field-list-on-click-view' field-key='name' >
+    	<td class='control-on-click-del ui-icon ui-icon-trash'>
+    </tr>
+    <tr>
+        <td colspan=6><a class='field-list-on-click-view' field-key='name' href='#'>Create new group</a>
+    </tr>
+</table>
+

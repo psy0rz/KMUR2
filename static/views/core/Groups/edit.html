@@ -1,0 +1,67 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'context'         : '.group',
+    'class'           : 'core.Groups',
+    'get_params'      : view.params,
+    'default_focus'   : 'name',
+    'title'           : 'Edit group {name}',
+    'title_new'       : 'New group',
+    'favorite_menu'   : 'users'
+});
+
+new ControlListRelated({
+    'view'            	: view,
+    'context'           : '.members',
+    'class'        		: 'core.Users',
+    'endless_scrolling'	: true,
+    'related_key'       : 'group_ids',
+    'related_value'     : view.params._id,
+    'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
+});
+
+
+</script>
+
+<fieldset class='group'>
+    <legend>Group settings</legend>
+    <table>
+    	<tr>
+    		<td class='field-meta-put' field-key='name' field-meta-key='desc'>
+    		<td class='field-meta-put' field-key='name'>
+    	</tr>
+    </table>
+    <div class='viewErrorClass'>
+        <button class='control-on-click-save' >Save</button>
+        <button class='control-on-click-del control-hide-on-new' >Delete</button>
+        <button class='control-on-click-cancel' >Cancel</button>
+        <span class='viewErrorText'></span>
+    </div>
+</fieldset>
+
+<fieldset class='members control-hide-on-new'>
+<legend>Members of this group</legend>
+    <table >
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='fullname' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="core.Users.edit">
+            <td class='field-list-on-click-view field-put' field-key='name' >
+            <td class='field-list-on-click-view field-put' field-key='fullname' >
+            <td class='control-relation-on-click-del ui-icon ui-icon-minus'>
+        </tr>
+        <tr class='ui-widget-content'>
+            <td colspan=2><input class='control-relation-on-change-autocomplete' search-keys='fullname name' result-format='{fullname} ({name})' />
+            <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
+        </tr>
+        <tr>
+            <td colspan=2><a class='field-list-on-click-view' field-key='name' href='#'>Create new member</a>
+        </tr>
+    </table>
+</fieldset>
+
