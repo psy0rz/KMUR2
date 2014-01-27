@@ -1,11 +1,11 @@
 #
 # Add initial admin mongo CLI:
-# db.models.core.Users.insert({ "username":"admin", password:"yourpassss", "groups":["admin"], "active": true})
+# db.models.core.Users.insert({ "name":"admin", password:"yourpassss", "groups":["admin"], "active": true})
 
 
 if [ "$1" == "" ]; then
     echo "For example:"
-    echo  "./call core Users login '{\"username\":\"geert\", \"password\":\"kut\"}'"
+    echo  "./call core Users login '{\"name\":\"geert\", \"password\":\"kut\"}'"
     echo 
     echo "It remembers cookies, hence sessions"
     exit 1

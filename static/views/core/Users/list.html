@@ -3,26 +3,22 @@
     new ControlList({
         'view'              : view,
         'class'             : 'core.Users',
+        'get_params'        : view.params,
         'title'             : 'Users overview',
         'endless_scrolling' : true,
         'favorite_menu'     : 'users',
         'default_focus'     : null,
-        'edit_view'       : {
-            name:   'core.Users.edit',
-            mode:   'main',
-            params: { }
-        }
     });
 
 </script>
 
 <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-<input type='text' class='control-on-change-search control-default-focus' control-search-keys='username fullname emails.email phones.phone'>
+<input type='text' class='control-on-change-search control-default-focus' control-search-keys='name fullname emails.email phones.phone'>
 
 <table >
 <tr class='ui-widget-header'>
     <th class='field-meta-put control-on-click-order' field-key='active' field-meta-key='desc'>
-    <th class='field-meta-put control-on-click-order control-order-asc' field-key='username' field-meta-key='desc'>
+    <th class='field-meta-put control-on-click-order control-order-asc' field-key='name' field-meta-key='desc'>
     <th class='field-meta-put control-on-click-order' field-key='fullname' field-meta-key='desc'>
     <th class='field-meta-put control-on-click-order' field-key='groups' field-meta-key='desc'>
     <th class='field-meta-put control-on-click-order' field-key='emails' field-meta-key='desc'>
@@ -32,7 +28,7 @@
 
 <tr>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='active' field-allow-null filter-match>
-    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='username' field-allow-null>
+    <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='name' field-allow-null>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='fullname' field-allow-null>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='groups' field-allow-null filter-in>
     <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='emails'>
@@ -42,21 +38,29 @@
 
 </tr>
 
-<tr class='colorRows field-list-source ui-widget-content' field-key=''>
-    <td class='control-on-click-edit field-put' field-key='active' >
-    <td class='control-on-click-edit field-put' field-key='username' >
-    <td class='control-on-click-edit field-put' field-key='fullname' >
-    <td class='control-on-click-edit field-put' field-key='groups' >
+<tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="core.Users.edit">
+    <td class='field-list-on-click-view field-put' field-key='active' >
+    <td class='field-list-on-click-view field-put' field-key='name' >
+    <td class='field-list-on-click-view field-put' field-key='fullname' >
+    <td class='field-list-on-click-view field-put' field-key='groups' >
     <td >
         <div class='field-put field-list-source field-list-source-hide' field-key='emails'>
-            <span class='control-on-click-edit field-put' field-key='emails.email' >
+            <span class='field-list-on-click-view field-put' field-key='emails.email' >
         </div>
     <td >
         <div class='field-put field-list-source field-list-source-hide' field-key='phones'>
-            <span class='control-on-click-edit field-put' field-key='phones.phone' >
+            <span class='field-list-on-click-view field-put' field-key='phones.phone' >
         </div>
     <td class='control-on-click-del ui-icon ui-icon-trash'>
 </tr>
+
+<tr>
+    <td colspan=6><a class='field-list-on-click-view' field-key='name' href='#'>Create new user</a>
+</tr>
+
 </table>
 
 
+<div class='floatingBar viewErrorClass'>
+    <button class='control-on-click-view' control-view='core.Users.edit'>Add</button>
+</div>

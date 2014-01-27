@@ -5,13 +5,10 @@ new ControlForm({
     'view'            : view,
     'get_params'      : view.params,
     'class'           : 'core.Users',
-    'default_focus'   : 'username',
-    'title'           : 'Edit user {username}',
+    'default_focus'   : 'name',
+    'title'           : 'Edit user {name}',
     'title_new'       : 'New user',
-    'favorite_menu'   : 'users',
-    'get_result'      : function(result){
-        console.log(result);
-    }
+    'favorite_menu'   : 'users'
 });
 
 
@@ -25,8 +22,8 @@ new ControlForm({
 			<td class='field-meta-put' field-key='active'>
 		</tr>
         <tr>
-            <td class='field-meta-put' field-key='username' field-meta-key='desc'>
-            <td class='field-meta-put' field-key='username'>
+            <td class='field-meta-put' field-key='name' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='name'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='fullname' field-meta-key='desc'>
@@ -36,14 +33,43 @@ new ControlForm({
 			<td class='field-meta-put' field-key='password' field-meta-key='desc'>
 			<td class='field-meta-put' field-key='password'>
 		</tr>
-		<tr>
-			<td class='field-meta-put' field-key='groups' field-meta-key='desc'>
-			<td class='field-meta-put' field-key='groups'  style='background:#eeffee;'>
-		</tr>
 	</table>
 </fieldset>
 
-<br>
+<fieldset style='display:inline-block;'>
+    <legend class='field-meta-put' field-key='roles' field-meta-key='desc'></legend>
+    <table>
+        <tr>
+            <td class='field-meta-put' field-key='roles'>
+        </tr>
+    </table>
+</fieldset>
+
+
+
+<fieldset style='display:inline-block;'>
+    <legend class='field-meta-put' field-key='group_ids' field-meta-key='desc'></legend>
+    <table class='field-meta-put' field-key='group_ids'>
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put' field-key='group_ids.name' field-meta-key='desc'>
+            <th>
+        </tr>
+
+        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='group_ids' field-list-view="core.Groups.edit">
+            <td class='field-put field-list-on-click-view' field-key='group_ids.name'>
+            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+        </tr>
+        <tr class='ui-widget-content'>
+            <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({_id})' />
+            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+        </tr>
+        <tr>
+            <td colspan=2 class='field-list-on-click-view' field-key='group_ids2.name'> <a href='#'>Create new group</a>
+        </tr>
+    </table>
+</fieldset>
+
+<p>
 
 <fieldset style='display:inline-block;'>
 	<legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
@@ -58,13 +84,13 @@ new ControlForm({
                 <td>
             </tr>
         </thead>
-        <tbody class='control-list-sortable'>
-            <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key='emails'>
-                <td class='control-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
-                <td class='field-meta-put control-on-focus-list-add' field-key='emails.email'>
-                <td class='field-meta-put control-on-focus-list-add' field-key='emails.desc'>
-                <td class='control-on-click-list-del ui-icon ui-icon-trash'>
-                <td class='control-on-click-list-add ui-icon ui-icon-plus'>
+        <tbody class=''>
+            <tr class='colorRows field-list-sortable field-meta-put field-list-source ui-widget-content' field-key='emails'>
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='emails.email'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='emails.desc'>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
             </tr>
         </tbody>
     </table>
@@ -83,34 +109,13 @@ new ControlForm({
                 <td>
             </tr>
         </thead>
-        <tbody class='control-list-sortable'>
-            <tr class='colorRows field-meta-put field-list-source ' field-key='phones'>
-                <td class='control-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
-                <td class='field-meta-put control-on-focus-list-add' field-key='phones.phone'>
-                <td class='field-meta-put control-on-focus-list-add' field-key='phones.desc'>
-                <td class='control-on-click-list-del ui-icon ui-icon-trash'>
-                <td class='control-on-click-list-add ui-icon ui-icon-plus'>
-            </tr>
-        </tbody>
-    </table>
-</fieldset>
-
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='company_ids' field-meta-key='desc'></legend>
-
-    <table >
-        <thead >
-            <tr class='field-meta-put ui-widget-header' field-key='company_ids'>
-                <td class='field-meta-put' field-key='company_ids.name' field-meta-key='desc'>
-                <td>
-                <td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class='colorRows field-put field-list-source field-list-source-hide ui-widget-content' field-key='company_ids'>
-                <td class='field-put' field-key='company_ids.name'>
-                <td class='control-on-click-list-del ui-icon ui-icon-trash'>
-                <td class='control-on-click-list-add ui-icon ui-icon-plus'>
+        <tbody class=''>
+            <tr class='colorRows field-list-sortable field-meta-put field-list-source ' field-key='phones'>
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='phones.phone'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='phones.desc'>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
             </tr>
         </tbody>
     </table>

@@ -19,17 +19,17 @@ def call_rpc(context, module, cls, method, *args, **kwargs):
 class Acl(object):
     """access control decorator.
 
-    Use this on functions to provide access control to certain groups.
+    Use this on functions to provide access control to certain roles.
     This is mandatory for functions you want to be able to call via rpc.
 
-    groups can be a iterable or a string
+    roles can be a iterable or a string`
     """
-    def __init__(self, groups="admin"):
-        self.groups = groups
+    def __init__(self, roles="admin"):
+        self.roles = roles
 
     def __call__(self, f):
         def wrapped_f(wrapped_instance, *args, **kwargs):
-            wrapped_instance.context.need_groups(self.groups)
+            wrapped_instance.context.need_roles(self.roles)
             return(f(wrapped_instance, *args, **kwargs))
 
         #we want to be able to verify if the outer wrapper is an acl_wrapper
@@ -41,17 +41,17 @@ class Acl(object):
 class Context(object):
     """Stores the context a model operates in.
 
-    This contains things like a username or a list of groups a user belongs to.
+    This contains things like a name or a list of roles a user belongs to.
     Its also used to keep track of a logged in user used by @Acl to do access checks.
     The content of the context is preserved between requests. (magically by the rpc-code via sessions and cookies)
 
-    Sessions that are not logged in have user 'anonymous' and group 'everyone'.
+    Sessions that are not logged in have user 'anonymous' and role 'everyone'.
 
-    Sessions that are logged in are always member of the groups 'everyone' and 'user'
+    Sessions that are logged in are always member of the roles 'everyone' and 'user'
 
-    Manupulation of user and group is currently done by models.core.Users.
+    Manupulation of user and role is currently done by models.core.Users.
 
-    Some stuff like username is preserved in a session, so it will be restored on the next request
+    Some stuff like name is preserved in a session, so it will be restored on the next request
     (things like the logged in user, look in __getstate__ for more info)
 
     """
@@ -76,8 +76,8 @@ class Context(object):
     def __getstate__(self):
         '''define the items that should be preserved in a session here'''
         return({
-                'username': self.username,
-                'groups': self.groups,
+                'name': self.name,
+                'roles': self.roles,
                 'user_id': self.user_id,
                 'db_name': self.db_name,
                 'db_host': self.db_host
@@ -85,29 +85,29 @@ class Context(object):
 
     def reset_user(self):
         '''reset user to logged out state'''
-        self.username = 'anonymous'
-        self.groups = ['everyone']
+        self.name = 'anonymous'
+        self.roles = ['everyone']
         self.user_id = None
 
         #make user configurable. should be database independent?
         self.db_name = "kmurtest"
         self.db_host = "localhost"
 
-    def has_groups(self, groups):
+    def has_roles(self, roles):
         '''Check if the user has any of the rights (one is enough)
 
-            groups can be iterable or a string
+            roles can be iterable or a string
         '''
-        if isinstance(groups, str):
-            return (groups in self.groups)
+        if isinstance(roles, str):
+            return (roles in self.roles)
         else:
-            return (len([group for group in groups if group in self.groups]) != 0)
+            return (len([role for role in roles if role in self.roles]) != 0)
 
-    def need_groups(self, groups):
-        '''raises exception if the user isnt member of any of the groups
+    def need_roles(self, roles):
+        '''raises exception if the user isnt member of any of the roles
         '''
-        if not self.has_groups(groups):
-            txt='Access denied - You need to be member of any of these groups: {}'.format(groups)
+        if not self.has_roles(roles):
+            txt='Access denied - You need to be member of any of these roles: {}'.format(roles)
             self.log("warning", txt, self.__class__.__name__);
             raise Exception(txt)
 
@@ -168,7 +168,7 @@ class Base(object):
     def debug(self, debug_object):
         self.context.debug(debug_object, level=2)
 
-    @Acl(groups=["everyone"])
+    @Acl(roles=["everyone"])
     def get_meta(self, *args, **kwargs):
         """Return the metadata for this model
 

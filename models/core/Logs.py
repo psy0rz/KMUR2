@@ -10,7 +10,7 @@ class Logs(models.mongodb.Base):
 
     meta = fields.List(
             fields.Dict({
-                        'username': fields.String(desc='Username'),
+                        'name': fields.String(desc='Username'),
                         'user_id': models.mongodb.FieldId(desc='User ID', required=False),
                         'type': fields.Select(desc='Type', choices={
                                                           'info': 'Info',
@@ -32,7 +32,7 @@ class Logs(models.mongodb.Base):
         '''add log text with specified type and text to logger
         '''
         log_entry = {
-                      'username': self.context.username,
+                      'name': self.context.name,
                       'user_id': self.context.user_id,
                       'type': log_type,
                       'text': text,
@@ -44,11 +44,11 @@ class Logs(models.mongodb.Base):
 
         self.last_logs.append(log_entry)
 
-    @Acl(groups="user")
+    @Acl(roles="user")
     def get_all(self, **params):
 
         #non admins get forced filtering on own user_id
-        if not self.context.has_groups("admin"):
+        if not self.context.has_roles("admin"):
             params['match'] = {'user_id': self.context.user_id}
 
         return(self._get_all(**params))

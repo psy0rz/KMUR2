@@ -1279,7 +1279,7 @@ Field.MultiSelect.meta_put=function(key, meta, context)
         if ('default' in meta)
             checkbox.attr("checked", meta.default.indexOf(choice) != -1);
 
-        label.append(checkbox);
+        label.prepend(checkbox);
         new_element.append(label);
                 
         //add break
@@ -1318,6 +1318,9 @@ Field.MultiSelect.get=function(key, meta, context)
 
 Field.MultiSelect.put=function(key, meta, context, data, options)
 {
+    if (data==null)
+        return;
+    
     if (context.hasClass("field-input"))
     {
         $("input", context).each(function()
@@ -1893,10 +1896,11 @@ Field.Relation.put=function(key, meta, context, data, options)
         var list_context=Field.Relation.list_context(key, context);
         if (meta.list)
         {
-
+            if (data==null)
+                Field.List.put(key, meta.meta, list_context, [], options);
             //if its empty or already resolved, directly recurse into sub-meta list
             //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
-            if ((data.length==0) || (typeof(data[0])=='object'))
+            else if ((data.length==0) || (typeof(data[0])=='object'))
                 Field.List.put(key, meta.meta, list_context, data, options);
             else 
             {

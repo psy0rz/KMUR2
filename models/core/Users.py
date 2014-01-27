@@ -3,7 +3,7 @@ import fields
 import models.mongodb
 from models import mongodb
 
-import models.core.Companies
+import models.core.Groups
 
 class Users(models.mongodb.Base):
     '''user management'''
@@ -11,14 +11,14 @@ class Users(models.mongodb.Base):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'username': fields.String(min=3, desc='Username'),
+                'name': fields.String(min=3, desc='Username'),
                 'password': fields.Password(min=5, desc='Password'),
                 'active': fields.Bool(desc="Enabled", default=True),
-                'groups': fields.MultiSelect(desc="Groups",
+                'roles': fields.MultiSelect(desc="Roles of the user",
                                              choices={
                                                       #make this configurable in a seperate group-module?
-                                                      #All users, including anonymous, are member of 'everyone'.
-                                                      #All users, except anonymous, are member of 'user'
+                                                      #All users, including anonymous, have role'everyone'.
+                                                      #All users, except anonymous, have role 'user'
                                                       "admin": "Administrator",
                                                       "employee": "Employee",
                                                       "customer": "Customer",
@@ -42,88 +42,90 @@ class Users(models.mongodb.Base):
                         }),
                     desc="Phone numbers"
                 ),
-                'company_ids': models.mongodb.Relation(
-                    desc='Companies this user belongs to',
-                    model=models.core.Companies.Companies)
+                'group_ids': models.mongodb.Relation(
+                    desc='Groups this user belongs to',
+                    model=models.core.Groups.Groups,
+                    resolve=False,
+                    list=True)
             }),
             list_key='_id'
         )
 
-    @Acl(groups="admin")
-    def put(self, **user):
+    @Acl(roles="admin")
+    def put(self, **doc):
 
-        if '_id' in user:
-          log_txt="Changed user {}".format(user['username'])
+        if '_id' in doc:
+          log_txt="Changed user {name}".format(**doc)
         else:
-          log_txt="Created new user {}".format(user['username'])
+          log_txt="Created new user {name}".format(**doc)
 
-        ret=self._put(user)
+        ret=self._put(doc)
 
         self.info(log_txt)
 
         return(ret)
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def delete(self, _id):
 
         doc=self._get(_id)
 
         ret=self._delete(_id)
 
-        self.info("Deleted user {}".format(doc['username']))
+        self.info("Deleted user {name}".format(**doc))
 
         return(ret)
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def get_all(self, **params):
         return(self._get_all(**params))
 
-    @Acl(groups=["everyone"])
-    def login(self, username, password):
-        '''authenticate the with the specified username and password.
+    @Acl(roles=["everyone"])
+    def login(self, name, password):
+        '''authenticate the with the specified name and password.
 
         if its ok, it doesnt throw an exception and returns nothing'''
 
         #FIXME: ugly temporary hack to bootstrap empty DB
-        if username=="admin":
-            self.context.groups.append('everyone')
-            self.context.groups.append('user')
-            self.context.groups.append('admin')
+        if name=="admin":
+            self.context.roles.append('everyone')
+            self.context.roles.append('user')
+            self.context.roles.append('admin')
             self.info("logged in via DEBUG HACK - REMOVE ME")
             return
 
 
         try:
             user = self._get(match={
-                                  'username': username,
+                                  'name': name,
                                   'password': password
                                   })
 
         except models.mongodb.NotFound:
-            self.warning("User {} does not exist or used wrong password".format(username))
+            self.warning("User {} does not exist or used wrong password".format(name))
             raise fields.FieldException("Username or password incorrect", "password")
 
         if not user['active']:
-            self.warning("User {} cannot log in because its deactivated".format(username))
-            raise fields.FieldException("This user is deactivated", "username")
+            self.warning("User {} cannot log in because its deactivated".format(name))
+            raise fields.FieldException("This user is deactivated", "name")
 
-        self.context.username = user['username']
-        self.context.groups = user['groups']
+        self.context.name = user['name']
+        self.context.roles = user['roles']
         self.context.user_id = str(user['_id'])
 
         #every user MUST to be member over everyone and user
-        self.context.groups.append('everyone')
-        self.context.groups.append('user')
+        self.context.roles.append('everyone')
+        self.context.roles.append('user')
 
         self.info("Logged in.")
 
-    @Acl(groups=["everyone"])
+    @Acl(roles=["everyone"])
     def logout(self):
-        '''logout the user. username becomes anonymous, groups becomes everyone.
+        '''logout the user. name becomes anonymous, roles becomes everyone.
         '''
         if self.context.user_id == None:
             raise fields.FieldException("You're not logged in")

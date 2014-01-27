@@ -16,7 +16,7 @@ class Companies(models.mongodb.Base):
         )
 
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -30,11 +30,11 @@ class Companies(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -45,6 +45,6 @@ class Companies(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(groups="admin")
+    @Acl(roles="admin")
     def get_all(self, **params):
         return(self._get_all(**params))

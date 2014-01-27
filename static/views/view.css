@@ -4,19 +4,17 @@
     Views usually have <style>-tags themselfs as well
 */
 
-.control-on-click-edit:hover, .control-on-click-del:hover
-{
-}
 
-.control-on-click-edit, .control-on-click-del, .control-on-click-add, .field-list-on-click-view
+.control-on-click-del, .control-on-click-add, .field-list-on-click-view
 {
 	cursor:pointer;
 }
 
-.control-on-drag-sort
+.field-list-on-drag-sort
 {
-	cursor:row-resize;
+	cursor: pointer;
 }
+
 
 .control-on-click-order
 {
