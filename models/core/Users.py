@@ -1,7 +1,6 @@
 from models.common import *
 import fields
 import models.mongodb
-from models import mongodb
 
 import models.core.Groups
 
@@ -91,7 +90,7 @@ class Users(models.mongodb.Base):
         if its ok, it doesnt throw an exception and returns nothing'''
 
         #FIXME: ugly temporary hack to bootstrap empty DB
-        if name=="admin":
+        if name=="tmpadmin":
             self.context.roles.append('everyone')
             self.context.roles.append('user')
             self.context.roles.append('admin')
@@ -115,7 +114,8 @@ class Users(models.mongodb.Base):
 
         self.context.name = user['name']
         self.context.roles = user['roles']
-        self.context.user_id = str(user['_id'])
+        self.context.user_id = user['_id']
+        self.context.group_ids= user['group_ids']
 
         #every user MUST to be member over everyone and user
         self.context.roles.append('everyone')

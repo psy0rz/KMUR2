@@ -8,6 +8,8 @@ import re
 class NotFound(Exception):
     pass
 
+class NoAccess(Exception):
+    pass
 
 
 
@@ -38,8 +40,8 @@ class FieldId(fields.Base):
         if not isinstance(data, (str, bson.objectid.ObjectId)):
             raise fields.FieldException("id should be a string or bson.ObjectId")
 
-        if str(bson.objectid.ObjectId(data)) != data:
-            raise fields.FieldException("invalid id")
+        if str(bson.objectid.ObjectId(data)) != str(data):
+            raise fields.FieldException("invalid id: {} != {}".format(data, str(bson.objectid.ObjectId(data))))
 
     def to_internal(self, context, data):
         """converts input data to an actual internal bson objectid"""
