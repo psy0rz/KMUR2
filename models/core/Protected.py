@@ -59,7 +59,7 @@ class Protected(models.mongodb.Base):
             access=False
             for meta_key, check in self.write.items():
                 if check['check']:
-                    if meta_key in check_doc and (contains(check_doc[meta_key], getattr(self.context, check['context_field']))):
+                    if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
                         access=True
                         break
 
@@ -72,36 +72,36 @@ class Protected(models.mongodb.Base):
                 if check['set_on_create']:
                     #make sure to use the correct datatype for the relation:
                     if self.meta.meta['meta'].meta['meta'][meta_key].meta['list']:
-                        if isinstance(getattr(self.context, check['context_field']), list):
+                        if isinstance(self.context.session[check['context_field']], list):
                             #both list:
-                            doc[meta_key]=getattr(self.context, check['context_field'])
+                            doc[meta_key]=self.context.session[check['context_field']]
                         else:
                             #document field is list:
-                            doc[meta_key]=[getattr(self.context, check['context_field'])]
+                            doc[meta_key]=[self.context.session[check['context_field']]]
                     else:
-                        if isinstance(getattr(self.context, check['context_field']), list):
+                        if isinstance(self.context.session[check['context_field']], list):
                             #document field is string, but context is list:
                             #kind of a hack? we use the first item of the list
-                            doc[meta_key]=getattr(self.context, check['context_field'])[0]
+                            doc[meta_key]=self.context.session[check['context_field']][0]
                         else:
                             #both are string:
-                            doc[meta_key]=getattr(self.context, check['context_field'])
+                            doc[meta_key]=self.context.session[check['context_field']]
 
-        return(super(Protected, self)._put(doc,**kwargs))
+        return(super(Protected, self)._put(doc=doc,**kwargs))
 
 
-    def _get(self, **kwargs):
+    def _get(self, *args, **kwargs):
         """do protected _get.
 
             calls parent _get to get the document and does the read-checks.
         """
 
-        doc=super(Protected, self)._get(**kwargs)
+        doc=super(Protected, self)._get(*args, **kwargs)
 
         access=False
         for meta_key, check in self.read.items():
             if check['check']:
-                if meta_key in doc and (contains(check_doc[meta_key], getattr(self.context, check['context_field']))):
+                if meta_key in doc and (contains(doc[meta_key], self.context.session[check['context_field']])):
                     access=True
                     break
 
@@ -111,45 +111,45 @@ class Protected(models.mongodb.Base):
         return(doc)
 
 
-    def _get_all(self, spec_and=[], **kwargs):
+    def _get_all(self, *args, spec_and=[], **kwargs):
         """do protected _get_all
 
         makes sure that _get_all only returns documents that the user in the context is allowed to access.
 
         it does this be adding a appropriate spec_and parameters to _get_all
         """
+        spec_and=spec_and.copy()
+
         ors=[] #if any one of the check fields matches, then access is allowed
         for meta_key, check in self.read.items():
             if check['check']:
-                print (dir(self.context))
-                if isinstance(getattr(self.context, check['context_field']), list):
+                if isinstance(self.context.session[check['context_field']], list):
                     ors.append({ 
                         meta_key: { 
-                            '$in': getattr(self.context, check['context_field']) 
+                            '$in': self.context.session[check['context_field']] 
                             }
                         })
                 else:
                     ors.append({ 
-                        meta_key: getattr(self.context, check['context_field']) 
+                        meta_key: self.context.session[check['context_field']] 
                         })
 
         if len(ors)>0:
-            spec_ands.append({ '$or' : ors})
+            spec_and.append({ '$or' : ors})
 
+        return(super(Protected, self)._get_all(*args, spec_and=spec_and, **kwargs))
 
-        return(super(Protected, self)._get_all(spec_and, **kwargs))
- 
 
 
     def _delete(self, _id):
         """deletes _id from collection, if writeaccess to the document is allowed"""
 
-        check_doc=super(Protected, self)._get(_id=_id)
+        check_doc=super(Protected, self)._get(_id)
 
         access=False
         for meta_key, check in self.write.items():
             if check['check']:
-                if meta_key in check_doc and (contains(check_doc[meta_key], getattr(self.context, check['context_field']))):
+                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
                     access=True
                     break
 

@@ -393,6 +393,8 @@ class Base(models.common.Base):
         '''
 
         meta=self.get_meta()
+        spec_or=spec_or.copy()
+        spec_and=spec_and.copy()
 
 
         if regex_or!=None:
@@ -502,7 +504,6 @@ class Base(models.common.Base):
 
         if spec_or:
             spec['$or']=spec_or
-
 
         cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,
