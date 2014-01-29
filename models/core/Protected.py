@@ -72,20 +72,26 @@ class Protected(models.mongodb.Base):
                 if check['set_on_create']:
                     #make sure to use the correct datatype for the relation:
                     if self.meta.meta['meta'].meta['meta'][meta_key].meta['list']:
+                        if not meta_key in doc:
+                            doc[meta_key]=[]
                         if isinstance(self.context.session[check['context_field']], list):
                             #both list:
-                            doc[meta_key]=self.context.session[check['context_field']]
+                            doc[meta_key].extend(self.context.session[check['context_field']])
+                            doc[meta_key]=list(set(doc[meta_key])) #unique values
                         else:
                             #document field is list:
-                            doc[meta_key]=[self.context.session[check['context_field']]]
+                            doc[meta_key].append(self.context.session[check['context_field']])
+                        doc[meta_key]=list(set(doc[meta_key])) #unique values
                     else:
-                        if isinstance(self.context.session[check['context_field']], list):
-                            #document field is string, but context is list:
-                            #kind of a hack? we use the first item of the list
-                            doc[meta_key]=self.context.session[check['context_field']][0]
-                        else:
-                            #both are string:
-                            doc[meta_key]=self.context.session[check['context_field']]
+                        #only set it if its still null.
+                        if (not meta_key in doc) or doc[meta_key]==None: 
+                            if isinstance(self.context.session[check['context_field']], list):
+                                #document field is string, but context is list:
+                                #kind of a hack? we use the first item of the list
+                                doc[meta_key]=self.context.session[check['context_field']][0]
+                            else:
+                                #both are string:
+                                doc[meta_key]=self.context.session[check['context_field']]
 
         return(super(Protected, self)._put(doc=doc,**kwargs))
 

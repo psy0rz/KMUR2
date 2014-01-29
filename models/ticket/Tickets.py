@@ -29,12 +29,12 @@ class Tickets(models.core.Protected.Protected):
                 '_id': models.mongodb.FieldId(),
                 'title': fields.String(min=3, desc='Ticket description'),
                 'allowed_groups': models.mongodb.Relation(
-                    desc='Groups that can access ticket',
+                    desc='Groups with access',
                     model=models.core.Groups.Groups,
                     resolve=False,
                     list=True),
                 'allowed_users': models.mongodb.Relation(
-                    desc='Users that can access ticket',
+                    desc='Users with access',
                     model=models.core.Users.Users,
                     resolve=False,
                     list=True),

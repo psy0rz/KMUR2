@@ -5,7 +5,7 @@
 */
 
 
-.control-on-click-del, .control-on-click-add, .field-list-on-click-view
+.control-on-click-del, .control-on-click-add, .field-list-on-click-view, .field-relation-on-click-add, .field-list-on-click-del
 {
 	cursor:pointer;
 }
@@ -101,6 +101,19 @@
 }
 
 
+.list-span
+{
+	border-width: 1px;
+	border-style: solid;
+    background: #EFE;
+    margin-right:0.5em;
+    padding-left:0.5em;
+
+}
+
+
+
+
 
 
 .value
@@ -112,6 +125,7 @@
 .inline-block
 {
 	display:inline-block;
+	vertical-align: middle;
 }
 
 .autoProgramError
