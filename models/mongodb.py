@@ -367,7 +367,7 @@ class Base(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, fields=None, skip=0, limit=0, sort={}, match=None, match_in=None, match_nin=None,regex=None, regex_or=None, gte=None, lte=None):
+    def _get_all(self, fields=None, skip=0, limit=0, sort={}, match=None, match_in=None, match_nin=None,regex=None, regex_or=None, gte=None, lte=None, spec_and=[], spec_or=[]):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
@@ -387,13 +387,13 @@ class Base(models.common.Base):
         gte:    dict of keys that should be greater than or equal to value
         lte:    dict of keys that should be less than or equal to value 
 
+        spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists.
+
 
         '''
 
         meta=self.get_meta()
 
-        spec_and=[]
-        spec_or=[]
 
         if regex_or!=None:
             for (key,value) in regex_or.items():

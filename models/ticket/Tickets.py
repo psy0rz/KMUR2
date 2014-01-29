@@ -5,7 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.mongodb
 
-class Ticket(models.core.Protected.Protected):
+class Tickets(models.core.Protected.Protected):
     '''ticket system'''
     
 

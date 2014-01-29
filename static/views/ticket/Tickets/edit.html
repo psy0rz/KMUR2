@@ -1,0 +1,81 @@
+
+<script>
+
+var form=new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.Tickets',
+    'get_params'      : view.params,
+    'default_focus'   : 'title',
+    'title'           : 'Edit ticket {title}',
+    'title_new'       : 'New ticket',
+    'favorite_menu'   : 'ticket',
+});
+
+</script>
+
+
+<fieldset style='display:inline-block;'>
+    <table>
+    	<tr>
+    		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
+    		<td class='field-meta-put' field-key='title'>
+    	</tr>
+    </table>
+</fieldset>
+
+<fieldset>
+    <legend>Allowed access</legend>
+    <fieldset style='display:inline-block;'>
+        <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='allowed_users'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='allowed_users.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
+                <td class='field-put field-list-on-click-view' field-key='allowed_users.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({_id})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='allowed_users.name'> <a href='#'>Create new user</a>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset style='display:inline-block;'>
+        <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='allowed_groups'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='allowed_groups.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                <td class='field-put field-list-on-click-view' field-key='allowed_groups.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({_id})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='allowed_groups.name'> <a href='#'>Create new group</a>
+            </tr>
+        </table>
+    </fieldset>
+
+</fieldset>
+
+
+
+<div class='floatingBar viewErrorClass'>
+	<button class='control-on-click-save' >Save</button>
+	<button class='control-on-click-del control-hide-on-new' >Delete</button>
+	<button class='control-on-click-cancel' >Cancel</button>
+	<span class='viewErrorText'></span>
+</div>
