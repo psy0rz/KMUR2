@@ -257,7 +257,7 @@ class Base(models.common.Base):
 
     Automatically sets self.db to the correct data, by parameters that are stored in the context object.
 
-    It uses context.db_name as database name and context.db_host as the host.
+    It uses context.session['db_name'] as database name and context.session['db_host'] as the host.
 
     self.db is also stored in the context so that multiple models can use the same database instance,
     instead of using seperate connections to the database.
@@ -269,9 +269,9 @@ class Base(models.common.Base):
         super(Base, self).__init__(context=context)
 
         if not hasattr(context, 'mongodb_connection'):
-            context.mongodb_connection = pymongo.Connection(host=context.db_host, safe=True)
+            context.mongodb_connection = pymongo.Connection(host=context.session['db_host'], safe=True)
 
-        self.db = context.mongodb_connection[context.db_name]
+        self.db = context.mongodb_connection[context.session['db_name']]
 
         self.default_collection = self.__class__.__module__
 

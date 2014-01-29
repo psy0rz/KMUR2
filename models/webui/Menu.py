@@ -57,13 +57,13 @@ class Menu(models.mongodb.Base):
         #add /update favorite item in database:
         self.db[self.default_collection].update(
                                                 spec={
-                                                      'user_id': self.context.user_id,
+                                                      'user_id': self.context.session['user_id'],
                                                       'menu': menu,
                                                       'favorite_id': favorite_id,
                                                       'view.name' : view['name'],
                                                       },
                                                 document={'$set': {
-                                                                   'user_id': self.context.user_id,
+                                                                   'user_id': self.context.session['user_id'],
                                                                    'menu': menu,
                                                                    'title': title,
                                                                    'view': view,
@@ -77,7 +77,7 @@ class Menu(models.mongodb.Base):
         #get all items for this menu and user
         favorites = self.db[self.default_collection].find(
                                                           {
-                                                          'user_id': self.context.user_id,
+                                                          'user_id': self.context.session['user_id'],
                                                           'menu': menu
                                                           },
                                                           sort=[('time', 1)]
@@ -100,7 +100,7 @@ class Menu(models.mongodb.Base):
         #delete item from favorite db
         self.db[self.default_collection].remove(
                                                 spec_or_id={
-                                                      'user_id': self.context.user_id,
+                                                      'user_id': self.context.session['user_id'],
                                                       'menu': menu,
                                                       'favorite_id': favorite_id
                                                       },
@@ -116,7 +116,7 @@ class Menu(models.mongodb.Base):
 
         return(self.db[self.default_collection].find(
           spec={ 
-            'user_id': self.context.user_id,
+            'user_id': self.context.session['user_id'],
           },
           sort=[ ( 'title',1 ) ]
         ));

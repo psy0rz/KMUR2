@@ -59,6 +59,7 @@ class Context(object):
     #first time initaisation of a new context.
     #this is not called when the context is restored from a session.
     def __init__(self, debug=False):
+        self.session = {}
         self.reset_user()
 
     #this is called on every request.
@@ -76,22 +77,19 @@ class Context(object):
     def __getstate__(self):
         '''define the items that should be preserved in a session here'''
         return({
-                'name': self.name,
-                'roles': self.roles,
-                'user_id': self.user_id,
-                'db_name': self.db_name,
-                'db_host': self.db_host
+                'session': self.session,
                 })
 
     def reset_user(self):
         '''reset user to logged out state'''
-        self.name = 'anonymous'
-        self.roles = ['everyone']
-        self.user_id = None
+        self.session['name'] = 'anonymous'
+        self.session['roles'] = ['everyone']
+        self.session['user_id'] = None
+        self.session['group_ids'] = None
 
         #make user configurable. should be database independent?
-        self.db_name = "kmurtest"
-        self.db_host = "localhost"
+        self.session['db_name'] = "kmurtest"
+        self.session['db_host'] = "localhost"
 
     def has_roles(self, roles):
         '''Check if the user has any of the rights (one is enough)
@@ -99,9 +97,9 @@ class Context(object):
             roles can be iterable or a string
         '''
         if isinstance(roles, str):
-            return (roles in self.roles)
+            return (roles in self.session['roles'])
         else:
-            return (len([role for role in roles if role in self.roles]) != 0)
+            return (len([role for role in roles if role in self.session['roles']]) != 0)
 
     def need_roles(self, roles):
         '''raises exception if the user isnt member of any of the roles

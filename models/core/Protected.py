@@ -121,6 +121,7 @@ class Protected(models.mongodb.Base):
         ors=[] #if any one of the check fields matches, then access is allowed
         for meta_key, check in self.read.items():
             if check['check']:
+                print (dir(self.context))
                 if isinstance(getattr(self.context, check['context_field']), list):
                     ors.append({ 
                         meta_key: { 

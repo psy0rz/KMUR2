@@ -32,8 +32,8 @@ class Logs(models.mongodb.Base):
         '''add log text with specified type and text to logger
         '''
         log_entry = {
-                      'name': self.context.name,
-                      'user_id': self.context.user_id,
+                      'name': self.context.session['name'],
+                      'user_id': self.context.session['user_id'],
                       'type': log_type,
                       'text': text,
                       'time': time.time(),
@@ -49,6 +49,6 @@ class Logs(models.mongodb.Base):
 
         #non admins get forced filtering on own user_id
         if not self.context.has_roles("admin"):
-            params['match'] = {'user_id': self.context.user_id}
+            params['match'] = {'user_id': self.context.session['user_id']}
 
         return(self._get_all(**params))

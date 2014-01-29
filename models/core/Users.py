@@ -91,9 +91,9 @@ class Users(models.mongodb.Base):
 
         #FIXME: ugly temporary hack to bootstrap empty DB
         if name=="tmpadmin":
-            self.context.roles.append('everyone')
-            self.context.roles.append('user')
-            self.context.roles.append('admin')
+            self.context.session['roles'].append('everyone')
+            self.context.session['roles'].append('user')
+            self.context.session['roles'].append('admin')
             self.info("logged in via DEBUG HACK - REMOVE ME")
             return
 
@@ -112,14 +112,14 @@ class Users(models.mongodb.Base):
             self.warning("User {} cannot log in because its deactivated".format(name))
             raise fields.FieldException("This user is deactivated", "name")
 
-        self.context.name = user['name']
-        self.context.roles = user['roles']
-        self.context.user_id = user['_id']
-        self.context.group_ids= user['group_ids']
+        self.context.session['name'] = user['name']
+        self.context.session['roles'] = user['roles']
+        self.context.session['user_id'] = user['_id']
+        self.context.session['group_ids']= user['group_ids']
 
         #every user MUST to be member over everyone and user
-        self.context.roles.append('everyone')
-        self.context.roles.append('user')
+        self.context.session['roles'].append('everyone')
+        self.context.session['roles'].append('user')
 
         self.info("Logged in.")
 
