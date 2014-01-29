@@ -14,45 +14,69 @@ var form=new ControlForm({
 </script>
 
 
-<fieldset style='display:inline-block;'>
     <table>
     	<tr>
     		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
     		<td class='field-meta-put' field-key='title'>
     	</tr>
     </table>
+
+<!--
+<fieldset style='display:inline-block;'>
+<legend>Sharing</legend>
+    <table >
+        <tr class='field-meta-put' field-key='allowed_users'>
+            <td class='field-meta-put' field-key='allowed_users' field-meta-key='desc'>
+            <td>:
+                <span class='list-span field-list-source field-list-source-hide' field-key='allowed_users' field-list-view="core.Users.edit">
+                    <span class='field-put field-list-on-click-view' field-key='allowed_users.name'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({fullname})' size=10 />
+                <span class='inline-block field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <a class='field-list-on-click-view' field-key='allowed_groups.name' href='#'>New...</a>
+        </tr>
+
+        <tr class='field-meta-put' field-key='allowed_groups'>
+            <td class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'>
+            <td>:
+                <span class='list-span field-list-source field-list-source-hide' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                    <span class='field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({fullname})' size=10 />
+                <span class='inline-block field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <a class='field-list-on-click-view' field-key='allowed_groups.name' href='#'>New...</a>
+        </tr>
+    </table>
 </fieldset>
+-->
+
+<fieldset style='display:block;'>
+<legend>Sharing</legend>
 
     <fieldset style='display:inline-block;'>
-    <legend>Sharing</legend>
-        <table >
-            <tr class='field-meta-put' field-key='allowed_users'>
-                <td class='field-meta-put' field-key='allowed_users' field-meta-key='desc'>
-                <td>:
-                    <span class='list-span field-list-source field-list-source-hide' field-key='allowed_users' field-list-view="core.Users.edit">
-                        <span class='field-put field-list-on-click-view' field-key='allowed_users.name'></span>
-                        <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
-                    </span>
-                    <input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({fullname})' size=10 />
-                    <span class='inline-block field-relation-on-click-add ui-icon ui-icon-plus'></span>
-                    <a class='field-list-on-click-view' field-key='allowed_groups.name' href='#'>New...</a>
+        <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='allowed_users'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='allowed_users.name' field-meta-key='desc'>
+                <th>
             </tr>
 
-            <tr class='field-meta-put' field-key='allowed_groups'>
-                <td class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'>
-                <td>:
-                    <span class='list-span field-list-source field-list-source-hide' field-key='allowed_groups' field-list-view="core.Groups.edit">
-                        <span class='field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
-                        <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
-                    </span>
-                    <input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({fullname})' size=10 />
-                    <span class='inline-block field-relation-on-click-add ui-icon ui-icon-plus'></span>
-                    <a class='field-list-on-click-view' field-key='allowed_groups.name' href='#'>New...</a>
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
+                <td class='field-put field-list-on-click-view' field-key='allowed_users.fullname'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname} ({name})' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
             </tr>
         </table>
     </fieldset>
 
-    <!--
     <fieldset style='display:inline-block;'>
         <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
         <table class='field-meta-put' field-key='allowed_groups'>
@@ -66,16 +90,16 @@ var form=new ControlForm({
                 <td class='field-list-on-click-del ui-icon ui-icon-minus'>
             </tr>
             <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({_id})' />
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' />
                 <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
             </tr>
             <tr>
-                <td colspan=2 class='field-list-on-click-view' field-key='allowed_groups.name'> <a href='#'>Create new group</a>
+                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new group</a>
             </tr>
         </table>
     </fieldset>
-    -->
 
+</fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
