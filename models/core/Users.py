@@ -29,20 +29,8 @@ class Users(models.mongodb.Base):
 
 
                 'fullname': fields.String(desc='Full name'),
-                'emails': fields.List(
-                    fields.Dict({
-                            'desc': fields.String(desc='Description'),
-                            'email': fields.Email(desc='Email address')
-                        }),
-                    desc="Email adresses"
-                ),
-                'phones': fields.List(
-                    fields.Dict({
-                            'desc': fields.String(desc='Description'),
-                            'phone': fields.Phone(desc='Phone number')
-                        }),
-                    desc="Phone numbers"
-                ),
+                'email': fields.Email(
+                        desc="Primary mail address"),
                 'group_ids': models.mongodb.Relation(
                     desc='Groups this user belongs to',
                     model=models.core.Groups.Groups,

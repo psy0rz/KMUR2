@@ -15,16 +15,30 @@
 <table >
     <tr class='ui-widget-header'>
     	<th class='field-meta-put control-on-click-order control-order-asc' field-key='title' field-meta-key='desc'>
+        <th class='field-meta-put control-on-click-order' field-key='emails' field-meta-key='desc'>
+        <th class='field-meta-put control-on-click-order' field-key='phones' field-meta-key='desc'>
     	<th>
     </tr>
 
     <tr>
         <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='title' field-allow-null>
+        <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='emails'>
+            <span class='field-meta-put control-on-change-filter' field-key='emails.email' field-allow-null></span>
+        <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='phones'>
+            <span class='field-meta-put control-on-change-filter' field-key='phones.phone' field-allow-null></span>
         <td>
     </tr>
 
     <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Relations.edit">
     	<td class='field-put field-list-on-click-view' field-key='title' >
+        <td >
+            <div class='field-put field-list-source field-list-source-hide' field-key='emails'>
+                <span class='field-list-on-click-view field-put' field-key='emails.email' >
+            </div>
+        <td >
+            <div class='field-put field-list-source field-list-source-hide' field-key='phones'>
+                <span class='field-list-on-click-view field-put' field-key='phones.phone' >
+            </div>
 
     	<td class='control-on-click-del ui-icon ui-icon-trash'>
     </tr>
