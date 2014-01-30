@@ -1,0 +1,65 @@
+
+<script>
+
+var form=new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.Tickets',
+    'get_params'      : view.params,
+    'default_focus'   : 'title',
+    'on_change'       : 'put',
+    'title'           : 'View ticket {title}',
+    'favorite_menu'   : 'ticket',
+});
+
+</script>
+
+<div control-view="ticket.Tickets.edit" control-view-pass-get-params>
+
+    <table>
+    	<tr>
+    		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
+    		<td class='field-put value control-on-click-view' field-key='title'>
+    	</tr>
+        <tr>
+            <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
+            <td><pre class='field-put value control-on-click-view' field-key='desc'></pre>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='relations' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='relations'>
+                <span class='list-span field-list-source field-list-source-hide' field-key='relations' field-list-view="ticket.Relations.edit">
+                    <span class='field-put field-list-on-click-view' field-key='relations.title'></span>
+                </span>
+        </tr>
+    </table>
+
+    <fieldset style='display:inline-block;'>
+    <legend>Sharing</legend>
+        <table >
+            <tr class='field-meta-put control-on-click-view' field-key='allowed_users'>
+                <td class='field-meta-put' field-key='allowed_users' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide' field-key='allowed_users' field-list-view="core.Users.edit">
+                        <span class='list-span field-put field-list-on-click-view' field-key='allowed_users.name'></span>
+                    </span>
+            </tr>
+
+            <tr class='field-meta-put control-on-click-view'  field-key='allowed_groups'>
+                <td class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                        <span class='list-span field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
+                    </span>
+            </tr>
+        </table>
+    </fieldset>
+
+
+</div>
+
+<div class='floatingBar viewErrorClass'>
+	<button class='control-on-click-save' >Save</button>
+	<button class='control-on-click-del control-hide-on-new' >Delete</button>
+	<button class='control-on-click-cancel' >Cancel</button>
+	<span class='viewErrorText'></span>
+</div>
