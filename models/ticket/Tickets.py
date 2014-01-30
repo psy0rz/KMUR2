@@ -27,7 +27,8 @@ class Tickets(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'title': fields.String(min=3, desc='Ticket description'),
+                'title': fields.String(min=3, desc='Title'),
+                'desc': fields.String(min=3, desc='Description'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,

@@ -104,16 +104,10 @@
 .list-span
 {
 	border-width: 1px;
-	border-style: solid;
-    background: #EFE;
+	border-bottom-style: dashed;
     margin-right:0.5em;
-    padding-left:0.5em;
 
 }
-
-
-
-
 
 
 .value

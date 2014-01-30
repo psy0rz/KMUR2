@@ -146,6 +146,59 @@ ControlBase.prototype.get=function(request_params)
     }
 }
 
+
+
+ControlBase.prototype.attach_event_handlers=function()
+{
+    var this_control=this;
+    var context=this.context;
+
+    //create a handler to open a view
+    $(".control-on-click-view",context).click(function(event)
+    {
+        var editView={};
+        editView.params={};
+        $.extend( editView.params, this_control.params.get_params );
+        if (! editView.params)
+            editView.params={};
+
+        editView.x=event.clientX;
+        editView.y=event.clientY;
+
+        editView.focus=$(this).attr("field-key");
+
+        if ($(this).attr("control-view"))
+        {
+            editView.name=$(this).attr("control-view");
+            editView.mode=$(this).attr("control-view-mode");
+        }
+        else
+        {
+
+            editView.name=$(this).closest("[control-view]").attr("control-view");
+            editView.mode=$(this).closest("[control-view-mode]").attr("control-view-mode");
+        }
+
+        if (!editView.name)
+        {
+            console.error("No view specified. Use control-view attribute to specifiy view that should be opened. (you also can specify it in a parent)");
+            return(false);
+        }
+
+        if (!editView.mode)
+            editView.mode="main";
+
+        viewCreate(
+            {
+                creator: $(this)
+            },
+            editView);
+
+        return(false);
+    });
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //form controller
 /*
@@ -350,31 +403,6 @@ ControlForm.prototype.attach_event_handlers=function()
         viewClose(this_control.params.view);
     });
 
-    //some forms are just showing limited data or are readonly. in those cases there usually will be some edit or view-detail buttons or elements to click
-    $(".control-on-click-view", context).off().click(function(event)
-    {
-
-        var editView={};
-        editView.params={};
-
-        editView.x=event.clientX;
-        editView.y=event.clientY;
-
-        editView.focus=$(this).attr("field-key");
-        editView.name=$(this).attr("control-view");
-        editView.mode=$(this).attr("control-view-mode");
-        if (!editView.mode)
-            editView.mode="main";
- 
-        viewCreate(
-            {
-                creator: $(this)
-            },
-            editView);
-
-        return(false);
-
-    });
 
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(result)
@@ -391,7 +419,13 @@ ControlForm.prototype.attach_event_handlers=function()
         {
             this_control.get({ show_changes: true });
         }
-
+        else if (this_control.params.on_change=='put')
+        {
+            Field.Dict.put('', this_control.meta, this_control.context, result.data, {
+                show_changes:true,
+                list_update: true
+            });
+        }
         return(false);
     });
 
@@ -1027,43 +1061,6 @@ ControlList.prototype.attach_event_handlers=function()
 
         this_control.get_delayed({});
 
-    });
-
-    //create a handler to open a arbitrary view
-    $(".control-on-click-view",context).click(function(event)
-    {
-        var editView={};
-        editView.params={};
-
-        editView.x=event.clientX;
-        editView.y=event.clientY;
-
-        editView.focus=$(this).attr("field-key");
-
-        if ($(this).attr("control-view"))
-        {
-            editView.name=$(this).attr("control-view");
-            editView.mode=$(this).attr("control-view-mode");
-            console.error("asd1",editView.name);
-        }
-        else
-        {
-
-            editView.name=$(this).closest("[control-view]").attr("control-view");
-            editView.mode=$(this).closest("[control-view]").attr("control-view-mode");
-            console.error("asd",editView.name);
-        }
-
-        if (!editView.mode)
-            editView.mode="main";
- 
-        viewCreate(
-            {
-                creator: $(this)
-            },
-            editView);
-
-        return(false);
     });
 
 
