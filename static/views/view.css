@@ -5,7 +5,7 @@
 */
 
 
-.control-on-click-del, .control-on-click-add, .field-list-on-click-view, .field-relation-on-click-add, .field-list-on-click-del
+.control-on-click-del, .control-on-click-add, .field-list-on-click-view, .field-relation-on-click-add, .field-list-on-click-del, .control-on-click-view
 {
 	cursor:pointer;
 }

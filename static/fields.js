@@ -259,6 +259,9 @@ Field.Base.find_data_keys=function(keys, meta, element)
 */
 Field.Base.from_element_get_data_keys=function(element)
 {
+    if (!element.attr("field-key"))
+        return("");
+
     var meta_keys=Field.Base.keys(element.attr("field-key"));
     var data_keys=[];
 
@@ -635,13 +638,21 @@ Field.List.meta_put=function(key, meta, context)
             //create the view to edit the clicked item
             var editView={};
             editView.params={};
-            editView.focus=Field.Base.from_element_get_data_keys($(this));
+            editView.focus=Field.Base.from_element_get_data_keys(element);
             //console.log(editView.focus);return(false);
             editView.params[meta.list_key]=list_id;
             editView.x=event.clientX;
             editView.y=event.clientY;
-            editView.name=list_source.attr("field-list-view");
-            editView.mode=list_source.attr("field-list-view-mode");
+            if (element.attr("field-list-view"))
+            {
+                editView.name=element.attr("field-list-view");
+                editView.mode=element.attr("field-list-view-mode");
+            }
+            else
+            {
+                editView.name=list_source.attr("field-list-view");
+                editView.mode=list_source.attr("field-list-view-mode");                
+            }
             if (!editView.mode)
                 editView.mode="main";
      

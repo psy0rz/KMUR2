@@ -322,6 +322,7 @@ ControlForm.prototype.attach_event_handlers=function()
     var context=this.context;
 
  
+    ControlBase.prototype.attach_event_handlers.call(this);
 
     $(".control-on-click-save", context).off().click(function()
     {
@@ -349,33 +350,31 @@ ControlForm.prototype.attach_event_handlers=function()
         viewClose(this_control.params.view);
     });
 
-/* DEPRECATED/CHANGE
-    //some forms are just showing data or are readonly. in those cases there usually will be some edit-button or elements to click.
-    $(".control-on-click-edit", context).off().click(function(event)
+    //some forms are just showing limited data or are readonly. in those cases there usually will be some edit or view-detail buttons or elements to click
+    $(".control-on-click-view", context).off().click(function(event)
     {
 
-        var element=$(this);
-    
-        //create the view to edit the clicked item
         var editView={};
-        $.extend( editView, this_control.params.edit_view );
-        if (! editView.params)
-            editView.params={};
+        editView.params={};
 
-
-        //determine focus field:
-        editView.focus=Field.Base.keys($(this).attr("field-key"));
         editView.x=event.clientX;
         editView.y=event.clientY;
- 
 
+        editView.focus=$(this).attr("field-key");
+        editView.name=$(this).attr("control-view");
+        editView.mode=$(this).attr("control-view-mode");
+        if (!editView.mode)
+            editView.mode="main";
+ 
         viewCreate(
             {
                 creator: $(this)
             },
             editView);
+
+        return(false);
+
     });
-*/
 
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(result)
@@ -720,6 +719,9 @@ ControlList.prototype.attach_event_handlers=function()
     var this_control=this;
     var context=this.context;
 
+    ControlBase.prototype.attach_event_handlers.call(this);
+
+
     //some  control changed/added an item in our class, so update the list
     $(context).subscribe(this.params.class+'.changed', "list", function(result)
     { 
@@ -1036,8 +1038,22 @@ ControlList.prototype.attach_event_handlers=function()
         editView.x=event.clientX;
         editView.y=event.clientY;
 
-        editView.name=$(this).attr("control-view");
-        editView.mode=$(this).attr("control-view-mode");
+        editView.focus=$(this).attr("field-key");
+
+        if ($(this).attr("control-view"))
+        {
+            editView.name=$(this).attr("control-view");
+            editView.mode=$(this).attr("control-view-mode");
+            console.error("asd1",editView.name);
+        }
+        else
+        {
+
+            editView.name=$(this).closest("[control-view]").attr("control-view");
+            editView.mode=$(this).closest("[control-view]").attr("control-view-mode");
+            console.error("asd",editView.name);
+        }
+
         if (!editView.mode)
             editView.mode="main";
  
