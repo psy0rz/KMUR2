@@ -3,11 +3,10 @@ import fields
 import models.core.Protected
 import models.core.Users
 import models.core.Groups
-import models.ticket.Relations
 import models.mongodb
 
-class Tickets(models.core.Protected.Protected):
-    '''ticket system'''
+class Relations(models.core.Protected.Protected):
+    '''Relations (these can be customers/companies or other contacts)'''
     
 
     write={
@@ -40,11 +39,20 @@ class Tickets(models.core.Protected.Protected):
                     model=models.core.Users.Users,
                     resolve=False,
                     list=True),
-                'relations': models.mongodb.Relation(
-                    desc='Related to',
-                    model=models.ticket.Relations.Relations,
-                    resolve=False,
-                    list=True),
+                'emails': fields.List(
+                    fields.Dict({
+                            'desc': fields.String(desc='Description'),
+                            'email': fields.Email(desc='Email address')
+                        }),
+                    desc="Email adresses"
+                ),
+                'phones': fields.List(
+                    fields.Dict({
+                            'desc': fields.String(desc='Description'),
+                            'phone': fields.Phone(desc='Phone number')
+                        }),
+                    desc="Phone numbers"
+                ),
             }),
             list_key='_id'
         )
@@ -53,9 +61,9 @@ class Tickets(models.core.Protected.Protected):
     def put(self, **doc):
 
         if '_id' in doc:
-          log_txt="Changed ticket {title}".format(**doc)
+          log_txt="Changed relation {title}".format(**doc)
         else:
-          log_txt="Created new ticket {title}".format(**doc)
+          log_txt="Created new relation {title}".format(**doc)
 
         ret=self._put(doc)
 
@@ -74,7 +82,7 @@ class Tickets(models.core.Protected.Protected):
 
         ret=self._delete(_id)
 
-        self.info("Deleted ticket {title}".format(**doc))
+        self.info("Deleted relation {title}".format(**doc))
 
         return(ret)
 

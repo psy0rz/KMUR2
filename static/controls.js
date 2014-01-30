@@ -157,27 +157,27 @@ ControlBase.prototype.attach_event_handlers=function()
     $(".control-on-click-view",context).click(function(event)
     {
         var editView={};
-        editView.params={};
-        $.extend( editView.params, this_control.params.get_params );
-        if (! editView.params)
-            editView.params={};
+
+
 
         editView.x=event.clientX;
         editView.y=event.clientY;
 
         editView.focus=$(this).attr("field-key");
 
+        var attribute_element;
         if ($(this).attr("control-view"))
-        {
-            editView.name=$(this).attr("control-view");
-            editView.mode=$(this).attr("control-view-mode");
-        }
+            attribute_element=$(this);
         else
-        {
+            attribute_element=$(this).closest("[control-view]");
 
-            editView.name=$(this).closest("[control-view]").attr("control-view");
-            editView.mode=$(this).closest("[control-view-mode]").attr("control-view-mode");
-        }
+        editView.name=attribute_element.attr("control-view");
+        editView.mode=attribute_element.attr("control-view-mode");
+
+        editView.params={};
+        if (attribute_element.attr("control-view-pass-get-params")=="")
+            $.extend( editView.params, this_control.params.get_params );
+
 
         if (!editView.name)
         {

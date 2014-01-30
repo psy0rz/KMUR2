@@ -3,11 +3,11 @@
 
 var form=new ControlForm({
     'view'            : view,
-    'class'           : 'ticket.Tickets',
+    'class'           : 'ticket.Relations',
     'get_params'      : view.params,
     'default_focus'   : 'title',
-    'title'           : 'Edit ticket {title}',
-    'title_new'       : 'New ticket',
+    'title'           : 'Edit relation {title}',
+    'title_new'       : 'New relation',
     'favorite_menu'   : 'ticket',
 });
 
@@ -21,47 +21,61 @@ var form=new ControlForm({
 	</tr>
     <tr>
         <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
-        <td><textarea class='field-put field-get field-input' field-key='desc' cols=80 rows=10></textarea>
+        <td><textarea class='field-put field-get field-input' field-key='desc' cols=40 rows=5></textarea>
     </tr>
-<!--
-    <tr>
-        <td class='field-meta-put' field-key='relation' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='relation'>
-            <span class='list-span field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
-                <span class='field-put field-list-on-click-view' field-key='relation.name'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
-            </span>
-            <input  class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' size=10/>
-            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-            <br>
-            <a class='field-list-on-click-view' field-key='name' href='#'>Create new relation</a>
-    </tr>
--->
+
 
 </table>
 
 <fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='relations' field-meta-key='desc'></legend>
-    <table class='field-meta-put' field-key='relations'>
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put' field-key='relations.title' field-meta-key='desc'>
-            <th>
-        </tr>
+    <legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
 
-        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='relations' field-list-view="ticket.Relations.edit">
-            <td class='field-put field-list-on-click-view' field-key='relations.title'>
-            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
-            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
-        </tr>
-        <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new relation</a>
-        </tr>
+    <table >
+        <thead >
+            <tr class='field-meta-put ui-widget-header' field-key='emails'>
+                <td>
+                <td class='field-meta-put' field-key='emails.email' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='emails.desc' field-meta-key='desc'>
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody class=''>
+            <tr class='colorRows field-list-sortable field-meta-put field-list-source ui-widget-content' field-key='emails'>
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='emails.email'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='emails.desc'>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </tbody>
     </table>
+
 </fieldset>
 
+<fieldset style='display:inline-block;'>
+    <legend class='field-meta-put' field-key='phones' field-meta-key='desc'></legend>
+    <table >
+        <thead >
+            <tr class='field-meta-put ui-widget-header' field-key='phones'>
+                <td>
+                <td class='field-meta-put' field-key='phones.phone' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='phones.desc' field-meta-key='desc'>
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody class=''>
+            <tr class='colorRows field-list-sortable field-meta-put field-list-source ' field-key='phones'>
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='phones.phone'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='phones.desc'>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
 
 <fieldset style='display:block;'>
 <legend>Sharing</legend>

@@ -2,22 +2,12 @@ from models.common import *
 import fields
 import models.mongodb
 
-import models.core.Protected
 import models.core.Groups
 
 
 
-class Users(models.core.Protected.Protected):
+class Users(models.mongodb.Base):
     '''user management'''
-
-    write={
-        'group_ids': {
-            'context_field': 'group_ids',
-            'set_on_create': True,
-            'check': True
-        }
-    }
-    read=write
     
     meta = fields.List(
             fields.Dict({
