@@ -23,6 +23,20 @@ var form=new ControlForm({
             <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
             <td><textarea class='field-put field-get field-input' field-key='desc' cols=80 rows=10></textarea>
         </tr>
+        <tr>
+            <td class='field-meta-put' field-key='relation' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='relation'>
+                <span class='list-span field-list-source field-list-source-hide' field-key='relation' field-list-view="core.Groups.edit">
+                    <span class='field-put field-list-on-click-view' field-key='relation.name'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name} ({_id})' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <br>
+                <a class='field-list-on-click-view' field-key='name' href='#'>Create new relation</a>
+        </tr>
+
+
     </table>
 
 
