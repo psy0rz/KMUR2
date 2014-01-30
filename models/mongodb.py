@@ -5,11 +5,9 @@ import bson.objectid
 import re
 
 
-class NotFound(Exception):
+class NotFoundError(Exception):
     pass
 
-class NoAccess(Exception):
-    pass
 
 
 
@@ -38,10 +36,10 @@ class FieldId(fields.Base):
             return
 
         if not isinstance(data, (str, bson.objectid.ObjectId)):
-            raise fields.FieldException("id should be a string or bson.ObjectId")
+            raise fields.FieldError("id should be a string or bson.ObjectId")
 
         if str(bson.objectid.ObjectId(data)) != str(data):
-            raise fields.FieldException("invalid id: {} != {}".format(data, str(bson.objectid.ObjectId(data))))
+            raise fields.FieldError("invalid id: {} != {}".format(data, str(bson.objectid.ObjectId(data))))
 
     def to_internal(self, context, data):
         """converts input data to an actual internal bson objectid"""
@@ -79,16 +77,16 @@ class Relation(fields.Base):
 
         if (min != None):
             if (min < 0):
-                raise FieldException("Min cant be smaller than 0")
+                raise FieldError("Min cant be smaller than 0")
             self.meta['min'] = min
 
         if (max != None):
             if (max < 0):
-                raise FieldException("Max cant be smaller than 0")
+                raise FieldError("Max cant be smaller than 0")
             self.meta['max'] = max
 
         if not isinstance(list, bool):
-            raise FieldException("list should be a bool")
+            raise FieldError("list should be a bool")
 
         self.meta['list'] = list
 
@@ -101,7 +99,7 @@ class Relation(fields.Base):
 
         if 'meta' in self.meta:
             if not isinstance(self.meta['meta'], fields.List):
-                FieldException("related metadata should be a list")
+                FieldError("related metadata should be a list")
 
 
         self.meta['resolve']=resolve
@@ -119,7 +117,7 @@ class Relation(fields.Base):
         if self.meta['list']:
 
             if not isinstance(data, list):
-                raise fields.FieldException("this field should be a list")
+                raise fields.FieldError("this field should be a list")
 
 
             #check mongo ID's validity
@@ -149,13 +147,13 @@ class Relation(fields.Base):
 
             #TODO: specify which id in case resolve is true? (altough this error should never happen)
             if len(result)!=len(data):
-                raise fields.FieldException("an item in the list doesnt exist")
+                raise fields.FieldError("an item in the list doesnt exist")
 
             if ('min' in self.meta) and len(result)<self.meta['min']:
-                raise fields.FieldException("should have at least {} item(s).".format(self.meta['min']))
+                raise fields.FieldError("should have at least {} item(s).".format(self.meta['min']))
 
             if ('max' in self.meta) and len(result)>self.meta['max']:
-                raise fields.FieldException("should have at most {} item(s).".format(self.meta['max']))
+                raise fields.FieldError("should have at most {} item(s).".format(self.meta['max']))
 
         else:
             mongo_id=None
@@ -169,7 +167,7 @@ class Relation(fields.Base):
             #check if None is allowed:
             if mongo_id==None:
                 if ('min' in self.meta) and self.meta['min']>0:
-                    raise fields.FieldException("should be related to exactly one item")
+                    raise fields.FieldError("should be related to exactly one item")
             else:
                 #check if item exists in forgein model:
                 foreign_object=self.model(context)
@@ -320,12 +318,12 @@ class Base(models.common.Base):
                     result = self.db[collection].update({'_id': _id}, {'$set': doc}, multi=False, safe=True)
 
                 if result['n'] == 0:
-                    raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+                    raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
                 #restore _id, so we return a complete doc again
                 doc['_id'] = _id
         except (pymongo.errors.DuplicateKeyError) as e:
-                raise fields.FieldException("An object with this name already exists. ("+str(e)+")")
+                raise fields.FieldError("An object with this name already exists. ("+str(e)+")")
 
         return(doc)
 
@@ -347,7 +345,7 @@ class Base(models.common.Base):
             doc = self.db[collection].find_one(bson.objectid.ObjectId(_id))
 
             if not doc:
-                raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+                raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
         else:
             for key in regex:
@@ -360,7 +358,7 @@ class Base(models.common.Base):
 
 
             if not doc:
-                raise NotFound("Object not found in collection '{}'".format(collection))
+                raise NotFoundError("Object not found in collection '{}'".format(collection))
 
 
         #convert to external data (e.g. resolve relations) and return document
@@ -528,7 +526,7 @@ class Base(models.common.Base):
 
         result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
         if result['n'] == 0:
-            raise NotFound("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
+            raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 
         return({ '_id': _id })
 

@@ -2,10 +2,22 @@ from models.common import *
 import fields
 import models.mongodb
 
+import models.core.Protected
 import models.core.Groups
 
-class Users(models.mongodb.Base):
+
+
+class Users(models.core.Protected.Protected):
     '''user management'''
+
+    write={
+        'group_ids': {
+            'context_field': 'group_ids',
+            'set_on_create': True,
+            'check': True
+        }
+    }
+    read=write
     
     meta = fields.List(
             fields.Dict({
@@ -104,13 +116,13 @@ class Users(models.mongodb.Base):
                                   'password': password
                                   })
 
-        except models.mongodb.NotFound:
+        except models.mongodb.NotFoundError:
             self.warning("User {} does not exist or used wrong password".format(name))
-            raise fields.FieldException("Username or password incorrect", "password")
+            raise fields.FieldError("Username or password incorrect", "password")
 
         if not user['active']:
             self.warning("User {} cannot log in because its deactivated".format(name))
-            raise fields.FieldException("This user is deactivated", "name")
+            raise fields.FieldError("This user is deactivated", "name")
 
         self.context.session['name'] = user['name']
         self.context.session['roles'] = user['roles']
@@ -128,7 +140,7 @@ class Users(models.mongodb.Base):
         '''logout the user. name becomes anonymous, roles becomes everyone.
         '''
         if self.context.user_id == None:
-            raise fields.FieldException("You're not logged in")
+            raise fields.FieldError("You're not logged in")
 
         self.info("Logged out")
         self.context.reset_user()

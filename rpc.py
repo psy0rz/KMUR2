@@ -107,11 +107,11 @@ def rpc():
         if 'context' in session:
             result.update(session['context'].get_results())
 
-    except (fields.FieldException, Exception) as e:
+    except (fields.FieldError, Exception) as e:
         traceback.print_exc()
         result['error'] = { 'message': str(e) }
 
-        if isinstance(e, fields.FieldException):
+        if isinstance(e, fields.FieldError):
             result['error']['fields'] = e.fields
 
     session.save()

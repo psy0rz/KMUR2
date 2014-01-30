@@ -7,7 +7,7 @@ import pymongo.cursor
 import re
 
 
-class FieldException(Exception):
+class FieldError(Exception):
     """Field exception. This is thrown when verifying if data is correct.
 
     The fields list indicates which field of an object failed.
@@ -15,7 +15,7 @@ class FieldException(Exception):
     """
     def __init__(self, message, field=None):
 
-        super(FieldException, self).__init__(message)
+        super(FieldError, self).__init__(message)
 
         if field:
             self.fields = [field]
@@ -62,18 +62,18 @@ class Base(object):
 
         if desc != None:
             if not isinstance(desc, str):
-                raise FieldException("desc should be a string")
+                raise FieldError("desc should be a string")
             self.meta['desc'] = desc
 
         if readonly != None:
             if not isinstance(readonly, bool):
-                raise FieldException("readonly should be a bool")
+                raise FieldError("readonly should be a bool")
 
             self.meta['readonly'] = readonly
 
         if required != None:
             if not isinstance(required, bool):
-                raise FieldException("required should be a bool")
+                raise FieldError("required should be a bool")
             self.meta['required'] = required
 
 
@@ -91,7 +91,7 @@ class Base(object):
         (usually in case required is set to  False and the data is set to None)'''
 
         if 'readonly' in self.meta and self.meta['readonly']:
-            raise FieldException("This field is readonly")
+            raise FieldError("This field is readonly")
 
         # If a value is not required it can be None, and further checks by the subclass are skipped.
         # In all other cases the subclass will do the rest of the checking.
@@ -131,7 +131,7 @@ class Nothing(Base):
         super(Nothing, self).__init__(**kwargs)
 
     def check(self, context, data):
-        raise FieldException("This field cant be set")
+        raise FieldError("This field cant be set")
 
 
 class Dict(Base):
@@ -146,19 +146,19 @@ class Dict(Base):
         super(Dict, self).__init__(**kwargs)
 
         if not isinstance(meta, dict):
-            raise FieldException("Metadata should be a dict")
+            raise FieldError("Metadata should be a dict")
 
         for key, submeta in meta.items():
             if not isinstance(submeta, Base):
-                raise FieldException("Metadata {} should be an instance of fields.Base".format(key), key)
+                raise FieldError("Metadata {} should be an instance of fields.Base".format(key), key)
 
         if required_fields != None:
             if not isinstance(required_fields, list):
-                raise FieldException("required-parameter should be a list")
+                raise FieldError("required-parameter should be a list")
 
             missing = [key for key in required_fields if key not in meta]
             if missing:
-                raise FieldException("Field '{}' is required, but is missing from metadata".format(missing[0]), missing[0])
+                raise FieldError("Field '{}' is required, but is missing from metadata".format(missing[0]), missing[0])
 
             self.meta['required'] = required_fields
 
@@ -170,17 +170,17 @@ class Dict(Base):
             return
 
         if not isinstance(data, dict):
-            raise FieldException("Data should be a dict")
+            raise FieldError("Data should be a dict")
 
         for key, value in data.items():
 
             if not key in self.meta['meta']:
-                raise FieldException("'{}' is an unknown field-name".format(key), key)
+                raise FieldError("'{}' is an unknown field-name".format(key), key)
 
             try:
                 #recurse into sub data
                 self.meta['meta'][key].check(context, value)
-            except FieldException as e:
+            except FieldError as e:
                 #record the key that throwed the exception:
                 e.fields.insert(0, key)
                 raise
@@ -189,7 +189,7 @@ class Dict(Base):
         if 'required' in self.meta:
             missing = [key for key in self.meta['required'] if key not in data]
             if missing:
-                raise FieldException("Required field {} is missing".format(missing[0]), missing[0])
+                raise FieldError("Required field {} is missing".format(missing[0]), missing[0])
 
     def to_internal(self, context, data):
         ret={}
@@ -224,11 +224,11 @@ class List(Base):
         super(List, self).__init__(**kwargs)
 
         if not isinstance(meta, Base):
-            raise FieldException("Metadata should be a an instance of fields.Base")
+            raise FieldError("Metadata should be a an instance of fields.Base")
 
         if list_key != None:
             if not isinstance(list_key, str):
-                raise FieldException("list_key should be a string")
+                raise FieldError("list_key should be a string")
             self.meta['list_key'] = list_key
 
         self.meta['meta'] = meta
@@ -239,13 +239,13 @@ class List(Base):
             return
 
         if not isinstance(data, list):
-            raise FieldException("Data should be a list")
+            raise FieldError("Data should be a list")
 
         for index, value in enumerate(data):
             try:
                 #recurse into sub data
                 self.meta['meta'].check(context, value)
-            except FieldException as e:
+            except FieldError as e:
                 #record the key that throwed the exception:
                 if ('list_key' in self.meta) and (self.meta['list_key'] in value):
                     #list_key based indexing
@@ -291,16 +291,16 @@ class String(Base):
         super(String, self).__init__(**kwargs)
 
         if min != None and max != None and max <= min:
-            raise FieldException("Max cant be smaller than min")
+            raise FieldError("Max cant be smaller than min")
 
         if (min != None):
             if (min < 0):
-                raise FieldException("Min cant be smaller than 0")
+                raise FieldError("Min cant be smaller than 0")
             self.meta['min'] = min
 
         if (max != None):
             if (max < 0):
-                raise FieldException("Max cant be smaller than 0")
+                raise FieldError("Max cant be smaller than 0")
             self.meta['max'] = max
 
     def check(self, context, data):
@@ -309,13 +309,13 @@ class String(Base):
             return
 
         if not isinstance(data, str):
-            raise FieldException("This should be a string")
+            raise FieldError("This should be a string")
 
         if (('min' in self.meta) and (len(data) < self.meta['min'])):
-            raise FieldException("Data should be at least {} characters long".format(self.meta['min']))
+            raise FieldError("Data should be at least {} characters long".format(self.meta['min']))
 
         if (('max' in self.meta) and (len(data) > self.meta['max'])):
-            raise FieldException("Data should be at most {} characters long".format(self.meta['max']))
+            raise FieldError("Data should be at most {} characters long".format(self.meta['max']))
 
         return True
 
@@ -335,7 +335,7 @@ class Number(Base):
         super(Number, self).__init__(**kwargs)
 
         if min != None and max != None and max <= min:
-            raise FieldException("Max cant be smaller than min")
+            raise FieldError("Max cant be smaller than min")
 
         self.meta['decimals'] = decimals
 
@@ -350,16 +350,16 @@ class Number(Base):
             return
 
         if not isinstance(data, (float, int)):
-            raise FieldException("This should be a number")
+            raise FieldError("This should be a number")
 
         if (('min' in self.meta) and (data < self.meta['min'])):
-            raise FieldException("Number should be at least {}".format(self.meta['min']))
+            raise FieldError("Number should be at least {}".format(self.meta['min']))
 
         if (('max' in self.meta) and (data > self.meta['max'])):
-            raise FieldException("Number should be at most {}".format(self.meta['max']))
+            raise FieldError("Number should be at most {}".format(self.meta['max']))
 
         if round(data, self.meta['decimals']) != data:
-            raise FieldException("Number should have no more than {} decimals".format(self.meta['decimals']))
+            raise FieldError("Number should have no more than {} decimals".format(self.meta['decimals']))
 
 
 class Timestamp(Base):
@@ -374,10 +374,10 @@ class Timestamp(Base):
             return
 
         if not isinstance(data, (int)) and not isinstance(data, (float)):
-            raise FieldException("A timestamp should be an integer")
+            raise FieldError("A timestamp should be an integer")
 
         if (data < 0):
-            raise FieldException("Timestamp can not be negative")
+            raise FieldError("Timestamp can not be negative")
 
 
 class Bool(Base):
@@ -394,7 +394,7 @@ class Bool(Base):
             return
 
         if not isinstance(data, (bool)):
-            raise FieldException("This should be a boolean value (e.g. true or false)")
+            raise FieldError("This should be a boolean value (e.g. true or false)")
 
 
 class Select(Base):
@@ -405,7 +405,7 @@ class Select(Base):
         super(Select, self).__init__(**kwargs)
 
         if not isinstance(choices, dict):
-            raise FieldException("choices should be a dict")
+            raise FieldError("choices should be a dict")
 
         self.meta['choices'] = choices
 
@@ -415,7 +415,7 @@ class Select(Base):
             return
 
         if not data in self.meta['choices']:
-            raise FieldException("This is an invalid choice")
+            raise FieldError("This is an invalid choice")
 
 
 class MultiSelect(Base):
@@ -426,7 +426,7 @@ class MultiSelect(Base):
         super(MultiSelect, self).__init__(**kwargs)
 
         if not isinstance(choices, dict):
-            raise FieldException("choices should be a dict")
+            raise FieldError("choices should be a dict")
 
         self.meta['choices'] = choices
 
@@ -436,14 +436,14 @@ class MultiSelect(Base):
             return
 
         if not isinstance(data, list):
-            raise FieldException("choices should be a list")
+            raise FieldError("choices should be a list")
 
         illegal = [i for i in data if i not in self.meta['choices']]
         if illegal:
-            raise FieldException("These choice(s) are illegal: {}".format(','.join(illegal)))
+            raise FieldError("These choice(s) are illegal: {}".format(','.join(illegal)))
 
         if len(set(data)) != len(data):
-            raise FieldException("List contains duplicate choices")
+            raise FieldError("List contains duplicate choices")
 
 
 class Anything(Base):
@@ -479,7 +479,7 @@ class Email(String):
 
         #NOTE: correct checking is hard, see http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
         if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", data)==None:
-            raise FieldException("Invalid email address")
+            raise FieldError("Invalid email address")
 
         return True
 
@@ -499,7 +499,7 @@ class Phone(String):
 
         #For now we do a very crude check
         if re.search("[^0-9+() ]", data)!=None:
-            raise FieldException("Invalid phone number")
+            raise FieldError("Invalid phone number")
 
         return True
 

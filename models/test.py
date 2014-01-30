@@ -59,7 +59,7 @@ d={
 
 try:
     t.check(d)
-except field.FieldException as e:
+except field.FieldError as e:
     print(e.message)
     print(e.fields)
     

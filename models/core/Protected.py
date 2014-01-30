@@ -18,6 +18,10 @@ def contains(a,b):
             return(a==b)
 
 
+class NoAccessError(Exception):
+    pass
+
+
 class Protected(models.mongodb.Base):
     """objects that are protected by comparing certain relations fields from self.context, when getting and putting
 
@@ -64,7 +68,7 @@ class Protected(models.mongodb.Base):
                         break
 
             if (not access):
-                raise NoAccess("You're not allowed to modify this document")
+                raise NoAccessError("You're not allowed to modify this document")
 
         else:
             #new document, store set permissions
@@ -112,7 +116,7 @@ class Protected(models.mongodb.Base):
                     break
 
         if (not access):
-            raise NoAccess("You're not allowed to read this document")
+            raise NoAccessError("You're not allowed to read this document")
 
         return(doc)
 
@@ -160,7 +164,7 @@ class Protected(models.mongodb.Base):
                     break
 
         if (not access):
-            raise NoAccess("You're not allowed to modify this document")
+            raise NoAccessError("You're not allowed to modify this document")
 
         return(super(Protected, self)._delete(_id))
 
