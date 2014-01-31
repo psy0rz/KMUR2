@@ -72,6 +72,7 @@ class Protected(models.mongodb.Base):
 
         else:
             #new document, store set permissions
+            check_doc={}
             for meta_key, check in self.write.items():
                 if check['set_on_create']:
                     #make sure to use the correct datatype for the relation:
@@ -96,6 +97,31 @@ class Protected(models.mongodb.Base):
                             else:
                                 #both are string:
                                 doc[meta_key]=self.context.session[check['context_field']]
+
+        #do a "test update" to check permissions:
+        check_doc.update(doc)
+        check_doc=self.get_meta(check_doc).meta['meta'].to_internal(self.context, check_doc)
+
+        #make sure user still has read acccess after modifications
+        access=False
+        for meta_key, check in self.read.items():
+            if check['check']:
+                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
+                    access=True
+                    break
+        if not access:
+            raise NoAccessError("Permission problem: You can't deny yourself read access to this object")
+
+        #make sure user still has write acccess after modifications
+        access=False
+        for meta_key, check in self.write.items():
+            if check['check']:
+                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
+                    access=True
+                    break
+        if not access:
+            raise NoAccessError("Permission problem: You can't deny yourself write access to this object")
+
 
         return(super(Protected, self)._put(doc=doc,**kwargs))
 
