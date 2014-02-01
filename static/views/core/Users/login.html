@@ -3,11 +3,14 @@ new ControlForm({
     'view'            : view,
     'class'           : 'core.Users',
     'default_focus'   : 'name',
-    'title'           : 'Inloggen',
+    'title_new'       : 'Inloggen',
     'get'             : undefined,
     'put'             : 'core.Users.login',
-    'put_result' : function()
+    'put_result' : function(result)
     {
+        $.jStorage.flush();
+        $.jStorage.set("session", result.data);
+        session=result.data;
         $.publish("menu.reload");
     }
 });

@@ -9,6 +9,10 @@ var form=new ControlForm({
     'title'           : 'Edit ticket {title}',
     'title_new'       : 'New ticket',
     'favorite_menu'   : 'ticket',
+    'default'         : { 
+        'allowed_users': [ session.user_id ],
+        'allowed_groups': [ ]
+    }
 });
 
 </script>

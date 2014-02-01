@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="lib/rison.js"></script>
 	<script type="text/javascript" src="lib/lodash.js"></script>
+	<script type="text/javascript" src="lib/jstorage.js"></script>
 	<script type="text/javascript" src="common.js"></script>
 	<script type="text/javascript" src="rpc.js"></script>
     <script type="text/javascript" src="fields.js"></script>
@@ -36,6 +37,10 @@
 
 		$(document).ready(function()
 		{
+			//this is the only global variable that the main-application has to deal with. 
+			//usually when creating controls that need to know the user_id or group_ids of the logged in user
+			session=$.jStorage.get("session");
+
 			//menuReload();
 			viewLoad({
 				name: 'webui.Menu.main',

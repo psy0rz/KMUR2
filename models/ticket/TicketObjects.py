@@ -18,7 +18,7 @@ class TicketObjects(models.core.Protected.Protected):
         },
         'allowed_users': {
             'context_field': 'user_id',
-            'set_on_create': True,
+            'set_on_create': False,
             'check': True
         },
     }

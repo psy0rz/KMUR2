@@ -113,6 +113,9 @@ class Users(models.mongodb.Base):
 
         self.info("Logged in.")
 
+        #the frontend might need this information as well:
+        return(self.context.session)
+
     @Acl(roles=["everyone"])
     def logout(self):
         '''logout the user. name becomes anonymous, roles becomes everyone.

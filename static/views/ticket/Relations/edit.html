@@ -9,6 +9,10 @@ var form=new ControlForm({
     'title'           : 'Edit relation {title}',
     'title_new'       : 'New relation',
     'favorite_menu'   : 'relations',
+    'default'         : { 
+        'allowed_users': [ session.user_id ],
+        'allowed_groups': [ ]
+    }
 });
 
 </script>
