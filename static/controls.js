@@ -225,6 +225,8 @@ params:
                             get:  re-get the data from the server. also gives feedback to the user
                             reload: re-load the whole view
 
+    default             default values to put before putting actual data.
+
 */
 function ControlForm(params)
 {
