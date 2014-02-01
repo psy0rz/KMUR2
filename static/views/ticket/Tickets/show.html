@@ -9,11 +9,12 @@ var form=new ControlForm({
     'on_change'       : 'put',
     'title'           : 'View ticket {title}',
     'favorite_menu'   : 'ticket',
+    'create_view_params': view.params,
 });
 
 </script>
 
-<div control-view="ticket.Tickets.edit" control-view-pass-get-params>
+<div control-view="ticket.Tickets.edit">
 
     <table>
     	<tr>

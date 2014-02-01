@@ -5,7 +5,7 @@ new ControlForm({
     'view'            : view,
     'context'         : '.group',
     'class'           : 'core.Groups',
-    'get_params'      : view.params,
+    'get_params'      : { '_id' : view.params._id } ,
     'default_focus'   : 'name',
     'title'           : 'Edit group {name}',
     'title_new'       : 'New group',
@@ -19,7 +19,10 @@ new ControlListRelated({
     'endless_scrolling'	: true,
     'related_key'       : 'group_ids',
     'related_value'     : view.params._id,
-    'unrelate_confirm'  : 'Do you want to remove {name} from this group?'
+    'unrelate_confirm'  : 'Do you want to remove {name} from this group?',
+    'create_view_params': {
+        'group_ids': [ view.params._id ]
+    }
 });
 
 
@@ -60,7 +63,7 @@ new ControlListRelated({
             <td class='control-relation-on-click-add ui-icon ui-icon-plus'>
         </tr>
         <tr>
-            <td colspan=2><a class='field-list-on-click-view' field-key='name' href='#'>Create new member</a>
+            <td colspan=2><a class='control-on-click-view' control-view='core.Users.edit' field-key='name' href='#'>Create new member</a>
         </tr>
     </table>
 </fieldset>

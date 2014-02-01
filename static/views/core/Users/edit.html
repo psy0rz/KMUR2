@@ -3,12 +3,13 @@
 
 new ControlForm({
     'view'            : view,
-    'get_params'      : view.params,
+    'get_params'      : { '_id': view.params._id },
     'class'           : 'core.Users',
     'default_focus'   : 'name',
     'title'           : 'Edit user {name}',
     'title_new'       : 'New user',
-    'favorite_menu'   : 'users'
+    'favorite_menu'   : 'users',
+    'default'         : view.params
 });
 
 

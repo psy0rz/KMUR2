@@ -23,6 +23,7 @@ params:
     delete:              rpc-method called to delete data (default: class+".delete")
     delete_params        parameters to pass to put (default: same as get_params)
 
+    create_view_params      parameters passed to new views created by this control
 
 Other items in params documented in the subclasses below.
 
@@ -31,6 +32,8 @@ function ControlBase(params)
 {
     //constructor
     this.params={};
+
+    //not that this wont copy keys that are null or undefined, which is important when creating new items
     $.extend( true, this.params, params);
 
     if (params.context)
@@ -69,6 +72,8 @@ function ControlBase(params)
         this.params.delete_params=this.params.get_params;
 
 
+    if (!('create_view_params' in this.params))
+        this.params.create_view_params={}
 
 }
 
@@ -174,9 +179,9 @@ ControlBase.prototype.attach_event_handlers=function()
         editView.name=attribute_element.attr("control-view");
         editView.mode=attribute_element.attr("control-view-mode");
 
-        editView.params={};
-        if (attribute_element.attr("control-view-pass-get-params")=="")
-            $.extend( editView.params, this_control.params.get_params );
+        editView.params=this_control.params.create_view_params;
+        // if (attribute_element.attr("control-view-pass-get-params")=="")
+        //     $.extend( editView.params, this_control.params.get_params );
 
 
         if (!editView.name)
@@ -281,6 +286,7 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
 
     this.attach_event_handlers();
 
+
     this.get(request_params);
 
 }
@@ -292,6 +298,7 @@ ControlForm.prototype.get=function(request_params)
     if (this.params.get_params==undefined || Object.keys(this.params.get_params).length==0)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
+        console.log("BOOM SJIPPD",this);
         this.get_result({}, request_params);
     }
     else
@@ -340,6 +347,11 @@ ControlForm.prototype.get_result=function(result, request_params)
     else
     {
         this.new_item=true;
+
+        //fill in default values
+        if (this.params.default)
+            Field.Dict.put('', this.meta, this.context, this.params.default, request_params)
+
 
         if (this.params.title_new)
         {
@@ -1331,12 +1343,13 @@ ControlListRelated.prototype.attach_event_handlers=function()
 
     //the view that was opened by us has created a new item. relate to it automaticly 
     //NOTE: we overrule handler that was created by Field.List 
-    $(this_control.list_source_element.parent()).off("control_form_created").on("control_form_created",function(event, result)
-    {
-        console.log("view opened by us has created an item", result);
-        this_control.relate(result.data[this_control.meta.list_key],"",function(result){        });
-        return(false);
-    });
+    //not needed anymore, since forms can have default values now
+    // $(this_control.list_source_element.parent()).off("control_form_created").on("control_form_created",function(event, result)
+    // {
+    //     console.log("view opened by us has created an item", result);
+    //     this_control.relate(result.data[this_control.meta.list_key],"",function(result){        });
+    //     return(false);
+    // });
 
 
     //remove the relation to us
