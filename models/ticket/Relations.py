@@ -6,24 +6,11 @@ import models.core.Groups
 import models.mongodb
 
 class Relations(models.core.Protected.Protected):
-    '''Relations (these can be customers/companies or other contacts)'''
+    '''Real-life relations (these can be customers/companies or other contacts)
+
+    dont confuse this with mongodb-relations :)
+    '''
     
-
-    write={
-        'allowed_groups': {
-            'context_field': 'group_ids',
-            'set_on_create': False,
-            'check': True
-        },
-        'allowed_users': {
-            'context_field': 'user_id',
-            'set_on_create': False,
-            'check': True
-        },
-    }
-
-    read=write
-
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
@@ -57,7 +44,20 @@ class Relations(models.core.Protected.Protected):
             list_key='_id'
         )
 
-    @Acl(roles="admin")
+    write={
+        'allowed_groups': {
+            'context_field': 'group_ids',
+            'check': True
+        },
+        'allowed_users': {
+            'context_field': 'user_id',
+            'check': True
+        },
+    }
+
+    read=write
+
+    @Acl(roles="user")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -71,11 +71,11 @@ class Relations(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -86,7 +86,7 @@ class Relations(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get_all(self, **params):
         return(self._get_all(**params))
 

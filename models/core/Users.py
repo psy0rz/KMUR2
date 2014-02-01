@@ -2,11 +2,12 @@ from models.common import *
 import fields
 import models.mongodb
 
+import models.core.Protected
 import models.core.Groups
 
 
 
-class Users(models.mongodb.Base):
+class Users(models.core.Protected.Protected):
     '''user management'''
     
     meta = fields.List(
@@ -40,6 +41,20 @@ class Users(models.mongodb.Base):
             list_key='_id'
         )
 
+
+    write={
+        'group_ids': {
+            'context_field': 'group_ids',
+            'set_on_create': False,
+            'check': True
+        },
+    }
+
+    read=write
+
+    read_roles=["admin"]
+    write_roles=read_roles
+
     @Acl(roles="admin")
     def put(self, **doc):
 
@@ -54,9 +69,11 @@ class Users(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get(self, _id):
-        return(self._get(_id))
+        return(self._get(_id,fields={
+                'password': False
+            }))
 
     @Acl(roles="admin")
     def delete(self, _id):
@@ -69,8 +86,21 @@ class Users(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get_all(self, **params):
+        if not 'fields' in params:
+            params['fields']={}
+
+        #note that mongodb cant mix inclusion and exclusion fields:
+        
+        #inclusion mode:
+        if len(params['fields'].values())>0 and list(params['fields'].values())[0]==True:
+            if 'password' in params['fields']:
+                del(params['fields']['password'])
+        #exclusion mode:
+        else:
+            params['fields']['password']=False
+
         return(self._get_all(**params))
 
     @Acl(roles=["everyone"])
@@ -89,7 +119,7 @@ class Users(models.mongodb.Base):
 
 
         try:
-            user = self._get(match={
+            user = super(models.core.Protected.Protected,self)._get(match={
                                   'name': name,
                                   'password': password
                                   })

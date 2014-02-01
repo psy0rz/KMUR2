@@ -30,7 +30,6 @@ class Protected(models.mongodb.Base):
         {
             'fieldname': {
                 'context_field':                context field name
-                'set_on_create': True           when creating new documents, set the value of this field to that of the context (only used for writing)
                 'check': True                   when set to true, it means the field is checked (read or write)
             }
         }
@@ -39,9 +38,16 @@ class Protected(models.mongodb.Base):
         write:
             (same as read)
 
+
+        write_roles: []                         roles that have full write access
+        read_roles:  []                         roles that have full read access
+
     """
 
-
+    read_roles=[]
+    write_roles=[]
+    read={}
+    write={}
 
     def __init__(self, context=None):
         super(Protected, self).__init__(context=context)
@@ -57,70 +63,74 @@ class Protected(models.mongodb.Base):
 
         """
 
-        #existing document, read it and check permissions
-        if '_id' in doc:
-            check_doc=super(Protected, self)._get(_id=doc['_id'])
+        if not self.context.has_roles(self.read_roles):
+            check_doc={}
+
+            #existing document, read it and check permissions
+            if '_id' in doc:
+                check_doc=super(Protected, self)._get(_id=doc['_id'])
+                access=False
+                for meta_key, check in self.write.items():
+                    if check['check']:
+                        if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
+                            access=True
+                            break
+
+                if (not access):
+                    raise NoAccessError("You're not allowed to modify this document")
+
+            #not needed anymore now we have default-values for views:
+            # else:
+            #     #new document, store set permissions
+            #     check_doc={}
+            #     for meta_key, check in self.write.items():
+            #         if check['set_on_create']:
+            #             #make sure to use the correct datatype for the relation:
+            #             if self.meta.meta['meta'].meta['meta'][meta_key].meta['list']:
+            #                 if not meta_key in doc:
+            #                     doc[meta_key]=[]
+            #                 if isinstance(self.context.session[check['context_field']], list):
+            #                     #both list:
+            #                     doc[meta_key].extend(self.context.session[check['context_field']])
+            #                     doc[meta_key]=list(set(doc[meta_key])) #unique values
+            #                 else:
+            #                     #document field is list:
+            #                     doc[meta_key].append(self.context.session[check['context_field']])
+            #                 doc[meta_key]=list(set(doc[meta_key])) #unique values
+            #             else:
+            #                 #only set it if its still null.
+            #                 if (not meta_key in doc) or doc[meta_key]==None: 
+            #                     if isinstance(self.context.session[check['context_field']], list):
+            #                         #document field is string, but context is list:
+            #                         #kind of a hack? we use the first item of the list
+            #                         doc[meta_key]=self.context.session[check['context_field']][0]
+            #                     else:
+            #                         #both are string:
+            #                         doc[meta_key]=self.context.session[check['context_field']]
+
+            #do a "test update" to check permissions:
+            check_doc.update(doc)
+            check_doc=self.get_meta(check_doc).meta['meta'].to_internal(self.context, check_doc)
+
+            #make sure user still has read acccess after modifications
+            access=False
+            for meta_key, check in self.read.items():
+                if check['check']:
+                    if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
+                        access=True
+                        break
+            if not access:
+                raise NoAccessError("Permission problem: You can't deny yourself read access to this object")
+
+            #make sure user still has write acccess after modifications
             access=False
             for meta_key, check in self.write.items():
                 if check['check']:
                     if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
                         access=True
                         break
-
-            if (not access):
-                raise NoAccessError("You're not allowed to modify this document")
-
-        else:
-            #new document, store set permissions
-            check_doc={}
-            for meta_key, check in self.write.items():
-                if check['set_on_create']:
-                    #make sure to use the correct datatype for the relation:
-                    if self.meta.meta['meta'].meta['meta'][meta_key].meta['list']:
-                        if not meta_key in doc:
-                            doc[meta_key]=[]
-                        if isinstance(self.context.session[check['context_field']], list):
-                            #both list:
-                            doc[meta_key].extend(self.context.session[check['context_field']])
-                            doc[meta_key]=list(set(doc[meta_key])) #unique values
-                        else:
-                            #document field is list:
-                            doc[meta_key].append(self.context.session[check['context_field']])
-                        doc[meta_key]=list(set(doc[meta_key])) #unique values
-                    else:
-                        #only set it if its still null.
-                        if (not meta_key in doc) or doc[meta_key]==None: 
-                            if isinstance(self.context.session[check['context_field']], list):
-                                #document field is string, but context is list:
-                                #kind of a hack? we use the first item of the list
-                                doc[meta_key]=self.context.session[check['context_field']][0]
-                            else:
-                                #both are string:
-                                doc[meta_key]=self.context.session[check['context_field']]
-
-        #do a "test update" to check permissions:
-        check_doc.update(doc)
-        check_doc=self.get_meta(check_doc).meta['meta'].to_internal(self.context, check_doc)
-
-        #make sure user still has read acccess after modifications
-        access=False
-        for meta_key, check in self.read.items():
-            if check['check']:
-                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
-                    access=True
-                    break
-        if not access:
-            raise NoAccessError("Permission problem: You can't deny yourself read access to this object")
-
-        #make sure user still has write acccess after modifications
-        access=False
-        for meta_key, check in self.write.items():
-            if check['check']:
-                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
-                    access=True
-                    break
-        if not access:
-            raise NoAccessError("Permission problem: You can't deny yourself write access to this object")
+            if not access:
+                raise NoAccessError("Permission problem: You can't deny yourself write access to this object")
 
 
         return(super(Protected, self)._put(doc=doc,**kwargs))
@@ -133,6 +143,9 @@ class Protected(models.mongodb.Base):
         """
 
         doc=super(Protected, self)._get(*args, **kwargs)
+
+        if self.context.has_roles(self.read_roles):
+            return(doc)
 
         access=False
         for meta_key, check in self.read.items():
@@ -154,24 +167,27 @@ class Protected(models.mongodb.Base):
 
         it does this be adding a appropriate spec_and parameters to _get_all
         """
-        spec_and=spec_and.copy()
 
-        ors=[] #if any one of the check fields matches, then access is allowed
-        for meta_key, check in self.read.items():
-            if check['check']:
-                if isinstance(self.context.session[check['context_field']], list):
-                    ors.append({ 
-                        meta_key: { 
-                            '$in': self.context.session[check['context_field']] 
-                            }
-                        })
-                else:
-                    ors.append({ 
-                        meta_key: self.context.session[check['context_field']] 
-                        })
+        if not self.context.has_roles(self.read_roles):
 
-        if len(ors)>0:
-            spec_and.append({ '$or' : ors})
+            spec_and=spec_and.copy()
+
+            ors=[] #if any one of the check fields matches, then access is allowed
+            for meta_key, check in self.read.items():
+                if check['check']:
+                    if isinstance(self.context.session[check['context_field']], list):
+                        ors.append({ 
+                            meta_key: { 
+                                '$in': self.context.session[check['context_field']] 
+                                }
+                            })
+                    else:
+                        ors.append({ 
+                            meta_key: self.context.session[check['context_field']] 
+                            })
+
+            if len(ors)>0:
+                spec_and.append({ '$or' : ors})
 
         return(super(Protected, self)._get_all(*args, spec_and=spec_and, **kwargs))
 
@@ -180,17 +196,18 @@ class Protected(models.mongodb.Base):
     def _delete(self, _id):
         """deletes _id from collection, if writeaccess to the document is allowed"""
 
-        check_doc=super(Protected, self)._get(_id)
+        if not self.context.has_roles(self.write_roles):
+            check_doc=super(Protected, self)._get(_id)
 
-        access=False
-        for meta_key, check in self.write.items():
-            if check['check']:
-                if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
-                    access=True
-                    break
+            access=False
+            for meta_key, check in self.write.items():
+                if check['check']:
+                    if meta_key in check_doc and (contains(check_doc[meta_key], self.context.session[check['context_field']])):
+                        access=True
+                        break
 
-        if (not access):
-            raise NoAccessError("You're not allowed to modify this document")
+            if (not access):
+                raise NoAccessError("You're not allowed to modify this document")
 
         return(super(Protected, self)._delete(_id))
 

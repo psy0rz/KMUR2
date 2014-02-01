@@ -139,7 +139,7 @@ class Relation(fields.Base):
             #call foreign model to check if all id's exist
             foreign_object=self.model(context)
             result=foreign_object.get_all(
-                    fields='_id',
+                    fields={ '_id': True },
                     match_in={
                         foreign_object.meta.meta['list_key']: mongo_ids
                         }
@@ -328,7 +328,7 @@ class Base(models.common.Base):
         return(doc)
 
 
-    def _get(self, _id=None, match={}, regex={}):
+    def _get(self, _id=None, match={}, regex={}, fields=None):
         '''get a document from the collection.
         _id: The id-string of the object to get (if this is specified , filter and match are ignored)
         regex: a dict containing keys and regular expression strings.
@@ -342,7 +342,7 @@ class Base(models.common.Base):
         regex_filters = {}
 
         if _id:
-            doc = self.db[collection].find_one(bson.objectid.ObjectId(_id))
+            doc = self.db[collection].find_one(bson.objectid.ObjectId(_id),fields=fields)
 
             if not doc:
                 raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
@@ -354,7 +354,7 @@ class Base(models.common.Base):
             for key in match:
                 regex_filters[key] = match[key]
 
-            doc = self.db[collection].find_one(regex_filters)
+            doc = self.db[collection].find_one(regex_filters,fields=fields)
 
 
             if not doc:

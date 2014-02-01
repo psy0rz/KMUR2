@@ -2,11 +2,13 @@ from models.common import *
 import fields
 import models.mongodb
 from models import mongodb
+import models.core.Protected
 
 
-class Groups(models.mongodb.Base):
+
+class Groups(models.core.Protected.Protected):
     '''group management'''
-    
+
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
@@ -14,6 +16,19 @@ class Groups(models.mongodb.Base):
             }),
             list_key='_id'
         )
+
+    write={
+        '_id': {
+            'context_field': 'group_ids',
+            'set_on_create': False,
+            'check': True
+        },
+    }
+    read=write
+
+    read_roles=[ "admin" ]
+    write_roles=read_roles
+
 
     @Acl(roles="admin")
     def put(self, **doc):
@@ -29,7 +44,7 @@ class Groups(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get(self, _id):
         return(self._get(_id))
 
@@ -44,7 +59,7 @@ class Groups(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get_all(self, **params):
         return(self._get_all(**params))
 
