@@ -1099,6 +1099,59 @@ ControlList.prototype.attach_event_handlers=function()
         });
     }
 
+    //create a handler to edit in place
+    $(context).off("click",".control-list-on-click-edit").on("click",".control-list-on-click-edit",  function(event)
+    {
+        var list_id=Field.List.from_element_get_id('', this);
+        var element=$(this);
+        var list_element=Field.List.from_element_get('', element);
+
+        //already clicked
+        if (element.hasClass("field-meta-put"))
+            return(true);
+
+        //change the field from a normal put to a meta-put, and create input fields:
+        element.addClass("field-meta-put");
+        element.removeClass("field-put");
+        Field.Dict.meta_put('', this_control.meta.meta, list_element);
+
+        //create a place for errors
+        element.append("<div style='postion: relative;left:10em;' class='viewErrorText'></div>");
+
+        //get data
+        rpc(this_control.params.class+".get",
+        {
+            '_id': list_id,
+        },
+        function(doc)
+        {
+            //fill data
+            Field.Dict.put('', this_control.meta.meta, list_element, doc.data, {});
+            $(":input", element).focus();
+
+            var last_put;
+
+            //put data when changed:
+            $(element).on("focusout",function()
+            {
+                doc=Field.Dict.get('', this_control.meta.meta, list_element);
+                doc['_id']=list_id;
+
+                if (!_.isEqual(last_put,doc))
+                {
+                    last_put=doc;
+                    rpc(this_control.params.class+".put", doc, function(result)
+                    {
+                        if (!viewShowError(result, element, this_control.meta.meta))
+                        {
+
+                        }
+
+                    });
+                }
+            });
+        });
+    });
 
 
 }

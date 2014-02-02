@@ -666,6 +666,7 @@ Field.List.meta_put=function(key, meta, context)
         });
 
 
+
     }
 
 };
@@ -1452,7 +1453,7 @@ Field.Timestamp.put=function(key, meta, context, data, options)
     //FIXME: recalculate to local-time, store UTC on server
     var dateStr="";
 
-    if (data!='')
+    if (data)
     {
         var date=new Date(data*1000);
         dateStr=$.datepicker.formatDate( Field.Timestamp.defaultDateFormat, date );

@@ -85,40 +85,43 @@ class Protected(models.mongodb.Base):
                     if check['check']:
                         removed_ids=[]
 
-                        for id in check_doc[meta_key]:
-                            if id not in converted_doc[meta_key]:
-                                removed_ids.append(id)
+                        if meta_key in converted_doc:
+                            for id in check_doc[meta_key]:
+                                if id not in converted_doc[meta_key]:
+                                    removed_ids.append(id)
 
-                        if len(removed_ids):
-                            foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
-                            foreign_object=foreign_model(self.context)
+                            if len(removed_ids):
+                                foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
+                                foreign_object=foreign_model(self.context)
 
-                            result=foreign_object.get_all(
-                                fields={ foreign_model.meta.meta['list_key']: True },
-                                match_in={ foreign_model.meta.meta['list_key']: removed_ids }
-                            )
-                            print(removed_ids, result)
-                            if (len(removed_ids)!=len(result)):
-                                raise fields.FieldError("You dont have permission to deny unknown users read-access to this document", meta_key)
+                                result=foreign_object.get_all(
+                                    fields={ foreign_model.meta.meta['list_key']: True },
+                                    match_in={ foreign_model.meta.meta['list_key']: removed_ids }
+                                )
+                                print(removed_ids, result)
+                                if (len(removed_ids)!=len(result)):
+                                    raise fields.FieldError("You dont have permission to deny unknown users read-access to this document", meta_key)
 
                 #make sure the user doesnt remove write-access to "users" he does not have access to himself:
                 for meta_key, check in self.write.items():
                     if check['check']:
                         removed_ids=[]
-                        for id in check_doc[meta_key]:
-                            if id not in converted_doc[meta_key]:
-                                removed_ids.append(id)
 
-                        if len(removed_ids):
-                            foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
-                            foreign_object=foreign_model(self.context)
+                        if meta_key in converted_doc:
+                            for id in check_doc[meta_key]:
+                                if id not in converted_doc[meta_key]:
+                                    removed_ids.append(id)
 
-                            result=foreign_object.get_all(
-                                fields={ foreign_model.meta.meta['list_key']: True },
-                                match_in={ foreign_model.meta.meta['list_key']: removed_ids }
-                            )
-                            if (len(removed_ids)!=len(result)):
-                                raise fields.FieldError("You dont have permission to deny unknown users write-access to this document", meta_key)
+                            if len(removed_ids):
+                                foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
+                                foreign_object=foreign_model(self.context)
+
+                                result=foreign_object.get_all(
+                                    fields={ foreign_model.meta.meta['list_key']: True },
+                                    match_in={ foreign_model.meta.meta['list_key']: removed_ids }
+                                )
+                                if (len(removed_ids)!=len(result)):
+                                    raise fields.FieldError("You dont have permission to deny unknown users write-access to this document", meta_key)
             
 
             #do a "test update" to check permissions:

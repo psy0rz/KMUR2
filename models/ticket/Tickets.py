@@ -12,8 +12,24 @@ class Tickets(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'title': fields.String(min=3, desc='Title'),
+                'title': fields.String(min=3, desc='Task'),
                 'desc': fields.String(desc='Description'),
+                'start_date': fields.Timestamp(desc='Start date'),
+                'due_date': fields.Timestamp(desc='Due date'),
+                'completed': fields.Bool(desc='Completed'),
+                'status': fields.Select(desc='Status', choices={
+                    'none': 'None',
+                    'next_action': 'Next Action',
+                    'active': 'Active',
+                    'planning': 'Planning',
+                    'deligated': 'Change to ticket status',
+                    'waiting': 'Waiting',
+                    'hold': 'Hold',
+                    'postponed': 'Posponed',
+                    'someday': 'Someday',
+                    'cancelled': 'Cancelled',
+                    'reference': 'Reference'
+                }),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -65,8 +81,8 @@ class Tickets(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self, _id):
-        return(self._get(_id))
+    def get(self, **kwargs):
+        return(self._get(**kwargs))
 
     @Acl(roles="user")
     def delete(self, _id):
