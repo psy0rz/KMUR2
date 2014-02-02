@@ -4,14 +4,14 @@
 var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.TicketObjects',
-    'get_params'      : view.params,
+    'get_params'      : { '_id': view.params._id },
     'default_focus'   : 'title',
     'title'           : 'Edit ticket item {title}',
     'title_new'       : 'New ticket item',
     'favorite_menu'   : 'ticket',
     'default'         : { 
         'allowed_users': [ session.user_id ],
-        'allowed_groups': [ ]
+        'tickets': [ view.params.ticket_id ]
     }
 });
 
@@ -24,44 +24,46 @@ var form=new ControlForm({
 		<td><input  class='field-put field-get field-input' field-key='title' size=100>
 	</tr>
     <tr>
-        <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
-        <td><textarea class='field-put field-get field-input' field-key='desc' cols=80 rows=10></textarea>
+        <td class='field-meta-put' field-key='text' field-meta-key='desc'>
+        <td><textarea class='field-put field-get field-input' field-key='text' cols=80 rows=10></textarea>
     </tr>
-<!--
     <tr>
-        <td class='field-meta-put' field-key='relation' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='relation'>
-            <span class='list-span field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
-                <span class='field-put field-list-on-click-view' field-key='relation.name'></span>
+        <td class='field-meta-put' field-key='type' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='type'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='billing_relation'>
+            <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
+                <span class='field-put field-list-on-click-view' field-key='billing_relation.title'></span>
                 <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
             </span>
-            <input  class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' size=10/>
+            <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
             <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
             <br>
-            <a class='field-list-on-click-view' field-key='name' href='#'>Create new relation</a>
+            <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
     </tr>
--->
 
 </table>
 
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='relations' field-meta-key='desc'></legend>
-    <table class='field-meta-put' field-key='relations'>
+<fieldset class='inline-block'>
+    <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
+    <table class='field-meta-put' field-key='tickets'>
         <tr class='ui-widget-header'>
-            <th class='field-meta-put' field-key='relations.title' field-meta-key='desc'>
+            <th class='field-meta-put' field-key='tickets.title' field-meta-key='desc'>
             <th>
         </tr>
 
-        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='relations' field-list-view="ticket.Relations.edit">
-            <td class='field-put field-list-on-click-view' field-key='relations.title'>
+        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.edit">
+            <td class='field-put field-list-on-click-view' field-key='tickets.title'>
             <td class='field-list-on-click-del ui-icon ui-icon-minus'>
         </tr>
         <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
+            <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
             <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
         </tr>
         <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new relation</a>
+            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
         </tr>
     </table>
 </fieldset>

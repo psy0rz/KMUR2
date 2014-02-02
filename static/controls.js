@@ -41,6 +41,12 @@ function ControlBase(params)
     else
         this.context=$("#"+params.view.id);
 
+    if (this.context.length==0)
+    {
+        console.error("Cant get context", this.context);
+        return(false);
+    }
+
     this.debug_txt=params.view.id+" "+params.view.name+" ";
 
     if (!('get_meta' in this.params))
@@ -664,7 +670,7 @@ ControlList.prototype.get_meta_result=function(result, request_params)
     Field[this.meta.type].meta_put('',this.meta, this.context);
 
 
-    this.attach_event_handlers();   
+    this.attach_event_handlers();
     this.get(request_params);
 }
 
@@ -767,8 +773,8 @@ ControlList.prototype.attach_event_handlers=function()
     var this_control=this;
     var context=this.context;
 
-    ControlBase.prototype.attach_event_handlers.call(this);
 
+    ControlBase.prototype.attach_event_handlers.call(this);
 
     //some  control changed/added an item in our class, so update the list
     $(context).subscribe(this.params.class+'.changed', "list", function(result)

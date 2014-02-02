@@ -27,7 +27,7 @@ class TicketObjects(models.core.Protected.Protected):
                 'to': fields.String(desc='To'),
                 'billing_relation': models.mongodb.Relation(
                     desc='Billing relation',
-                    model=models.core.Groups.Groups,
+                    model=models.ticket.Relations.Relations,
                     check_exists=False,
                     resolve=False,
                     list=False),
@@ -71,9 +71,9 @@ class TicketObjects(models.core.Protected.Protected):
     def put(self, **doc):
 
         if '_id' in doc:
-          log_txt="Changed ticket {title}".format(**doc)
+          log_txt="Changed ticket item {title}".format(**doc)
         else:
-          log_txt="Created new ticket {title}".format(**doc)
+          log_txt="Created new ticket item {title}".format(**doc)
 
         ret=self._put(doc)
 
@@ -92,7 +92,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=self._delete(_id)
 
-        self.info("Deleted ticket {title}".format(**doc))
+        self.info("Deleted ticket item {title}".format(**doc))
 
         return(ret)
 
