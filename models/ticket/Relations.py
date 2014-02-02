@@ -20,11 +20,13 @@ class Relations(models.core.Protected.Protected):
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
                     resolve=False,
+                    check_exists=False,
                     list=True),
                 'allowed_users': models.mongodb.Relation(
                     desc='Users with access',
                     model=models.core.Users.Users,
                     resolve=False,
+                    check_exists=False,
                     list=True),
                 'emails': fields.List(
                     fields.Dict({

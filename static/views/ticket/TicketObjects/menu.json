@@ -1,0 +1,15 @@
+{
+    "ticket":{
+		"items":[
+            {
+                "title":"My items",
+                "view":
+                    { 
+                        "name":"ticket.TicketObjects.list",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}

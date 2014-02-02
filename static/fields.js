@@ -1870,6 +1870,11 @@ Field.Relation.get=function(key, meta, context)
         ids.push(value[meta.meta.list_key]);
     });
 
+    if ($(context).data('field-relation-hidden'))
+    {
+        ids=ids.concat($(context).data('field-relation-hidden'));
+    }
+
     if (meta.list)
         return(ids)
     else
@@ -1879,18 +1884,6 @@ Field.Relation.get=function(key, meta, context)
         else
             return(null);
     }
-    // return(ids);
-    // }
-    // else
-    // {
-    //     var id=context.attr("field-relation-id");
-    //     if (!id)
-    //         id=null; //undefined isnt valid json..
-
-    //     // console.error("id is ",id);
-
-    //     return(id);
-    // }
 }
 
 Field.Relation.put=function(key, meta, context, data, options)
@@ -1927,7 +1920,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                     get_params,
                     function(result)
                     {
-                        //create dummy items for stuff that cant be resolved (usually because of protected objects)
+                        //also store items that cant be resolved (usually relations to protected items)
                         for (i in result.data)
                         {
                             var id=result.data[i][meta.meta.list_key];
@@ -1935,12 +1928,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                             if (i!=-1)
                                 data.splice(i,1);
                         }
-                        for (i in data)
-                        {
-                            var item={};
-                            item[meta.meta.list_key]=data[i];
-                            result.data.push(item);
-                        }
+                        $(context).data('field-relation-hidden', data);
 
                         Field.List.put(key, meta.meta, list_context, result.data, options);
      
