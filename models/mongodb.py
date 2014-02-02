@@ -58,7 +58,7 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, model, meta=None, list=True, min=None, max=None, resolve=True , **kwargs):
+    def __init__(self, model, meta=None, list=True, min=None, max=None, resolve=True , check_exists=True, **kwargs):
         """
             model: specifies the related model (as a python object)
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
@@ -69,6 +69,7 @@ class Relation(fields.Base):
                 set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself. 
                 (the stuff in field.js will take care of extra rpc-calls to the foreign model)
                 this is a tradeoff the developer has to make, depending on the application.
+            check_exists: checks if the specified item exist in the forgeign model.
 
         """
 
@@ -89,6 +90,7 @@ class Relation(fields.Base):
             raise FieldError("list should be a bool")
 
         self.meta['list'] = list
+        self.meta['check_exists'] = check_exists
 
         if meta==None:
             if resolve:
@@ -136,23 +138,24 @@ class Relation(fields.Base):
                 else:
                     mongo_ids=data
 
-            #call foreign model to check if all id's exist
-            foreign_object=self.model(context)
-            result=foreign_object.get_all(
-                    fields={ '_id': True },
-                    match_in={
-                        foreign_object.meta.meta['list_key']: mongo_ids
-                        }
-                    );
+            if self.meta['check_exists']:
+                #call foreign model to check if all id's exist
+                foreign_object=self.model(context)
+                result=foreign_object.get_all(
+                        fields={ '_id': True },
+                        match_in={
+                            foreign_object.meta.meta['list_key']: mongo_ids
+                            }
+                        );
 
-            #TODO: specify which id in case resolve is true? (altough this error should never happen)
-            if len(result)!=len(data):
-                raise fields.FieldError("an item in the list doesnt exist")
+                #TODO: specify which id in case resolve is true? 
+                if len(result)!=len(data):
+                    raise fields.FieldError("an item in the list doesnt exist")
 
-            if ('min' in self.meta) and len(result)<self.meta['min']:
+            if ('min' in self.meta) and len(mongo_ids)<self.meta['min']:
                 raise fields.FieldError("should have at least {} item(s).".format(self.meta['min']))
 
-            if ('max' in self.meta) and len(result)>self.meta['max']:
+            if ('max' in self.meta) and len(mongo_ids)>self.meta['max']:
                 raise fields.FieldError("should have at most {} item(s).".format(self.meta['max']))
 
         else:

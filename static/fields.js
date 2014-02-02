@@ -1920,12 +1920,28 @@ Field.Relation.put=function(key, meta, context, data, options)
                 };
 
                 get_params['match_in'][meta.meta.list_key]=data;
+
                 //get related data
                 rpc(
                     meta.model+".get_all",
                     get_params,
                     function(result)
                     {
+                        //create dummy items for stuff that cant be resolved (usually because of protected objects)
+                        for (i in result.data)
+                        {
+                            var id=result.data[i][meta.meta.list_key];
+                            var i=data.indexOf(id);
+                            if (i!=-1)
+                                data.splice(i,1);
+                        }
+                        for (i in data)
+                        {
+                            var item={};
+                            item[meta.meta.list_key]=data[i];
+                            result.data.push(item);
+                        }
+
                         Field.List.put(key, meta.meta, list_context, result.data, options);
      
                     },

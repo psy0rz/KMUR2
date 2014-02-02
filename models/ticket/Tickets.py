@@ -18,17 +18,20 @@ class Tickets(models.core.Protected.Protected):
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
                     resolve=False,
-                    list=True),
+                    list=True,
+                    check_exists=False),
                 'allowed_users': models.mongodb.Relation(
                     desc='Users with access',
                     model=models.core.Users.Users,
                     resolve=False,
-                    list=True),
+                    list=True,
+                    check_exists=False),
                 'relations': models.mongodb.Relation(
                     desc='Related to',
                     model=models.ticket.Relations.Relations,
                     resolve=False,
-                    list=True),
+                    list=True,
+                    check_exists=False),
             }),
             list_key='_id'
         )
