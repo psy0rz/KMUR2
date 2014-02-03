@@ -22,14 +22,14 @@ class Tickets(models.core.Protected.Protected):
                     'next_action': 'Next Action',
                     'active': 'Active',
                     'planning': 'Planning',
-                    'deligated': 'Change to ticket status',
+                    'deligated': 'Deligated',
                     'waiting': 'Waiting',
                     'hold': 'Hold',
                     'postponed': 'Posponed',
                     'someday': 'Someday',
                     'cancelled': 'Cancelled',
                     'reference': 'Reference'
-                }),
+                },default='next_action'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -69,12 +69,15 @@ class Tickets(models.core.Protected.Protected):
     @Acl(roles="user")
     def put(self, **doc):
 
-        if '_id' in doc:
-          log_txt="Changed ticket {title}".format(**doc)
-        else:
-          log_txt="Created new ticket {title}".format(**doc)
 
         ret=self._put(doc)
+
+        if '_id' in doc:
+            #support edits in place that only put small documents
+            doc=self._get(doc['_id'])
+            log_txt="Changed ticket {title}".format(**doc)
+        else:
+            log_txt="Created new ticket {title}".format(**doc)
 
         self.info(log_txt)
 

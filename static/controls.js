@@ -1116,39 +1116,54 @@ ControlList.prototype.attach_event_handlers=function()
         Field.Dict.meta_put('', this_control.meta.meta, list_element);
 
         //create a place for errors
-        element.append("<div style='postion: relative;left:10em;' class='viewErrorText'></div>");
+        element.append("<div class='viewErrorText viewErrorClass'></div>");
+
+        function restore_element(data)
+        {
+            // rpc(this_control.params.class+".get", { '_id': list_id }, function(result)
+            // {
+                element.removeClass("field-meta-put");
+                element.addClass("field-put");
+                Field.Dict.meta_put('', this_control.meta.meta, list_element);
+                Field.Dict.put('', this_control.meta.meta, list_element, data, {});
+            // });
+        }
+
 
         //get data
-        rpc(this_control.params.class+".get",
-        {
-            '_id': list_id,
-        },
-        function(doc)
+        rpc(this_control.params.class+".get",{ '_id': list_id }, function(result)
         {
             //fill data
-            Field.Dict.put('', this_control.meta.meta, list_element, doc.data, {});
+            Field.Dict.put('', this_control.meta.meta, list_element, result.data, {});
             $(":input", element).focus();
 
-            var last_put;
+            var last_put=Field.Dict.get('', this_control.meta.meta, list_element);
+            last_put['_id']=list_id;
+
+            var busy=false; //busy rpc-ing, or waiting for user to correct error
 
             //put data when changed:
-            $(element).on("focusout",function()
+            $(element.children().first()).on("focusout",function()
             {
-                doc=Field.Dict.get('', this_control.meta.meta, list_element);
+                var doc=Field.Dict.get('', this_control.meta.meta, list_element);
                 doc['_id']=list_id;
 
                 if (!_.isEqual(last_put,doc))
                 {
                     last_put=doc;
+                    busy=true;
                     rpc(this_control.params.class+".put", doc, function(result)
                     {
                         if (!viewShowError(result, element, this_control.meta.meta))
                         {
-
+                            //restore element
+                            restore_element(result.data);
                         }
-
                     });
                 }
+                else
+                    if (!busy)
+                        restore_element(result.data);
             });
         });
     });

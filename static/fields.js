@@ -340,11 +340,13 @@ Field.Dict.put=function(key, meta, context, data, options)
         context.data("field-data",data);
     }
 
-    //traverse the meta-data
-    $.each(meta.meta, function(sub_key, thismeta){
+    //traverse the data
+    //NOT the metadata, because we want to keep default values that are already set
+    $.each(data, function(sub_key, thisdata){
         var key_str=Field.Base.concat_keys(key, sub_key);
-        var thisdata=data[sub_key];
-//      if (thismeta!=undefined)
+//        var thisdata=data[sub_key];
+        var thismeta=meta.meta[sub_key];
+      if (thismeta!=undefined)
         {
 
             if (thismeta.type=='Dict')
