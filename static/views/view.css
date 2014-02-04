@@ -130,6 +130,15 @@
 }
 
 
-  .ui-autocomplete-loading {
-    background: white url('../icons/ui-anim_basic_16x16.gif') right center no-repeat;
-  }
+.ui-autocomplete-loading {
+	background: white url('../icons/ui-anim_basic_16x16.gif') right center no-repeat;
+}
+
+.field-timestamp-quick {
+	cursor: pointer;
+}
+
+.field-timestamp-quick:hover {
+	background: #dddddd;
+
+}

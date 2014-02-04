@@ -1401,7 +1401,8 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
 /////////////////////////////////////////////////////////////////////////
 Field.Timestamp=Object.create(Field.Base);
 
-Field.Timestamp.defaultDateFormat='dd-mm-yy';
+Field.Timestamp.defaultDateFormat='dd M yy';
+Field.Timestamp.quickDateFormat='D dd M';
 Field.Timestamp.defaultTimeFormat='hh:mm';
 
 Field.Timestamp.meta_put=function(key, meta, context, options)
@@ -1430,7 +1431,11 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
         //we probably never want to activate inside of a list-source
         if ($(this).closest(".field-list-source").length != 0)
             return(true);
+
+        if ($(this).hasClass("hasDatepicker"))
+            return(true);
         
+        var widget;
         if (allowTime)
         {
             //date AND time picker:
@@ -1445,6 +1450,8 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
 
                 }
             }).datetimepicker("show");
+
+            widget=$(this).datetimepicker("widget");
         }
         else
         {
@@ -1458,7 +1465,37 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
                     new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
                 }
             }).datepicker("show");
+
+            widget=$(this).datepicker("widget");
         }
+
+        var picker=$(this);
+        function quickdate(format, timestamp)
+        {
+            var date=new Date(timestamp);
+            var new_element=$("<div class='field-timestamp-quick'>"+format.replace("%",$.datepicker.formatDate( Field.Timestamp.quickDateFormat, date ))+"</div>");
+            widget.append(new_element);
+            new_element.click(function(){
+                picker.datepicker("setDate", date );
+                picker.datepicker("hide");
+                return(false);
+            })
+        }
+
+        var now=new Date().getTime();
+        quickdate("% (Today)", now);
+        quickdate("% (Tomorrow)", now + 1*1000*3600*24);
+        quickdate("%", now + 2*1000*3600*24);
+        quickdate("%", now + 3*1000*3600*24);
+        quickdate("%", now + 4*1000*3600*24);
+        quickdate("%", now + 5*1000*3600*24);
+        quickdate("%", now + 6*1000*3600*24);
+        widget.append("<br>");
+        quickdate("in 1 week (%)", now + 7*1000*3600*24);
+        quickdate("in 1 month (%)", now + 30*1000*3600*24);
+        quickdate("in 1 year (%)", now + 365*1000*3600*24);
+        widget.append("<br>");
+
         return(false);
     });
 
