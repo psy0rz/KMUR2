@@ -1167,7 +1167,11 @@ Field.Select.meta_put=function(key, meta, context, options)
         return(false);
     });
 
-    $(new_element).trigger("mousedown");
+    $(new_element).on('focusout', function()
+    {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
 
 }
 
