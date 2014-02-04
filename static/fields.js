@@ -983,6 +983,27 @@ Field.List.resolve_meta=function(meta, keys)
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
 
+Field.String.attach_eventhandlers=function(key,meta,context,new_element)
+{
+    //send changes as nice event with 'this' set to context
+    $(new_element).on('input change', function()
+    {
+        context.trigger("field_changed",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
+
+    //send a field_done when the user seems to be done editting this field
+    $(new_element).on('focusout keypress' , function(e)
+    {
+        if (e.keyCode!=undefined && e.keyCode!=$.ui.keyCode.ENTER)
+            return(true);
+
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+    });
+
+}
+
+
 Field.String.meta_put=function(key, meta, context, options)
 {
     if (Field.Base.meta_put(key, meta, context, options))
@@ -1003,19 +1024,8 @@ Field.String.meta_put=function(key, meta, context, options)
 
     Field.Base.input_append(key, meta, context, new_element);
 
-    //send changes as nice event with 'this' set to context
-    $(new_element).on('input change', function()
-    {
-        context.trigger("field_changed",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
-        return(false);
-    });
+    this.attach_eventhandlers(key, meta, context, new_element);
 
-    //send a field_done when the user seems to be done editting this field
-    $(new_element).on('focusout', function()
-    {
-        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
-        return(false);
-    });
 
 }
 
@@ -1061,21 +1071,11 @@ Field.Password.meta_put=function(key, meta, context, options)
             .attr("type","password"); 
 
     new_element.val(meta.default);
+
     Field.Base.input_append(key, meta, context, new_element);
 
-    //send changes as nice event with 'this' set to context
-    $(new_element).on('input change', function()
-    {
-        context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this))] );
-        return(false);
-    });
+    this.attach_eventhandlers(key, meta, context, new_element);
 
-    //send a field_done when the user seems to be done editting this field
-    $(new_element).on('focusout', function()
-    {
-        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
-        return(false);
-    });
 }
 
 
@@ -1095,19 +1095,7 @@ Field.Number.meta_put=function(key, meta, context, options)
 
     Field.Base.input_append(key, meta, context, new_element);
 
-    //send changes as nice event with 'this' set to context
-    $(new_element).on('input change', function()
-    {
-        context.trigger("field_changed", [ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
-        return(false);
-    });
-
-    //send a field_done when the user seems to be done editting this field
-    $(new_element).on('focusout', function()
-    {
-        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
-        return(false);
-    });
+    this.attach_eventhandlers(key, meta, context, new_element);
 }
 
 

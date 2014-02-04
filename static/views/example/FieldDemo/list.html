@@ -2,12 +2,22 @@
 <script>
     new ControlList({
         'view'            	: view,
-	    'get_params'      : view.params,
+	    'get_params'      : {
+	    	'sleep': view.params.sleep,
+	    	'limit': view.params.limit
+	    },
         'class'        		: 'example.FieldDemo',
         'title'           	: 'field demo overview',
         'endless_scrolling'	: true,
         'favorite_menu'     : 'example',
     });
+
+    var context=$("#"+view.params.id);
+
+    if (view.params.inplace)
+    {
+    	$(".field-list-on-click-view").removeClass("field-list-on-click-view").addClass("control-list-on-click-edit");
+    }
 
 </script>
 

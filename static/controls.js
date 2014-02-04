@@ -1113,6 +1113,7 @@ ControlList.prototype.attach_event_handlers=function()
         }
 
         //change the field from a normal put to a meta-put, and create input fields:
+        $(".field-meta-put", list_element).removeClass("field-meta-put").addClass("field-put"); //cleanup leftover stuff
         element.addClass("field-meta-put");
         element.removeClass("field-put");
         Field.Dict.meta_put('', this_control.meta.meta, list_element);
@@ -1120,15 +1121,14 @@ ControlList.prototype.attach_event_handlers=function()
         //create a place for errors
         element.append("<div class='viewErrorText viewErrorClass'></div>");
 
-        function restore_element(result, options)
+        function restore_element()
         {
             // rpc(this_control.params.class+".get", { '_id': list_id }, function(result)
             // {
-                element.removeClass("field-meta-put");
-                element.addClass("field-put");
+                $(".field-meta-put", list_element).removeClass("field-meta-put").addClass("field-put"); 
+                // element.removeClass("field-meta-put");
+                // element.addClass("field-put");
                 Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
-//                Field.Dict.put('', this_control.meta.meta, list_element, data, options);
-                $.publish(this_control.params.class+'.changed', result);
 
             // });
         }
@@ -1151,14 +1151,18 @@ ControlList.prototype.attach_event_handlers=function()
                     {
                         if (!viewShowError(result, element, this_control.meta.meta))
                         {
-                            //restore element
-                            restore_element(result, { show_changes: true });
+                            restore_element();
+                            $.publish(this_control.params.class+'.changed', result);
                         }
                     });
                 }
                 else
                     if (!busy)
-                        restore_element(result, {});
+                    {
+                        //nothing changed so dont send a changed-event
+                        restore_element();
+                        Field.Dict.put('', this_control.meta.meta, list_element, result.data, {});
+                    }
                 
             });
 

@@ -59,9 +59,9 @@ class FieldDemo(models.mongodb.Base):
         call get_meta to see which fields you can set'''
 
         if '_id' in doc:
-          logTxt="Changed demo row {}".format(doc['stringTest'])
+          logTxt="Changed demo row {_id}".format(**doc)
         else:
-          logTxt="Created demo row {}".format(doc['stringTest'])
+          logTxt="Created demo row {_id}".format(**doc)
 
         ret=self._put(doc)
 
@@ -83,7 +83,7 @@ class FieldDemo(models.mongodb.Base):
 
         ret=self._delete(_id)
 
-        self.info("Deleted demo row {}".format(doc['stringTest']))
+        self.info("Deleted demo row {_id}".format(**doc))
 
         return(ret)
 

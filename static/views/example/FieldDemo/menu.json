@@ -6,7 +6,8 @@
                 "name":"example.FieldDemo.list",
                 "mode":"main",
                 "params": {
-                        "limit": 10
+                        "limit": 10,
+                        "sleep": 0
                 }
             },
 		"items":[
@@ -28,6 +29,19 @@
                         "params": {
                             "sleep": 1,
                             "limit": 10
+                        }
+                    }
+            },
+            {
+                "title":"List fielddemo (editinplace)",
+                "view":
+                    { 
+                        "name":"example.FieldDemo.list",
+                        "mode":"main",
+                        "params": {
+                            "inplace": 1,
+                            "limit": 10,
+                            "sleep":0
                         }
                     }
             }
