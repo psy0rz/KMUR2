@@ -71,7 +71,7 @@ Field.Base.not_implemented=function(key, meta, context, data)
     dynamicly created input fields get a field-input class, so that .put knows its a inputfield instead of a normal html field
 
 */
-Field.Base.meta_put=function(key, meta, context)
+Field.Base.meta_put=function(key, meta, context, options)
 {
 //    console.log("meta_put", key, meta, context);
     var meta_key=context.attr("field-meta-key");
@@ -295,7 +295,7 @@ Field.Dict=Object.create(Field.Base);
 
 
 //a dict will traverse all the sub-metadata items
-Field.Dict.meta_put=function(key, meta, context)
+Field.Dict.meta_put=function(key, meta, context, options)
 {
     //dict operates on a bigger context, but meta_put is expecting direct element, so give it that:
 //    if (key)
@@ -303,7 +303,7 @@ Field.Dict.meta_put=function(key, meta, context)
         var selector='.field-meta-put[field-key="'+key+'"]';
         $(selector, context).each(function()
         {               
-            Field.Base.meta_put(key, meta, $(this));
+            Field.Base.meta_put(key, meta, $(this), options);
         });
     }
 
@@ -314,7 +314,7 @@ Field.Dict.meta_put=function(key, meta, context)
         {
             //handle sub-dicts in the same context. this way you can use keys
             //like foo.subdict, without needing a surrounding element that has key foo.
-            Field.Dict.meta_put(key_str, thismeta, context);
+            Field.Dict.meta_put(key_str, thismeta, context, options);
         }
         else
         {
@@ -323,7 +323,7 @@ Field.Dict.meta_put=function(key, meta, context)
             $(selector, context).each(function()
             {
                 if (thismeta.type in Field)
-                    Field[thismeta.type].meta_put(key_str, thismeta, $(this));
+                    Field[thismeta.type].meta_put(key_str, thismeta, $(this), options);
             });
         }
     }); //meta data
@@ -509,7 +509,7 @@ Field.List.clone=function(source_element)
 
 }
 
-Field.List.meta_put=function(key, meta, context)
+Field.List.meta_put=function(key, meta, context, options)
 {
 //    console.log("list metaput", key, meta, context);
     if (Field.Base.meta_put(key, meta, context))
@@ -541,7 +541,7 @@ Field.List.meta_put=function(key, meta, context)
     }
 
     //recurse into submeta
-    Field[meta.meta.type].meta_put(key, meta.meta, context);
+    Field[meta.meta.type].meta_put(key, meta.meta, context, options);
 
     //after the submeta data is done, attach event handlers for listsources
     if (list_source)
@@ -983,9 +983,9 @@ Field.List.resolve_meta=function(meta, keys)
 /////////////////////////////////////////////////////////////////////////////////////////////
 Field.String=Object.create(Field.Base);
 
-Field.String.meta_put=function(key, meta, context)
+Field.String.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     var new_element;
@@ -1007,6 +1007,13 @@ Field.String.meta_put=function(key, meta, context)
     $(new_element).on('input change', function()
     {
         context.trigger("field_changed",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
+
+    //send a field_done when the user seems to be done editting this field
+    $(new_element).on('focusout', function()
+    {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
         return(false);
     });
 
@@ -1044,9 +1051,9 @@ Field.String.put=function(key, meta, context, data, options)
 //Password is almost the same as String
 Field.Password=Object.create(Field.String);
 
-Field.Password.meta_put=function(key, meta, context)
+Field.Password.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     var new_element;
@@ -1062,15 +1069,22 @@ Field.Password.meta_put=function(key, meta, context)
         context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this))] );
         return(false);
     });
+
+    //send a field_done when the user seems to be done editting this field
+    $(new_element).on('focusout', function()
+    {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 Field.Number=Object.create(Field.String);
-Field.Number.meta_put=function(key, meta, context)
+Field.Number.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     var new_element;
@@ -1085,6 +1099,13 @@ Field.Number.meta_put=function(key, meta, context)
     $(new_element).on('input change', function()
     {
         context.trigger("field_changed", [ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+        return(false);
+    });
+
+    //send a field_done when the user seems to be done editting this field
+    $(new_element).on('focusout', function()
+    {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
         return(false);
     });
 }
@@ -1106,9 +1127,9 @@ Field.Number.get=function(key, meta, context)
 
 ///////////////////////////////////////////////////
 Field.Select=Object.create(Field.Base);
-Field.Select.meta_put=function(key, meta, context)
+Field.Select.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     //create select element
@@ -1142,8 +1163,11 @@ Field.Select.meta_put=function(key, meta, context)
     $(new_element).on('change', function()
     {
         context.trigger("field_changed", [key , meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
         return(false);
     });
+
+    $(new_element).trigger("mousedown");
 
 }
 
@@ -1175,9 +1199,9 @@ Field.Select.put=function(key, meta, context, data, options)
 
 ///////////////////////////////////////////////////
 Field.Bool=Object.create(Field.Base);
-Field.Bool.meta_put=function(key, meta, context)
+Field.Bool.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     if (context.attr("field-allow-null")=="")
@@ -1190,7 +1214,7 @@ Field.Bool.meta_put=function(key, meta, context)
                         0:meta.false_desc,
                         1:meta.true_desc
                     };
-        Field.Select.meta_put(key,select_meta,context);
+        Field.Select.meta_put(key,select_meta,context, options);
     }
     else
     {
@@ -1203,9 +1227,11 @@ Field.Bool.meta_put=function(key, meta, context)
         //send changes as nice event with 'this' set to context
         $(new_element).on('change', function()
         {
-            context.trigger("field_changed", [ key , meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+            new_element.trigger("field_changed", [ key , meta, context, Field[meta.type].get(key,meta,$(this)) ] );
+            new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
             return(false);
         });
+
     }
 
 
@@ -1244,8 +1270,16 @@ Field.Bool.put=function(key, meta, context, data, options)
             }
             else
             {
-                context.attr("checked", data);
+                if (options.field_action)
+                {
+                    //invert choice and say we're done (used for edit-in-place)
+                   context.attr("checked", !data);
+                   context.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+                }
+                else
+                   context.attr("checked", data);
             }
+
     }
     else
     {
@@ -1272,9 +1306,9 @@ Field.Bool.put=function(key, meta, context, data, options)
 
 ///////////////////////////////////////////////////
 Field.MultiSelect=Object.create(Field.Base);
-Field.MultiSelect.meta_put=function(key, meta, context)
+Field.MultiSelect.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     var new_element=$("<span>")
@@ -1309,6 +1343,14 @@ Field.MultiSelect.meta_put=function(key, meta, context)
         context.trigger("field_changed",[ key, meta, context, Field[meta.type].get(key,meta, new_element) ]); 
         return(false);
     });
+
+    //send a field_done when the user seems to be done editting this field
+    $(new_element).on('focusout', function()
+    {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+        return(false);
+    });
+
 }
 
 
@@ -1369,9 +1411,9 @@ Field.Timestamp=Object.create(Field.Base);
 Field.Timestamp.defaultDateFormat='dd-mm-yy';
 Field.Timestamp.defaultTimeFormat='hh:mm';
 
-Field.Timestamp.meta_put=function(key, meta, context)
+Field.Timestamp.meta_put=function(key, meta, context, options)
 {
-    if (Field.Base.meta_put(key, meta, context))
+    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
 
@@ -1394,7 +1436,7 @@ Field.Timestamp.meta_put=function(key, meta, context)
     new_element.focus(function(){
         //we probably never want to activate inside of a list-source
         if ($(this).closest(".field-list-source").length != 0)
-            return;
+            return(true);
         
         if (allowTime)
         {
@@ -1406,6 +1448,8 @@ Field.Timestamp.meta_put=function(key, meta, context)
                 {
                     $(this).datetimepicker("destroy");
                     $(this).attr("id",null);
+                    new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+
                 }
             }).datetimepicker("show");
         }
@@ -1418,9 +1462,11 @@ Field.Timestamp.meta_put=function(key, meta, context)
                 {
                     $(this).datepicker("destroy");
                     $(this).attr("id",null);
+                    new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
                 }
             }).datepicker("show");
         }
+        return(false);
     });
 
 
@@ -1489,17 +1535,17 @@ Field.Timestamp.put=function(key, meta, context, data, options)
 /////////////////////////////////////////////////////////////////////////
 Field.Relation=Object.create(Field.Base);
 
-Field.Relation.meta_put=function(key, meta, context)
+Field.Relation.meta_put=function(key, meta, context, options)
 {
 
-   if (Field.Base.meta_put(key, meta, context))
+   if (Field.Base.meta_put(key, meta, context, options))
         return;
 
     context.addClass("field-put field-input field-get");
 
    //sub-meta-data is already resolved?
     if ('meta' in meta)
-        Field.Relation.meta_put_resolved(key, meta, context)
+        Field.Relation.meta_put_resolved(key, meta, context, options)
     else
     {
         //asyncroniously resolve sub-metadata and cache the result in case another field needs it. (happens when displaying a list of client-resolved relations for example)
@@ -1515,7 +1561,7 @@ Field.Relation.meta_put=function(key, meta, context)
             {
                 //complete the submeta data and call actual function
                 meta.meta=result.data;
-                Field.Relation.meta_put_resolved(key, meta, context);
+                Field.Relation.meta_put_resolved(key, meta, context, options);
                 context.trigger("meta_put_done");
             },
             "getting metadata from related model"
@@ -1531,7 +1577,7 @@ Field.Relation.list_context=function(key, context)
 
 
 
-Field.Relation.meta_put_resolved=function(key, meta, context)
+Field.Relation.meta_put_resolved=function(key, meta, context, options)
 {
  
 
@@ -1550,14 +1596,14 @@ Field.Relation.meta_put_resolved=function(key, meta, context)
     //recurse into list with sub-meta
     //use our context here: there are probably things like table headers that need meta-data descriptions
     //and list.meta_put can handle parent contexts as well as the list_context.
-    Field.List.meta_put(key, meta.meta, context);
+    Field.List.meta_put(key, meta.meta, context, options);
 
 
     //make sure we field-meta-put any headers or legends (overwrite stuff that the list or sub-dict has filled in)
     var selector='.field-meta-put[field-key="'+key+'"]';
     $(selector, context).each(function()
     {
-        Field.Base.meta_put(key, meta, $(this));   
+        Field.Base.meta_put(key, meta, $(this), options);   
     });
 
 

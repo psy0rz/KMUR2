@@ -288,7 +288,7 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
     //all default models are ListDicts, and since a form is editting one item from that list, we should
     //use the Dict, so we use .meta:
     this.meta=result['data'].meta;
-    Field[this.meta.type].meta_put('',this.meta, this.context);
+    Field[this.meta.type].meta_put('',this.meta, this.context, {});
 
     this.attach_event_handlers();
 
@@ -667,7 +667,7 @@ ControlList.prototype.get_meta_result=function(result, request_params)
 
     this.meta=result['data'];
 
-    Field[this.meta.type].meta_put('',this.meta, this.context);
+    Field[this.meta.type].meta_put('',this.meta, this.context, {});
 
 
     this.attach_event_handlers();
@@ -1108,7 +1108,9 @@ ControlList.prototype.attach_event_handlers=function()
 
         //already clicked
         if (element.hasClass("field-meta-put"))
+        {
             return(true);
+        }
 
         //change the field from a normal put to a meta-put, and create input fields:
         element.addClass("field-meta-put");
@@ -1118,14 +1120,14 @@ ControlList.prototype.attach_event_handlers=function()
         //create a place for errors
         element.append("<div class='viewErrorText viewErrorClass'></div>");
 
-        function restore_element(data)
+        function restore_element(data, options)
         {
             // rpc(this_control.params.class+".get", { '_id': list_id }, function(result)
             // {
                 element.removeClass("field-meta-put");
                 element.addClass("field-put");
-                Field.Dict.meta_put('', this_control.meta.meta, list_element);
-                Field.Dict.put('', this_control.meta.meta, list_element, data, {});
+                Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
+                Field.Dict.put('', this_control.meta.meta, list_element, data, options);
             // });
         }
 
@@ -1133,17 +1135,8 @@ ControlList.prototype.attach_event_handlers=function()
         //get data
         rpc(this_control.params.class+".get",{ '_id': list_id }, function(result)
         {
-            //fill data
-            Field.Dict.put('', this_control.meta.meta, list_element, result.data, {});
-            $(":input", element).focus();
-
-            var last_put=Field.Dict.get('', this_control.meta.meta, list_element);
-            last_put['_id']=list_id;
-
-            var busy=false; //busy rpc-ing, or waiting for user to correct error
-
-            //put data when changed:
-            $(element.children().first()).on("focusout",function()
+            //put data when changes are done:
+            $(element.children().first()).on("field_done",function()
             {
                 var doc=Field.Dict.get('', this_control.meta.meta, list_element);
                 doc['_id']=list_id;
@@ -1157,14 +1150,26 @@ ControlList.prototype.attach_event_handlers=function()
                         if (!viewShowError(result, element, this_control.meta.meta))
                         {
                             //restore element
-                            restore_element(result.data);
+                            restore_element(result.data, { show_changes: true });
                         }
                     });
                 }
                 else
                     if (!busy)
-                        restore_element(result.data);
+                        restore_element(result.data, {});
+                
             });
+
+            //fill data, invoke the 'default action' (e.g. inverting a checkbox or opening a selectbox)
+            Field.Dict.put('', this_control.meta.meta, list_element, result.data, { field_action: true });
+            $(":input", element).focus();
+
+            var last_put=Field.Dict.get('', this_control.meta.meta, list_element);
+            last_put['_id']=list_id;
+
+            var busy=false; //busy rpc-ing, or waiting for user to correct error
+
+
         });
     });
 
