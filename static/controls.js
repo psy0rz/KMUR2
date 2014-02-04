@@ -1140,12 +1140,31 @@ ControlList.prototype.attach_event_handlers=function()
             //put data when changes are done:
             $(element.children().first()).on("field_done",function()
             {
-                var doc=Field.Dict.get('', this_control.meta.meta, list_element);
-                doc['_id']=list_id;
+                var doc={};
+                $.extend(true, doc, result.data);
 
-                if (!_.isEqual(last_put,doc))
+                function update(dst, src)
                 {
-                    last_put=doc;
+                    for (k in src)
+                    {
+                        if ((src[k] instanceof Array) || typeof(src[k]) != 'object')
+                        {
+                            dst[k]=src[k];
+                        }
+                        else
+                        {
+                            if (typeof(dst[k]) !='object')
+                                dst[k]={};
+                            update(dst[k], src[k]);
+                        }
+                    }
+                }
+                console.error(doc);
+                update(doc, Field.Dict.get('', this_control.meta.meta, list_element));
+
+
+                if (!_.isEqual(result.data,doc))
+                {
                     busy=true;
                     rpc(this_control.params.class+".put", doc, function(result)
                     {
@@ -1170,8 +1189,8 @@ ControlList.prototype.attach_event_handlers=function()
             Field.Dict.put('', this_control.meta.meta, list_element, result.data, { field_action: true });
             $(":input", element).focus();
 
-            var last_put=Field.Dict.get('', this_control.meta.meta, list_element);
-            last_put['_id']=list_id;
+            // var last_put=Field.Dict.get('', this_control.meta.meta, list_element);
+            // last_put['_id']=list_id;
 
             var busy=false; //busy rpc-ing, or waiting for user to correct error
 

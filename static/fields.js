@@ -1332,23 +1332,24 @@ Field.MultiSelect.meta_put=function(key, meta, context, options)
     //send changes as nice event with 'this' set to context
     $(new_element).on('change', function()
     {
+        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
         context.trigger("field_changed",[ key, meta, context, Field[meta.type].get(key,meta, new_element) ]); 
         return(false);
     });
 
     //send a field_done when the user seems to be done editting this field
-    $(new_element).on('focusout', function()
-    {
-        new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
-        return(false);
-    });
+    // $(new_element).on('focusout', function()
+    // {
+    //     new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+    //     return(false);
+    // });
 
 }
 
 
 Field.MultiSelect.get=function(key, meta, context)
 {
-    var value=new Array();
+    var value=[];
     
     $("input", context).each(function()
     {
