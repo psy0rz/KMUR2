@@ -1120,14 +1120,16 @@ ControlList.prototype.attach_event_handlers=function()
         //create a place for errors
         element.append("<div class='viewErrorText viewErrorClass'></div>");
 
-        function restore_element(data, options)
+        function restore_element(result, options)
         {
             // rpc(this_control.params.class+".get", { '_id': list_id }, function(result)
             // {
                 element.removeClass("field-meta-put");
                 element.addClass("field-put");
                 Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
-                Field.Dict.put('', this_control.meta.meta, list_element, data, options);
+//                Field.Dict.put('', this_control.meta.meta, list_element, data, options);
+                $.publish(this_control.params.class+'.changed', result);
+
             // });
         }
 
@@ -1150,13 +1152,13 @@ ControlList.prototype.attach_event_handlers=function()
                         if (!viewShowError(result, element, this_control.meta.meta))
                         {
                             //restore element
-                            restore_element(result.data, { show_changes: true });
+                            restore_element(result, { show_changes: true });
                         }
                     });
                 }
                 else
                     if (!busy)
-                        restore_element(result.data, {});
+                        restore_element(result, {});
                 
             });
 
