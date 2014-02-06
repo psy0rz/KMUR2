@@ -32,6 +32,14 @@ class Tickets(models.core.Protected.Protected):
                     ('reference', 'Reference')
                 ],default='next_action'),
 
+                'priority': fields.Select(desc='Priority', choices=[
+                    ('5', 'Top'),
+                    ('4', 'High'),
+                    ('3', 'Normal'),
+                    ('2', 'Low'),
+                    ('1', 'Unimportant'),
+                ],default='3'),
+
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,

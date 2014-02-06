@@ -368,7 +368,7 @@ class Base(models.common.Base):
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
         skip: number of items to skip
         limit: number of maximum items to return
-        sort: a dict containing keys and sort directions (-1 descending, +1 ascending)
+        sort: a list of key,direction pairs (-1 descending, +1 ascending)
 
         Filter options:
 
@@ -504,7 +504,7 @@ class Base(models.common.Base):
                             fields=fields,
                             skip=skip,
                             limit=limit,
-                            sort=list(sort.items()))
+                            sort=sort)
 
         #TODO: optimize, make external-conversion optional? especially some way to make resolving optional. or is it up to the user to use field to only ask for relevant fields?
         return self.get_meta().to_external(self.context, list(cursor))

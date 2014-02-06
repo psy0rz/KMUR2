@@ -1144,7 +1144,7 @@ Field.Select.meta_put=function(key, meta, context, options)
             option_element.prop('disabled',true);
         
         //we use this instead of new_element.val(thismeta.default) because clone wont work with this.
-        if (choice==meta.default &&  !allow_null)
+        if (choice[0]==meta.default &&  !allow_null)
             option_element.attr("selected","selected");
         new_element.append(option_element);
     });

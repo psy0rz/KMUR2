@@ -887,14 +887,13 @@ ControlList.prototype.attach_event_handlers=function()
     //what is the current selected sorting column?
     function getSortSettings()
     {
-        this_control.params.get_params.sort={};
-        $(".control-order-asc",context).each(function()
+        this_control.params.get_params.sort=[];
+        $(".control-order-asc, .control-order-desc",context).each(function()
         {
-            this_control.params.get_params.sort[$(this).attr("field-key")]=1;
-        });
-        $(".control-order-desc",context).each(function()
-        {
-            this_control.params.get_params.sort[$(this).attr("field-key")]=-1;
+            if ($(this).hasClass("control-order-asc"))
+                this_control.params.get_params.sort.push([$(this).attr("field-key"),1]);
+            else
+                this_control.params.get_params.sort.push([$(this).attr("field-key"),-1]);
         });
 
         //reset scrolling
@@ -905,23 +904,21 @@ ControlList.prototype.attach_event_handlers=function()
 
     $(".control-on-click-order", context).off().click(function()
     {
-        //NOTE:it would be possible to select multiple columns for sorting, but  this is a bit too unclear in the UI and backend
 
         //change to desc
         if ($(this).hasClass("control-order-asc"))
         {
-            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
+            $(this).removeClass("control-order-asc");
             $(this).addClass("control-order-desc");
         }
         //change to unsorted
         else if ($(this).hasClass("control-order-desc"))
         {
-            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
+            $(this).removeClass("control-order-desc");
         }
         //start with asc
         else
         {
-            $(".control-on-click-order", context).removeClass("control-order-asc").removeClass("control-order-desc");
             $(this).addClass("control-order-asc");
         }
 
