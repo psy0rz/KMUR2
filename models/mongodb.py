@@ -276,11 +276,10 @@ class Base(models.common.Base):
 
         self.default_collection = self.__class__.__module__
 
-    def _put(self, doc, meta=None, replace=False):
+    def _put(self, doc, replace=False):
         """Checks document with field and replaces, updates or inserts it into collection
 
-        If meta is set, the check function of that object will be used.
-        Otherwise self.get_meta(doc) will be called to get the default meta.
+        self.get_meta(doc) will be called to get the default meta.
 
         If _id is not set the document is inserted.
 
@@ -296,13 +295,8 @@ class Base(models.common.Base):
         collection = self.default_collection
 
         #check and convert data
-        if meta:
-            #NOTE:is this ever used?
-            meta.meta['meta'].check(self.context, doc)
-            doc=meta.meta['meta'].to_internal(self.context, doc)
-        else:
-            self.get_meta(doc).meta['meta'].check(self.context, doc)
-            doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
+        self.get_meta(doc).meta['meta'].check(self.context, doc)
+        doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
             
 
         try:
@@ -328,7 +322,7 @@ class Base(models.common.Base):
         except (pymongo.errors.DuplicateKeyError) as e:
                 raise fields.FieldError("An object with this name already exists. ("+str(e)+")")
 
-        return(doc)
+        return(self.get_meta(doc).meta['meta'].to_external(self.context, doc))
 
 
     def _get(self, _id=None, match={}, regex={}, fields=None):

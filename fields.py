@@ -117,8 +117,6 @@ class Base(object):
 
         mostly usefull for things like relations. 
 
-        to_external is NOT always called for efficiency reasons. for example: we wouldnt use it to resolve all related data when doing a get_all on a mongodb object.
-
         so for stuff that just needs to be json-encodable you should look at the JSONEncoder above.'''
 
         return(data)
@@ -365,20 +363,35 @@ class Number(Base):
 class Timestamp(Base):
     """A unix timestamp"""
 
-    def __init__(self, **kwargs):
+    #configurable 'null date' value, to allow favourable sorting
+    def __init__(self, null_date=2**31-1, **kwargs):
         super(Timestamp, self).__init__(**kwargs)
+        self.null_date=null_date
 
     def check(self, context, data):
 
         if not super(Timestamp, self).check(context, data):
             return
 
-        if not isinstance(data, (int)) and not isinstance(data, (float)):
-            raise FieldError("A timestamp should be an integer")
+        if not isinstance(data, (int)) and not isinstance(data, (float)) and data!=None:
+            raise FieldError("A timestamp should be an integer or Null")
 
-        if (data < 0):
+        if (data!=None and data < 0):
             raise FieldError("Timestamp can not be negative")
 
+    def to_internal(self, context, data):
+        print("ik krijeg")
+        print (data)
+        if data==None:
+            data=self.null_date
+
+        return(data)
+
+    def to_external(self, context, data):
+        if data==self.null_date:
+           data=None
+
+        return(data)
 
 class Bool(Base):
     """Boolean, only real boolean types allowed"""

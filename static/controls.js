@@ -1147,7 +1147,7 @@ ControlList.prototype.attach_event_handlers=function()
                 {
                     for (k in src)
                     {
-                        if ((src[k] instanceof Array) || typeof(src[k]) != 'object')
+                        if (src[k]==null || (src[k] instanceof Array) || typeof(src[k]) != 'object')
                         {
                             dst[k]=src[k];
                         }

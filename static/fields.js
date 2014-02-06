@@ -1446,7 +1446,7 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
                 {
                     $(this).datetimepicker("destroy");
                     $(this).attr("id",null);
-                    new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
+                    new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,new_element) ]);
 
                 }
             }).datetimepicker("show");
@@ -1496,6 +1496,14 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
         quickdate("in 1 year (%)", now + 365*1000*3600*24);
         widget.append("<br>");
 
+        widget.append($("<div class='field-timestamp-quick'>no date</div>")).click(function(){
+            new_element.val("");
+            picker.datepicker("hide");
+            //somehow it doesnt trigger on hiding the picker
+            new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,new_element) ]);
+            return(false);
+        });
+
         return(false);
     });
 
@@ -1503,7 +1511,7 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
     Field.Base.input_append(key, meta, context, new_element);
 
     //send changes as nice event with 'this' set to context
-    $(new_element).on('input change', function()
+    $(new_element).on('input change', function(e)
     {
         context.trigger("field_changed",[ key, meta, context, Field[meta.type].get(key,meta,$(this)) ] );
         return(false);
@@ -1514,9 +1522,10 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
 
 Field.Timestamp.get=function(key, meta, context)
 {
-    if (context.attr("field-allow-null")=="" && context.val()=="")
+    if (context.val()=="")
+    {
         return(null);
-
+    }
     //var dateStr=$(element).val().split()
     //var date=new Date($(element).datepicker("getDate"));
     //return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);
