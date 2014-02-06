@@ -12,7 +12,7 @@ class Tickets(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'title': fields.String(min=3, desc='Task'),
+                'title': fields.String(min=3, desc='Task', size=100),
                 'desc': fields.String(desc='Description'),
                 'start_date': fields.Timestamp(desc='Start date'),
                 'due_date': fields.Timestamp(desc='Due date'),
@@ -75,9 +75,9 @@ class Tickets(models.core.Protected.Protected):
         if '_id' in doc:
             #support edits in place that only put small documents
             doc=self._get(doc['_id'])
-            log_txt="Changed ticket {title}".format(**doc)
+            log_txt="Changed task {title}".format(**doc)
         else:
-            log_txt="Created new ticket {title}".format(**doc)
+            log_txt="Created new task {title}".format(**doc)
 
         self.info(log_txt)
 
@@ -94,7 +94,7 @@ class Tickets(models.core.Protected.Protected):
 
         ret=self._delete(_id)
 
-        self.info("Deleted ticket {title}".format(**doc))
+        self.info("Deleted task {title}".format(**doc))
 
         return(ret)
 

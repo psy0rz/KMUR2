@@ -7,7 +7,7 @@ var form=new ControlForm({
     'get_params'      : view.params,
     'default_focus'   : 'title',
     'on_change'       : 'put',
-    'title'           : 'View ticket {title}',
+    'title'           : 'View task {title}',
     'favorite_menu'   : 'ticket',
     'context'         : '.ticket',
     'create_view_params': view.params,
@@ -36,7 +36,7 @@ new ControlListRelated({
     'endless_scrolling' : true,
     'related_key'       : 'tickets',
     'related_value'     : view.params._id,
-    'unrelate_confirm'  : "Do you want to remove ticket item '{title}' from this ticket?",
+    'unrelate_confirm'  : "Do you want to remove task item '{title}' from this ticket?",
     'create_view_params': {
         'group_ids': [ view.params._id ]
     }

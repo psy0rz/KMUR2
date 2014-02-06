@@ -1,6 +1,6 @@
 {
 	"ticket":{
-		"title":"Tickets",
+		"title":"Tasks",
         "view":
             { 
                 "name":"ticket.Tickets.list",

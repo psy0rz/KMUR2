@@ -285,7 +285,7 @@ class List(Base):
 class String(Base):
     """A regular string, with optional min and max value"""
 
-    def __init__(self, min=None, max=None, **kwargs):
+    def __init__(self, min=None, max=None, size=20, **kwargs):
         super(String, self).__init__(**kwargs)
 
         if min != None and max != None and max <= min:
@@ -300,6 +300,9 @@ class String(Base):
             if (max < 0):
                 raise FieldError("Max cant be smaller than 0")
             self.meta['max'] = max
+
+
+        self.meta['size']=size
 
     def check(self, context, data):
 

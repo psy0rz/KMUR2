@@ -1010,14 +1010,15 @@ Field.String.meta_put=function(key, meta, context, options)
         return;
 
     var new_element;
-    if (meta.max>100)
+    if (context.attr("field-string-textarea"))
     {
-        new_element=$("<textarea>");
+        new_element=$("<textarea>").attr("size", meta.size);
     }
     else
     {
         new_element=$("<input>")
-            .attr("type","text");                       
+            .attr("type","text")
+            .attr("size",meta.size);                       
     }
 
     new_element.val(meta.default);

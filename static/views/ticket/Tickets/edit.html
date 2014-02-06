@@ -6,8 +6,8 @@ var form=new ControlForm({
     'class'           : 'ticket.Tickets',
     'get_params'      :  view.params,
     'default_focus'   : 'title',
-    'title'           : 'Edit ticket {title}',
-    'title_new'       : 'New ticket',
+    'title'           : 'Edit task {title}',
+    'title_new'       : 'New task',
     'favorite_menu'   : 'ticket',
     'default'         : { 
         'allowed_users': [ session.user_id ],
@@ -21,7 +21,7 @@ var form=new ControlForm({
 <table>
 	<tr>
 		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
-		<td><input  class='field-put field-get field-input' field-key='title' size=100>
+		<td class='field-meta-put' field-key='title'>
 	</tr>
     <tr>
         <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
