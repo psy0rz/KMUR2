@@ -380,8 +380,6 @@ class Timestamp(Base):
             raise FieldError("Timestamp can not be negative")
 
     def to_internal(self, context, data):
-        print("ik krijeg")
-        print (data)
         if data==None:
             data=self.null_date
 

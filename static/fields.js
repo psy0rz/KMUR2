@@ -1499,8 +1499,6 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
         widget.append($("<div class='field-timestamp-quick'>no date</div>")).click(function(){
             new_element.val("");
             picker.datepicker("hide");
-            //somehow it doesnt trigger on hiding the picker
-            new_element.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,new_element) ]);
             return(false);
         });
 

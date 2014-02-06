@@ -1123,14 +1123,9 @@ ControlList.prototype.attach_event_handlers=function()
 
         function restore_element()
         {
-            // rpc(this_control.params.class+".get", { '_id': list_id }, function(result)
-            // {
-                $(".field-meta-put", list_element).removeClass("field-meta-put").addClass("field-put"); 
-                // element.removeClass("field-meta-put");
-                // element.addClass("field-put");
-                Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
-
-            // });
+            $(".field-meta-put", list_element).removeClass("field-meta-put").addClass("field-put"); 
+            Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
+            element.empty(); //important if a key isnt set in the document
         }
 
 
@@ -1159,7 +1154,6 @@ ControlList.prototype.attach_event_handlers=function()
                         }
                     }
                 }
-                console.error(doc);
                 update(doc, Field.Dict.get('', this_control.meta.meta, list_element));
 
 
