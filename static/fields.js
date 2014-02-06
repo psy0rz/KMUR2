@@ -1195,7 +1195,7 @@ Field.Select.put=function(key, meta, context, data, options)
     else
     {
         var new_element=$("<span>");
-        new_element.addClass("field-select-"+data);
+        // new_element.addClass("field-select-"+data);
         new_element.addClass("field-select-"+key+"-"+data);
 
         //translate raw data to descriptive text
@@ -1300,13 +1300,13 @@ Field.Bool.put=function(key, meta, context, data, options)
         
         if (data)
         {
-            new_element.addClass("field-bool-true");
+            // new_element.addClass("field-bool-true");
             new_element.addClass("field-bool-"+key+"-true");
             new_element.text(meta.true_desc);
         }
         else
         {
-            new_element.addClass("field-bool-false");
+            // new_element.addClass("field-bool-false");
             new_element.addClass("field-bool-"+key+"-false");
             new_element.text(meta.false_desc);
         }
@@ -1408,7 +1408,7 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
             new_element.append(
                 $("<div>") 
                     .addClass("field-multiselect")
-                    .addClass("field-multiselect-"+data[data_nr])
+                    // .addClass("field-multiselect-"+data[data_nr])
                     .addClass("field-multiselect-"+key+"-"+data[data_nr])
                     .text(meta.choices[data[data_nr]])
             );

@@ -142,3 +142,14 @@
 	background: #dddddd;
 
 }
+
+
+.field-select-ticket_status-next_action {
+	font-weight: bold;
+	color:#b57a15;
+}
+
+.field-select-ticket_status-none {
+	color:gray;
+}
+

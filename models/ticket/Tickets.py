@@ -16,8 +16,8 @@ class Tickets(models.core.Protected.Protected):
                 'desc': fields.String(desc='Description'),
                 'start_date': fields.Timestamp(desc='Start date'),
                 'due_date': fields.Timestamp(desc='Due date'),
-                'completed': fields.Bool(desc='Completed'),
-                'status': fields.Select(desc='Status', choices=[
+                'ticket_completed': fields.Bool(desc='Completed'),
+                'ticket_status': fields.Select(desc='Status', choices=[
                     ('none', 'None'),
                     ('next_action', 'Next Action'),
                     ('active', 'Active'),
@@ -32,7 +32,7 @@ class Tickets(models.core.Protected.Protected):
                     ('reference', 'Reference')
                 ],default='next_action'),
 
-                'priority': fields.Select(desc='Priority', choices=[
+                'ticket_priority': fields.Select(desc='Priority', choices=[
                     ('5', 'Top'),
                     ('4', 'High'),
                     ('3', 'Normal'),
