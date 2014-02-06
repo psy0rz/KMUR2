@@ -1135,10 +1135,13 @@ Field.Select.meta_put=function(key, meta, context, options)
     }
     
     //add choices
-    $.each(meta['choices'], function(choice, desc){
+    $.each(meta['choices'], function(choicenr, choice){
         var option_element=$("<option>")
-            .attr("value",choice)
-            .text(desc);
+            .attr("value",choicenr)
+            .text(choice[1]);
+
+        if (choice[0]==null)
+            option_element.prop('disabled',true);
         
         //we use this instead of new_element.val(thismeta.default) because clone wont work with this.
         if (choice==meta.default &&  !allow_null)
@@ -1171,19 +1174,40 @@ Field.Select.get=function(key, meta, context)
     if (context.attr("field-allow-null")=="" && context.prop("selectedIndex")==0)
         return (null);
 
-    return(context.val());
+    //translate selected index to value
+    return(meta.choices[context.val()][0]);
 }
 
 Field.Select.put=function(key, meta, context, data, options)
 {
     if (context.hasClass("field-input"))
-        context.val(data);
+    {
+        //translate raw data to index
+        for (i in meta.choices)
+        {
+            if (meta.choices[i][0]==data)
+            {
+                context.val(i);
+                break;
+            }
+        }
+    }
     else
     {
         var new_element=$("<span>");
         new_element.addClass("field-select-"+data);
         new_element.addClass("field-select-"+key+"-"+data);
-        new_element.text(meta.choices[data]);
+
+        //translate raw data to descriptive text
+        for (i in meta.choices)
+        {
+            if (meta.choices[i][0]==data)
+            {
+                new_element.text(meta.choices[i][1]);
+                break;
+            }
+        }
+
         Field.Base.html_append(key, meta, context, data, options, new_element);
     }
 }
@@ -1203,10 +1227,10 @@ Field.Bool.meta_put=function(key, meta, context, options)
         var select_meta={};
         $.extend(select_meta, meta);
         select_meta.type='Select';
-        select_meta.choices={
-                        0:meta.false_desc,
-                        1:meta.true_desc
-                    };
+        select_meta.choices=[
+                        [false,meta.false_desc],
+                        [true,meta.true_desc]
+                    ];
         Field.Select.meta_put(key,select_meta,context, options);
     }
     else
@@ -1236,12 +1260,8 @@ Field.Bool.get=function(key, meta, context)
 
     if (context.attr("field-allow-null")=="")
     {
-        //if we allow null, we use a select box for it
-        var value=Field.Select.get(key ,meta, context);
-        if (value==null)
-            return (null);
-
-        return(value==1);
+        //if we allow null, we used a select box for it
+        return(Field.Select.get(key ,meta, context));
     }
     else
     {

@@ -15,14 +15,14 @@ class TicketObjects(models.core.Protected.Protected):
                 'create_time': fields.Timestamp(desc='Creation time'),
                 'title': fields.String(min=3, desc='Title'),
                 'text': fields.String(desc='Text'),
-                'type': fields.Select(desc='Type', choices={
-                    'phone': 'Phone call',
-                    'email': 'Email',
-                    'note': 'Note',
-                    'work': 'Work done',
-                    'change': 'Change to ticket status',
-                    'doc': 'Document'
-                }),
+                'type': fields.Select(desc='Type', choices=[
+                    ('phone', 'Phone call'),
+                    ('email', 'Email'),
+                    ('note', 'Note'),
+                    ('work', 'Work done'),
+                    ('change', 'Change to ticket status'),
+                    ('doc', 'Document')
+                ]),
                 'from': fields.String(desc='From'),
                 'to': fields.String(desc='To'),
                 'billing_relation': models.mongodb.Relation(

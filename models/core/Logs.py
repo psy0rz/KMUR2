@@ -12,11 +12,11 @@ class Logs(models.mongodb.Base):
             fields.Dict({
                         'name': fields.String(desc='Username'),
                         'user_id': models.mongodb.FieldId(desc='User ID', required=False),
-                        'type': fields.Select(desc='Type', choices={
-                                                          'info': 'Info',
-                                                          'warning': 'Warning',
-                                                          'error': 'Error'
-                                                          }),
+                        'type': fields.Select(desc='Type', choices=[
+                                                          ('info', 'Info'),
+                                                          ('warning', 'Warning'),
+                                                          ('error', 'Error')
+                                                          ]),
                         'text': fields.String(desc='Log text'),
                         'module_name': fields.String(desc='Module name'),
                         'time': fields.Timestamp(desc='Time')

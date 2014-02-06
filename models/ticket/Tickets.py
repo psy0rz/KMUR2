@@ -17,19 +17,21 @@ class Tickets(models.core.Protected.Protected):
                 'start_date': fields.Timestamp(desc='Start date'),
                 'due_date': fields.Timestamp(desc='Due date'),
                 'completed': fields.Bool(desc='Completed'),
-                'status': fields.Select(desc='Status', choices={
-                    'none': 'None',
-                    'next_action': 'Next Action',
-                    'active': 'Active',
-                    'planning': 'Planning',
-                    'deligated': 'Deligated',
-                    'waiting': 'Waiting',
-                    'hold': 'Hold',
-                    'postponed': 'Posponed',
-                    'someday': 'Someday',
-                    'cancelled': 'Cancelled',
-                    'reference': 'Reference'
-                },default='next_action'),
+                'status': fields.Select(desc='Status', choices=[
+                    ('none', 'None'),
+                    ('next_action', 'Next Action'),
+                    ('active', 'Active'),
+                    (None,'---'),
+                    ('planning', 'Planning'),
+                    ('deligated', 'Deligated'),
+                    ('waiting', 'Waiting'),
+                    ('hold', 'Hold'),
+                    ('postponed', 'Postponed'),
+                    ('someday', 'Someday'),
+                    ('cancelled', 'Cancelled'),
+                    ('reference', 'Reference')
+                ],default='next_action'),
+
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,

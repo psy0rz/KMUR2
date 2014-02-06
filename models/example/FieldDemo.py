@@ -16,11 +16,11 @@ class FieldDemo(models.mongodb.Base):
                                                               "": "Empty choice",
                                                             }),
                         'selectTest': fields.Select(desc="Select test",
-                                                              choices={
-                                                              "first": "First choice",
-                                                              "second": "Second choice",
-                                                              "": "Empty choice",
-                                                            }),
+                                                              choices=[
+                                                              ("first", "First choice"),
+                                                              ("second", "Second choice"),
+                                                              ("", "Empty choice"),
+                                                            ]),
                         'passwordTest': fields.Password(desc="Password test"),
                         'booleanTest': fields.Bool(desc='Boolean test'),
                         'numberIntTest': fields.Number(desc='Integer test (optional)', required=False),

@@ -418,8 +418,8 @@ class Select(Base):
 
         super(Select, self).__init__(**kwargs)
 
-        if not isinstance(choices, dict):
-            raise FieldError("choices should be a dict")
+        if not isinstance(choices, list):
+            raise FieldError("choices should be a list")
 
         self.meta['choices'] = choices
 
@@ -428,7 +428,13 @@ class Select(Base):
         if not super(Select, self).check(context, data):
             return
 
-        if not data in self.meta['choices']:
+        ok=False
+        for choice in self.meta['choices']:
+            if choice[0]!=None and data==choice[0]:
+                ok=True
+                break
+
+        if not ok:
             raise FieldError("This is an invalid choice")
 
 
