@@ -11,14 +11,19 @@ var form=new ControlForm({
     'favorite_menu'   : 'ticket',
     'default'         : { 
         'allowed_users': [ session.user_id ],
-        'allowed_groups': [ ]
+        'allowed_groups': [ ],
+        'start_date': new Date().getTime()/1000
     }
 });
 
 </script>
 
 
-<table>
+<table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='ticket_completed' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='ticket_completed'>
+    </tr>
 	<tr>
 		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
 		<td class='field-meta-put' field-key='title'>
@@ -36,12 +41,12 @@ var form=new ControlForm({
         <td class='field-meta-put' field-key='due_date'>
     </tr>
     <tr>
-        <td class='field-meta-put' field-key='status' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='status'>
+        <td class='field-meta-put' field-key='ticket_status' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='ticket_status'>
     </tr>
     <tr>
-        <td class='field-meta-put' field-key='priority' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='priority'>
+        <td class='field-meta-put' field-key='ticket_priority' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='ticket_priority'>
     </tr>
 <!--
     <tr>
@@ -60,9 +65,9 @@ var form=new ControlForm({
 
 </table>
 
-<fieldset style='display:inline-block;'>
+<fieldset class='inline-block' style='vertical-align: top'>
     <legend class='field-meta-put' field-key='relations' field-meta-key='desc'></legend>
-    <table class='field-meta-put' field-key='relations'>
+    <table class='field-meta-put field-key-root' field-key='relations'>
         <tr class='ui-widget-header'>
             <th class='field-meta-put' field-key='relations.title' field-meta-key='desc'>
             <th>
@@ -77,13 +82,34 @@ var form=new ControlForm({
             <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
         </tr>
         <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new relation</a>
+            <td colspan=2 class='field-list-on-click-view' field-key='relations.title'> <a href='#'>Create new relation</a>
         </tr>
     </table>
 </fieldset>
 
+<fieldset class='inline-block' style='vertical-align: top'>
+    <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
+    <table class='field-meta-put field-key-root' field-key='tickets'>
+        <tr class='ui-widget-header'>
+            <th class='field-meta-put' field-key='tickets.title' field-meta-key='desc'>
+            <th>
+        </tr>
 
-<fieldset style='display:block;'>
+        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.edit">
+            <td class='field-put field-list-on-click-view' field-key='tickets.title'>
+            <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+        </tr>
+        <tr class='ui-widget-content'>
+            <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
+            <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
+        </tr>
+        <tr>
+            <td colspan=2 class='field-list-on-click-view' field-key='tickets.title'> <a href='#'>Create new ticket</a>
+        </tr>
+    </table>
+</fieldset>
+
+<fieldset class='inline-block'>
 <legend>Sharing</legend>
 
     <fieldset style='display:inline-block;'>

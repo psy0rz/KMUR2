@@ -1449,7 +1449,7 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
     
     //create datepicker on demand, to make it clonable:
     //(its probably more efficient as well on long lists)
-    new_element.focus(function(){
+    new_element.on('focus click', function(){
         //we probably never want to activate inside of a list-source
         if ($(this).closest(".field-list-source").length != 0)
             return(true);

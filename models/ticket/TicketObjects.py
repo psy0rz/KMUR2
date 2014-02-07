@@ -22,7 +22,7 @@ class TicketObjects(models.core.Protected.Protected):
                     ('work', 'Work done'),
                     ('change', 'Change to ticket status'),
                     ('doc', 'Document')
-                ]),
+                ], default='note'),
                 'from': fields.String(desc='From'),
                 'to': fields.String(desc='To'),
                 'billing_relation': models.mongodb.Relation(

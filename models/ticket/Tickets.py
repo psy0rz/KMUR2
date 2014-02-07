@@ -8,59 +8,58 @@ import models.mongodb
 
 class Tickets(models.core.Protected.Protected):
     '''ticket system'''
-    
+
     meta = fields.List(
-            fields.Dict({
-                '_id': models.mongodb.FieldId(),
-                'title': fields.String(min=3, desc='Task', size=100),
-                'desc': fields.String(desc='Description'),
-                'start_date': fields.Timestamp(desc='Start date'),
-                'due_date': fields.Timestamp(desc='Due date'),
-                'ticket_completed': fields.Bool(desc='Completed'),
-                'ticket_status': fields.Select(desc='Status', choices=[
-                    ('none', 'None'),
-                    ('next_action', 'Next Action'),
-                    ('active', 'Active'),
-                    (None,'---'),
-                    ('planning', 'Planning'),
-                    ('deligated', 'Deligated'),
-                    ('waiting', 'Waiting'),
-                    ('hold', 'Hold'),
-                    ('postponed', 'Postponed'),
-                    ('someday', 'Someday'),
-                    ('cancelled', 'Cancelled'),
-                    ('reference', 'Reference')
-                ],default='next_action'),
+        fields.Dict({
+            '_id': models.mongodb.FieldId(),
+            'title': fields.String(min=3, desc='Task', size=100),
+            'desc': fields.String(desc='Description'),
+            'start_date': fields.Timestamp(desc='Start date'),
+            'due_date': fields.Timestamp(desc='Due date'),
+            'ticket_completed': fields.Bool(desc='Completed'),
+            'ticket_status': fields.Select(desc='Status', choices=[
+                ('none', 'None'),
+                ('next_action', 'Next Action'),
+                ('active', 'Active'),
+                (None,'---'),
+                ('planning', 'Planning'),
+                ('deligated', 'Deligated'),
+                ('waiting', 'Waiting'),
+                ('hold', 'Hold'),
+                ('postponed', 'Postponed'),
+                ('someday', 'Someday'),
+                ('cancelled', 'Cancelled'),
+                ('reference', 'Reference')
+            ],default='next_action'),
 
-                'ticket_priority': fields.Select(desc='Priority', choices=[
-                    ('5', 'Top'),
-                    ('4', 'High'),
-                    ('3', 'Normal'),
-                    ('2', 'Low'),
-                    ('1', 'Unimportant'),
-                ],default='3'),
-
-                'allowed_groups': models.mongodb.Relation(
-                    desc='Groups with access',
-                    model=models.core.Groups.Groups,
-                    resolve=False,
-                    list=True,
-                    check_exists=False),
-                'allowed_users': models.mongodb.Relation(
-                    desc='Users with access',
-                    model=models.core.Users.Users,
-                    resolve=False,
-                    list=True,
-                    check_exists=False),
-                'relations': models.mongodb.Relation(
-                    desc='Related to',
-                    model=models.ticket.Relations.Relations,
-                    resolve=False,
-                    list=True,
-                    check_exists=False),
-            }),
-            list_key='_id'
-        )
+            'ticket_priority': fields.Select(desc='Priority', choices=[
+                ('5', 'Top'),
+                ('4', 'High'),
+                ('3', 'Normal'),
+                ('2', 'Low'),
+                ('1', 'Unimportant'),
+            ],default='3'),
+            'allowed_groups': models.mongodb.Relation(
+                desc='Groups with access',
+                model=models.core.Groups.Groups,
+                resolve=False,
+                list=True,
+                check_exists=False),
+            'allowed_users': models.mongodb.Relation(
+                desc='Users with access',
+                model=models.core.Users.Users,
+                resolve=False,
+                list=True,
+                check_exists=False),
+            'relations': models.mongodb.Relation(
+                desc='Related to',
+                model=models.ticket.Relations.Relations,
+                resolve=False,
+                list=True,
+                check_exists=False)
+      }),
+        list_key='_id'
+    )
 
     write={
         'allowed_groups': {
@@ -112,3 +111,10 @@ class Tickets(models.core.Protected.Protected):
     def get_all(self, **params):
         return(self._get_all(**params))
 
+#since this is recursive, we cant define it inside the Tickets class
+Tickets.meta.meta['meta'].meta['meta']['tickets']=models.mongodb.Relation(
+    desc='Tickets that depend on this',
+    model=Tickets,
+    resolve=False,
+    list=True,
+    check_exists=False)
