@@ -9,6 +9,37 @@
         'favorite_menu'     : 'ticket'
     });
 
+    var now=new Date().getTime()/1000;
+    $('.field-list-source[field-key=""]', context).on("field_list_post_put", function(e, list_element, data)
+    {
+        if (data)
+        {
+            $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
+            if (!data['ticket_completed'])
+            {
+                list_element.removeClass("ticket-completed");
+
+                var delta=(data['due_date']-now)/(24*3600);
+                if (delta<0)
+                    $('[field-key="due_date"]', list_element).addClass("ticket-date-late");
+                else if (delta<2)
+                    $('[field-key="due_date"]', list_element).addClass("ticket-date-now");
+                else if (delta<13)
+                    $('[field-key="due_date"]', list_element).addClass("ticket-date-soon");
+                else
+                    $('[field-key="due_date"]', list_element).addClass("ticket-date-future");
+
+
+            }
+            else
+            {
+                list_element.addClass("ticket-completed");
+            }
+        }
+    });
+
+
+
 </script>
 
 

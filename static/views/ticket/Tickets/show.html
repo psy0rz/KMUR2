@@ -13,7 +13,6 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
-        var context=$("#"+view.id);
         $(".new-ticket-item", context).click(function()
         {
             viewCreate({ creator: $(this) },

@@ -783,6 +783,7 @@ Field.List.put=function(key, meta, context, data, options)
             
             //finally put data into it
             Field[meta.meta.type].put(key, meta.meta, update_element, item_value, recursive_options);
+            $(context).trigger("field_list_post_put", [ update_element, item_value ]);
 
             prev_element=update_element;
         });
@@ -1517,7 +1518,9 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
         quickdate("in 1 year (%)", now + 365*1000*3600*24);
         widget.append("<br>");
 
-        widget.append($("<div class='field-timestamp-quick'>no date</div>")).click(function(){
+        var nodate=$("<div class='field-timestamp-quick'>no date</div>");
+        widget.append(nodate)
+        nodate.click(function(){
             new_element.val("");
             picker.datepicker("hide");
             return(false);

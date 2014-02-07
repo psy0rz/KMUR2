@@ -12,11 +12,10 @@
         'favorite_menu'     : 'example',
     });
 
-    var context=$("#"+view.params.id);
 
     if (view.params.inplace)
     {
-    	$(".field-list-on-click-view").removeClass("field-list-on-click-view").addClass("control-list-on-click-edit");
+    	$(".field-list-on-click-view", context).removeClass("field-list-on-click-view").addClass("control-list-on-click-edit");
     }
 
 </script>

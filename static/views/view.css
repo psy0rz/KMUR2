@@ -149,7 +149,40 @@
 	color:#b57a15;
 }
 
+.ticket-completed .field-select-ticket_status-next_action {
+	color: gray;
+}
+
 .field-select-ticket_status-none {
 	color:gray;
 }
 
+
+.ticket-date-future
+{
+	color:#000;
+}
+
+.ticket-date-soon
+{
+	color:#600;
+}
+
+.ticket-date-now
+{
+	color:#600;
+	font-weight:bold;
+}
+
+.ticket-date-late
+{
+	color:#900;
+	font-weight:bold;
+}
+
+
+.ticket-completed
+{
+	text-decoration: strike-thourgh;
+	color: gray;
+}

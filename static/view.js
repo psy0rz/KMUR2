@@ -470,7 +470,9 @@ function viewLoad(view)
                 
                                 
                 //just set innerHTML, without having jquery executing the scripts:
-                document.getElementById(view.id).innerHTML+=result;             
+                document.getElementById(view.id).innerHTML+=result;
+
+                var context=$("#"+view.id);
                 //eval the scripts in the current context. 
                 //the scripts may use the our view-variable as well:
                 try
