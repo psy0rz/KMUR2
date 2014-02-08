@@ -420,7 +420,7 @@ ControlForm.prototype.attach_event_handlers=function()
 
     $(".control-on-click-cancel", context).off().click(function()
     {
-        viewClose(this_control.params.view);
+        window.history.back();
     });
 
 
@@ -456,7 +456,8 @@ ControlForm.prototype.attach_event_handlers=function()
         if (result.data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
         {
             console.log("form: data on server got deleted",this_control);
-            viewClose(this_control.params.view);
+            window.history.back();
+            
         }
 
         //sometimes stuff gets deleted by edit forms, which themselfs do not update favorites. 
@@ -480,14 +481,16 @@ ControlForm.prototype.attach_event_handlers=function()
 //focus the correct input field
 ControlForm.prototype.focus=function()
 {
+    var element;
     if (this.params.view && this.params.view.focus)
-    {
-        Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.view.focus)).focus();
-    }
+        element=Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.view.focus));
     else if (this.params.default_focus)
-        Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.default_focus)).focus();
+        element=Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.default_focus));
     else
-        $(".control-default-focus", this.context).focus();
+        element=$(".control-default-focus", this.context);
+
+    $(':input', element).focus();
+    element.focus();
 }
 
 
@@ -522,7 +525,7 @@ ControlForm.prototype.put_result=function(result, request_params)
     {
 
         if (this.params.close_after_save)
-            viewClose(this.params.view);
+            window.history.back();
 
         //send a event to the creator of this view
         if (this.new_item)
@@ -576,7 +579,8 @@ ControlForm.prototype.delete_result=function(result, request_params)
         if (this.params.close_after_save)
         {
             //console.error("closing dah shit", this.params.view);
-            viewClose(this.params.view);
+            
+            window.history.back();
         }
 
         //send a deleted-event to the creator of this view

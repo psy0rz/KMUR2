@@ -122,6 +122,11 @@
 	vertical-align: top;
 }
 
+.nowrap
+{
+	white-space: nowrap;
+
+}
 .autoProgramError
 {
 	background-color: #ff0000;
