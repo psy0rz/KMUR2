@@ -319,6 +319,8 @@ ControlForm.prototype.get_result=function(result, request_params)
 {
     this.params.get_result(result, request_params);
 
+    this.focus();
+
     // $(".control-on-click-save", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
     {
@@ -385,7 +387,6 @@ ControlForm.prototype.get_result=function(result, request_params)
         });
     }
     
-    this.focus();
 }
 
 

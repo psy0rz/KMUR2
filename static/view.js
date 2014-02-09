@@ -406,17 +406,18 @@ function viewDOMdel(view)
     var foregroundView=$("#views .viewMain:last");
     console.log("foreground:",foregroundView);
     console.log("refocus",foregroundView.data('view_focus'));
-    $(foregroundView.data('view_focus')).focus();
+    if (foregroundView.data('view_focus'))
+        foregroundView.data('view_focus').focus();
 }
 
 /** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
  */
 function viewReady(params)
 {
+    var viewDiv=$("#"+params.view.id);
     
     if (params.view.mode=='popup')
     {
-        var viewDiv=$("#"+params.view.id);
         var dialogDiv=viewDiv.parent();
 
         if ('title' in params)
@@ -446,6 +447,8 @@ function viewReady(params)
     if ('title' in params)
         document.title=params.title;
 
+    viewDiv.data('view_focus', $(':focus'));
+    console.log("focus stored", viewDiv.data('view_focus'));
 }
 
 
@@ -505,11 +508,6 @@ function viewLoad(view)
     });
             
 
-    viewDiv.on('focusout', 'input,textarea', function()
-    {
-        console.log("focus", this);
-        viewDiv.data('view_focus', this);
-    });
 
 }
 

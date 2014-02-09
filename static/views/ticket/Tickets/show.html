@@ -5,7 +5,6 @@ var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Tickets',
     'get_params'      : view.params,
-    'default_focus'   : 'title',
     'on_change'       : 'put',
     'title'           : 'View task {title}',
     'favorite_menu'   : 'ticket',
@@ -69,7 +68,7 @@ new ControlListRelated({
             </tr>
             <tr>
                 <td class='field-meta-put control-on-click-view' field-key='title' field-meta-key='desc'>
-                <td class='field-put value control-on-click-view' field-key='title'>
+                <td style='font-weight:bold' class='field-put value control-on-click-view' field-key='title'>
             </tr>
             <tr>
                 <td class='field-meta-put control-on-click-view' field-key='desc' field-meta-key='desc'>
