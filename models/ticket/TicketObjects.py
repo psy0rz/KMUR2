@@ -5,6 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.ticket.Relations
 import models.mongodb
+import time
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
@@ -12,7 +13,10 @@ class TicketObjects(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'create_time': fields.Timestamp(desc='Creation time'),
+                'create_time': fields.Timestamp(desc='Note created at'),
+                'start_time': fields.Timestamp(desc='Start time'),
+                'end_time': fields.Timestamp(desc='End time'),
+                'work': fields.Number(desc='Amount of work done (minutes)'),
                 'title': fields.String(min=3, desc='Title'),
                 'text': fields.String(desc='Text'),
                 'type': fields.Select(desc='Type', choices=[
@@ -20,7 +24,7 @@ class TicketObjects(models.core.Protected.Protected):
                     ('email', 'Email'),
                     ('note', 'Note'),
                     ('work', 'Work done'),
-                    ('change', 'Change to ticket status'),
+                    ('change', 'Task update'),
                     ('doc', 'Document')
                 ], default='note'),
                 'from': fields.String(desc='From'),
@@ -44,7 +48,7 @@ class TicketObjects(models.core.Protected.Protected):
                     resolve=False,
                     list=True),
                 'tickets': models.mongodb.Relation(
-                    desc='Tickets',
+                    desc='Tasks this note belongs to',
                     model=models.ticket.Tickets.Tickets,
                     check_exists=False,
                     resolve=False,
@@ -72,8 +76,11 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
           log_txt="Changed ticket item {title}".format(**doc)
+          # if 'create_time' in doc:
+          #   del doc['create_time']            
         else:
           log_txt="Created new ticket item {title}".format(**doc)
+          # doc['create_time']=time.time()
 
         ret=self._put(doc)
 

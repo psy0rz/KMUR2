@@ -681,6 +681,8 @@ Field.List.meta_put=function(key, meta, context, options)
 
  options.list_no_add: dont add new items. only update existing items.
 
+ options.list_continue: add new items to the end of the list, instead of being intelligent. used with list_update for endless scrolling
+
  NOTE: no_remove and no_add are usually used when the data is incomplete. e.g. the data is just the one item that changed.
 */
 
@@ -694,6 +696,7 @@ Field.List.put=function(key, meta, context, data, options)
     //since sublists get complete data, we dont want the no_add and no_delete options there:
     delete recursive_options.list_no_add;
     delete recursive_options.list_no_remove;
+    delete recursive_options.list_continue;
 
     var parent=context.parent();
 
@@ -722,6 +725,7 @@ Field.List.put=function(key, meta, context, data, options)
     if (data)
     {
         var prev_element=undefined;
+
         $.each(data, function (item_nr, item_value) {
             
             //this will become a new or existing item that needs to be filled with data
@@ -771,7 +775,13 @@ Field.List.put=function(key, meta, context, data, options)
                 }
                 else
                 {
-                    update_element.insertBefore(context);
+                    if (options.list_continue || existing_items.length==0)
+                        update_element.insertBefore(context);
+                    else
+                    {
+                        //we update a list and the first item in data seems to be new, so assume it should be the first in the list
+                        update_element.insertBefore(existing_items[0]);
+                    }
                 }
             }
             //found, make sure its not deleted
@@ -1425,7 +1435,7 @@ Field.Timestamp=Object.create(Field.Base);
 
 Field.Timestamp.defaultDateFormat='dd M yy';
 Field.Timestamp.quickDateFormat='D dd M';
-Field.Timestamp.defaultTimeFormat='hh:mm';
+Field.Timestamp.defaultTimeFormat='HH:mm';
 
 Field.Timestamp.meta_put=function(key, meta, context, options)
 {

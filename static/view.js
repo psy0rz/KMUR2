@@ -456,7 +456,7 @@ function viewLoad(view)
     //add nice debugging 
     if (gDebuggingEnabled)
     {
-        document.getElementById(view.id).innerHTML="<div class='debug'>"+view.id+": "+view.name+": "+JSON.stringify(view.params)+"</div>";  //JSON.stringify(view,null,' ')
+        document.getElementById(view.id).innerHTML="<div class='debug'>"+view.id+": "+view.name+": "+JSON.stringify(view)+"</div>";  //JSON.stringify(view,null,' ')
     }
     
     var view_url="views/"+view.name.replace(/\./g,"/")+".html";

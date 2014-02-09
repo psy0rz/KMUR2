@@ -736,7 +736,8 @@ ControlList.prototype.get_result=function(result, request_params)
                 console.debug("endless scroll getting more data because document height is not reached yet ", this.params.get_params.skip);
                 this.get_delayed({
                     list_no_remove: true,
-                    list_update: true
+                    list_update: true,
+                    list_continue: true
                 });
             }
         }
@@ -784,7 +785,7 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.changed', "list", function(result)
     { 
 
-        console.log("ControlList: data on server has changed", result);
+        console.log("ControlList: data on server has changed", result, this);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
@@ -1255,7 +1256,9 @@ function ControlListRelated(params)
     if (!('unrelate_confirm' in params))
         this.params.unrelate_confirm="";
 
-    this.params.on_change='get';
+    //put doenst work with listrelations, so we need at least get:
+//    if (this.params.on_change='put')
+   //     this.params.on_change='get';
 
 
 }

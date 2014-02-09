@@ -15,7 +15,7 @@ var form=new ControlForm({
     {
         $(".new-ticket-item", context).click(function()
         {
-            viewCreate({ creator: $(this) },
+            viewCreate({ creator: context },
             {
                 name: 'ticket.TicketObjects.edit',
                 mode: 'main',
@@ -33,6 +33,7 @@ new ControlListRelated({
     'context'           : '.ticket-objects',
     'class'             : 'ticket.TicketObjects',
     'endless_scrolling' : true,
+    'on_change'         : 'get',
     'related_key'       : 'tickets',
     'related_value'     : view.params._id,
     'unrelate_confirm'  : "Do you want to remove task item '{title}' from this ticket?",
@@ -142,20 +143,20 @@ new ControlListRelated({
 
 
 <fieldset class='ticket-objects control-hide-on-new'>
-    <legend>Ticket history</legend>
+    <legend>Task history and notes</legend>
     <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
     <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
 
     <table >
         <tr class='ui-widget-header'>
-            <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
             <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
             <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
             <th>
         </tr>
 
-        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
-            <td class='field-list-on-click-view field-put' field-key='create_time' >
+        <tr class='colorRows field-list-source field-list-add-after field-list-source-hideX ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
+            <td class='field-list-on-click-view field-put' field-key='create_time' field-timestamp-allow-time>
             <td class='field-list-on-click-view field-put' field-key='type' >
             <td class='field-list-on-click-view field-put' field-key='title' >
         </tr>

@@ -11,14 +11,21 @@ var form=new ControlForm({
     'favorite_menu'   : 'ticket',
     'default'         : { 
         'allowed_users': [ session.user_id ],
-        'tickets': [ view.params.ticket_id ]
+        'tickets': [ view.params.ticket_id ],
+        'create_time': new Date().getTime()/1000,
+        'start_time': new Date().getTime()/1000
+
     }
 });
 
 </script>
 
 
-<table>
+<table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
+    </tr>
 	<tr>
 		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
 		<td><input  class='field-put field-get field-input' field-key='title' size=100>
@@ -69,7 +76,7 @@ var form=new ControlForm({
 </fieldset>
 
 
-<fieldset style='display:block;'>
+<fieldset class='inline-block'>
 <legend>Sharing</legend>
 
     <fieldset style='display:inline-block;'>
