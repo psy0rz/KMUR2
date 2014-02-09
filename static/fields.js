@@ -775,11 +775,12 @@ Field.List.put=function(key, meta, context, data, options)
                 }
                 else
                 {
-                    if (options.list_continue || existing_items.length==0)
+                    if (!options.list_no_remove || options.list_continue || existing_items.length==0)
                         update_element.insertBefore(context);
                     else
                     {
                         //we update a list and the first item in data seems to be new, so assume it should be the first in the list
+                        console.error("inserting before", existing_items[0]);
                         update_element.insertBefore(existing_items[0]);
                     }
                 }

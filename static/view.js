@@ -313,7 +313,7 @@ function viewDOMadd(view)
     // if (view.highlight)
     //     $(view.highlight).addClass("ui-state-highlight");
 
-    
+    var viewDiv;
     if (view.mode=='main')
     {
         //add title to path
@@ -324,7 +324,7 @@ function viewDOMadd(view)
         titleDiv.text("...");
         $("#viewPath").append(titleDiv);
         
-        var viewDiv=$("<div>");
+        viewDiv=$("<div>");
         viewDiv.addClass("ui-widget-content");
         viewDiv.addClass("viewMain");
         viewDiv.attr("id",view.id);
@@ -339,7 +339,7 @@ function viewDOMadd(view)
         var dialogDiv=$("<div>");
         dialogDiv.addClass("viewPopup");
         
-        var viewDiv=$("<div>");
+        viewDiv=$("<div>");
         viewDiv.attr("id",view.id);
         viewDiv.addClass("view");
         
@@ -368,11 +368,13 @@ function viewDOMadd(view)
     {
         console.error("viewCreate: unknown view mode",view);
     }
+
 }
 
 //deletes a view from the DOM-tree in the correct way 
 function viewDOMdel(view)
 {
+    var viewDiv=$("#"+view.id);
     if (view.mode=='popup')
     {
         var dialogDiv=$("#"+view.id).parent();
@@ -380,27 +382,31 @@ function viewDOMdel(view)
     }
     else if (view.mode=='main')
     {
-        $("#"+view.id).remove();
+        viewDiv.remove();
         $("#"+view.id+"Title").remove();
         viewPathUpdate();
     }
     else //mode existing 
     {
         //just clear it
-        $("#"+view.id).unbind();
-        $("#"+view.id).empty();
+        viewDiv.unbind();
+        viewDiv.empty();
     }
 
     //scroll to it?
     if ($(view.creator).length!=0)
     {
-        $("body").scrollTop($(view.creator).offset().top-100);
+//        $("body").scrollTop($(view.creator).offset().top-100);
         //$(view.highlight).removeClass("ui-state-highlight");
         //NO: goes wrong when adding stuff to formlists
         //$(view.highlight).effect('highlight',2000);
 
     }
 
+    var foregroundView=$("#views .viewMain:last");
+    console.log("foreground:",foregroundView);
+    console.log("refocus",foregroundView.data('view_focus'));
+    $(foregroundView.data('view_focus')).focus();
 }
 
 /** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
@@ -449,9 +455,12 @@ function viewLoad(view)
 {
     console.debug("viewLoad loading: "+view.name, view);
 
+    var viewDiv=$("#"+view.id);
     //clear/unbind old stuff
-    $("#"+view.id).unbind();
-    $("#"+view.id).empty();
+    viewDiv.unbind();
+    viewDiv.empty();
+
+
 
     //add nice debugging 
     if (gDebuggingEnabled)
@@ -495,6 +504,13 @@ function viewLoad(view)
             },
     });
             
+
+    viewDiv.on('focusout', 'input,textarea', function()
+    {
+        console.log("focus", this);
+        viewDiv.data('view_focus', this);
+    });
+
 }
 
 
