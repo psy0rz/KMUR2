@@ -15,40 +15,45 @@ var form=new ControlForm({
         'create_time': new Date().getTime()/1000,
         'start_time': new Date().getTime()/1000
 
+    },
+    'get_result': function(result)
+    {
+        $(context).on('field_changed', '[field-key="type"]',function(e, key, meta, element, data)
+        {
+            $("show-on-phone, show-on-email").hide();
+            $("show-on-"+data).show();
+        });
     }
 });
+
 
 </script>
 
 
 <table class='inline-block'>
     <tr>
-        <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
-    </tr>
-	<tr>
-		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
-		<td><input  class='field-put field-get field-input' field-key='title' size=100>
-	</tr>
-    <tr>
-        <td class='field-meta-put' field-key='text' field-meta-key='desc'>
-        <td><textarea class='field-put field-get field-input' field-key='text' cols=80 rows=10></textarea>
-    </tr>
-    <tr>
         <td class='field-meta-put' field-key='type' field-meta-key='desc'>
         <td class='field-meta-put' field-key='type'>
     </tr>
     <tr>
-        <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='billing_relation'>
-            <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
-                <span class='field-put field-list-on-click-view' field-key='billing_relation.title'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
-            </span>
-            <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
-            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-            <br>
-            <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+        <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
+    </tr>
+    <tr class='show-on-phone show-on-email'>
+        <td class='field-meta-put' field-key='from' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='from'>
+    </tr>
+    <tr class='show-on-phone show-on-email'>
+        <td class='field-meta-put' field-key='to' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='to'>
+    </tr>
+	<tr>
+		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
+		<td class='field-meta-put' field-key='title'>
+	</tr>
+    <tr>
+        <td class='field-meta-put' field-key='text' field-meta-key='desc'>
+        <td><textarea class='field-put field-get field-input' field-key='text' cols=80 rows=10></textarea>
     </tr>
 
 </table>
@@ -66,14 +71,46 @@ var form=new ControlForm({
             <td class='field-list-on-click-del ui-icon ui-icon-minus'>
         </tr>
         <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
+            <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
             <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
         </tr>
         <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
+            <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new task</a>
         </tr>
     </table>
 </fieldset>
+
+
+<fieldset class='inline-block'>
+    <legend>Billing</legend>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='billing_relation'>
+                <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <br>
+                <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='start_time' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='start_time' field-timestamp-allow-time>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='end_time' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='end_time' field-timestamp-allow-time>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='minutes' >
+        </tr>
+        </table>
+</fieldset>
+
 
 
 <fieldset class='inline-block'>

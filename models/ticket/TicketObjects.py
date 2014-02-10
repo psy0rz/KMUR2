@@ -13,17 +13,16 @@ class TicketObjects(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'create_time': fields.Timestamp(desc='Note created at'),
+                'create_time': fields.Timestamp(desc='Created at'),
                 'start_time': fields.Timestamp(desc='Start time'),
                 'end_time': fields.Timestamp(desc='End time'),
-                'work': fields.Number(desc='Amount of work done (minutes)'),
-                'title': fields.String(min=3, desc='Title'),
+                'minutes': fields.Number(desc='Billable minutes'),
+                'title': fields.String(min=3, desc='Title', size=100),
                 'text': fields.String(desc='Text'),
                 'type': fields.Select(desc='Type', choices=[
                     ('phone', 'Phone call'),
                     ('email', 'Email'),
                     ('note', 'Note'),
-                    ('work', 'Work done'),
                     ('change', 'Task update'),
                     ('doc', 'Document')
                 ], default='note'),
