@@ -1575,9 +1575,19 @@ Field.Timestamp.get=function(key, meta, context)
     //var date=new Date($(element).datepicker("getDate"));
     //return($.datepicker.parseDate(defaultDateFormat+" "+defaultTimeFormat, $(element).val())/1000);
     //return(Date.parse()/1000);
-    return(Date.parse(
-            $.datepicker.parseDateTime(Field.Timestamp.defaultDateFormat, Field.Timestamp.defaultTimeFormat, context.val())
-        )/1000);
+    if (context.attr("field-timestamp-allow-time")!=null)
+    {
+        return(Date.parse(
+                $.datepicker.parseDateTime(Field.Timestamp.defaultDateFormat, Field.Timestamp.defaultTimeFormat, context.val())
+            )/1000);
+
+    }
+    else
+    {
+        return(Date.parse(
+                $.datepicker.parseDate(Field.Timestamp.defaultDateFormat, context.val())
+            )/1000);
+    }
 }
 
 Field.Timestamp.put=function(key, meta, context, data, options)
