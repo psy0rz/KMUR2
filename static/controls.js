@@ -430,7 +430,7 @@ ControlForm.prototype.attach_event_handlers=function()
 
 
     //some  control changed/added an item in our class, so update the form
-    $(context).subscribe(this.params.class+'.changed', "form", function(result)
+    $(context).subscribe(this.params.class+'.changed', "form", function(data)
     { 
         console.log("ControlForm: data on server has changed",this_control);
 
@@ -446,7 +446,7 @@ ControlForm.prototype.attach_event_handlers=function()
         }
         else if (this_control.params.on_change=='put')
         {
-            Field.Dict.put('', this_control.meta, this_control.context, result.data, {
+            Field.Dict.put('', this_control.meta, this_control.context, data, {
                 show_changes:true,
                 list_update: true
             });
@@ -455,10 +455,10 @@ ControlForm.prototype.attach_event_handlers=function()
     });
 
     //a control deleted something in our class
-    $(context).subscribe(this.params.class+'.deleted', "form", function(result)
+    $(context).subscribe(this.params.class+'.deleted', "form", function(data)
     { 
         //NOTE: we just assume we can compare the _id here. maybe we should make this more generic?
-        if (result.data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
+        if (data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
         {
             console.log("form: data on server got deleted",this_control);
             window.history.back();
@@ -467,13 +467,13 @@ ControlForm.prototype.attach_event_handlers=function()
 
         //sometimes stuff gets deleted by edit forms, which themselfs do not update favorites. 
         //so in that case we can do it for them.
-        if (this_control.params.favorite_menu && (this_control.params.favorite_key in result.data))
+        if (this_control.params.favorite_menu && (this_control.params.favorite_key in data))
         {
             console.log("deleting entry from favorites menu");
 //            $(document).trigger('menu.delete_favorite', {
             $.publish('menu_delete_favorite', {
                 'menu':      this_control.params.favorite_menu,
-                'favorite_id': result.data[this_control.params.favorite_key]
+                'favorite_id': data[this_control.params.favorite_key]
             });
         }
 
@@ -545,7 +545,7 @@ ControlForm.prototype.put_result=function(result, request_params)
             $(this.params.view.creator).trigger("control_form_changed", result);
 
         //broadcast a changed-event to everyone who is listening to it.
-        $.publish(this.params.class+'.changed', result);
+        // $.publish(this.params.class+'.changed', result);
 
         if (this.params.favorite_menu)
         {
@@ -598,8 +598,7 @@ ControlForm.prototype.delete_result=function(result, request_params)
         $(this.params.view.creator).trigger("control_form_deleted", result);
 
         //broadcast the deleted event to everyone who is listening
-//        $(".view").not(this.context).trigger(this.params.class+'.deleted', result);
-        $.publish(this.params.class+'.deleted', result);
+        // $.publish(this.params.class+'.deleted', result);
 
         if (this.params.favorite_menu)
         {
@@ -793,10 +792,10 @@ ControlList.prototype.attach_event_handlers=function()
     ControlBase.prototype.attach_event_handlers.call(this);
 
     //some  control changed/added an item in our class, so update the list
-    $(context).subscribe(this.params.class+'.changed', "list", function(result)
+    $(context).subscribe(this.params.class+'.changed', "list", function(data)
     { 
 
-        console.log("ControlList: data on server has changed", result, this);
+        console.log("ControlList: data on server has changed", data, this);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
@@ -823,7 +822,7 @@ ControlList.prototype.attach_event_handlers=function()
                 this_control.list_source_element.attr("field-key"),
                 this_control.meta,
                 this_control.list_source_element,
-                [ result.data ],
+                [ data ],
                 {
                     list_no_remove: true,
                     list_update: true,
@@ -837,12 +836,12 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
     //some control (or maybe this control) deleted an item in our class, so update the list
-    $(context).subscribe(this.params.class+'.deleted', "list", function(result)
+    $(context).subscribe(this.params.class+'.deleted', "list", function(data)
     {
 
         console.log("ControlList: data on server has been deleted", this_control);
 
-        var key=result.data[this_control.meta.list_key];
+        var key=data[this_control.meta.list_key];
         var element=Field.List.find_element(
             this_control.list_source_element.attr("field-key"),
             this_control.meta,
@@ -879,8 +878,7 @@ ControlList.prototype.attach_event_handlers=function()
                 {
                     if (!viewShowError(result, this_control.context, this_control.meta))
                     {
-//                        $(".view").not(this.context).trigger(this_control.params.class+'.deleted', result);
-                        $.publish(this_control.params.class+'.deleted', result);
+//                        $.publish(this_control.params.class+'.deleted', result);
 
                         if (this_control.params.favorite_menu)
                         {
@@ -1180,7 +1178,7 @@ ControlList.prototype.attach_event_handlers=function()
                         if (!viewShowError(result, element, this_control.meta.meta))
                         {
                             restore_element();
-                            $.publish(this_control.params.class+'.changed', result);
+//                            $.publish(this_control.params.class+'.changed', result);
                         }
                     });
                 }
@@ -1345,7 +1343,7 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
                             {
                                 if (!viewShowError(result, context, this_control.meta))
                                 {
-                                    $.publish(this_control.params.class+'.changed', result);
+//                                    $.publish(this_control.params.class+'.changed', result);
                                     ok_callback(result);         
                                 }
                             },
@@ -1430,7 +1428,7 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
                             {
                                 if (!viewShowError(result, context, this_control.meta))
                                 {
-                                    $.publish(this_control.params.class+'.changed', result);
+//                                    $.publish(this_control.params.class+'.changed', result);
                                     ok_callback(result);         
                                 }
                             },

@@ -81,6 +81,7 @@ class Tickets(models.core.Protected.Protected):
 
 
         ret=self._put(doc)
+        self.event("changed", ret)
 
         if '_id' in doc:
             #support edits in place that only put small documents
@@ -116,6 +117,7 @@ class Tickets(models.core.Protected.Protected):
         doc=self._get(_id)
 
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted task {title}".format(**doc))
 

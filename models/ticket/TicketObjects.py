@@ -4,6 +4,7 @@ import models.core.Protected
 import models.core.Users
 import models.core.Groups
 import models.ticket.Relations
+import models.ticket.Tickets
 import models.mongodb
 import time
 
@@ -83,6 +84,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=self._put(doc)
 
+        self.event("changed", ret)
         self.info(log_txt)
 
         return(ret)
@@ -98,6 +100,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=self._delete(_id)
 
+        self.event("deleted", ret)
         self.info("Deleted ticket item {title}".format(**doc))
 
         return(ret)

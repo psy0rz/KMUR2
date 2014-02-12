@@ -1905,16 +1905,13 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
     });
 
     //data in related model was changed
-    $(context).subscribe(meta.model+'.changed', "fields", function(result)
+    $(context).subscribe(meta.model+'.changed', "fields", function(data)
     { 
 
-        console.log("field.relation: data on server has changed",result, this);
+        console.log("field.relation: data on server has changed",data, this);
 
-        var data;
         if (meta.list)
-            data=[ result.data ];
-        else
-            data=result.data;
+            data=[ data ];
 
         Field.Relation.put(
             key, 
@@ -1936,10 +1933,10 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
 
     //data in related model was deleted
     //NOTE: control_form_deleted is ALSO triggered in Field.List, but this doesnt seem to be a problem right now
-    $(context).subscribe(meta.model+'.deleted', "fields", function(result)
+    $(context).subscribe(meta.model+'.deleted', "fields", function(data)
     {
 
-        console.log("field.relation: data on server has been deleted", result, this);
+        console.log("field.relation: data on server has been deleted", data, this);
 
 
         var list_key=meta.meta.list_key;
@@ -1948,7 +1945,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
             key,
             meta.meta,
             $(this),
-            [ result.data[list_key] ]
+            [ data[list_key] ]
         );
 
         element.hide(1000, function()

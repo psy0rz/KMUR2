@@ -68,6 +68,7 @@ class Context(object):
     def reinit(self, debug=False):
         import models.core.Logs
         self.log = models.core.Logs.Logs(self)
+        self._events=[]
 
         if debug:
             self._debug = []
@@ -109,6 +110,17 @@ class Context(object):
             self.log("warning", txt, self.__class__.__name__);
             raise Exception(txt)
 
+
+    def event(self, name, value):
+        '''send an event to the client. 
+
+        events are tupple of eventnames and values. the GUI can use this to take actions.
+
+        usually events are named like 'model.module.classname.changed' or deleted.
+        '''
+
+        self._events.append( (name,value) )
+
     def get_results(self):
         '''gets the "results" of what was done during the context.
 
@@ -121,6 +133,8 @@ class Context(object):
 
         if hasattr(self, '_debug') and self._debug != None:
             ret['debug'] = self._debug
+
+        ret['events']=self._events
 
         return ret
 
@@ -165,6 +179,11 @@ class Base(object):
 
     def debug(self, debug_object):
         self.context.debug(debug_object, level=2)
+
+    def event(self, name, value):
+        '''send a event, but prepends name with full model and class name'''
+
+        self.context.event(self.__module__.replace("models.","")+"."+name, value)
 
     @Acl(roles=["everyone"])
     def get_meta(self, *args, **kwargs):

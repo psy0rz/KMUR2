@@ -138,6 +138,12 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                         
                     });
                 }
+
+                //broadcast events
+                for (i in result.events)
+                {
+                    $.publish(result.events[i][0], result.events[i][1]);
+                }
                 
                 rpcEnd();
                 callback(result);
