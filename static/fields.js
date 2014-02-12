@@ -775,8 +775,12 @@ Field.List.put=function(key, meta, context, data, options)
                 }
                 else
                 {
-                    if (!options.list_no_remove || options.list_continue || existing_items.length==0)
+                    console.log("no prevelement", options, existing_items.length);
+                    if ( options.list_continue || existing_items.length==0)
+                    {
+                        console.error("inserting before listsource");
                         update_element.insertBefore(context);
+                    }
                     else
                     {
                         //we update a list and the first item in data seems to be new, so assume it should be the first in the list
@@ -819,14 +823,14 @@ Field.List.put=function(key, meta, context, data, options)
 
 Field.List.get=function(key, meta, context)
 {
-    console.log("Field.List.get", key, meta, context);
+    // console.log("Field.List.get", key, meta, context);
 
     var values=new Array();
     var parent=context.parent();
     
     //traverse all the list items
     $('.field-list-item[field-key="'+key+'"]', parent).each(function(){
-        console.log("Field.List.get item", this);
+        // console.log("Field.List.get item", this);
         var value=Field[meta.meta.type].get(key, meta.meta, $(this));
         if (meta.list_key)
         {
