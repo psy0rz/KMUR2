@@ -68,6 +68,7 @@ class Members(models.mongodb.Base):
         ret=self._put(doc)
 
         self.info(log_txt)
+        self.event("changed",ret)
 
         return(ret)
 
@@ -80,6 +81,7 @@ class Members(models.mongodb.Base):
 
         doc=self._get(_id)
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted member {}".format(doc['name']))
 

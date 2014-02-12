@@ -64,6 +64,7 @@ class FieldDemo(models.mongodb.Base):
           logTxt="Created demo row {_id}".format(**doc)
 
         ret=self._put(doc)
+        self.event("changed",ret)
 
         self.info(logTxt)
 
@@ -82,6 +83,7 @@ class FieldDemo(models.mongodb.Base):
         doc=self._get(_id)
 
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted demo row {_id}".format(**doc))
 

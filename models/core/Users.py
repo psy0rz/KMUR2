@@ -64,6 +64,7 @@ class Users(models.core.Protected.Protected):
           log_txt="Created new user {name}".format(**doc)
 
         ret=self._put(doc)
+        self.event("changed",ret)
 
         self.info(log_txt)
 
@@ -81,6 +82,7 @@ class Users(models.core.Protected.Protected):
         doc=self._get(_id)
 
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted user {name}".format(**doc))
 

@@ -36,6 +36,7 @@ class Recurse(models.mongodb.Base):
           log_txt="Created member {}".format(doc['name'])
 
         ret=self._put(doc)
+        self.event("changed",ret)
 
         self.info(log_txt)
 
@@ -50,6 +51,7 @@ class Recurse(models.mongodb.Base):
 
         doc=self._get(_id)
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted member {}".format(doc['name']))
 

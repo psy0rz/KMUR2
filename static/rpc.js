@@ -139,14 +139,18 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                     });
                 }
 
+                
+                rpcEnd();
+
+                //first call back, then do events. this is neccesary for inplace editting 
+                callback(result);
+
                 //broadcast events
                 for (i in result.events)
                 {
                     $.publish(result.events[i][0], result.events[i][1]);
                 }
-                
-                rpcEnd();
-                callback(result);
+
                 console.debug(debugTxt+ " PROCESSED ("+((new Date().getTime())-start_time)+"ms)");
 
             },

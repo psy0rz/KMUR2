@@ -100,9 +100,9 @@ class Tickets(models.core.Protected.Protected):
                 type= 'change',
                 create_time=time.time(),
                 title='changedddd',
-                allowed_groups=doc['allowed_groups'],
-                allowed_users=doc['allowed_users'],
-                tickets=[ doc['_id'] ]
+                allowed_groups=ret['allowed_groups'],
+                allowed_users=ret['allowed_users'],
+                tickets=[ ret['_id'] ]
             )
 
         return(ret)

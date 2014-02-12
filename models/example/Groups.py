@@ -32,6 +32,7 @@ class Groups(models.mongodb.Base):
           log_txt="Created group {}".format(doc['name'])
 
         ret=self._put(doc)
+        self.event("changed",ret)
 
         self.info(log_txt)
 
@@ -46,6 +47,7 @@ class Groups(models.mongodb.Base):
 
         doc=self._get(_id)
         ret=self._delete(_id)
+        self.event("deleted",ret)
 
         self.info("Deleted group {}".format(doc['name']))
 
