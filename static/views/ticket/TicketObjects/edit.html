@@ -13,16 +13,37 @@ var form=new ControlForm({
         'allowed_users': [ session.user_id ],
         'tickets': [ view.params.ticket_id ],
         'create_time': new Date().getTime()/1000,
-        'start_time': new Date().getTime()/1000
+        'start_time': new Date().getTime()/1000,
+        'end_time': new Date().getTime()/1000
 
     },
     'get_result': function(result)
     {
+        $(".show-on", context).hide();
+        if (result.data)
+        {
+            $(".show-on-"+result.data['type'], context).show();
+            var delta=result.data.end_time-result.data.start_time;
+            $('.delta',context).text(delta/60);
+        }
+
         $(context).on('field_changed', '[field-key="type"]',function(e, key, meta, element, data)
         {
-            $("show-on-phone, show-on-email").hide();
-            $("show-on-"+data).show();
+            $(".show-on", context).hide();
+            $(".show-on-"+data, context).show();
         });
+
+        //calculate worked minutes
+        $(context).on('field_changed', '[field-key="start_time"], [field-key="end_time"]',function(e, key, meta, element, data)
+        {
+            var form_data=form.field_get();
+            if (form_data.end_time && form_data.start_time)
+            {
+                var delta=form_data.end_time-form_data.start_time;
+                $('.delta',context).text(delta/60);
+            }
+        });
+       
     }
 });
 
@@ -39,11 +60,11 @@ var form=new ControlForm({
         <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
         <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
     </tr>
-    <tr class='show-on-phone show-on-email'>
+    <tr class='show-on show-on-phone show-on-email'>
         <td class='field-meta-put' field-key='from' field-meta-key='desc'>
         <td class='field-meta-put' field-key='from'>
     </tr>
-    <tr class='show-on-phone show-on-email'>
+    <tr class='show-on show-on-phone show-on-email'>
         <td class='field-meta-put' field-key='to' field-meta-key='desc'>
         <td class='field-meta-put' field-key='to'>
     </tr>
@@ -106,7 +127,9 @@ var form=new ControlForm({
         </tr>
         <tr>
             <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
-            <td class='field-meta-put' field-key='minutes' >
+            <td>
+                <span class='field-meta-put' field-key='minutes' ></span> 
+                ( <span class='delta'></span> )
         </tr>
         </table>
 </fieldset>

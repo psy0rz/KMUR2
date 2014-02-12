@@ -332,7 +332,7 @@ class Number(Base):
 
     By default allows 0 decimals. (use decimals=.. to change)"""
 
-    def __init__(self, min=None, max=None, decimals=0, **kwargs):
+    def __init__(self, min=None, max=None, size=10,decimals=0, **kwargs):
         super(Number, self).__init__(**kwargs)
 
         if min != None and max != None and max <= min:
@@ -345,6 +345,8 @@ class Number(Base):
 
         if (max != None):
             self.meta['max'] = max
+
+        self.meta['size']=size
 
     def check(self, context, data):
         if not super(Number, self).check(context, data):

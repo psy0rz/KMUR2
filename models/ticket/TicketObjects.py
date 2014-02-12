@@ -16,7 +16,7 @@ class TicketObjects(models.core.Protected.Protected):
                 'create_time': fields.Timestamp(desc='Created at'),
                 'start_time': fields.Timestamp(desc='Start time'),
                 'end_time': fields.Timestamp(desc='End time'),
-                'minutes': fields.Number(desc='Billable minutes'),
+                'minutes': fields.Number(desc='Billable minutes',default=0, size=10),
                 'title': fields.String(min=3, desc='Title', size=100),
                 'text': fields.String(desc='Text'),
                 'type': fields.Select(desc='Type', choices=[

@@ -1102,7 +1102,8 @@ Field.Number.meta_put=function(key, meta, context, options)
 
     var new_element;
     new_element=$("<input>")
-        .attr("type","text");                       
+        .attr("type","text")
+        .attr("size", meta.size);   
 
     new_element.val(meta.default);
 

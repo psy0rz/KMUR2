@@ -304,7 +304,6 @@ ControlForm.prototype.get=function(request_params)
     if (this.params.get_params==undefined || Object.keys(this.params.get_params).length==0)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
-        console.log("BOOM SJIPPD",this);
         this.get_result({}, request_params);
     }
     else
@@ -314,6 +313,11 @@ ControlForm.prototype.get=function(request_params)
     }
 }
 
+//put data into the fields of the current form
+ControlForm.prototype.field_put=function(data, options)
+{
+    Field.Dict.put('', this.meta, this.context, data, options);
+}
 
 ControlForm.prototype.get_result=function(result, request_params)
 {
@@ -326,7 +330,7 @@ ControlForm.prototype.get_result=function(result, request_params)
     {
         this.new_item=false;
 
-        Field.Dict.put('', this.meta, this.context, result.data, request_params)
+        this.field_put(result.data, request_params);
 
         if (this.params.favorite_menu)
         {
@@ -495,6 +499,12 @@ ControlForm.prototype.focus=function()
 }
 
 
+//get the currently filled in values from the form fields
+ControlForm.prototype.field_get=function()
+{
+    return(Field.Dict.get('', this.meta, this.context));
+}
+
 //save the form data by calling the put rpc function
 ControlForm.prototype.put=function(request_params)
 {
@@ -505,7 +515,7 @@ ControlForm.prototype.put=function(request_params)
         put_params=jQuery.extend(true, put_params, this.params.put_params); //COPY, and not by reference!
 
     //get the data and store it into our local put_params
-    put_params=jQuery.extend(true, put_params, Field.Dict.get('', this.meta, this.context));
+    put_params=jQuery.extend(true, put_params, this.field_get());
 
     //call the put function on the rpc server
     var this_control=this;

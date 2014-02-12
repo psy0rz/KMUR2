@@ -404,8 +404,8 @@ function viewDOMdel(view)
     }
 
     var foregroundView=$("#views .viewMain:last");
-    console.log("foreground:",foregroundView);
-    console.log("refocus",foregroundView.data('view_focus'));
+    // console.log("foreground:",foregroundView);
+    // console.log("refocus",foregroundView.data('view_focus'));
     if (foregroundView.data('view_focus'))
         foregroundView.data('view_focus').focus();
 }
@@ -448,7 +448,7 @@ function viewReady(params)
         document.title=params.title;
 
     viewDiv.data('view_focus', $(':focus'));
-    console.log("focus stored", viewDiv.data('view_focus'));
+    // console.log("focus stored", viewDiv.data('view_focus'));
 }
 
 
