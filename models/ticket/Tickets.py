@@ -5,6 +5,8 @@ import models.core.Users
 import models.core.Groups
 import models.ticket.Relations
 import models.mongodb
+#import models.ticket.TicketObjects
+import time
 
 class Tickets(models.core.Protected.Protected):
     '''ticket system'''
@@ -89,6 +91,17 @@ class Tickets(models.core.Protected.Protected):
             log_txt="Created new task {title}".format(**doc)
 
         self.info(log_txt)
+
+        #create change-ticket note
+        ticket_objects_model=models.ticket.TicketObjects.TicketObjects(self.context)
+        ticket_objects.model.put({
+                'type': 'change',
+                'create_time': time.time(),
+                'title': 'changedddd',
+                'allowed_groups': doc['allowed_groups'],
+                'allowed_users': doc['allowed_users'],
+                'tickets': [ doc['_id'] ]
+            })
 
         return(ret)
 

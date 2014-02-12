@@ -1107,7 +1107,9 @@ ControlList.prototype.attach_event_handlers=function()
             console.debug("endless scroll skip is ", this_control.params.get_params.skip);
             this_control.get_delayed({
                 list_no_remove: true,
-                list_update: true
+                list_update: true,
+                list_continue: true
+ 
             });
         });
     }

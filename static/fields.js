@@ -708,7 +708,11 @@ Field.List.put=function(key, meta, context, data, options)
     {
         //remove existing listitems
         if (!options.list_no_remove)
+        {
             existing_items.remove();
+            existing_items=$();
+        }
+
     }
     //in update mode, add a marker to remember which stuff can be deleted
     else
@@ -775,16 +779,19 @@ Field.List.put=function(key, meta, context, data, options)
                 }
                 else
                 {
-                    console.log("no prevelement", options, existing_items.length);
-                    if ( options.list_continue || existing_items.length==0)
+                    // console.log("no prevelement", options, existing_items.length);
+                    //only insert before context if:
+                    //-there are no existing items
+                    //-we are in continue-mode (endless scroll)
+                    if (  options.list_continue || existing_items.length==0)
                     {
-                        console.error("inserting before listsource");
+                        // console.error("inserting before listsource");
                         update_element.insertBefore(context);
                     }
                     else
                     {
                         //we update a list and the first item in data seems to be new, so assume it should be the first in the list
-                        console.error("inserting before", existing_items[0]);
+                        // console.error("inserting before", existing_items[0]);
                         update_element.insertBefore(existing_items[0]);
                     }
                 }
