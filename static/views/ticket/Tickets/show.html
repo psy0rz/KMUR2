@@ -12,14 +12,16 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
-        $(".new-ticket-item", context).click(function()
+        $(".new-ticket-note", context).click(function()
         {
             viewCreate({ creator: context },
             {
                 name: 'ticket.TicketObjects.edit',
                 mode: 'main',
                 params: {
-                    ticket_id: view.params._id
+                    ticket_id: view.params._id,
+                    type: 'note'
+
                 }
             });
 
@@ -129,6 +131,20 @@ new ControlListRelated({
             </table>
         </fieldset>
 
+        <div class='floatingBar viewErrorClass'>
+            <button class='new-ticket-note' >Add note</button>
+            <button class='control-on-click-cancel' >Back to overview</button>
+
+            <span class='field-meta-put' field-key='relations'>
+                    <span class='field-list-source field-list-source-hide' field-key='relations'>
+                        <button style='' class='field-put' field-key='relations.title'></button>
+                    </span>
+            </span>
+
+            <span class='viewErrorText'></span>
+        </div>
+
+
     </span>
 </span>
 
@@ -167,8 +183,3 @@ new ControlListRelated({
     </table>
 </fieldset>
 
-<div class='floatingBar viewErrorClass'>
-	<button class='new-ticket-item' >Add notes to ticket</button>
-	<button class='control-on-click-cancel' >Back to overview</button>
-	<span class='viewErrorText'></span>
-</div>

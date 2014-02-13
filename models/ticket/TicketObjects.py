@@ -24,6 +24,7 @@ class TicketObjects(models.core.Protected.Protected):
                     ('phone', 'Phone call'),
                     ('email', 'Email'),
                     ('note', 'Note'),
+                    ('time', 'Time'),
                     ('change', 'Task update'),
                     ('doc', 'Document')
                 ], default='note'),
