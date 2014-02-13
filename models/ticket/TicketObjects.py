@@ -75,17 +75,19 @@ class TicketObjects(models.core.Protected.Protected):
     def put(self, **doc):
 
         if '_id' in doc:
-          log_txt="Changed ticket item {title}".format(**doc)
+          log_txt="Changed task note '{title}'".format(**doc)
           # if 'create_time' in doc:
           #   del doc['create_time']            
         else:
-          log_txt="Created new ticket item {title}".format(**doc)
+          log_txt="Created new task note 'title'".format(**doc)
           # doc['create_time']=time.time()
 
         ret=self._put(doc)
 
         self.event("changed", ret)
-        self.info(log_txt)
+
+        if ret['type']!='change':
+            self.info(log_txt)
 
         return(ret)
 

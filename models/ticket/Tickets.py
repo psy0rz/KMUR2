@@ -79,31 +79,47 @@ class Tickets(models.core.Protected.Protected):
     @Acl(roles="user")
     def put(self, **doc):
 
+        old_doc={}
+        if '_id' in doc:
+            old_doc=self._get(doc['_id'])
 
         ret=self._put(doc)
         self.event("changed", ret)
 
         if '_id' in doc:
             #support edits in place that only put small documents
-            doc=self._get(doc['_id'])
-            log_txt="Changed task {title}".format(**doc)
+            log_txt="Changed task {title}".format(**old_doc)
         else:
             log_txt="Created new task {title}".format(**doc)
 
         self.info(log_txt)
 
-        #create change-ticket note
-        #import here to prevent circular trouble
-        import models.ticket.TicketObjects
-        ticket_objects=models.ticket.TicketObjects.TicketObjects(self.context)
-        ticket_objects.put(
-                type= 'change',
-                create_time=time.time(),
-                title='changedddd',
-                allowed_groups=ret['allowed_groups'],
-                allowed_users=ret['allowed_users'],
-                tickets=[ ret['_id'] ]
-            )
+
+        change_title=""
+        change_text=""
+        meta=self.meta.meta['meta'].meta['meta']
+        for key in ret.keys():
+            if key in old_doc and old_doc[key]!=ret[key]:
+                if 'desc' in meta[key].meta:
+                    if change_title=="":
+                        change_title+="'{}'".format(meta[key].meta['desc'])
+                    else:
+                        change_title+=", '{}'".format(meta[key].meta['desc'])
+                    change_text+="Changed '{}' from '{}' to '{}'\n\n".format(meta[key].meta['desc'], old_doc[key], ret[key])
+
+        if change_title!="":
+            #import here to prevent circular trouble
+            import models.ticket.TicketObjects
+            ticket_objects=models.ticket.TicketObjects.TicketObjects(self.context)
+            ticket_objects.put(
+                    type= 'change',
+                    create_time=time.time(),
+                    title="{} changed: {}".format(self.context.session['name'], change_title),
+                    text=change_text,
+                    allowed_groups=ret['allowed_groups'],
+                    allowed_users=ret['allowed_users'],
+                    tickets=[ ret['_id'] ]
+                )
 
         return(ret)
 
