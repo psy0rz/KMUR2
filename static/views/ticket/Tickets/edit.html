@@ -93,6 +93,18 @@ var form=new ControlForm({
 <fieldset class='inline-block'>
 <legend>Sharing</legend>
 
+    <div>
+        <span class='field-meta-put' field-key='owner' field-meta-key='desc'></span>: 
+        <span class='field-meta-put' field-key='owner'>
+            <span class='list-span field-list-source field-list-source-hide' field-key='owner' field-list-view="core.Users.edit">
+                <span class='field-put field-list-on-click-view' field-key='owner.fullname' style='font-weight: bold'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+            </span>
+            <input  class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' size=10/>
+            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+        </span>
+    </div>
+
     <fieldset style='display:inline-block;'>
         <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
         <table class='field-meta-put' field-key='allowed_users'>

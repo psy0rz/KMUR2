@@ -85,10 +85,14 @@ class Protected(models.mongodb.Base):
                     if check['check']:
                         removed_ids=[]
 
-                        if meta_key in converted_doc:
-                            for id in check_doc[meta_key]:
-                                if id not in converted_doc[meta_key]:
-                                    removed_ids.append(id)
+                        if meta_key in converted_doc and meta_key in check_doc:
+                            if isinstance(converted_doc[meta_key], list):
+                                for id in check_doc[meta_key]:
+                                    if id not in converted_doc[meta_key]:
+                                        removed_ids.append(id)
+                            else:
+                                if converted_doc[meta_key]!=check_doc[meta_key]:
+                                    removed_ids.append(converted_doc[meta_key])
 
                             if len(removed_ids):
                                 foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
@@ -107,10 +111,14 @@ class Protected(models.mongodb.Base):
                     if check['check']:
                         removed_ids=[]
 
-                        if meta_key in converted_doc:
-                            for id in check_doc[meta_key]:
-                                if id not in converted_doc[meta_key]:
-                                    removed_ids.append(id)
+                        if meta_key in converted_doc and meta_key in check_doc:
+                            if isinstance(converted_doc[meta_key], list):
+                                for id in check_doc[meta_key]:
+                                    if id not in converted_doc[meta_key]:
+                                        removed_ids.append(id)
+                            else:
+                                if converted_doc[meta_key]!=check_doc[meta_key]:
+                                    removed_ids.append(converted_doc[meta_key])
 
                             if len(removed_ids):
                                 foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model

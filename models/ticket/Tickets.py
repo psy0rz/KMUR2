@@ -24,7 +24,7 @@ class Tickets(models.core.Protected.Protected):
                 ('active', 'Active'),
                 (None,'---'),
                 ('planning', 'Planning'),
-                ('deligated', 'Deligated'),
+                ('deligated', 'Deligated 3rd party'),
                 ('waiting', 'Waiting'),
                 ('hold', 'Hold'),
                 ('postponed', 'Postponed'),
@@ -40,6 +40,12 @@ class Tickets(models.core.Protected.Protected):
                 ('2', 'Low'),
                 ('1', 'Unimportant'),
             ],default='3'),
+            'owner': models.mongodb.Relation(
+                desc='Owner',
+                model=models.core.Users.Users,
+                resolve=False,
+                list=False,
+                check_exists=False),
             'allowed_groups': models.mongodb.Relation(
                 desc='Groups with access',
                 model=models.core.Groups.Groups,
@@ -47,7 +53,7 @@ class Tickets(models.core.Protected.Protected):
                 list=True,
                 check_exists=False),
             'allowed_users': models.mongodb.Relation(
-                desc='Users with access',
+                desc='Deligated to',
                 model=models.core.Users.Users,
                 resolve=False,
                 list=True,
@@ -65,6 +71,10 @@ class Tickets(models.core.Protected.Protected):
     write={
         'allowed_groups': {
             'context_field': 'group_ids',
+            'check': True
+        },
+        'owner': {
+            'context_field': 'user_id',
             'check': True
         },
         'allowed_users': {

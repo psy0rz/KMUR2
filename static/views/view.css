@@ -191,3 +191,58 @@
 	text-decoration: strike-thourgh;
 	color: gray;
 }
+
+
+
+.ticket-object .field-select-type-change
+{
+	background: url("../icons/pencil.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+.ticket-object .field-select-type-email
+{
+	background: url("../icons/email.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+
+.ticket-object .field-select-type-phone
+{
+	background: url("../icons/phone.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+
+.ticket-object .field-select-type-note
+{
+	background: url("../icons/note.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+
+.ticket-object .field-select-type-time
+{
+	background: url("../icons/clock.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+.ticket-object .field-select-type-doc
+{
+	background: url("../icons/page.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+.ticket-add-time-button-style
+{
+	background: url("../icons/clock.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+.ticket-add-note-button-style
+{
+	background: url("../icons/note.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+

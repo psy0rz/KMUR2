@@ -12,7 +12,7 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
-        $(".new-ticket-note", context).click(function()
+        $(".on-click-new-ticket-note", context).click(function()
         {
             viewCreate({ creator: context },
             {
@@ -27,7 +27,31 @@ var form=new ControlForm({
 
         });
 
+        $(".on-click-new-ticket-time", context).on('click',".field-list-item", function()
+        {
+            viewCreate({ creator: context },
+            {
+                name: 'ticket.TicketObjects.edit',
+                mode: 'main',
+                params: {
+                    ticket_id: view.params._id,
+                    type: 'time',
+                    billing_relation: $(this).attr("field-list-id")
+                }
+            });
 
+        });
+
+        $(".on-click-ticket-list", context).click(function()
+        {
+            viewCreate({ clear:true, creator: context },
+            {
+                name: 'ticket.Tickets.list',
+                mode: 'main',
+                params: {}
+            });
+
+        });
     }
 });
 
@@ -103,6 +127,14 @@ new ControlListRelated({
         <fieldset class='inline-block'>
         <legend>Sharing</legend>
             <table >
+                <tr class='field-meta-put control-on-click-view' field-key='owner'>
+                    <td class='field-meta-put' field-key='owner' field-meta-key='desc'>
+                    <td>:
+                        <span class='field-list-source field-list-source-hide' field-key='owner' field-list-view="core.Users.edit">
+                            <span class='list-span field-put field-list-on-click-view' field-key='owner.name'></span>
+                        </span>
+                </tr>
+
                 <tr class='field-meta-put control-on-click-view' field-key='allowed_users'>
                     <td class='field-meta-put' field-key='allowed_users' field-meta-key='desc'>
                     <td>:
@@ -132,12 +164,12 @@ new ControlListRelated({
         </fieldset>
 
         <div class='floatingBar viewErrorClass'>
-            <button class='new-ticket-note' >Add note</button>
-            <button class='control-on-click-cancel' >Back to overview</button>
+            <button class='on-click-ticket-list' >Tasks</button>
+            <button class='on-click-new-ticket-note ticket-add-note-button-style' >Add note</button>
 
-            <span class='field-meta-put' field-key='relations'>
+            <span class='field-meta-put on-click-new-ticket-time' field-key='relations' >
                     <span class='field-list-source field-list-source-hide' field-key='relations'>
-                        <button style='' class='field-put' field-key='relations.title'></button>
+                        <button class='field-put ticket-add-time-button-style' field-key='relations.title' title='Add time' ></button>
                     </span>
             </span>
 
@@ -169,16 +201,17 @@ new ControlListRelated({
 
     <table >
         <tr class='ui-widget-header'>
-            <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
             <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
             <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
             <th>
         </tr>
 
-        <tr class='colorRows field-list-source field-list-add-after field-list-source-hideX ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
-            <td class='field-list-on-click-view field-put' field-key='create_time' field-timestamp-allow-time>
+        <tr class='colorRows ticket-object field-list-source field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
             <td class='field-list-on-click-view field-put' field-key='type' >
+            <td class='field-list-on-click-view field-put' field-key='create_time' field-timestamp-allow-time>
             <td class='field-list-on-click-view field-put' field-key='title' >
+            <td class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'>
         </tr>
     </table>
 </fieldset>

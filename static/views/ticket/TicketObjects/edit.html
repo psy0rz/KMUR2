@@ -14,16 +14,18 @@ var form=new ControlForm({
         'tickets': [ view.params.ticket_id ],
         'create_time': new Date().getTime()/1000,
         'start_time': new Date().getTime()/1000,
-        'end_time': new Date().getTime()/1000
+        'end_time': new Date().getTime()/1000,
+        'billing_relation': view.params.billing_relation,
+        'type': view.params.type
 
     },
-    'get_result': function(result)
+    'field_put': function(data, options)
     {
         $(".show-on", context).hide();
-        if (result.data)
+        if (data)
         {
-            $(".show-on-"+result.data['type'], context).show();
-            var delta=result.data.end_time-result.data.start_time;
+            $(".show-on-"+data['type'], context).show();
+            var delta=data.end_time-data.start_time;
             $('.delta',context).text(delta/60);
         }
 
@@ -87,7 +89,7 @@ var form=new ControlForm({
             <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_relation'>
                 <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
-                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title'></span>
+                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
                     <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
                 </span>
                 <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>

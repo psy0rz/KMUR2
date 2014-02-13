@@ -238,6 +238,8 @@ params:
 
     default             default values to put before putting actual data.
 
+    field_put           called after putting the data to the form fields. for existing forms the data is the get_result, for new forms its the default variable.
+
 */
 function ControlForm(params)
 {
@@ -255,6 +257,9 @@ function ControlForm(params)
 
     if (! this.params.put_result)
         this.params.put_result=function(){};
+
+    if (! this.params.field_put)
+        this.params.field_put=function(){};
 
     if (! this.params.create_ok)
         this.params.create_ok=function(){};
@@ -317,6 +322,8 @@ ControlForm.prototype.get=function(request_params)
 ControlForm.prototype.field_put=function(data, options)
 {
     Field.Dict.put('', this.meta, this.context, data, options);
+    this.params.field_put(data, options);
+
 }
 
 ControlForm.prototype.get_result=function(result, request_params)
@@ -362,7 +369,7 @@ ControlForm.prototype.get_result=function(result, request_params)
 
         //fill in default values
         if (this.params.default)
-            Field.Dict.put('', this.meta, this.context, this.params.default, request_params)
+            this.field_put(this.params.default, request_params);
 
 
         if (this.params.title_new)

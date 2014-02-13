@@ -110,5 +110,11 @@ class TicketObjects(models.core.Protected.Protected):
 
     @Acl(roles="admin")
     def get_all(self, **params):
-        return(self._get_all(**params))
+        ticket_objects=self._get_all(**params)
+
+        #shorten ticket data 
+        for ticket_object in ticket_objects:
+            ticket_object['text']='test'
+
+        return(ticket_objects)
 
