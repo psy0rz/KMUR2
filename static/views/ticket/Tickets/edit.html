@@ -11,6 +11,7 @@ var form=new ControlForm({
     // 'favorite_menu'   : 'ticket',
     'default'         : { 
         'allowed_users': [ session.user_id ],
+        'owner': session.user_id,
         'allowed_groups': [ ],
         'start_date': new Date().getTime()/1000
     }

@@ -72,7 +72,7 @@ class TicketObjects(models.core.Protected.Protected):
     read=write
 
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -92,11 +92,11 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -108,13 +108,10 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @Acl(roles="user")
     def get_all(self, **params):
         ticket_objects=self._get_all(**params)
 
-        #shorten ticket data 
-        for ticket_object in ticket_objects:
-            ticket_object['text']='test'
 
         return(ticket_objects)
 

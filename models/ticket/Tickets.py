@@ -126,8 +126,7 @@ class Tickets(models.core.Protected.Protected):
                     create_time=time.time(),
                     title="{} changed: {}".format(self.context.session['name'], change_title),
                     text=change_text,
-                    allowed_groups=ret['allowed_groups'],
-                    allowed_users=ret['allowed_users'],
+                    allowed_users=[ self.context.session['user_id'] ],
                     tickets=[ ret['_id'] ]
                 )
 
