@@ -46,7 +46,7 @@ class Tickets(models.core.Protected.Protected):
                 resolve=False,
                 list=True,
                 check_exists=False),
-            'allowed_users': models.mongodb.Relation(
+            'deligated_users': models.mongodb.Relation(
                 desc='Deligated to',
                 model=models.core.Users.Users,
                 resolve=False,
@@ -71,7 +71,7 @@ class Tickets(models.core.Protected.Protected):
             'context_field': 'user_id',
             'check': True
         },
-        'allowed_users': {
+        'deligated_users': {
             'context_field': 'user_id',
             'check': True
         },

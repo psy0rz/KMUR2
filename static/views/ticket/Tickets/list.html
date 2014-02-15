@@ -36,10 +36,17 @@
                 list_element.addClass("ticket-completed");
             }
 
-            if (session.user_id in data['allowed_users'])
-            {
-                
-            }
+
+            $('.ticket-sharing', list_element).removeClass("ticket-sharing-private ticket-sharing-group ticket-sharing-deligated");
+            //private ticket
+            if (data['allowed_groups'].length==0 && data['deligated_users'].length==0)
+                $('.ticket-sharing', list_element).addClass("ticket-sharing-private");
+            //shared with group
+            else if (data['allowed_groups'].length>0)
+                $('.ticket-sharing', list_element).addClass("ticket-sharing-group");
+            else
+                $('.ticket-sharing', list_element).addClass("ticket-sharing-deligated");
+
         }
     });
 
@@ -89,7 +96,7 @@
 
             <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
                 <td class='field-list-on-click-view ticket-show-button-style' field-list-view="ticket.Tickets.show">&nbsp;
-                <td class='field-list-on-click-view ticket-edit-button-style' field-list-view="ticket.Tickets.edit">&nbsp;
+                <td class='field-list-on-click-view ticket-sharing' field-list-view="ticket.Tickets.edit">&nbsp;
 
                 <td class='field-put control-list-on-click-edit' field-key='ticket_completed' >
             	<td class='field-put control-list-on-click-edit' field-key='title' >

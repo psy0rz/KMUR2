@@ -10,7 +10,6 @@ var form=new ControlForm({
     'title_new'       : 'New task',
     // 'favorite_menu'   : 'ticket',
     'default'         : { 
-        'allowed_users': [ session.user_id ],
         'owner': session.user_id,
         'allowed_groups': [ ],
         'start_date': new Date().getTime()/1000
@@ -107,19 +106,19 @@ var form=new ControlForm({
     </div>
 
     <fieldset style='display:inline-block;'>
-        <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='allowed_users'>
+        <legend class='field-meta-put' field-key='deligated_users' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='deligated_users'>
             <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='allowed_users.name' field-meta-key='desc'>
+                <th class='field-meta-put' field-key='deligated_users.name' field-meta-key='desc'>
                 <th>
             </tr>
 
-            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
-                <td class='field-put field-list-on-click-view' field-key='allowed_users.fullname'>
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='deligated_users' field-list-view="core.Users.edit">
+                <td class='field-put field-list-on-click-view' field-key='deligated_users.fullname'>
                 <td class='field-list-on-click-del ui-icon ui-icon-minus'>
             </tr>
             <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{name} ({fullname})' />
                 <td class='field-relation-on-click-add ui-icon ui-icon-plus'>
             </tr>
             <tr>
