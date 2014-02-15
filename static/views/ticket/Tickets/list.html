@@ -1,6 +1,6 @@
 
 <script>
-    new ControlList({
+    form=new ControlList({
         'view'            	: view,
         'class'        		: 'ticket.Tickets',
         'get_params'        : view.params,
@@ -38,41 +38,62 @@
         }
     });
 
-
-
+    $(".tabs", context).tabs({
+        'activate': function(event, ui)
+        {
+            // form.params.get_params.match={
+            //     'ticket_status': ui.newTab.attr("status")
+            // }
+            form.get_delayed({});
+        } 
+    });
 </script>
 
+<div class="tabs">
+    <ul>
+        <li status="">              <a href="#dummytab">All</a></li>
+        <li status="next_action">   <a href="#dummytab">Next action</a></li>
+        <li status="project">       <a href="#dummytab">Project</a></li>
+        <li status="waiting">       <a href="#dummytab">Waiting for</a></li>
+        <li status="someday">       <a href="#dummytab">Someday/Maybe</a></li>
+        <li status="reference">     <a href="#dummytab">Reference</a></li>
+        <li status="none">          <a href="#dummytab">No status</a></li>
+    </ul>
+    <div id="dummytab">
+ 
+        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title desc'>
 
-<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-<input type='text' class='control-on-change-search control-default-focus' control-search-keys='title desc'>
+        <table >
+            <tr class='ui-widget-header'>
+                <th>
+                <th>
+            	<th class='field-meta-put control-on-click-order control-order-asc' field-key='ticket_completed' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='start_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-desc' field-key='ticket_priority' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
+            	<th>
+            </tr>
 
-<table >
-    <tr class='ui-widget-header'>
-        <th>
-        <th>
-    	<th class='field-meta-put control-on-click-order control-order-asc' field-key='ticket_completed' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='start_date' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order control-order-desc' field-key='ticket_priority' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
-    	<th>
-    </tr>
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
+                <td class='field-list-on-click-view' field-list-view="ticket.Tickets.show"><a href='#'>View</a>
+                <td class='field-list-on-click-view' field-list-view="ticket.Tickets.edit"><a href='#'>Edit</a>
 
-    <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
-        <td class='field-list-on-click-view' field-list-view="ticket.Tickets.show"><a href='#'>View</a>
-        <td class='field-list-on-click-view' field-list-view="ticket.Tickets.edit"><a href='#'>Edit</a>
+                <td class='field-put control-list-on-click-edit' field-key='ticket_completed' >
+            	<td class='field-put control-list-on-click-edit' field-key='title' >
+                <td class='field-put control-list-on-click-edit' field-key='start_date'>
+                <td class='field-put control-list-on-click-edit' field-key='due_date'>
+                <td class='field-put control-list-on-click-edit' field-key='ticket_priority' >
+                <td class='field-put control-list-on-click-edit' field-key='ticket_status' >
 
-        <td class='field-put control-list-on-click-edit' field-key='ticket_completed' >
-    	<td class='field-put control-list-on-click-edit' field-key='title' >
-        <td class='field-put control-list-on-click-edit' field-key='start_date'>
-        <td class='field-put control-list-on-click-edit' field-key='due_date'>
-        <td class='field-put control-list-on-click-edit' field-key='ticket_priority' >
-        <td class='field-put control-list-on-click-edit' field-key='ticket_status' >
+            	<td class='control-on-click-del ui-icon ui-icon-trash'>
+            </tr>
+        </table>
+    </div>
+</div>
 
-    	<td class='control-on-click-del ui-icon ui-icon-trash'>
-    </tr>
-</table>
 
 <div class='floatingBar viewErrorClass'>
     <button class='control-on-click-view' control-view='ticket.Tickets.edit' field-key='title' >Create new task</button>

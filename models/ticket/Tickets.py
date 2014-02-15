@@ -21,15 +21,9 @@ class Tickets(models.core.Protected.Protected):
             'ticket_status': fields.Select(desc='Status', choices=[
                 ('none', 'None'),
                 ('next_action', 'Next Action'),
-                ('active', 'Active'),
-                (None,'---'),
-                ('planning', 'Planning'),
-                ('deligated', 'Deligated 3rd party'),
+                ('project', 'Project'),
                 ('waiting', 'Waiting'),
-                ('hold', 'Hold'),
-                ('postponed', 'Postponed'),
-                ('someday', 'Someday'),
-                ('cancelled', 'Cancelled'),
+                ('someday', 'Someday/Maybe'),
                 ('reference', 'Reference')
             ],default='next_action'),
 
