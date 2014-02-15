@@ -115,3 +115,17 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ticket_objects)
 
+    @Acl(roles="user")
+    def get_all_by_ticket(self, ticket_id, **params):
+        #make sure we have access to the ticket
+        ticket=model.ticket.Tickets.Tickets(self.context)
+        ticket.get(ticket_id)
+        
+        #call the 'unprotected' get_all but make sure it only returns objects that belong to this the ticket
+        ticket_objects=super(Protected, self)._get_all(match_in={
+             'ticket_id': ticket_id
+            },
+            **params)
+
+
+        return(ticket_objects)

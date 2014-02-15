@@ -62,6 +62,7 @@ new ControlListRelated({
     'context'           : '.ticket-objects',
     'class'             : 'ticket.TicketObjects',
     'endless_scrolling' : true,
+    'get_all'           : 'get_all_by_ticket'
     'on_change'         : 'get',
     'related_key'       : 'tickets',
     'related_value'     : view.params._id,
