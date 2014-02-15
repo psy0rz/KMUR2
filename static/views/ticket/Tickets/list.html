@@ -41,10 +41,15 @@
     $(".tabs", context).tabs({
         'activate': function(event, ui)
         {
-            // form.params.get_params.match={
-            //     'ticket_status': ui.newTab.attr("status")
-            // }
+            if (ui.newTab.attr("status")=="")
+                form.params.get_params.match={};
+            else
+                form.params.get_params.match={
+                    'ticket_status': ui.newTab.attr("status")
+                }
             form.get_delayed({});
+           // ("input", context).focus();
+           form.focus();
         } 
     });
 </script>
