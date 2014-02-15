@@ -96,17 +96,20 @@ class Tickets(models.core.Protected.Protected):
         ret=self._put(doc)
         self.event("changed", ret)
 
+
         if '_id' in doc:
             #support edits in place that only put small documents
             log_txt="Changed task {title}".format(**old_doc)
+            change_title=""
+            change_text=""
         else:
             log_txt="Created new task {title}".format(**doc)
+            change_title="Created task"
+            change_text=""
 
         self.info(log_txt)
 
 
-        change_title=""
-        change_text=""
         meta=self.meta.meta['meta'].meta['meta']
         for key in ret.keys():
             if key in old_doc and old_doc[key]!=ret[key]:
@@ -124,7 +127,7 @@ class Tickets(models.core.Protected.Protected):
             ticket_objects.put(
                     type= 'change',
                     create_time=time.time(),
-                    title="{} changed: {}".format(self.context.session['name'], change_title),
+                    title="{}: {}".format(self.context.session['name'], change_title),
                     text=change_text,
                     allowed_users=[ self.context.session['user_id'] ],
                     tickets=[ ret['_id'] ]
@@ -133,8 +136,8 @@ class Tickets(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self, **kwargs):
-        return(self._get(**kwargs))
+    def get(self, _id, **kwargs):
+        return(self._get(_id,**kwargs))
 
     @Acl(roles="user")
     def delete(self, _id):

@@ -57,19 +57,15 @@ var form=new ControlForm({
 
 
 
-new ControlListRelated({
+new ControlList({
     'view'              : view,
     'context'           : '.ticket-objects',
     'class'             : 'ticket.TicketObjects',
     'endless_scrolling' : true,
-    'get_all'           : 'get_all_by_ticket'
+    'get'               : 'ticket.TicketObjects.get_all_by_ticket',
+    'get_params'        : { 'ticket_id': view.params._id },
     'on_change'         : 'get',
-    'related_key'       : 'tickets',
-    'related_value'     : view.params._id,
-    'unrelate_confirm'  : "Do you want to remove task item '{title}' from this ticket?",
-    'create_view_params': {
-        'group_ids': [ view.params._id ]
-    }
+
 });
 
 new ControlListRelated({

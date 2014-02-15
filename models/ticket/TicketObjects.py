@@ -94,6 +94,21 @@ class TicketObjects(models.core.Protected.Protected):
 
     @Acl(roles="user")
     def get(self, _id):
+
+        #read the object unprotected
+        ticket_object=super(models.core.Protected.Protected, self)._get(_id)
+
+        #do we have access to one of the ticket the object belongs to?
+        if len(ticket_object['tickets'])>0:
+            ticket_model=models.ticket.Tickets.Tickets(self.context)
+            tickets=ticket_model.get_all(match_in={
+                    '_id': ticket_object['tickets']
+                })
+
+            if len(tickets)>0:
+                return(ticket_object)
+
+
         return(self._get(_id))
 
     @Acl(roles="user")
@@ -118,12 +133,12 @@ class TicketObjects(models.core.Protected.Protected):
     @Acl(roles="user")
     def get_all_by_ticket(self, ticket_id, **params):
         #make sure we have access to the ticket
-        ticket=model.ticket.Tickets.Tickets(self.context)
-        ticket.get(ticket_id)
+        ticket_model=models.ticket.Tickets.Tickets(self.context)
+        ticket_model.get(ticket_id)
         
         #call the 'unprotected' get_all but make sure it only returns objects that belong to this the ticket
-        ticket_objects=super(Protected, self)._get_all(match_in={
-             'ticket_id': ticket_id
+        ticket_objects=super(models.core.Protected.Protected, self)._get_all(match_in={
+             'tickets': [ ticket_id ]
             },
             **params)
 
