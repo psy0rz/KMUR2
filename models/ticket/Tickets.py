@@ -94,12 +94,14 @@ class Tickets(models.core.Protected.Protected):
         if '_id' in doc:
             #support edits in place that only put small documents
             log_txt="Changed task {title}".format(**old_doc)
-            change_title=""
+            change_title="{} changed task.".format(self.context.session['name'])
             change_text=""
+            changed=False
         else:
             log_txt="Created new task {title}".format(**doc)
-            change_title="Created task"
+            change_title="{} created task.".format(self.context.session['name'])
             change_text=""
+            changed=True
 
         self.info(log_txt)
 
@@ -108,20 +110,17 @@ class Tickets(models.core.Protected.Protected):
         for key in ret.keys():
             if key in old_doc and old_doc[key]!=ret[key]:
                 if 'desc' in meta[key].meta:
-                    if change_title=="":
-                        change_title+="'{}'".format(meta[key].meta['desc'])
-                    else:
-                        change_title+=", '{}'".format(meta[key].meta['desc'])
                     change_text+="Changed '{}' from '{}' to '{}'\n\n".format(meta[key].meta['desc'], old_doc[key], ret[key])
+                    changed=True
 
-        if change_title!="":
+        if changed:
             #import here to prevent circular trouble
             import models.ticket.TicketObjects
             ticket_objects=models.ticket.TicketObjects.TicketObjects(self.context)
             ticket_objects.put(
                     type= 'change',
                     create_time=time.time(),
-                    title="{}: {}".format(self.context.session['name'], change_title),
+                    title=change_title,
                     text=change_text,
                     allowed_users=[ self.context.session['user_id'] ],
                     tickets=[ ret['_id'] ]

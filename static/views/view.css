@@ -246,3 +246,15 @@
 }
 
 
+.ticket-show-button-style
+{
+	background: url("../icons/brick.png") left center no-repeat; 
+	padding-left:20px;
+}
+
+.ticket-edit-button-style
+{
+	background: url("../icons/brick_edit.png") left center no-repeat; 
+	padding-left:20px;
+}
+
