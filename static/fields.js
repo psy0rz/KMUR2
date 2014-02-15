@@ -597,11 +597,12 @@ Field.List.meta_put=function(key, meta, context, options)
         //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
         $(list_source.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
-            console.log("field.list: view opened by us has changed the data", result);
+            console.log("field.list: view opened by us has changed the data", result, this);
+
             Field.List.put(
                 key,
                 meta,
-                $(this).closest('[field-key="'+key+'"]'),
+                list_source,
                 [ result.data ],
                 {
                     list_no_remove: true,
