@@ -234,6 +234,7 @@ params:
     on_change           what to do when our class changes:
                             null: dont do anything, to prevent losing data (default)
                             get:  re-get the data from the server. also gives feedback to the user
+                            put: put the data into the form. (cant verify if the data actually belongs to the form!)
                             reload: re-load the whole view
 
     default             default values to put before putting actual data.
@@ -449,7 +450,10 @@ ControlForm.prototype.attach_event_handlers=function()
         //re-get the data and show changes
         else if (this_control.params.on_change=='get')
         {
-            this_control.get({ show_changes: true });
+            this_control.get({ 
+                show_changes: true,
+                list_update: true 
+            });
         }
         else if (this_control.params.on_change=='put')
         {
@@ -636,8 +640,8 @@ params:
     favorite_key        the result-key to use as favorite identifier (defaults to _id)
 
     on_change           what to do when our class changes:
-                            put: only put the new data into the list. ignores sorting and filtering, but gives best feedback to user (default)
-                            get: re-get the list, honoring sorting and filtering settings
+                            put: only put the new data into the list. ignores sorting and filtering, but gives best feedback to user. doesnt work for new items
+                            get: re-get the list, honoring sorting and filtering settings (default)
                             reload: re-load the whole view
 
 */
@@ -653,7 +657,7 @@ function ControlList(params)
         this.params.favorite_key='_id';
 
     if (! this.params.on_change)
-        this.params.on_change='put';
+        this.params.on_change='get';
 
     if (typeof (this.params.get_params) ==='undefined')
         this.params.get_params={};
@@ -837,6 +841,7 @@ ControlList.prototype.attach_event_handlers=function()
                 [ data ],
                 {
                     list_no_remove: true,
+                    list_no_add: true,
                     list_update: true,
                     show_changes: true
 
@@ -1142,6 +1147,7 @@ ControlList.prototype.attach_event_handlers=function()
             $(".field-meta-put", list_element).removeClass("field-meta-put").addClass("field-put"); 
             Field.Dict.meta_put('', this_control.meta.meta, list_element, {});
             element.empty(); //important if a key isnt set in the document
+            element.text(" "); //to prevent empty table cells for field-no-text elements
         }
 
 

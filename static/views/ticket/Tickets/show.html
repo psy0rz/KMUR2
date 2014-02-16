@@ -5,7 +5,7 @@ var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Tickets',
     'get_params'      : view.params,
-    'on_change'       : 'put',
+    'on_change'       : 'get',
     'title'           : 'View task {title}',
     'favorite_menu'   : 'ticket',
     'context'         : '.ticket',
@@ -86,7 +86,7 @@ new ControlListRelated({
         <table class='inline-block'>
             <tr>
                 <td class='field-meta-put control-on-click-view' field-key='ticket_completed' field-meta-key='desc'>
-                <td class='field-put value control-on-click-view' field-key='ticket_completed'>
+                <td class='field-put value control-on-click-view ticket-check-style' field-key='ticket_completed'>
             </tr>
             <tr>
                 <td class='field-meta-put control-on-click-view' field-key='title' field-meta-key='desc'>
@@ -154,8 +154,9 @@ new ControlListRelated({
             <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
             <table class='field-meta-put field-key-root' field-key='tickets'>
                 <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
-                    <td class='field-put field-list-on-click-view' field-key='tickets.ticket_status'>
+                    <td class='field-put field-list-on-click-view ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
                     <td class='field-put field-list-on-click-view' field-key='tickets.title'>
+                    <td class='field-put field-list-on-click-view' field-key='tickets.ticket_status'>
                 </tr>
             </table>
         </fieldset>
@@ -182,8 +183,9 @@ new ControlListRelated({
     <legend>Tasks that depend on us</legend>
     <table >
         <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
-            <td class='field-list-on-click-view field-put' field-key='ticket_status' >
+            <td class='field-list-on-click-view field-put ticket-check-style' field-key='ticket_completed' field-no-text>
             <td class='field-list-on-click-view field-put' field-key='title' >
+            <td class='field-list-on-click-view field-put' field-key='ticket_status' >
         </tr>
     </table>
 </fieldset>

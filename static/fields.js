@@ -152,6 +152,12 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
             if (options.show_changes)
                 context.effect('highlight', 2000);
         }
+        else
+        {
+            //element can still have different attributes:
+            context.empty();
+            context.append(element);
+        }
     }
     else
     {
@@ -160,6 +166,11 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
             context.text(element);
             if (options.show_changes)
                 context.effect('highlight', 2000);
+        }
+        else
+        {
+            //element can still have different attributes:
+            context.text(element);
         }
     }
 
@@ -1323,17 +1334,24 @@ Field.Bool.put=function(key, meta, context, data, options)
     {
         var new_element=$("<span>");
         
+
         if (data)
         {
-            // new_element.addClass("field-bool-true");
-            new_element.addClass("field-bool-"+key+"-true");
-            new_element.text(meta.true_desc);
+            new_element.addClass("field-bool-true");
+            new_element.removeClass("field-bool-false");
+            // new_element.addClass("field-bool-"+key.replace(".","_")+"-true");
+            // new_element.removeClass("field-bool-"+key.replace(".","_")+"-false");
+
+            if (context.attr("field-no-text")==undefined)
+                new_element.text(meta.true_desc);
         }
         else
         {
-            // new_element.addClass("field-bool-false");
-            new_element.addClass("field-bool-"+key+"-false");
-            new_element.text(meta.false_desc);
+            new_element.addClass("field-bool-false");
+            new_element.removeClass("field-bool-true");
+            // new_element.addClass("field-bool-"+key.replace(".","_")+"-false");
+            if (context.attr("field-no-text")==undefined)
+                new_element.text(meta.false_desc);
         }
 
         Field.Base.html_append(key, meta, context, data, options, new_element);

@@ -277,3 +277,18 @@
 }
 
 
+.ticket-check-style .field-bool-false 
+{
+	background: url("../icons/unchecked.png") left center no-repeat; 
+	padding-left:20px;
+	
+}
+
+.ticket-check-style .field-bool-true
+{
+	background: url("../icons/checked.png") left center no-repeat; 
+	padding-left:20px;
+	
+}
+
+

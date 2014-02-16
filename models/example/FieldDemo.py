@@ -58,13 +58,14 @@ class FieldDemo(models.mongodb.Base):
 
         call get_meta to see which fields you can set'''
 
-        if '_id' in doc:
-          logTxt="Changed demo row {_id}".format(**doc)
-        else:
-          logTxt="Created demo row {_id}".format(**doc)
 
         ret=self._put(doc)
         self.event("changed",ret)
+
+        if '_id' in doc:
+          logTxt="Changed demo row {_id}".format(**ret)
+        else:
+          logTxt="Created demo row {_id}".format(**ret)
 
         self.info(logTxt)
 
