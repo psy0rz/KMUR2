@@ -98,7 +98,6 @@ class Relation(fields.Base):
         else:
             self.meta['meta']=meta
 
-
         if 'meta' in self.meta:
             if not isinstance(self.meta['meta'], fields.List):
                 FieldError("related metadata should be a list")
@@ -222,12 +221,12 @@ class Relation(fields.Base):
         else:
             return(data)
 
-    def to_external(self, context, data):
+    def to_external(self, context, data, resolve=False):
         """resolve a list of bson objectids by calling the external model to get the corresponding data
 
         (only when resolve is True) """
 
-        if self.meta['resolve']==False:
+        if self.meta['resolve']==False and resolve==False:
             return(data)
 
         if self.meta['list']:
@@ -236,7 +235,7 @@ class Relation(fields.Base):
 
             foreign_object=self.model(context)
             result=foreign_object.get_all(match_in={
-                    self.meta['meta'].meta['list_key']: data
+                    self.model.meta.meta['list_key']: data
                 })
 
             return(result)

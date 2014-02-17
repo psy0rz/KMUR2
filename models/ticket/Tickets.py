@@ -107,11 +107,58 @@ class Tickets(models.core.Protected.Protected):
 
 
         meta=self.meta.meta['meta'].meta['meta']
-        for key in ret.keys():
-            if key in old_doc and old_doc[key]!=ret[key]:
-                if 'desc' in meta[key].meta:
-                    change_text+="Changed '{}' from '{}' to '{}'\n\n".format(meta[key].meta['desc'], old_doc[key], ret[key])
-                    changed=True
+
+
+        def get_removed(lista,listb):
+            if not isinstance(lista, list):
+                lista=[]
+
+            if not isinstance(listb, list):
+                listb=[]
+
+            removed=[]
+            for a in lista:
+                if not a in listb:
+                    removed.append(a)
+
+            return(removed)
+
+        # print (old_doc)
+        # print (ret)
+        # print (get_removed(old_doc['deligated_users'], ret['deligated_users']))        
+
+        diff=meta['deligated_users'].to_external(self.context, get_removed(old_doc['deligated_users'], ret['deligated_users']), resolve=True)
+        for user in diff:
+            change_text+="Removed {name} from task.\n".format(**user)
+
+        diff=meta['deligated_users'].to_external(self.context, get_removed( ret['deligated_users'],old_doc['deligated_users']), resolve=True)
+        for user in diff:
+            change_text+="Deligated task to {name}.\n".format(**user)
+
+
+        diff=meta['allowed_groups'].to_external(self.context, get_removed(old_doc['allowed_groups'], ret['allowed_groups']), resolve=True)
+        for user in diff:
+            change_text+="Removed group {name} from task.\n".format(**user)
+
+        diff=meta['allowed_groups'].to_external(self.context, get_removed( ret['allowed_groups'],old_doc['allowed_groups']), resolve=True)
+        for user in diff:
+            change_text+="Added group {name} to task.\n".format(**user)
+
+        if old_doc['owner']!=ret['owner']:
+            changed_text+="Changed task owner from {name} to {name}"
+            meta['owner'].to_external(self.context, old_doc['owner', resolve=True)
+
+        # old_data=meta[key].to_external(self.context, old_doc[key], resolve=True)
+        # new_data=meta[key].to_external(self.context, ret[key], resolve=True)
+                    
+        changed=True
+        # for key in ret.keys():
+        #     if key in old_doc and old_doc[key]!=ret[key]:
+        #         if 'desc' in meta[key].meta:
+        #             old_data=meta[key].to_external(self.context, old_doc[key], resolve=True)
+        #             new_data=meta[key].to_external(self.context, ret[key], resolve=True)
+        #             change_text+="Changed '{}' from '{}' to '{}'\n\n".format(meta[key].meta['desc'], old_data, new_data)
+        #             changed=True
 
         if changed:
             #import here to prevent circular trouble
