@@ -121,6 +121,11 @@ class Base(object):
 
         return(data)
 
+    def to_human(self, context, data):
+        '''convert field to human readable 
+
+        this is mostly used inside models to transform things like Select field to their descriptive texts'''
+        return(data)
 
 
 class Nothing(Base):
@@ -204,6 +209,14 @@ class Dict(Base):
 
         return(ret)
 
+    def to_human(self, context, data):
+        ret={}
+        for key,value in data.items():
+            if key in self.meta['meta']:
+                ret[key]=self.meta['meta'][key].to_human(context, value)
+
+        return(ret)
+
 
 class List(Base):
     """Data that contains a list of other field-objects
@@ -268,6 +281,12 @@ class List(Base):
 
         return (ret)
 
+    def to_human(self, context, data):
+        ret=[]
+        for value in data:
+            ret.append(self.meta['meta'].to_human(context, value))
+
+        return (ret)
 
 # seems to make things more complicated..                
 # class ListDict(object):
@@ -413,6 +432,13 @@ class Bool(Base):
             raise FieldError("This should be a boolean value (e.g. true or false)")
 
 
+    def to_human(self, context, data):
+        if data:
+            return(self.meta['true_desc'])
+        else:
+            return(self.meta['false_desc'])
+
+
 class Select(Base):
     '''Select list. User can select one item from choices'''
 
@@ -438,6 +464,12 @@ class Select(Base):
 
         if not ok:
             raise FieldError("This is an invalid choice")
+
+    def to_human(self, context, data):
+        for choice in self.meta['choices']:
+            if choice[0]!=None and data==choice[0]:
+                return(choice[1])
+        return(None)
 
 
 class MultiSelect(Base):
@@ -467,6 +499,12 @@ class MultiSelect(Base):
         if len(set(data)) != len(data):
             raise FieldError("List contains duplicate choices")
 
+    def to_human(self, context, data):
+        ret=[]
+        for i in data:
+            ret.append(self.meta['choices'][i])
+
+        return(ret)
 
 class Anything(Base):
     """Allow anything.

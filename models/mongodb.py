@@ -250,7 +250,8 @@ class Relation(fields.Base):
                 #non existing or non allowed data will simply None
                 return(None) 
 
-
+    def to_human(self, context, data):
+        return(self.to_external(context, data, resolve=True))
 
 class Base(models.common.Base):
     """Base class for models that use mongodb.
