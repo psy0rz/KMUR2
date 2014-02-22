@@ -1,0 +1,22 @@
+{
+	"contracts":{
+		"title":"Contracts",
+        "view":
+            { 
+                "name":"ticket.Contracts.list",
+                "mode":"main",
+                "params": { }
+            },
+		"items":[
+            {
+                "title":"Overview",
+                "view":
+                    { 
+                        "name":"ticket.Contracts.list",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}
