@@ -1,90 +1,67 @@
 
 <script>
 
-var form=new ControlForm({
+new ControlForm({
     'view'            : view,
-    'class'           : 'ticket.Relations',
+    'class'           : 'ticket.Contracts',
     'get_params'      : view.params,
     'default_focus'   : 'title',
-    'title'           : 'Edit relation {title}',
-    'title_new'       : 'New relation',
-    'favorite_menu'   : 'relations',
+    'title'           : 'Edit contract {title}',
+    'title_new'       : 'New contract',
+    'favorite_menu'   : 'contracts',
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'allowed_groups': [ ]
     }
 });
 
+
+
 </script>
 
-
-<table>
-	<tr>
-		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
-		<td class='field-meta-put' field-key='title'>
-	</tr>
+<legend>Contract</legend>
+<table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='active' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='active'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='title' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='title'>
+    </tr>
     <tr>
         <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
-        <td><textarea class='field-put field-get field-input' field-key='desc' cols=40 rows=5></textarea>
+        <td><textarea class='field-put field-get field-input' field-key='desc' cols=80 rows=5></textarea>
     </tr>
-
-
+    <tr>
+        <td class='field-meta-put' field-key='type' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='type'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='price' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='price'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes_minimum' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes_minimum'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes_rounding' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes_rounding'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='tax' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='tax'>
+    </tr>
 </table>
 
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
-
-    <table >
-        <thead >
-            <tr class='field-meta-put ui-widget-header' field-key='emails'>
-                <td>
-                <td class='field-meta-put' field-key='emails.email' field-meta-key='desc'>
-                <td class='field-meta-put' field-key='emails.desc' field-meta-key='desc'>
-                <td>
-                <td>
-            </tr>
-        </thead>
-        <tbody class=''>
-            <tr class='colorRows field-list-sortable field-meta-put field-list-source ui-widget-content' field-key='emails'>
-                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
-                <td class='field-meta-put field-list-on-focus-add' field-key='emails.email'>
-                <td class='field-meta-put field-list-on-focus-add' field-key='emails.desc'>
-                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
-                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
-            </tr>
-        </tbody>
-    </table>
-
-</fieldset>
-
-<fieldset style='display:inline-block;'>
-    <legend class='field-meta-put' field-key='phones' field-meta-key='desc'></legend>
-    <table >
-        <thead >
-            <tr class='field-meta-put ui-widget-header' field-key='phones'>
-                <td>
-                <td class='field-meta-put' field-key='phones.phone' field-meta-key='desc'>
-                <td class='field-meta-put' field-key='phones.desc' field-meta-key='desc'>
-                <td>
-                <td>
-            </tr>
-        </thead>
-        <tbody class=''>
-            <tr class='colorRows field-list-sortable field-meta-put field-list-source ' field-key='phones'>
-                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
-                <td class='field-meta-put field-list-on-focus-add' field-key='phones.phone'>
-                <td class='field-meta-put field-list-on-focus-add' field-key='phones.desc'>
-                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
-                <td class='field-list-on-click-add ui-icon ui-icon-plus'>
-            </tr>
-        </tbody>
-    </table>
-</fieldset>
-
-<fieldset style='display:block;'>
-<legend>Sharing</legend>
-
-    <fieldset style='display:inline-block;'>
+<fieldset>
+    <legend>Sharing</legend>        
+    <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
         <table class='field-meta-put' field-key='allowed_users'>
             <tr class='ui-widget-header'>
@@ -106,7 +83,7 @@ var form=new ControlForm({
         </table>
     </fieldset>
 
-    <fieldset style='display:inline-block;'>
+    <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
         <table class='field-meta-put' field-key='allowed_groups'>
             <tr class='ui-widget-header'>
@@ -127,13 +104,13 @@ var form=new ControlForm({
             </tr>
         </table>
     </fieldset>
-
 </fieldset>
 
 
-<div class='floatingBar viewErrorClass'>
-	<button class='control-on-click-save' >Save</button>
-	<button class='control-on-click-del control-hide-on-new' >Delete</button>
-	<button class='control-on-click-cancel' >Cancel</button>
-	<span class='viewErrorText'></span>
+<div class='viewErrorClass floatingBar'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-del control-hide-on-new' >Delete</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
 </div>
+

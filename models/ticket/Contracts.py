@@ -14,6 +14,7 @@ class Contracts(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
+                'active': fields.Bool(desc='Active', default=1),
                 'title': fields.String(min=3, desc='Title', size=100),
                 'desc': fields.String(desc='Description'),
                 'allowed_groups': models.mongodb.Relation(
@@ -30,13 +31,14 @@ class Contracts(models.core.Protected.Protected):
                     list=True),
                 'type': fields.Select(desc="Billing",
                                                       choices=[
-                                                      ("post", "Per hour"),
-                                                      ("prepay", "Prepayed"),
+                                                      ("post", "Post"),
+                                                      ("prepay", "Prepayed montly"),
                                                     ]),
                 'price': fields.Number(desc='Price'),
                 'minutes': fields.Number(desc='Time', default=60),
-                'minutes_minimum': fields.Number(desc='Minimal number of minutes', default=0),
-                'minutes_rounding': fields.Number(desc='Minutes to round up to', default=15),
+                'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
+                'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
+                'tax': fields.Number(desc='Tax', default=21),
             }),
             list_key='_id'
         )

@@ -4,6 +4,7 @@ import models.core.Protected
 import models.core.Users
 import models.core.Groups
 import models.mongodb
+import models.ticket.Contracts
 
 class Relations(models.core.Protected.Protected):
     '''Real-life relations (these can be customers/companies or other contacts)
@@ -27,6 +28,12 @@ class Relations(models.core.Protected.Protected):
                     model=models.core.Users.Users,
                     resolve=False,
                     check_exists=False,
+                    list=True),
+                'contracts': models.mongodb.Relation(
+                    desc='Contracts',
+                    model=models.ticket.Contracts.Contracts,
+                    resolve=False,
+                    check_exists=True,
                     list=True),
                 'emails': fields.List(
                     fields.Dict({
