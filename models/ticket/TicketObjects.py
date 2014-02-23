@@ -82,16 +82,15 @@ class TicketObjects(models.core.Protected.Protected):
     @Acl(roles="user")
     def put(self, **doc):
 
-        #make sure user updates ALL billing info to prevent fraud:
-        if 'billing_contract' not in doc or 'billing_relation' not in doc:
-            raise fields.FieldError("Please specify billing information", 'billing_contract')
+        #only accept billing info if both fields are specified (to prevent fraud by changing only one):         
+        if ('billing_contract' in doc)  ^  ('billing_relation' in doc):
+            raise fields.FieldError("Please specify complete billing information", 'billing_contract')
 
         #verify billing contract is allowed for this relation
-        relation=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['billing_relation'])
-        print(doc)
-        print(relation)
-        if doc['billing_contract'] not in relation['contracts']:
-            raise fields.FieldError("Relation doesnt have this contract", 'billing_contract')
+        if 'billing_contract' in doc:
+            relation=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['billing_relation'])
+            if doc['billing_contract'] not in relation['contracts']:
+                raise fields.FieldError("Relation doesnt have this contract", 'billing_contract')
 
 
         if '_id' in doc:

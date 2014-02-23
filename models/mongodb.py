@@ -35,8 +35,8 @@ class FieldId(fields.Base):
         if not super(FieldId, self).check(context, data):
             return
 
-        if not isinstance(data, (str, bson.objectid.ObjectId)):
-            raise fields.FieldError("id should be a string or bson.ObjectId")
+        if not isinstance(data, (str)):
+            raise fields.FieldError("id should be a string")
 
         if str(bson.objectid.ObjectId(data)) != str(data):
             raise fields.FieldError("invalid id: {} != {}".format(data, str(bson.objectid.ObjectId(data))))
@@ -147,7 +147,7 @@ class Relation(fields.Base):
                 else:
                     mongo_ids=data
 
-            if self.meta['check_exists']:
+            if len(mongo_ids)>0 and self.meta['check_exists']:
                 #call foreign model to check if all id's exist
                 foreign_object=self.model(context)
                 result=foreign_object.get_all(
@@ -241,10 +241,16 @@ class Relation(fields.Base):
             if isinstance(data,list):
                 ret=[]
                 for _id in data:
-                    ret.append(str(_id))
+                    if _id==None:
+                        ret.append(None)
+                    else:
+                        ret.append(str(_id))
                 return(ret)
             else:
-                return(str(data))
+                if data==None:
+                    return(None)
+                else:
+                    return(str(data))
 
         if self.meta['list']:
             if not isinstance(data,list):
@@ -356,6 +362,7 @@ class Base(models.common.Base):
 
         regex_filters = {}
 
+        print (type(_id))
         if _id:
             doc = self.db[collection].find_one(bson.objectid.ObjectId(_id),fields=fields)
 
