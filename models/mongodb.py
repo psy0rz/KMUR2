@@ -43,7 +43,17 @@ class FieldId(fields.Base):
 
     def to_internal(self, context, data):
         """converts input data to an actual internal bson objectid"""
-        return(bson.objectid.ObjectId(data))
+        if data==None:
+            return(data)
+        else:
+            return(bson.objectid.ObjectId(data))
+
+    def to_external(self, context, data):
+        """converts bson objectid to string"""
+        if data==None:
+            return(data)
+        else:
+            return(str(data))
 
 
 class Relation(fields.Base):
@@ -227,7 +237,14 @@ class Relation(fields.Base):
         (only when resolve is True) """
 
         if self.meta['resolve']==False and resolve==False:
-            return(data)
+            #only convert bson ids to strings
+            if isinstance(data,list):
+                ret=[]
+                for _id in data:
+                    ret.append(str(_id))
+                return(ret)
+            else:
+                return(str(data))
 
         if self.meta['list']:
             if not isinstance(data,list):
@@ -242,6 +259,7 @@ class Relation(fields.Base):
         else:
             if data==None:
                 return(None)
+
             
             foreign_object=self.model(context)
             try:
@@ -382,25 +400,52 @@ class Base(models.common.Base):
         gte:    dict of keys that should be greater than or equal to value
         lte:    dict of keys that should be less than or equal to value 
 
-        spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists.
+        spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists. NOTE: these are not converted to internal format and do not function with mongo identifiers
 
 
         '''
 
         meta=self.get_meta()
-        spec_or=spec_or.copy()
-        spec_and=spec_and.copy()
+        spec_ors=spec_or.copy()
+        spec_ands=spec_and.copy()
+
+
+        #queries are too complex to do this i think:
+        # #try to convert spec_and and spec_or to internal data format:
+        # for this_or in spec_or:
+        #     conv_or={}
+        #     for (key,value) in this_or.items():
+        #         if isinstance(value, dict):
+        #             for (query, query_val) in value:
+        #                 conv_or[key]={
+        #                     query: self.meta.meta['meta'].meta['meta'][key].to_internal(self.context, query_val)
+        #                 }
+        #         else:
+        #             conv_or[key]=self.meta.meta['meta'].meta['meta'][key].to_internal(self.context, value)
+        #     spec_ors.append(conv_or)
+
+        # for this_and in spec_and:
+        #     conv_and={}
+        #     for (key,value) in this_and.items():
+        #         if isinstance(value, dict):
+        #             for (query, query_val) in value:
+        #                 conv_and[key]={
+        #                     query: self.meta.meta['meta'].meta['meta'][key].to_internal(self.context, query_val)
+        #                 }
+        #         else:
+        #             conv_and[key]=self.meta.meta['meta'].meta['meta'][key].to_internal(self.context, value)
+        #     spec_ands.append(conv_and)
 
 
         if regex_or!=None:
             for (key,value) in regex_or.items():
-                spec_or.append({
+                spec_ors.append({
                     key : re.compile(value, re.IGNORECASE)
                     })
 
         if gte!=None:
             for (key,value) in gte.items():
-                spec_and.append({
+                spec_ands.append({
                         key: {
                             '$gte': value 
                             }
@@ -408,7 +453,7 @@ class Base(models.common.Base):
 
         if lte!=None:
             for (key,value) in lte.items():
-                spec_and.append({
+                spec_ands.append({
                         key: {
                            '$lte': value 
                             }
@@ -416,7 +461,7 @@ class Base(models.common.Base):
 
         # if key_in!=None:
         #     for (key,value) in key_in.items():
-        #         spec_and.append({
+        #         spec_ands.append({
         #                 key: {
         #                    '$in': value 
         #                     }
@@ -424,13 +469,13 @@ class Base(models.common.Base):
 
         if regex!=None:
             for (key,value) in regex.items():
-                spec_and.append({
+                spec_ands.append({
                     key: re.compile(value, re.IGNORECASE)
                     })
 
         if match!=None:
             for (key,value) in match.items():
-                spec_and.append({
+                spec_ands.append({
                     key: meta.meta['meta'].meta['meta'][key].to_internal(self.context, value)
                     })
 
@@ -443,7 +488,7 @@ class Base(models.common.Base):
                 for value in values:
                     converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
-                spec_and.append({
+                spec_ands.append({
                     key: {
                         '$in': converted_values
                     }
@@ -457,7 +502,7 @@ class Base(models.common.Base):
                 for value in values:
                     converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
-                spec_and.append({
+                spec_ands.append({
                     key : {
                         '$nin': converted_values
                     }
@@ -473,7 +518,7 @@ class Base(models.common.Base):
         #         ids=[]
         #         for id in id_in:
         #             ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
-        #         spec_and.append({
+        #         spec_ands.append({
         #             list_key: {
         #                 '$in': ids
         #                 }
@@ -483,7 +528,7 @@ class Base(models.common.Base):
         #         ids=[]
         #         for id in id_nin:
         #             ids.append(meta.meta['meta'].meta['meta'][list_key].to_internal(self.context, id))
-        #         spec_and.append({
+        #         spec_ands.append({
         #             list_key: {
         #                 '$nin': ids
         #                 }
@@ -494,11 +539,11 @@ class Base(models.common.Base):
         #(note that the or-result is anded together with the other ands by mongodb)
         spec={}
 
-        if spec_and:
-            spec['$and']=spec_and
+        if spec_ands:
+            spec['$and']=spec_ands
 
-        if spec_or:
-            spec['$or']=spec_or
+        if spec_ors:
+            spec['$or']=spec_ors
 
         cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,

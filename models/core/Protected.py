@@ -65,7 +65,8 @@ class Protected(models.mongodb.Base):
 
         if not self.context.has_roles(self.write_roles):
             check_doc={}
-            converted_doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
+            #converted_doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
+            converted_doc=doc
 
             #existing document, read it and check permissions
             if '_id' in converted_doc:
@@ -202,12 +203,14 @@ class Protected(models.mongodb.Base):
                     if isinstance(self.context.session[check['context_field']], list):
                         ors.append({ 
                             meta_key: { 
-                                '$in': self.context.session[check['context_field']] 
+                                '$in': self.meta.meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
+                                    self.context.session[check['context_field']]) 
                                 }
                             })
                     else:
                         ors.append({ 
-                            meta_key: self.context.session[check['context_field']] 
+                            meta_key: self.meta.meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
+                                self.context.session[check['context_field']]) 
                             })
 
             if len(ors)>0:

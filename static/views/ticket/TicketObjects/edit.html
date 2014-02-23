@@ -86,18 +86,6 @@ var form=new ControlForm({
     <legend>Billing</legend>
     <table class='inline-block'>
         <tr>
-            <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
-            <td class='field-meta-put' field-key='billing_relation'>
-                <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
-                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
-                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
-                </span>
-                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
-                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
-                <br>
-                <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
-        </tr>
-        <tr>
             <td class='field-meta-put' field-key='start_time' field-meta-key='desc'>
             <td class='field-meta-put' field-key='start_time' field-timestamp-allow-time>
         </tr>
@@ -111,7 +99,31 @@ var form=new ControlForm({
                 <span class='field-meta-put' field-key='minutes' ></span> 
                 ( <span class='delta'></span> )
         </tr>
-        </table>
+        <tr>
+            <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='billing_relation'>
+                <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <br>
+                <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='billing_contract'>
+                <span class='list-span field-list-source field-list-source-hide' field-key='billing_contract' field-list-view="ticket.Contracts.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_contract.title' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-plus'></span>
+                <br>
+                <a class='field-list-on-click-view' field-key='title' href='#'>Create new contract</a>
+        </tr>
+    </table>
 </fieldset>
 
 

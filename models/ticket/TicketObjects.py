@@ -5,6 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.ticket.Relations
 import models.ticket.Tickets
+import models.ticket.Contracts
 import models.mongodb
 import time
 
@@ -33,6 +34,12 @@ class TicketObjects(models.core.Protected.Protected):
                 'billing_relation': models.mongodb.Relation(
                     desc='Billing relation',
                     model=models.ticket.Relations.Relations,
+                    check_exists=False,
+                    resolve=False,
+                    list=False),
+                'billing_contract': models.mongodb.Relation(
+                    desc='Billing contract',
+                    model=models.ticket.Contracts.Contracts,
                     check_exists=False,
                     resolve=False,
                     list=False),
@@ -75,6 +82,18 @@ class TicketObjects(models.core.Protected.Protected):
     @Acl(roles="user")
     def put(self, **doc):
 
+        #make sure user updates ALL billing info to prevent fraud:
+        if 'billing_contract' not in doc or 'billing_relation' not in doc:
+            raise fields.FieldError("Please specify billing information", 'billing_contract')
+
+        #verify billing contract is allowed for this relation
+        relation=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['billing_relation'])
+        print(doc)
+        print(relation)
+        if doc['billing_contract'] not in relation['contracts']:
+            raise fields.FieldError("Relation doesnt have this contract", 'billing_contract')
+
+
         if '_id' in doc:
           log_txt="Changed task note '{title}'".format(**doc)
           # if 'create_time' in doc:
@@ -98,7 +117,7 @@ class TicketObjects(models.core.Protected.Protected):
         #read the object unprotected
         ticket_object=super(models.core.Protected.Protected, self)._get(_id)
 
-        #do we have access to one of the ticket the object belongs to?
+        #do we have access to at least one of the ticket the object belongs to?
         if len(ticket_object['tickets'])>0:
             ticket_model=models.ticket.Tickets.Tickets(self.context)
             tickets=ticket_model.get_all(match_in={
