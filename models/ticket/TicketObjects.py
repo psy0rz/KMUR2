@@ -86,8 +86,8 @@ class TicketObjects(models.core.Protected.Protected):
         if ('billing_contract' in doc)  ^  ('billing_relation' in doc):
             raise fields.FieldError("Please specify complete billing information", 'billing_contract')
 
-        #verify billing contract is allowed for this relation
-        if 'billing_contract' in doc:
+        #verify the billing contract is allowed for this relation
+        if 'billing_contract' in doc and doc['billing_contract']!=None and doc['billing_relation']!=None:
             relation=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['billing_relation'])
             if doc['billing_contract'] not in relation['contracts']:
                 raise fields.FieldError("Relation doesnt have this contract", 'billing_contract')

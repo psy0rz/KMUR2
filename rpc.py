@@ -109,10 +109,13 @@ def rpc():
 
     except (fields.FieldError, Exception) as e:
         traceback.print_exc()
-        result['error'] = { 'message': str(e) }
-
         if isinstance(e, fields.FieldError):
-            result['error']['fields'] = e.fields
+            result['error'] = { 
+                'message': str(e), 
+                'fields': e.fields
+            }
+        else:
+            result['error'] = { 'message': e.__class__.__name__ + ": " + str(e) }
 
     session.save()
 

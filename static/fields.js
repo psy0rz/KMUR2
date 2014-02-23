@@ -1778,7 +1778,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
 
                 //get currently selected ids
                 var current_items=Field.Relation.get(key, meta, this_context);
-                console.log("currentitems", current_items);
+                // console.log("currentitems", current_items);
 
                 //filter those ids out
                 var list_key=meta.meta.list_key;
@@ -1796,6 +1796,13 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
                 });
 
                 var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
+
+                //allow customisation of the get_all parameters
+                if (context.data("pre_get_all") && !context.data("pre_get_all")(params))
+                {
+                    response([]);
+                    return(true);
+                }
 
                 //call the foreign model to do the actual search
                 rpc(meta.model+".get_all",

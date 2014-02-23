@@ -12,6 +12,10 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
+
+        //create time-adding buttons
+        
+        
         $(".on-click-new-ticket-note", context).click(function()
         {
             viewCreate({ creator: context },
@@ -161,18 +165,6 @@ new ControlListRelated({
             </table>
         </fieldset>
 
-        <div class='floatingBar viewErrorClass'>
-            <button class='on-click-ticket-list' >Tasks</button>
-            <button class='on-click-new-ticket-note ticket-add-note-button-style' >Add note</button>
-
-            <span class='field-meta-put on-click-new-ticket-time' field-key='relations' >
-                    <span class='field-list-source field-list-source-hide' field-key='relations'>
-                        <button class='field-put ticket-add-time-button-style' field-key='relations.title' title='Add time' ></button>
-                    </span>
-            </span>
-
-            <span class='viewErrorText'></span>
-        </div>
 
 
     </span>
@@ -216,3 +208,15 @@ new ControlListRelated({
     </table>
 </fieldset>
 
+<div class='floatingBar viewErrorClass'>
+    <button class='on-click-ticket-list' >Tasks</button>
+    <button class='on-click-new-ticket-note ticket-add-note-button-style' >Add note</button>
+
+    <span class='field-meta-put on-click-new-ticket-time' field-key='relations' >
+            <span class='field-list-source field-list-source-hide' field-key='relations'>
+                <button class='field-put ticket-add-time-button-style' field-key='relations.title' title='Add time' ></button>
+            </span>
+    </span>
+
+    <span class='viewErrorText'></span>
+</div>

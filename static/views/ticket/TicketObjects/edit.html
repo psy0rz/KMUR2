@@ -50,6 +50,23 @@ var form=new ControlForm({
 });
 
 
+//this function is called just before doing a search in the billing_contract field.
+$('[field-key="billing_contract"]', context).data("pre_get_all", function(params)
+{
+    //get the currently selected billing_relation:
+    var relation=$('.field-list-item[field-key="billing_relation"]', context).data("field-data");
+
+    if (!relation || !relation['contracts'])
+        return(false);
+
+    //we only want to show the contracts that are selected in this relation
+    params['match_in']={
+        '_id': relation['contracts']
+    };
+
+    return(true);
+})
+
 </script>
 
 
@@ -102,7 +119,7 @@ var form=new ControlForm({
         <tr>
             <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_relation'>
-                <span class='list-span field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
+                <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
                     <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
                     <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
                 </span>
