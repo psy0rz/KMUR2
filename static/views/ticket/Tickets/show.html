@@ -13,9 +13,6 @@ var form=new ControlForm({
     'get_result': function(result)
     {
 
-        //create time-adding buttons
-        
-        
         $(".on-click-new-ticket-note", context).click(function()
         {
             viewCreate({ creator: context },
@@ -55,6 +52,49 @@ var form=new ControlForm({
                 params: {}
             });
 
+        });
+    },
+    'field_put': function(data)
+    {
+        //create time-adding-buttons
+
+//        $(".on-click-new-ticket-time",context).clear();
+        //first resolve all relations
+        rpc( "ticket.Relations.get_all", { 'match_in': { '_id': data.relations }}, function(relations)
+        {
+            //get all contracts
+            var contract_ids=[];
+            $.each(relations.data, function(i, relation)
+            {   
+                if (relation.contracts)
+                    contract_ids=contract_ids.concat(relation.contracts);
+            });
+
+            rpc( "ticket.Contracts.get_all", { 'match_in': { '_id': contract_ids }}, function(contracts)
+            {
+                //index contracts by id
+                var contracts_by_id={};
+                $.each(contracts.data, function(i, contract){
+                    contracts_by_id[contract._id]=contract;
+                });
+
+                //now add a button for every contract for every a relation has
+                $.each(relations.data, function(i, relation)
+                {
+                    if (relation.contracts)
+                    {
+                        $.each(relation.contracts, function(i, contract_id)
+                        {
+                            console.log("add time: ", relation.title, contracts_by_id[contract_id].title);
+                            var button=$("<button class='on-click-new-ticket-time'></button>");
+                            var span=$("<span class='ticket-add-time-button-style'></span>");
+                            button.append(span);
+                            span.text(relation.title+": "+contracts_by_id[contract_id].title);
+                            $(".floatingBar",context).append(button);
+                        });
+                    }
+                });
+            });
         });
     }
 });
@@ -119,7 +159,7 @@ new ControlListRelated({
             <tr>
                 <td class='field-meta-put control-on-click-view' field-key='relations' field-meta-key='desc'>
                 <td class='field-meta-put control-on-click-view' field-key='relations'>
-                    <span class='list-span field-list-source field-list-source-hide' field-key='relations' field-list-view="ticket.Relations.edit">
+                    <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='relations' field-list-view="ticket.Relations.edit">
                         <span class='field-put' field-key='relations.title'></span>
                     </span>
             </tr>
@@ -210,13 +250,8 @@ new ControlListRelated({
 
 <div class='floatingBar viewErrorClass'>
     <button class='on-click-ticket-list' >Tasks</button>
-    <button class='on-click-new-ticket-note ticket-add-note-button-style' >Add note</button>
+    <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
 
-    <span class='field-meta-put on-click-new-ticket-time' field-key='relations' >
-            <span class='field-list-source field-list-source-hide' field-key='relations'>
-                <button class='field-put ticket-add-time-button-style' field-key='relations.title' title='Add time' ></button>
-            </span>
-    </span>
 
     <span class='viewErrorText'></span>
 </div>

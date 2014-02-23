@@ -2087,14 +2087,15 @@ Field.Relation.put=function(key, meta, context, data, options)
                     function(result)
                     {
                         //also store items that cant be resolved (usually relations to protected items)
+                        var hidden_data=data.slice(0);
                         for (i in result.data)
                         {
                             var id=result.data[i][meta.meta.list_key];
-                            var i=data.indexOf(id);
+                            var i=hidden_data.indexOf(id);
                             if (i!=-1)
-                                data.splice(i,1);
+                                hidden_data.splice(i,1);
                         }
-                        $(context).data('field-relation-hidden', data);
+                        $(context).data('field-relation-hidden', hidden_data);
 
                         Field.List.put(key, meta.meta, list_context, result.data, options);
      
