@@ -28,8 +28,10 @@ var form=new ControlForm({
 
         });
 
-        $(".on-click-new-ticket-time", context).on('click',".field-list-item", function()
+        $(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
         {
+            console.log("jo", this);
+            return;
             viewCreate({ creator: context },
             {
                 name: 'ticket.TicketObjects.edit',
@@ -56,46 +58,54 @@ var form=new ControlForm({
     },
     'field_put': function(data)
     {
-        //create time-adding-buttons
-
-//        $(".on-click-new-ticket-time",context).clear();
-        //first resolve all relations
-        rpc( "ticket.Relations.get_all", { 'match_in': { '_id': data.relations }}, function(relations)
+        //(re)-create time-adding-buttons
+        //this seems overly complex, but thats because its very specific and cant be abstracted i think.
+        function create_buttons()
         {
-            //get all contracts
-            var contract_ids=[];
-            $.each(relations.data, function(i, relation)
-            {   
-                if (relation.contracts)
-                    contract_ids=contract_ids.concat(relation.contracts);
-            });
-
-            rpc( "ticket.Contracts.get_all", { 'match_in': { '_id': contract_ids }}, function(contracts)
+            $(".on-click-new-ticket-time",context).remove();
+            //first resolve all relations
+            rpc( "ticket.Relations.get_all", { 'match_in': { '_id': data.relations }}, function(relations)
             {
-                //index contracts by id
-                var contracts_by_id={};
-                $.each(contracts.data, function(i, contract){
-                    contracts_by_id[contract._id]=contract;
+                //get all contracts
+                var contract_ids=[];
+                $.each(relations.data, function(i, relation)
+                {   
+                    if (relation.contracts)
+                        contract_ids=contract_ids.concat(relation.contracts);
                 });
 
-                //now add a button for every contract for every a relation has
-                $.each(relations.data, function(i, relation)
+                rpc( "ticket.Contracts.get_all", { 'match_in': { '_id': contract_ids }}, function(contracts)
                 {
-                    if (relation.contracts)
+                    //index contracts by id
+                    var contracts_by_id={};
+                    $.each(contracts.data, function(i, contract){
+                        contracts_by_id[contract._id]=contract;
+                    });
+
+                    //now add a button for every contract a relation has
+                    $.each(relations.data, function(i, relation)
                     {
-                        $.each(relation.contracts, function(i, contract_id)
+                        if (relation.contracts)
                         {
-                            console.log("add time: ", relation.title, contracts_by_id[contract_id].title);
-                            var button=$("<button class='on-click-new-ticket-time'></button>");
-                            var span=$("<span class='ticket-add-time-button-style'></span>");
-                            button.append(span);
-                            span.text(relation.title+": "+contracts_by_id[contract_id].title);
-                            $(".floatingBar",context).append(button);
-                        });
-                    }
+                            $.each(relation.contracts, function(i, contract_id)
+                            {
+                                console.log("add time: ", relation.title, contracts_by_id[contract_id].title);
+                                var button=$("<button class='on-click-new-ticket-time'></button>");
+                                var span=$("<span class='ticket-add-time-button-style'></span>");
+                                button.append(span);
+                                span.text(relation.title+": "+contracts_by_id[contract_id].title);
+                                $(".floatingBar",context).append(button);
+                            });
+                        }
+                    });
                 });
             });
-        });
+        };
+
+       create_buttons();
+       $(context).subscribe("ticket.Contracts.changed", "time_buttons", create_buttons);
+       $(context).subscribe("ticket.Relations.changed", "time_buttons", create_buttons);
+
     }
 });
 
