@@ -28,23 +28,6 @@ var form=new ControlForm({
 
         });
 
-        $(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
-        {
-            console.log("jo", this);
-            return;
-            viewCreate({ creator: context },
-            {
-                name: 'ticket.TicketObjects.edit',
-                mode: 'main',
-                params: {
-                    ticket_id: view.params._id,
-                    type: 'time',
-                    billing_relation: $(this).attr("field-list-id")
-                }
-            });
-
-        });
-
         $(".on-click-ticket-list", context).click(function()
         {
             viewCreate({ clear:true, creator: context },
@@ -55,6 +38,23 @@ var form=new ControlForm({
             });
 
         });
+
+        $(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
+        {
+            viewCreate({ creator: context },
+            {
+                name: 'ticket.TicketObjects.edit',
+                mode: 'main',
+                params: {
+                    ticket_id: view.params._id,
+                    type: 'time',
+                    billing_relation: $(this).attr("relation-id"),
+                    billing_contract: $(this).attr("contract-id")
+                }
+            });
+
+        });
+
     },
     'field_put': function(data)
     {
@@ -89,11 +89,15 @@ var form=new ControlForm({
                         {
                             $.each(relation.contracts, function(i, contract_id)
                             {
-                                console.log("add time: ", relation.title, contracts_by_id[contract_id].title);
-                                var button=$("<button class='on-click-new-ticket-time'></button>");
+                                // console.log("add time: ", relation.title, contracts_by_id[contract_id].title);
+
                                 var span=$("<span class='ticket-add-time-button-style'></span>");
-                                button.append(span);
                                 span.text(relation.title+": "+contracts_by_id[contract_id].title);
+
+                                var button=$("<button class='on-click-new-ticket-time'></button>");
+                                button.append(span);
+                                button.attr("relation-id",relation._id);
+                                button.attr("contract-id",contract_id);
                                 $(".floatingBar",context).append(button);
                             });
                         }
