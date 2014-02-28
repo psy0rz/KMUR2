@@ -362,7 +362,6 @@ class Base(models.common.Base):
 
         regex_filters = {}
 
-        print (type(_id))
         if _id:
             doc = self.db[collection].find_one(bson.objectid.ObjectId(_id),fields=fields)
 
