@@ -6,7 +6,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
     
     meta = fields.List(
             fields.Dict({
-                'invoice_nr': fields.Number(desc='Next invoice number'),
+                'yinvoice_nr': fields.Number(desc='Next invoice number'),
             }),
         )
 
@@ -19,7 +19,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
 
     @Acl(roles="admin")
     def gt(self):
-        return(self['xinvoice_nr'])
+        return(self['yinvoice_nr'])
 
 
     @Acl(roles="admin")
@@ -27,6 +27,6 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
         if 'invoice_nr' in self:
             print ("invoice_nr")
 
-        if 'xinvoice_nr' in self:
-            print ("xinvoice_nr")
+        if 'yinvoice_nr' in self:
+            print ("yinvoice_nr")
               

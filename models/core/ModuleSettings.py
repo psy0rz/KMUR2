@@ -47,12 +47,22 @@ class ModuleSettings(models.mongodb.Base):
     def __getitem__(self, key):
         collection = self.default_collection
         doc = self.db[collection].find_one(0, fields={ key: True } )
-        return(doc[key])
+
+        if key in doc:
+            return(doc[key])
+
+        #return default value
+        return(self.get_meta(doc).meta['meta'].meta['meta'][key].meta['default'])
 
     def __contains__(self, key):
         collection = self.default_collection
         doc = self.db[collection].find_one(0, fields={ key: True } )
-        return(key in doc)
+        if key in doc:
+            return(True)
+
+        #return true if the metadata exists
+        return(key in self.get_meta(doc).meta['meta'].meta['meta'])
+
 
     def __setitem__(self, key, value):
         collection = self.default_collection
