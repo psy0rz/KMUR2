@@ -44,4 +44,23 @@ class ModuleSettings(models.mongodb.Base):
             return(self.get_meta(doc).meta['meta'].to_external(self.context, doc))
 
 
+    def __getitem__(self, key):
+        collection = self.default_collection
+        doc = self.db[collection].find_one(0, fields={ key: True } )
+        return(doc[key])
+
+    def __contains__(self, key):
+        collection = self.default_collection
+        doc = self.db[collection].find_one(0, fields={ key: True } )
+        return(key in doc)
+
+    def __setitem__(self, key, value):
+        collection = self.default_collection
+        self.db[collection].update(
+            {'_id':0}, 
+            {'$set' : {
+                key: value
+            } }, 
+            upsert=True)
+
 

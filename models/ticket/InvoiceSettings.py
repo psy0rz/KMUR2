@@ -13,7 +13,20 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
 
 
     @Acl(roles="admin")
-    def test(self):
-        self['invoice_nr']=self['invoice_nr']+1
+    def inc(self):
+        self['xinvoice_nr']=self['xinvoice_nr']+1
 
 
+    @Acl(roles="admin")
+    def gt(self):
+        return(self['xinvoice_nr'])
+
+
+    @Acl(roles="admin")
+    def ki(self):
+        if 'invoice_nr' in self:
+            print ("invoice_nr")
+
+        if 'xinvoice_nr' in self:
+            print ("xinvoice_nr")
+              
