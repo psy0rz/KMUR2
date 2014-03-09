@@ -51,7 +51,7 @@ class ModuleSettings(models.mongodb.Base):
         if key in doc:
             return(doc[key])
 
-        #return default value
+        #return default value, if any 
         return(self.get_meta(doc).meta['meta'].meta['meta'][key].meta['default'])
 
     def __contains__(self, key):
@@ -60,8 +60,12 @@ class ModuleSettings(models.mongodb.Base):
         if key in doc:
             return(True)
 
-        #return true if the metadata exists
-        return(key in self.get_meta(doc).meta['meta'].meta['meta'])
+        #return true if the metadata exists and has a default value
+        if key in self.get_meta(doc).meta['meta'].meta['meta']:
+            if default in self.get_meta(doc).meta['meta'].meta['meta'][key].meta:
+                return(True)
+
+        return(False)
 
 
     def __setitem__(self, key, value):
