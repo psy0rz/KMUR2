@@ -1,4 +1,3 @@
-from models.common import *
 import fields
 import models.core.ModuleSettings
 
