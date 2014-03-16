@@ -5,6 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.mongodb
 import models.ticket.Relations
+import models.tickets.InvoiceSettings
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -13,8 +14,7 @@ class Invoices(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'title': fields.String(min=3, desc='Title', size=100),
-                'desc': fields.String(desc='Description'),
+                'notes': fields.String(desc='Notes'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,

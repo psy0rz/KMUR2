@@ -1,0 +1,22 @@
+{
+	"invoices":{
+		"title":"Invoices",
+        "view":
+            { 
+                "name":"ticket.Invoices.list",
+                "mode":"main",
+                "params": { }
+            },
+  	    "items":[
+            {
+                "title":"Settings",
+                "view":
+                    { 
+                        "name":"ticket.Invoices.settings",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+		]
+	}
+}

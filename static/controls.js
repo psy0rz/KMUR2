@@ -62,8 +62,8 @@ function ControlBase(params)
     if (!('get' in this.params))
         this.params.get=this.params.class+".get";
 
-    if (!('get_params' in this.params))
-        this.params.get_params={}; //too ambigious: this.params.view.params;
+    // if (!('get_params' in this.params))
+    //     this.params.get_params={}; //too ambigious: this.params.view.params;
 
     if (! this.params.get_result)
         this.params.get_result=function(){};
@@ -305,9 +305,10 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
 
 ControlForm.prototype.get=function(request_params)
 {
-    //its not possible to 'get' data from a form when there are no get_parameters. 
-    //this is the case when the user wants to create a new item instead of editting an existing one
-    if (this.params.get_params==undefined || Object.keys(this.params.get_params).length==0)
+    console.log(this.params.get_params);
+    //its not possible to 'get' data from a form when there are no get_parameters specified.
+    //unless get_parmas is explicitly undefined.
+    if (this.params.get_params!=undefined && Object.keys(this.params.get_params).length==0)
     {
         //NOTE:not getting data,  but we still call get_result with an empty result to handle the rest of the stuff
         this.get_result({}, request_params);

@@ -83,7 +83,7 @@ class Contracts(models.core.Protected.Protected):
         ret=self._delete(_id)
         self.event("deleted",ret)
 
-        self.info("Deleted relation {title}".format(**doc))
+        self.info("Deleted contract {title}".format(**doc))
 
         return(ret)
 
