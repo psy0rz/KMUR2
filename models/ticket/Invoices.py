@@ -15,9 +15,10 @@ class Invoices(models.core.Protected.Protected):
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
 
-                'title': fields.String(desc='Title'),
+                'title': fields.String(desc='Title', default='Invoice'),
 
                 #filled automatcly when invoice is "sent"
+                #after sending, most of the invoice may no longer be changed
                 'invoice_nr': fields.Number(desc='Invoice number'),
                 'sent': fields.Bool(desc='Sent'),
                 'sent_date': fields.Timestamp(desc='Invoice date'),
@@ -47,7 +48,7 @@ class Invoices(models.core.Protected.Protected):
                     check_exists=True,
                     list=False),
                 'to_relation': models.mongodb.Relation(
-                    desc='To',
+                    desc='Customer',
                     model=models.ticket.Relations.Relations,
                     resolve=False,
                     check_exists=True,
@@ -56,6 +57,17 @@ class Invoices(models.core.Protected.Protected):
                 #invoice-data should be immutable once they're sent to the customer
                 'from_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
                 'to_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
+
+                'items': fields.List(
+                    fields.Dict({
+                            'amount': fields.Number(desc='Amount',size=5),
+                            'desc': fields.String(desc='Description', size=80),
+                            'price': fields.Number(desc='Price', size=5),
+                            'tax': fields.Number(desc='Tax', default=21, size=5),
+                        }),
+                    desc="Invoice items"
+                ),
+
 
                 'notes': fields.String(desc='Notes'),
 

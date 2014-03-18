@@ -1,65 +1,172 @@
 
 <script>
 
+
 new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Invoices',
     'get_params'      : view.params,
-    'default_focus'   : 'notes',
+    'default_focus'   : 'title',
     'title'           : 'Edit invoice {invoice_nr}',
     'title_new'       : 'New invoice',
     'favorite_menu'   : 'invoices',
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'allowed_groups': [ ]
+    },
+    'field_put': function(data, options)
+    {
+        var item_context=$('.field-list-source[field-key="items"]', context).parent();
+
+        //rounding according to http://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden
+        function tax_round(number)
+        {
+            return(Math.round(number*100)/100); 
+        }
+
+        function recalculate()
+        {
+            var total=0;
+            var total_tax=0;
+            $(".field-list-item", item_context).each(function()
+            {
+                var amount=$('.field-input[field-key="items.amount"]',this).val();
+                var price=$('.field-input[field-key="items.price"]',this).val();
+                var tax=$('.field-input[field-key="items.tax"]',this).val();
+                var row_total=tax_round(Math.round(amount*price*100)/100);
+                var row_total_tax=tax_round(row_total + (row_total*tax/100));
+                total+=row_total;
+                total_tax+=row_total_tax;
+                $('.calc-row-total',this).text(row_total.toFixed(2));
+                $('.calc-row-total-tax',this).text(row_total_tax.toFixed(2));
+
+            });
+            $('.calc-total',context).text(tax_round(total).toFixed(2));
+            $('.calc-total-tax',context).text(tax_round(total_tax).toFixed(2));
+        };
+
+        //recalculate right now, since data has just been put into the form
+        recalculate();
+
+        //trigger recalculate on field change
+        $(item_context).on('field_changed', '[field-key="items.amount"], [field-key="items.price"], [field-key="items.tax"]',function(e, key, meta, element, data)
+        {
+            recalculate();
+        });        
+
+        $(item_context).on('field_added field_deleted', '*', function()
+        {
+            recalculate();
+        });
+
+        //change default tax
+        $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, meta, element, data)
+        {
+            $('.field-list-source .field-input[field-key="items.tax"]',context).val(data);
+        });
+
     }
+
 });
 
 
 
 </script>
 
-<legend>Contract</legend>
-<table class='inline-block'>
-    <tr>
-        <td class='field-meta-put' field-key='active' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='active'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='title' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='title'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
-        <td><textarea class='field-put field-get field-input' field-key='desc' cols=80 rows=5></textarea>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='type' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='type'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='price' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='price'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='minutes'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='minutes_minimum' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='minutes_minimum'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='minutes_rounding' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='minutes_rounding'>
-    </tr>
-    <tr>
-        <td class='field-meta-put' field-key='tax' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='tax'>
-    </tr>
-</table>
+<fieldset class='inline-block'>
+    <legend>Info</legend>        
+
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='title' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='title'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='to_relation' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='to_relation'>
+                <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='to_relation' field-list-view="ticket.Relations.edit">
+                    <span class='field-put field-list-on-click-view' field-key='to_relation.title' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+                <br>
+                <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+        </tr>
+    </table>
+
+
+
+</fieldset>
+
+<fieldset class='inline-block control-hide-on-new'>
+    <legend>Status</legend>        
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='invoice_nr' field-meta-key='desc'>
+            <td class='field-put value' field-key='invoice_nr'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='sent' field-meta-key='desc'>
+            <td class='field-put value' field-key='sent'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='sent_date' field-meta-key='desc'>
+            <td class='field-put value' field-key='sent_date'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='payed' field-meta-key='desc'>
+            <td class='field-put value' field-key='payed'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='payed_date' field-meta-key='desc'>
+            <td class='field-put value' field-key='payed_date'>
+        </tr>
+    </table>
+</fieldset>
+
+
 
 <fieldset>
+    <legend class='field-meta-put' field-key='items' field-meta-key='desc'></legend>
+    <table >
+        <thead >
+            <tr class='field-meta-put ui-widget-header' field-key='items'>
+                <td>
+                <td class='field-meta-put' field-key='items.amount' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='items.desc' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='items.price' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='items.tax' field-meta-key='desc'>
+                <td>Total
+                <td>With tax
+                <td>
+                <td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class='colorRows field-meta-put field-list-source field-list-sortable ui-widget-content' field-key='items'>
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-meta-put field-list-on-focus-add' field-key='items.amount'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='items.desc'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='items.price'>
+                <td class='field-meta-put field-list-on-focus-add' field-key='items.tax'>
+                <td class='calc-row-total' style='text-align: right;'>
+                <td class='calc-row-total-tax' style='text-align: right;'>
+                <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                <td class='field-list-on-click-add ui-icon ui-icon-triangle-1-s'>
+            </tr>
+            <tr>
+                <td colspan=5>
+                <td class='calc-total value' style='text-align: right; font-weight: bold;'>
+                <td class='calc-total-tax value' style='text-align: right; font-weight: bold;'>
+            </tr>
+
+        </tbody>
+    </table>
+</fieldset>
+
+
+<fieldset class='inline-block'>
     <legend>Sharing</legend>        
     <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>

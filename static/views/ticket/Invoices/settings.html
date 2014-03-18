@@ -18,6 +18,19 @@ new ControlForm({
         <td class='field-meta-put' field-key='invoice_nr' field-meta-key='desc'>
         <td class='field-meta-put' field-key='invoice_nr'>
     </tr>
+    <tr>
+        <td class='field-meta-put' field-key='from_relation' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='from_relation'>
+            <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='from_relation' field-list-view="ticket.Relations.edit">
+                <span class='field-put field-list-on-click-view' field-key='from_relation.title' style='font-weight: bold'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+            </span>
+            <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+            <br>
+            <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+
+    </tr>
 </table>
 
 

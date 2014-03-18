@@ -52,7 +52,7 @@ var form=new ControlForm({
 
 
 //this function is called just before doing a search in the billing_contract field.
-$('[field-key="billing_contract"]', context).data("pre_get_all", function(params)
+$('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", function(params)
 {
     //get the currently selected billing_relation:
     var relation=$('.field-list-item[field-key="billing_relation"]', context).data("field-data");

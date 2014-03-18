@@ -560,6 +560,7 @@ Field.List.meta_put=function(key, meta, context, options)
         //create an add-handler to add items to lists
         list_source.parent().off("click", ".field-list-on-click-add").on("click", ".field-list-on-click-add", function(){
             Field.List.from_element_add(null, this);
+            context.trigger("field_added",[key , meta, context]);
         });
         
         //create an add-handler if the source-element of a list is focussed
@@ -573,6 +574,8 @@ Field.List.meta_put=function(key, meta, context, options)
                 var added_item=Field.List.from_element_add(null, this);
                 $(this).removeClass("field-list-tmp-focus");
                 $(".field-list-tmp-focus", added_item).focus().removeClass("field-list-tmp-focus");
+                //indicates that a field was added manually by the user
+                context.trigger("field_added",[key , meta, context]);
                 return(false);
             }
             return(true);
@@ -586,6 +589,8 @@ Field.List.meta_put=function(key, meta, context, options)
                     clicked_element.hide('fast',function()
                     {
                         clicked_element.remove();
+                        //indicates that a field was deleted manually by the user
+                        context.trigger("field_deleted",[key , meta, context]);
                     });
             }
         });
@@ -1798,7 +1803,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
                 var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
 
                 //allow customisation of the get_all parameters
-                if (context.data("pre_get_all") && !context.data("pre_get_all")(params))
+                if (context.data("field_relation_pre_get_all") && !context.data("field_relation_pre_get_all")(params))
                 {
                     response([]);
                     return(true);
