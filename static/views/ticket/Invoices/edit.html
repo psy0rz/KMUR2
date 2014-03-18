@@ -3,12 +3,12 @@
 
 new ControlForm({
     'view'            : view,
-    'class'           : 'ticket.Contracts',
+    'class'           : 'ticket.Invoices',
     'get_params'      : view.params,
-    'default_focus'   : 'title',
-    'title'           : 'Edit contract {title}',
-    'title_new'       : 'New contract',
-    'favorite_menu'   : 'contracts',
+    'default_focus'   : 'notes',
+    'title'           : 'Edit invoice {invoice_nr}',
+    'title_new'       : 'New invoice',
+    'favorite_menu'   : 'invoices',
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'allowed_groups': [ ]

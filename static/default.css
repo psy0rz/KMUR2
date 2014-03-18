@@ -181,4 +181,32 @@
 	float:left;
 }
 
+#views
+{
+	padding-left:15em;
+	padding-top:2em;
+	padding-bottom:3em;	
+}
+
+@media print
+{
+	.floatingBar
+	{
+		display: none;
+	}
+
+	.hide-while-printing
+	{
+		display: none;
+	}
+
+	#views
+	{
+		padding-left:0em;
+		padding-right:0em;
+		padding-top:0em;
+		padding-bottom:0em;
+	}
+}
+
 

@@ -7,5 +7,6 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
             fields.Dict({
                 'invoice_nr': fields.Number(desc='Next invoice number', default=0),
             }),
+
         )
 

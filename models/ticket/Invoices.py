@@ -5,7 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.mongodb
 import models.ticket.Relations
-import models.tickets.InvoiceSettings
+import models.ticket.InvoiceSettings
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -14,7 +14,19 @@ class Invoices(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'notes': fields.String(desc='Notes'),
+
+                'title': fields.String(desc='Title'),
+
+                #filled automatcly when invoice is "sent"
+                'invoice_nr': fields.Number(desc='Invoice number'),
+                'sent': fields.Bool(desc='Sent'),
+                'sent_date': fields.Timestamp(desc='Invoice date'),
+
+                #filled automaticly when invoice is "payed"
+                'payed': fields.Bool(desc='Payed'),
+                'payed_date': fields.Timestamp(desc='Payed date'),
+
+
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -27,26 +39,26 @@ class Invoices(models.core.Protected.Protected):
                     resolve=False,
                     check_exists=False,
                     list=True),
-                'contracts': models.mongodb.Relation(
-                    desc='Contracts',
-                    model=models.ticket.Contracts.Contracts,
+
+                'from_relation': models.mongodb.Relation(
+                    desc='From',
+                    model=models.ticket.Relations.Relations,
                     resolve=False,
                     check_exists=True,
-                    list=True),
-                'emails': fields.List(
-                    fields.Dict({
-                            'desc': fields.String(desc='Description'),
-                            'email': fields.Email(desc='Email address')
-                        }),
-                    desc="Email adresses"
-                ),
-                'phones': fields.List(
-                    fields.Dict({
-                            'desc': fields.String(desc='Description'),
-                            'phone': fields.Phone(desc='Phone number')
-                        }),
-                    desc="Phone numbers"
-                ),
+                    list=False),
+                'to_relation': models.mongodb.Relation(
+                    desc='To',
+                    model=models.ticket.Relations.Relations,
+                    resolve=False,
+                    check_exists=True,
+                    list=False),
+
+                #invoice-data should be immutable once they're sent to the customer
+                'from_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
+                'to_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
+
+                'notes': fields.String(desc='Notes'),
+
             }),
             list_key='_id'
         )
@@ -64,7 +76,7 @@ class Invoices(models.core.Protected.Protected):
 
     read=write
 
-    @Acl(roles="user")
+    @Acl(roles="finance")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -79,11 +91,11 @@ class Invoices(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @Acl(roles="finance")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="user")
+    @Acl(roles="finance")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -95,7 +107,7 @@ class Invoices(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @Acl(roles="finance")
     def get_all(self, **params):
         return(self._get_all(**params))
 
