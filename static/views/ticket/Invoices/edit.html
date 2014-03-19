@@ -16,14 +16,6 @@ var form=new ControlForm({
     }
 });
 
-var item_context=$('.field-list-source[field-key="items"]', context).parent();
-
-// //rounding according to http://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden
-// function tax_round(number)
-// {
-//     return(Math.round(number*100)/100); 
-// }
-
 var calculating=false;
 var changed=false;
 function recalculate()
@@ -59,27 +51,9 @@ function recalculate()
         }
     );
 
-    // var total=0;
-    // var total_tax=0;
-    // $(".field-list-item", item_context).each(function()
-    // {
-    //     var amount=$('.field-input[field-key="items.amount"]',this).val();
-    //     var price=$('.field-input[field-key="items.price"]',this).val();
-    //     var tax=$('.field-input[field-key="items.tax"]',this).val();
-    //     var row_total=tax_round(Math.round(amount*price*100)/100);
-    //     var row_total_tax=tax_round(row_total + (row_total*tax/100));
-    //     total+=row_total;
-    //     total_tax+=row_total_tax;
-    //     $('.calc-row-total',this).text(row_total.toFixed(2));
-    //     $('.calc-row-total-tax',this).text(row_total_tax.toFixed(2));
-
-    // });
-    // $('.calc-total',context).text(tax_round(total).toFixed(2));
-    // $('.calc-total-tax',context).text(tax_round(total_tax).toFixed(2));
 };
 
-        //recalculate right now, since data has just been put into the form
-//        recalculate();
+var item_context=$('.field-list-source[field-key="items"]', context).parent();
 
 //trigger recalculate on field change
 $(item_context).on('field_changed', '[field-key="items.amount"], [field-key="items.price"], [field-key="items.tax"]',function(e, key, meta, element, data)
