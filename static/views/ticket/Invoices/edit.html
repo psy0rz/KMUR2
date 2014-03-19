@@ -2,7 +2,7 @@
 <script>
 
 
-new ControlForm({
+var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Invoices',
     'get_params'      : view.params,
@@ -13,60 +13,89 @@ new ControlForm({
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'allowed_groups': [ ]
-    },
-    'field_put': function(data, options)
+    }
+});
+
+var item_context=$('.field-list-source[field-key="items"]', context).parent();
+
+// //rounding according to http://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden
+// function tax_round(number)
+// {
+//     return(Math.round(number*100)/100); 
+// }
+
+var calculating=false;
+var changed=false;
+function recalculate()
+{
+    //prevent queuing in case of slow links or servers
+    if (calculating)
     {
-        var item_context=$('.field-list-source[field-key="items"]', context).parent();
+        changed=true;
+        return;
+    }
+    calculating=true;
+    changed=false;
 
-        //rounding according to http://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden
-        function tax_round(number)
+    rpc(    
+        "ticket.Invoices.calc",
+        form.field_get(),
+        function(result)
         {
-            return(Math.round(number*100)/100); 
-        }
-
-        function recalculate()
-        {
-            var total=0;
-            var total_tax=0;
-            $(".field-list-item", item_context).each(function()
+            calculating=false;
+            if (!viewShowError(result, context, form.meta))
             {
-                var amount=$('.field-input[field-key="items.amount"]',this).val();
-                var price=$('.field-input[field-key="items.price"]',this).val();
-                var tax=$('.field-input[field-key="items.tax"]',this).val();
-                var row_total=tax_round(Math.round(amount*price*100)/100);
-                var row_total_tax=tax_round(row_total + (row_total*tax/100));
-                total+=row_total;
-                total_tax+=row_total_tax;
-                $('.calc-row-total',this).text(row_total.toFixed(2));
-                $('.calc-row-total-tax',this).text(row_total_tax.toFixed(2));
+                form.field_put(result.data, { 
+                    list_update: true, 
+                    list_no_remove: true,
+                    list_no_add: true,
+                    show_changes:true,
+                    no_input: true,
+                });
+            }
+            if (changed)
+                recalculate();
 
-            });
-            $('.calc-total',context).text(tax_round(total).toFixed(2));
-            $('.calc-total-tax',context).text(tax_round(total_tax).toFixed(2));
-        };
+        }
+    );
+
+    // var total=0;
+    // var total_tax=0;
+    // $(".field-list-item", item_context).each(function()
+    // {
+    //     var amount=$('.field-input[field-key="items.amount"]',this).val();
+    //     var price=$('.field-input[field-key="items.price"]',this).val();
+    //     var tax=$('.field-input[field-key="items.tax"]',this).val();
+    //     var row_total=tax_round(Math.round(amount*price*100)/100);
+    //     var row_total_tax=tax_round(row_total + (row_total*tax/100));
+    //     total+=row_total;
+    //     total_tax+=row_total_tax;
+    //     $('.calc-row-total',this).text(row_total.toFixed(2));
+    //     $('.calc-row-total-tax',this).text(row_total_tax.toFixed(2));
+
+    // });
+    // $('.calc-total',context).text(tax_round(total).toFixed(2));
+    // $('.calc-total-tax',context).text(tax_round(total_tax).toFixed(2));
+};
 
         //recalculate right now, since data has just been put into the form
-        recalculate();
+//        recalculate();
 
-        //trigger recalculate on field change
-        $(item_context).on('field_changed', '[field-key="items.amount"], [field-key="items.price"], [field-key="items.tax"]',function(e, key, meta, element, data)
-        {
-            recalculate();
-        });        
+//trigger recalculate on field change
+$(item_context).on('field_changed', '[field-key="items.amount"], [field-key="items.price"], [field-key="items.tax"]',function(e, key, meta, element, data)
+{
+    recalculate();
+});        
 
-        $(item_context).on('field_added field_deleted', '*', function()
-        {
-            recalculate();
-        });
+$(item_context).on('field_added field_deleted', '*', function()
+{
+    recalculate();
+});
 
-        //change default tax
-        $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, meta, element, data)
-        {
-            $('.field-list-source .field-input[field-key="items.tax"]',context).val(data);
-        });
-
-    }
-
+//change default tax
+$(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, meta, element, data)
+{
+    $('.field-list-source .field-input[field-key="items.tax"]',context).val(data);
 });
 
 
@@ -137,8 +166,8 @@ new ControlForm({
                 <td class='field-meta-put' field-key='items.desc' field-meta-key='desc'>
                 <td class='field-meta-put' field-key='items.price' field-meta-key='desc'>
                 <td class='field-meta-put' field-key='items.tax' field-meta-key='desc'>
-                <td>Total
-                <td>With tax
+                <td class='field-meta-put' field-key='items.calc_total' field-meta-key='desc'>
+                <td class='field-meta-put' field-key='items.calc_total_tax' field-meta-key='desc'>
                 <td>
                 <td>
             </tr>
@@ -150,15 +179,15 @@ new ControlForm({
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.desc'>
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.price'>
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.tax'>
-                <td class='calc-row-total' style='text-align: right;'>
-                <td class='calc-row-total-tax' style='text-align: right;'>
+                <td class='field-put' field-key='items.calc_total' style='text-align: right;'></td>
+                <td class='field-put' field-key='items.calc_total_tax' style='text-align: right;'></td>
                 <td class='field-list-on-click-del ui-icon ui-icon-trash'>
                 <td class='field-list-on-click-add ui-icon ui-icon-triangle-1-s'>
             </tr>
             <tr>
                 <td colspan=5>
-                <td class='calc-total value' style='text-align: right; font-weight: bold;'>
-                <td class='calc-total-tax value' style='text-align: right; font-weight: bold;'>
+                <td class='field-put value' field-key='calc_total' style='text-align: right; font-weight: bold;'>
+                <td class='field-put value' field-key='calc_total_tax' style='text-align: right; font-weight: bold;'>
             </tr>
 
         </tbody>

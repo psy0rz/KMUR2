@@ -150,7 +150,7 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
             context.empty();
             context.append(element);
             if (options.show_changes)
-                context.effect('highlight', 2000);
+                context.stop(true,true).effect('highlight',  2000);
         }
         else
         {
@@ -165,7 +165,7 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
         {
             context.text(element);
             if (options.show_changes)
-                context.effect('highlight', 2000);
+                context.stop(true,true).effect('highlight', 2000);
         }
         else
         {
@@ -1085,7 +1085,10 @@ Field.String.put=function(key, meta, context, data, options)
 {
 //    console.log("String.put", key , meta, context, data, options);
     if (context.hasClass("field-input"))
-        context.val(data);
+    {
+        if (!options.no_input)
+            context.val(data);
+    }
     else
     {
         if (data==null)
@@ -1223,13 +1226,16 @@ Field.Select.put=function(key, meta, context, data, options)
 {
     if (context.hasClass("field-input"))
     {
-        //translate raw data to index
-        for (i in meta.choices)
+        if (!options.no_input)
         {
-            if (meta.choices[i][0]==data)
+            //translate raw data to index
+            for (i in meta.choices)
             {
-                context.val(i);
-                break;
+                if (meta.choices[i][0]==data)
+                {
+                    context.val(i);
+                    break;
+                }
             }
         }
     }
@@ -1317,6 +1323,8 @@ Field.Bool.put=function(key, meta, context, data, options)
 {
     if (context.hasClass("field-input"))
     {
+        if (!options.no_input)
+        {
             if (context.attr("field-allow-null")=="")
             {
                 //if we allow null, we use a select box for it
@@ -1333,7 +1341,7 @@ Field.Bool.put=function(key, meta, context, data, options)
                 else
                    context.attr("checked", data);
             }
-
+        }
     }
     else
     {
@@ -1441,11 +1449,14 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
     
     if (context.hasClass("field-input"))
     {
-        $("input", context).each(function()
+        if (!options.no_input)
         {
-            //set checked to true if the value of the checkbox is found in the value passed to this function:
-            $(this).attr("checked", (data.indexOf($(this).attr("value")) != -1));
-        });
+            $("input", context).each(function()
+            {
+                //set checked to true if the value of the checkbox is found in the value passed to this function:
+                $(this).attr("checked", (data.indexOf($(this).attr("value")) != -1));
+            });
+        }
     }
     else
     {
@@ -1637,7 +1648,8 @@ Field.Timestamp.put=function(key, meta, context, data, options)
 
     if (context.hasClass("field-input"))
     {
-        context.val(dateStr);
+        if (!options.no_input)
+            context.val(dateStr);
     }
     else
     {

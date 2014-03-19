@@ -6,6 +6,7 @@ import models.core.Groups
 import models.mongodb
 import models.ticket.Relations
 import models.ticket.InvoiceSettings
+import time
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -64,10 +65,13 @@ class Invoices(models.core.Protected.Protected):
                             'desc': fields.String(desc='Description', size=80),
                             'price': fields.Number(desc='Price', size=5),
                             'tax': fields.Number(desc='Tax', default=21, size=5),
+                            'calc_total': fields.Number(desc='Total', readonly=True),
+                            'calc_total_tax': fields.Number(desc='with tax', readonly=True),
                         }),
                     desc="Invoice items"
                 ),
-
+                'calc_total': fields.Number(desc='Total', readonly=True),
+                'calc_total_tax': fields.Number(desc='with tax', readonly=True),
 
                 'notes': fields.String(desc='Notes'),
 
@@ -104,8 +108,47 @@ class Invoices(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="finance")
+    def calc(self, **doc):
+        """calculates the document in place and also returns it
+
+        used internally as well as by frontends
+
+        performs roundings according to dutch tax rules: http://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/administratie_bijhouden/facturen_maken/btw-bedrag_afronden
+
+        well..not exactly:
+
+        In [28]: round(3.33500001,2)
+        Out[28]: 3.34
+
+        In [29]: round(3.33500000,2)
+        Out[29]: 3.33
+
+        so we're only rounding UP when its just >5, not >=5, but in practice this makes no difference.
+
+        """
+#        time.sleep(2)
+#        self.get_meta(doc).meta['meta'].check(self.context, doc)
+        doc['calc_total']=0
+        doc['calc_total_tax']=0
+        for item in doc['items']:
+            try:
+                item['calc_total']=round(item['amount']*item['price'],2)
+                item['calc_total_tax']=round(item['calc_total']+(item['calc_total']*item['tax']/100),2)
+                doc['calc_total']+=item['calc_total']
+                doc['calc_total_tax']+=item['calc_total_tax']
+            except:
+                item['calc_total']=None
+                item['calc_total_tax']=None
+
+
+        doc['calc_total']=round(doc['calc_total'],2)
+        doc['calc_total_tax']=round(doc['calc_total_tax'],2)
+
+        return(doc)
+
+    @Acl(roles="finance")
     def get(self, _id):
-        return(self._get(_id))
+        return(self.calc(**self._get(_id)))
 
     @Acl(roles="finance")
     def delete(self, _id):
