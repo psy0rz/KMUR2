@@ -104,13 +104,13 @@ Field.Base.meta_put=function(key, meta, context, options)
 
     if context has field-allow-null attribute, then the element will get it as well
     */ 
-Field.Base.input_append=function(key, meta, context, element)
+Field.Base.input_append=function(key, meta, context, element, options)
 {
     element.addClass("field-input field-put");
     element.attr("field-key", key);
     element.attr("title", meta.desc);
     
-    if (!meta.readonly)
+    if (!meta.readonly && !options.readonly)
     {
         element.addClass("field-get");
     }
@@ -318,6 +318,11 @@ Field.Dict.meta_put=function(key, meta, context, options)
         });
     }
 
+    var recursive_options={};
+    $.extend(recursive_options, options);
+    if (meta.readonly)
+        recursive_options.readonly=true;
+
     //traverse the sub meta data
     $.each(meta.meta, function(sub_key, thismeta){
         var key_str=Field.Base.concat_keys(key, sub_key);
@@ -325,7 +330,7 @@ Field.Dict.meta_put=function(key, meta, context, options)
         {
             //handle sub-dicts in the same context. this way you can use keys
             //like foo.subdict, without needing a surrounding element that has key foo.
-            Field.Dict.meta_put(key_str, thismeta, context, options);
+            Field.Dict.meta_put(key_str, thismeta, context, recursive_options);
         }
         else
         {
@@ -334,7 +339,7 @@ Field.Dict.meta_put=function(key, meta, context, options)
             $(selector, context).each(function()
             {
                 if (thismeta.type in Field)
-                    Field[thismeta.type].meta_put(key_str, thismeta, $(this), options);
+                    Field[thismeta.type].meta_put(key_str, thismeta, $(this), recursive_options);
             });
         }
     }); //meta data
@@ -552,62 +557,69 @@ Field.List.meta_put=function(key, meta, context, options)
     }
 
     //recurse into submeta
-    Field[meta.meta.type].meta_put(key, meta.meta, context, options);
+    var recursive_options={};
+    $.extend(recursive_options, options);
+    if (meta.readonly)
+        recursive_options.readonly=true;
+    Field[meta.meta.type].meta_put(key, meta.meta, context, recursive_options);
 
     //after the submeta data is done, attach event handlers for listsources
     if (list_source)
     {
-        //create an add-handler to add items to lists
-        list_source.parent().off("click", ".field-list-on-click-add").on("click", ".field-list-on-click-add", function(){
-            Field.List.from_element_add(null, this);
-            context.trigger("field_added",[key , meta, context]);
-        });
-        
-        //create an add-handler if the source-element of a list is focussed
-        list_source.parent().off("focus", ".field-list-on-focus-add :input").on("focus", ".field-list-on-focus-add :input", function(){
-            //only add an item if the user focusses a field in the listsource..
-            //console.error(from_element_get(null, $(this)));
-            if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
-            {
-                //most reliable way to move the focus to the correct field, since it also should work with relations (which uses different classes on its input box)
-                $(this).addClass("field-list-tmp-focus");
-                var added_item=Field.List.from_element_add(null, this);
-                $(this).removeClass("field-list-tmp-focus");
-                $(".field-list-tmp-focus", added_item).focus().removeClass("field-list-tmp-focus");
-                //indicates that a field was added manually by the user
-                context.trigger("field_added",[key , meta, context]);
-                return(false);
-            }
-            return(true);
-        });
-        
-        //create a handler to delete a list item
-        list_source.parent().off("click", ".field-list-on-click-del").on("click", ".field-list-on-click-del", function(){
-            var clicked_element=Field.List.from_element_get(null, this);
-            if (clicked_element.hasClass("field-list-item"))
-            {
-                    clicked_element.hide('fast',function()
-                    {
-                        clicked_element.remove();
-                        //indicates that a field was deleted manually by the user
-                        context.trigger("field_deleted",[key , meta, context]);
-                    });
-            }
-        });
-        
-        //create handlers to make lists sortable
-        if (list_source.hasClass("field-list-sortable"))
+        if (!recursive_options.readonly)
         {
-            list_source.parent().sortable({
-                placeholder: "",
-                handle: ".field-list-on-drag-sort",
-                cancel: ".field-list-source",
-                items:"> .field-list-item",
-                forceHelperSize: true,
-                forcePlaceholderSize: true
+            //create an add-handler to add items to lists
+            list_source.parent().off("click", ".field-list-on-click-add").on("click", ".field-list-on-click-add", function(){
+                Field.List.from_element_add(null, this);
+                context.trigger("field_added",[key , meta, context]);
             });
-        };
-
+            
+            //create an add-handler if the source-element of a list is focussed
+            list_source.parent().off("focus", ".field-list-on-focus-add :input").on("focus", ".field-list-on-focus-add :input", function(){
+                //only add an item if the user focusses a field in the listsource..
+                //console.error(from_element_get(null, $(this)));
+                if (Field.List.from_element_get(null, $(this)).hasClass("field-list-source"))
+                {
+                    //most reliable way to move the focus to the correct field, since it also should work with relations (which uses different classes on its input box)
+                    $(this).addClass("field-list-tmp-focus");
+                    var added_item=Field.List.from_element_add(null, this);
+                    $(this).removeClass("field-list-tmp-focus");
+                    $(".field-list-tmp-focus", added_item).focus().removeClass("field-list-tmp-focus");
+                    //indicates that a field was added manually by the user
+                    context.trigger("field_added",[key , meta, context]);
+                    return(false);
+                }
+                return(true);
+            });
+            
+            //create a handler to delete a list item
+            list_source.parent().off("click", ".field-list-on-click-del").on("click", ".field-list-on-click-del", function(){
+                var clicked_element=Field.List.from_element_get(null, this);
+                if (clicked_element.hasClass("field-list-item"))
+                {
+                        clicked_element.hide('fast',function()
+                        {
+                            clicked_element.remove();
+                            //indicates that a field was deleted manually by the user
+                            context.trigger("field_deleted",[key , meta, context]);
+                        });
+                }
+            });
+            
+            //create handlers to make lists sortable
+            if (list_source.hasClass("field-list-sortable"))
+            {
+                list_source.parent().sortable({
+                    placeholder: "",
+                    handle: ".field-list-on-drag-sort",
+                    cancel: ".field-list-source",
+                    items:"> .field-list-item",
+                    forceHelperSize: true,
+                    forcePlaceholderSize: true
+                });
+            };
+        }
+        
         //the view that was opened by us has changed something to our item
         //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.
         //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
@@ -1063,7 +1075,7 @@ Field.String.meta_put=function(key, meta, context, options)
 
     new_element.val(meta.default);
 
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     this.attach_eventhandlers(key, meta, context, new_element);
 
@@ -1116,7 +1128,7 @@ Field.Password.meta_put=function(key, meta, context, options)
 
     new_element.val(meta.default);
 
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     this.attach_eventhandlers(key, meta, context, new_element);
 
@@ -1138,7 +1150,7 @@ Field.Number.meta_put=function(key, meta, context, options)
 
     new_element.val(meta.default);
 
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     this.attach_eventhandlers(key, meta, context, new_element);
 }
@@ -1193,7 +1205,7 @@ Field.Select.meta_put=function(key, meta, context, options)
         new_element.append(option_element);
     });
             
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     //send changes as nice event with 'this' set to context
     $(new_element).on('change', function()
@@ -1286,7 +1298,7 @@ Field.Bool.meta_put=function(key, meta, context, options)
             .attr("type","checkbox")
             .attr("value","")
         new_element.attr("checked", meta.default);
-        Field.Base.input_append(key, meta, context, new_element);
+        Field.Base.input_append(key, meta, context, new_element, options);
 
         //send changes as nice event with 'this' set to context
         $(new_element).on('change', function()
@@ -1404,7 +1416,7 @@ Field.MultiSelect.meta_put=function(key, meta, context, options)
         new_element.append($("<br>"));
     });
 
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     //send changes as nice event with 'this' set to context
     $(new_element).on('change', function()
@@ -1588,7 +1600,7 @@ Field.Timestamp.meta_put=function(key, meta, context, options)
     });
 
 
-    Field.Base.input_append(key, meta, context, new_element);
+    Field.Base.input_append(key, meta, context, new_element, options);
 
     //send changes as nice event with 'this' set to context
     $(new_element).on('input change', function(e)

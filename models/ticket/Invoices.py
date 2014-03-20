@@ -68,7 +68,8 @@ class Invoices(models.core.Protected.Protected):
                             'calc_total': fields.Number(desc='Total', readonly=True),
                             'calc_total_tax': fields.Number(desc='with tax', readonly=True),
                         }),
-                    desc="Invoice items"
+                    desc="Invoice items",
+                    readonly=True
                 ),
                 'calc_total': fields.Number(desc='Total', readonly=True),
                 'calc_total_tax': fields.Number(desc='with tax', readonly=True),
