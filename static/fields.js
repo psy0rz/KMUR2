@@ -618,41 +618,42 @@ Field.List.meta_put=function(key, meta, context, options)
                     forcePlaceholderSize: true
                 });
             };
+
+            //the view that was opened by us has changed something to our item
+            //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.
+            //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
+            $(list_source.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
+            {
+                console.log("field.list: view opened by us has changed the data", result, this);
+
+                Field.List.put(
+                    key,
+                    meta,
+                    list_source,
+                    [ result.data ],
+                    {
+                        list_no_remove: true,
+                        list_update: true,
+                        show_changes: true
+
+                    }
+                );
+
+                return(false);
+            });
+
+            //the view that was opened by us has deleted our item
+            $(list_source).off("control_form_deleted").on("control_form_deleted",function(event)
+            {
+                console.log("view opened by us has deleted the data");
+                 $(this).hide(1000,function()
+                 {
+                     $(this).remove();
+                 });
+                return(false);
+            });
         }
         
-        //the view that was opened by us has changed something to our item
-        //NOTE:this might do things twice, since there is also a global change-handler in things like controllist.
-        //the reason we do it here as well is that fields normally dont know (and shouldnt know) there model-class and cant thus cant listen to global change events. only field.relation is an exception offcourse.
-        $(list_source.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
-        {
-            console.log("field.list: view opened by us has changed the data", result, this);
-
-            Field.List.put(
-                key,
-                meta,
-                list_source,
-                [ result.data ],
-                {
-                    list_no_remove: true,
-                    list_update: true,
-                    show_changes: true
-
-                }
-            );
-
-            return(false);
-        });
-
-        //the view that was opened by us has deleted our item
-        $(list_source).off("control_form_deleted").on("control_form_deleted",function(event)
-        {
-            console.log("view opened by us has deleted the data");
-             $(this).hide(1000,function()
-             {
-                 $(this).remove();
-             });
-            return(false);
-        });
 
         //create handler to open a view to edit the clicked element, or create a new element (in case the user clicked the field-list-source)
         $(list_source.parent()).off("click",".field-list-on-click-view").on("click",".field-list-on-click-view",  function(event)
@@ -1683,7 +1684,11 @@ Field.Relation.meta_put=function(key, meta, context, options)
    if (Field.Base.meta_put(key, meta, context, options))
         return;
 
-    context.addClass("field-put field-input field-get");
+    context.addClass("field-put field-input");
+    if (!meta.readonly && !options.readonly )
+    {
+        context.addClass("field-get");
+    }
 
    //sub-meta-data is already resolved?
     if ('meta' in meta)
@@ -1734,11 +1739,15 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
         return;
     }
 
+    var recursive_options={};
+    $.extend(recursive_options, options);
+    if (meta.readonly)
+        recursive_options.readonly=true;
 
     //recurse into list with sub-meta
     //use our context here: there are probably things like table headers that need meta-data descriptions
     //and list.meta_put can handle parent contexts as well as the list_context.
-    Field.List.meta_put(key, meta.meta, context, options);
+    Field.List.meta_put(key, meta.meta, context, recursive_options);
 
 
     //make sure we field-meta-put any headers or legends (overwrite stuff that the list or sub-dict has filled in)
@@ -1755,134 +1764,166 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
     list_context.addClass("field-key-root"); //marker for from_element_get_data_keys
 
 
-
-    function create_autocomplete(this_context)
+    if (meta.readonly || options.readonly)
+    { 
+        $(".field-relation-on-change-autocomplete", context).attr('disabled',true);
+    }
+    else
     {
-  //      console.error("A");
-        //we probably never want to activate in a listsource
-        if (this_context.closest(".field-list-source").length != 0)
-            return(false);
-
-//        var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
-//        console.error("B", this);
-
-         $(".field-relation-on-change-autocomplete", this_context).autocomplete({
-            minLength: 0,
-            autoFocus: true,
-            //focus of selected suggestion has been changed
-            focus: function( event, ui ) {
+        function create_autocomplete(this_context)
+        {
+      //      console.error("A");
+            //we probably never want to activate in a listsource
+            if (this_context.closest(".field-list-source").length != 0)
                 return(false);
-            },
-            //suggestion has been selected, add it to the list
-            select: function (event, ui) {
-                $(this).val("");
 
-                if (meta.list)
-                {
-                    Field.Relation.put(key, meta, this_context, [ ui.item.value ], {
-                        list_no_remove: true,
-                        list_no_add: false,
-                        list_update: true,
-                        show_changes: false
-                    });
-                }
-                else
-                {
-                    Field.Relation.put(key, meta, this_context, ui.item.value, {
-                        list_no_remove: false, //we only want one item in the list, since this is not a list ;)
-                        list_no_add: false,
-                        list_update: true,
-                        show_changes: false
-                    });
-                }
+    //        var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+    //        console.error("B", this);
 
-                return(false);
-            },
-            //data source
-            source: function(request, response)
-            {
+             $(".field-relation-on-change-autocomplete", this_context).autocomplete({
+                minLength: 0,
+                autoFocus: true,
+                //focus of selected suggestion has been changed
+                focus: function( event, ui ) {
+                    return(false);
+                },
+                //suggestion has been selected, add it to the list
+                select: function (event, ui) {
+                    $(this).val("");
 
-                //contruct or-based case insensitive regex search, excluding all the already selected id's
-                var params={}
-
-                //get currently selected ids
-                var current_items=Field.Relation.get(key, meta, this_context);
-                // console.log("currentitems", current_items);
-
-                //filter those ids out
-                var list_key=meta.meta.list_key;
-                params['match_nin']={}
-                if (meta.list)
-                    params['match_nin'][list_key]=current_items;
-                else
-                    params['match_nin'][list_key]=[ current_items ];
-
-                var search_keys=$(".field-relation-on-change-autocomplete", this_context).attr("search-keys").split(" ");
-                params['regex_or']={}
-                $.each(search_keys, function(i, key_str)
-                {
-                    params['regex_or'][key_str]=request.term;
-                });
-
-                var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
-
-                //allow customisation of the get_all parameters
-                if (context.data("field_relation_pre_get_all") && !context.data("field_relation_pre_get_all")(params))
-                {
-                    response([]);
-                    return(true);
-                }
-
-                //call the foreign model to do the actual search
-                rpc(meta.model+".get_all",
-                    params,
-                    function (result)
+                    if (meta.list)
                     {
-                        viewShowError(result,this_context,meta);
-                        //construct list of search-result-choices for autocomplete
-                        choices=[]
-                        for (i in result.data)
+                        Field.Relation.put(key, meta, this_context, [ ui.item.value ], {
+                            list_no_remove: true,
+                            list_no_add: false,
+                            list_update: true,
+                            show_changes: false
+                        });
+                    }
+                    else
+                    {
+                        Field.Relation.put(key, meta, this_context, ui.item.value, {
+                            list_no_remove: false, //we only want one item in the list, since this is not a list ;)
+                            list_no_add: false,
+                            list_update: true,
+                            show_changes: false
+                        });
+                    }
+
+                    return(false);
+                },
+                //data source
+                source: function(request, response)
+                {
+
+                    //contruct or-based case insensitive regex search, excluding all the already selected id's
+                    var params={}
+
+                    //get currently selected ids
+                    var current_items=Field.Relation.get(key, meta, this_context);
+                    // console.log("currentitems", current_items);
+
+                    //filter those ids out
+                    var list_key=meta.meta.list_key;
+                    params['match_nin']={}
+                    if (meta.list)
+                        params['match_nin'][list_key]=current_items;
+                    else
+                        params['match_nin'][list_key]=[ current_items ];
+
+                    var search_keys=$(".field-relation-on-change-autocomplete", this_context).attr("search-keys").split(" ");
+                    params['regex_or']={}
+                    $.each(search_keys, function(i, key_str)
+                    {
+                        params['regex_or'][key_str]=request.term;
+                    });
+
+                    var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
+
+                    //allow customisation of the get_all parameters
+                    if (context.data("field_relation_pre_get_all") && !context.data("field_relation_pre_get_all")(params))
+                    {
+                        response([]);
+                        return(true);
+                    }
+
+                    //call the foreign model to do the actual search
+                    rpc(meta.model+".get_all",
+                        params,
+                        function (result)
                         {
-                            choices[i]={
-                                label: ControlBase.prototype.format(result_format, result.data[i]),
-                                value: result.data[i]
+                            viewShowError(result,this_context,meta);
+                            //construct list of search-result-choices for autocomplete
+                            choices=[]
+                            for (i in result.data)
+                            {
+                                choices[i]={
+                                    label: ControlBase.prototype.format(result_format, result.data[i]),
+                                    value: result.data[i]
+                                }
                             }
-                        }
-                        response(choices);
-                    },
-                    'relation autocomplete');
+                            response(choices);
+                        },
+                        'relation autocomplete');
+                }
+            })
+            return(true);
+        }
+
+
+        $(".field-relation-on-click-add", context).click(function()
+        {
+           var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+            if (create_autocomplete(this_context))
+            {
+                $(".field-relation-on-change-autocomplete", this_context).autocomplete("search", $(this).val());
+                return(false)
+            }
+            else
+            {
+                return(true);
             }
         })
-        return(true);
-    }
 
-
-    $(".field-relation-on-click-add", context).click(function()
-    {
-       var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
-        if (create_autocomplete(this_context))
+        //this makes auto complete clonable
+        $(".field-relation-on-change-autocomplete", context).on('focus',function()
         {
-            $(".field-relation-on-change-autocomplete", this_context).autocomplete("search", $(this).val());
-            return(false)
-        }
-        else
+            var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+
+            if (create_autocomplete(this_context))
+                return(false)
+            else
+                return(true);
+        });
+
+
+        //field.list also catches this, but we need some special treatment so we overrule it
+        $(list_context.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
         {
-            return(true);
-        }
-    })
+            console.log("field.relation: view opened by us has changed the data", result);
 
-    //this makes auto complete clonable
-    $(".field-relation-on-change-autocomplete", context).on('focus',function()
-    {
-        var this_context=$(this).closest('.field-put[field-key="'+key+'"]');
+            var data;
+            if (meta.list)
+                data=[ result.data ];
+            else
+                data=result.data;
 
-        if (create_autocomplete(this_context))
-            return(false)
-        else
-            return(true);
-    });
+            Field.Relation.put(
+                key, 
+                meta,
+                $(this).closest('[field-key="'+key+'"]'),
+                data, 
+                {
+                    list_no_remove: meta.list,
+                    list_no_add: false, 
+                    list_update: true,
+                    show_changes: true
+                }
+            );
+            return(false);
+        });
 
-
+    } //not readonly
 
     //special handler that is used for searching: it emits a field_change event with a list of _id's that match the search text.
     var search_txt;
@@ -1933,31 +1974,6 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
 
 
 
-    //field.list also catches this, but we need some special treatment so we overrule it
-    $(list_context.parent()).off("control_form_changed control_form_created").on("control_form_changed control_form_created",function(event,result)
-    {
-        console.log("field.relation: view opened by us has changed the data", result);
-
-        var data;
-        if (meta.list)
-            data=[ result.data ];
-        else
-            data=result.data;
-
-        Field.Relation.put(
-            key, 
-            meta,
-            $(this).closest('[field-key="'+key+'"]'),
-            data, 
-            {
-                list_no_remove: meta.list,
-                list_no_add: false, 
-                list_update: true,
-                show_changes: true
-            }
-        );
-        return(false);
-    });
 
     //data in related model was changed
     $(context).subscribe(meta.model+'.changed', "fields", function(data)
