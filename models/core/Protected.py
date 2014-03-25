@@ -96,7 +96,7 @@ class Protected(models.mongodb.Base):
                                     removed_ids.append(check_doc[meta_key])
 
                             if len(removed_ids):
-                                foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
+                                foreign_model=self.get_meta().meta['meta'].meta['meta'][meta_key].model
                                 foreign_object=foreign_model(self.context)
 
                                 result=foreign_object.get_all(
@@ -122,7 +122,7 @@ class Protected(models.mongodb.Base):
                                     removed_ids.append(check_doc[meta_key])
 
                             if len(removed_ids):
-                                foreign_model=self.meta.meta['meta'].meta['meta'][meta_key].model
+                                foreign_model=self.get_meta().meta['meta'].meta['meta'][meta_key].model
                                 foreign_object=foreign_model(self.context)
 
                                 result=foreign_object.get_all(
@@ -203,13 +203,13 @@ class Protected(models.mongodb.Base):
                     if isinstance(self.context.session[check['context_field']], list):
                         ors.append({ 
                             meta_key: { 
-                                '$in': self.meta.meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
+                                '$in': self.get_meta().meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
                                     self.context.session[check['context_field']]) 
                                 }
                             })
                     else:
                         ors.append({ 
-                            meta_key: self.meta.meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
+                            meta_key: self.get_meta().meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
                                 self.context.session[check['context_field']]) 
                             })
 
