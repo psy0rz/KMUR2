@@ -120,22 +120,33 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                         var logDiv;
                         if (logLine.type=='info')
                         {
-                            logDiv=$('<div class="log ui-state-highlight ui-corner-all" ><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span><strong>Info: </strong><span class="logtxt"></span></div>');
+                            logDiv=$('<div class="log log-not-removed ui-corner-all" ><span class="ui-icon ui-icon-info" style="display: inline-block; margin-right: .3em;"></span><strong>Info: </strong><span class="logtxt"></span></div>');
                         }
                         else if (logLine.type=='warning')
                         {
-                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Warning: </strong><span class="logtxt"></span></div>');
+                            logDiv=$('<div class="log log-not-removed ui-state-highlight ui-corner-all" ><span class="ui-icon ui-icon-alert" style="display: inline-block; margin-right: .3em;"></span><strong>Warning: </strong><span class="logtxt"></span></div>');
                         }
                         else
                         {
-                            logDiv=$('<div class="log ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Error: </strong><span class="logtxt"></span></div>');
+                            logDiv=$('<div class="log log-not-removed ui-state-error ui-corner-all" ><span class="ui-icon ui-icon-alert" style="display: inline-block; margin-right: .3em;"></span><strong>Error: </strong><span class="logtxt"></span></div>');
                         }
                         $(".logtxt", logDiv).text(logLine.text);                            
                         $('#viewLog').append(logDiv);
 
-                        if ($('#viewLog .log').length>4)
-                            $($('#viewLog .log').first().remove());
+                        //some effects
+                        logDiv.effect('highlight',2000).delay(10000).switchClass("","ui-state-disabled",4000);
+
+                        //remove excessive log lines
+                        if ($('#viewLog .log-not-removed').length>4)
+                        {
+                            $($('#viewLog .log-not-removed').first().removeClass('log-not-removed').fadeOut(8000, function()
+                                {
+                                    $(this).remove();
+
+                                }));
+                        }
                         
+
                     });
                 }
 
