@@ -13,7 +13,14 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
                     resolve=False,
                     check_exists=True,
                     list=False),
+                'invoice_status': fields.List(
+                    fields.Dict({
+                            'title': fields.String(desc="Title",min=3),
+                            'days': fields.Number(desc="Auto-set after days",min=0),
+                        }),
+                    desc="Invoice statuses"
+                ),
             }),
-
         )
+
 
