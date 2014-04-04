@@ -139,7 +139,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                         //remove excessive log lines
                         if ($('#viewLog .log-not-removed').length>4)
                         {
-                            $($('#viewLog .log-not-removed').first().removeClass('log-not-removed').fadeOut(8000, function()
+                            $($('#viewLog .log-not-removed').first().removeClass('log-not-removed').stop(true,true).fadeOut(8000, function()
                                 {
                                     $(this).remove();
 
