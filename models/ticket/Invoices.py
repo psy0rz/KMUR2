@@ -7,6 +7,7 @@ import models.mongodb
 import models.ticket.Relations
 import models.ticket.InvoiceSettings
 import time
+from fields import FieldError
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -24,6 +25,12 @@ class Invoices(models.core.Protected.Protected):
             if 'sent' in doc and doc['sent']:
                 readonly=True
 
+
+        # settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+        # status_choices=[]
+
+        # for choice in settings['invoice_status']:
+        #     status_choices[]
 
         return(
             fields.List(
@@ -62,6 +69,7 @@ class Invoices(models.core.Protected.Protected):
                         resolve=False,
                         check_exists=True,
                         list=False,
+                        min=1,
                         readonly=readonly),
                     'to_relation': models.mongodb.Relation(
                         desc='Customer',
@@ -69,6 +77,7 @@ class Invoices(models.core.Protected.Protected):
                         resolve=False,
                         check_exists=True,
                         list=False,
+                        min=1,
                         readonly=readonly),
 
                     #invoice-data should be immutable once they're sent to the customer
@@ -81,14 +90,14 @@ class Invoices(models.core.Protected.Protected):
                                 'desc': fields.String(desc='Description', size=80),
                                 'price': fields.Number(desc='Price', size=5,decimals=2),
                                 'tax': fields.Number(desc='Tax', default=21, size=5, decimals=2),
-                                'calc_total': fields.Number(desc='Total', readonly=True),
-                                'calc_total_tax': fields.Number(desc='with tax', readonly=True),
+                                'calc_total': fields.Number(desc='Total',decimals=2),
+                                'calc_total_tax': fields.Number(desc='with tax',decimals=2),
                             }),
                         desc="Invoice items",
                         readonly=readonly
                     ),
-                    'calc_total': fields.Number(desc='Total', readonly=True),
-                    'calc_total_tax': fields.Number(desc='with tax', readonly=True),
+                    'calc_total': fields.Number(desc='Total', decimals=2, readonly=readonly),
+                    'calc_total_tax': fields.Number(desc='with tax', decimals=2, readonly=readonly),
 
                     'notes': fields.String(desc='Notes'),
 
@@ -113,21 +122,41 @@ class Invoices(models.core.Protected.Protected):
     @Acl(roles="finance")
     def put(self, **doc):
 
+        #precheck, to prevent confusing errors for the enduser later on
+        self.get_meta(doc).meta['meta'].check(self.context, doc)
+
+        settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+
+        if 'sent' in doc:
+            raise FieldError("Cant modify sent-status this way")
+
+        if 'items' in doc:
+            doc=self.calc(**doc)
+
+
+        if 'to_relation' in doc:
+            doc['to_copy']=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['to_relation'])['invoice']
+            doc['from_relation']=settings['from_relation']
+            doc['from_copy']=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['from_relation'])['invoice']
+
         if '_id' in doc:
-          log_txt="Changed relation {title}".format(**doc)
+          log_txt="Changed invoice {title}".format(**doc)
         else:
-          log_txt="Created new relation {title}".format(**doc)
+          log_txt="Created new invoice {title}".format(**doc)
 
         ret=self._put(doc)
         self.event("changed",ret)
 
         self.info(log_txt)
 
+
         return(ret)
+
+    
 
     @Acl(roles="finance")
     def calc(self, **doc):
-        """calculates the document in place and also returns it
+        """returns a calculated version of doc
 
         used internally as well as by frontends
 
@@ -166,17 +195,25 @@ class Invoices(models.core.Protected.Protected):
 
     @Acl(roles="finance")
     def get(self, _id):
-        return(self.calc(**self._get(_id)))
+        # return(self.calc(**self._get(_id)))
+        return(self._get(_id))
 
     @Acl(roles="finance")
     def delete(self, _id):
 
         doc=self._get(_id)
 
+        if 'send' in doc and doc['sent']:
+            raise FieldError("invoice already was sent, cannot change or delete it.")
+
+        if 'invoice_nr' in doc:
+            raise FieldError("invoice already has an invoice_nr, its NOT allowed to have holes in your bookkeeping so you can never delete this one.")
+
+
         ret=self._delete(_id)
         self.event("deleted",ret)
 
-        self.info("Deleted relation {title}".format(**doc))
+        self.info("Deleted invoice {title}".format(**doc))
 
         return(ret)
 
