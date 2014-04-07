@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+if [ "$1" == "" ]; then
+    echo "Uses the simpler GET interface for download stuff and simple calls"
+    echo "For example:"
+    echo  "./get core/Users/login/username/password"
+    echo 
+    echo "It remembers cookies, hence sessions"
+    exit 1
+fi
+
+curl -b ./.cookies -c ./.cookies "http://localhost:8080/rpc/$1"
+echo
+
+

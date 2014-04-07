@@ -1,18 +1,34 @@
 """Base classes and decorators for all models"""
 
+import re
 
 def call_rpc(context, module, cls, method, *args, **kwargs):
-    """resolve and call rpc models from strings, almost like rpc.py would do 
+    """resolve and call rpc models from strings, also called from rpc.py
 
     (mostly used internally)
     """
+    if re.search("[^a-zA-Z0-9_]", module):
+        raise Exception("rpc: Illegal module name")
+
+    if re.search("[^a-zA-Z0-9]", cls):
+        raise Exception("rpc: Illegal class name")
+
+    if re.search("[^a-zA-Z0-9_]", method):
+        raise Exception("rpc: Illegal method name")
+
+    if re.search("^_", method):
+        raise Exception("rpc: Methodname may not begin with _")
 
     rpc_models = __import__('models.' + module + '.' + cls)
     rpc_module = getattr(rpc_models, module)
     rpc_package = getattr(rpc_module, cls)
     rpc_class = getattr(rpc_package, cls)
     rpc_class_instance = rpc_class(context)
+    if not isinstance(rpc_class_instance, Base):
+        raise Exception("rpc: Class is not a model")
     rpc_method = getattr(rpc_class_instance, method)
+    if not hasattr(rpc_method, 'has_acl_decorator'):
+        raise Exception("rpc: This method is protected from outside access because it has no @Acl decorator")
     return(rpc_method(*args,**kwargs))
 
 

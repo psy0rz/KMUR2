@@ -20,12 +20,10 @@ import models.common
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 
 
-#rpc calls to models:
-#the client always calls http;//server/rpc, but when we deploy our app with in a webserver , the /rpc part 
-#is stripped.
-@bottle.post('/')
+#rpc POST calls to models.
+#usually used for json data communication
 @bottle.post('/rpc')
-def rpc():
+def rpc_post():
 
     session = bottle.request.environ.get('beaker.session')
 
@@ -133,6 +131,40 @@ def rpc():
         del(result['data'])
         #try again, hopefully without throwing more exceptions
         return(json.dumps(result, cls=fields.JSONEncoder, indent=indent, separators=(',', ':'), ensure_ascii=False))
+
+
+#simple rpc GET interface
+#usually used to download files from models:
+# /rpc/module/class/method/par1/par2/par...
+#litterally passes parameters as strings to the rpc-method, and returns the result without additional data or postprocessing
+@bottle.get('/rpc/<filename:path>')
+def rpc_get(filename):
+
+    match=re.match("(.*?)/(.*?)/(.*?)/(.*)", filename)
+    get_module=match.group(1)
+    get_class=match.group(2)
+    get_method=match.group(3)
+    get_params=match.group(4).split("/")
+
+    session = bottle.request.environ.get('beaker.session')
+
+    try:
+        if not 'context' in session:
+            session['context'] = models.common.Context()
+
+        session['context'].reinit()
+
+        result=models.common.call_rpc(session['context'], get_module, get_class, get_method, *get_params)
+  
+        session.save()
+        return(result)
+
+    except (Exception) as e:
+        traceback.print_exc()
+        session.save()
+        #bottle.abort(500, "Exception during request. "+e.__class__.__name__ + ": " + str(e))
+        bottle.response.status=500
+        return("Exception during request. "+e.__class__.__name__ + ": " + str(e))
 
 
 

@@ -1,4 +1,4 @@
-#
+#!/bin/bash
 # Add initial admin mongo CLI:
 # db.models.core.Users.insert({ "name":"admin", password:"yourpassss", "groups":["admin"], "active": true})
 
