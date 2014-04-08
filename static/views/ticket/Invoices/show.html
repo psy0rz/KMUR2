@@ -1,0 +1,105 @@
+
+<script>
+
+var form=new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.Invoices',
+    'get_params'      : view.params,
+    'default_focus'   : 'title',
+    'title'           : 'View invoice {invoice_nr}',
+    'favorite_menu'   : 'invoices',
+    'create_view_params': view.params,
+});
+
+</script>
+
+<div>
+    <fieldset class='inline-block'>
+        <legend>To:</legend>        
+        <div class='field-put' field-key='to_copy.company'></div>
+        <div class='field-put' field-key='to_copy.department'></div>
+        <div class='field-put' field-key='to_copy.address'></div>
+        <div><span class='field-put' field-key='to_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='to_copy.city'></span></div>
+        <div class='field-put' field-key='to_copy.province'></div>
+        <div class='field-put' field-key='to_copy.country'></div>
+
+    </fieldset>
+
+    <fieldset class='inline-block' style='float: right'>
+        <legend>From:</legend>        
+        <div class='field-put' field-key='from_copy.company'></div>
+        <div class='field-put' field-key='from_copy.department'></div>
+        <div class='field-put' field-key='from_copy.address'></div>
+        <div><span class='field-put' field-key='from_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='from_copy.city'></span></div>
+        <div class='field-put' field-key='from_copy.province'></div>
+        <div class='field-put' field-key='from_copy.country'></div>
+        <p>
+        <div>BTW: <span class='field-put' field-key='from_copy.vat_nr'></span></div>
+        <div>KVK: <span class='field-put' field-key='from_copy.coc_nr'></span></div>
+        <p>
+        <div>IBAN: <span class='field-put' field-key='from_copy.iban_nr'></span></div>
+        <div>BIC: <span class='field-put' field-key='from_copy.bic_code'></span></div>
+    </fieldset>
+</div>
+
+<p>
+
+<fieldset class='inline-block control-hide-on-new'>
+    <legend>Status</legend>        
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='invoice_nr' field-meta-key='desc'>
+            <td class='field-put value' field-key='invoice_nr'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='sent_date' field-meta-key='desc'>
+            <td class='field-put value' field-key='sent_date'>
+        </tr>
+    </table>
+</fieldset>
+
+<p>
+
+
+<table style='width:100%' control-view="ticket.Invoices.edit">
+    <thead >
+        <tr class='field-meta-put' field-key='items' >
+            <td class='field-meta-put' field-key='items.amount' field-meta-key='desc' style='border-bottom-style: solid'>
+            <td class='field-meta-put' field-key='items.desc' field-meta-key='desc' style='border-bottom-style: solid'>
+            <td class='field-meta-put' field-key='items.price' field-meta-key='desc' style='border-bottom-style: solid'>
+            <td class='field-meta-put' field-key='items.tax' field-meta-key='desc' style='border-bottom-style: solid'>
+            <td class='field-meta-put' field-key='items.calc_total' field-meta-key='desc' style='border-bottom-style: solid'>
+            <td class='field-meta-put' field-key='items.calc_total_tax' field-meta-key='desc' style='border-bottom-style: solid'>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class='field-meta-put field-list-source-hide field-list-source' field-key='items' field-list-view="ticket.Invoices.edit">
+            <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.amount'>
+            <td class='field-put control-on-click-view' field-key='items.desc'>
+            <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.price'>
+            <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.tax'>
+            <td class='field-put' field-key='items.calc_total' style='width: 5em; text-align: right;'></td>
+            <td class='field-put' field-key='items.calc_total_tax' style='width: 5em; text-align: right;'></td>
+        </tr>
+        <tr>
+            <td colspan=4>
+            <td class='field-put' field-key='calc_total' style='text-align: right; font-weight: bold; border-top-style: solid'>
+            <td class='field-put' field-key='calc_total_tax' style='text-align: right; font-weight: bold; border-top-style: solid'>
+        </tr>
+
+    </tbody>
+</table>
+
+<p class='field-put' field-key='notes'>
+
+
+
+
+
+<div class='viewErrorClass floatingBar'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-del control-hide-on-new' >Delete</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
+</div>
+
