@@ -66,7 +66,7 @@ var form=new ControlForm({
             //first resolve all relations
             rpc( "ticket.Relations.get_all", { 'match_in': { '_id': data.relations }}, function(relations)
             {
-                //get all contracts
+                //get all related contracts
                 var contract_ids=[];
                 $.each(relations.data, function(i, relation)
                 {   
@@ -82,9 +82,18 @@ var form=new ControlForm({
                         contracts_by_id[contract._id]=contract;
                     });
 
-                    //now add a button for every contract a relation has
+                    //now add a button for every relation
                     $.each(relations.data, function(i, relation)
                     {
+                        var span=$("<span class='ticket-add-time-button-style'></span>");
+                        span.text(relation.title);
+
+                        var button=$("<button class='on-click-new-ticket-time'></button>");
+                        button.append(span);
+                        button.attr("relation-id",relation._id);
+                        $(".floatingBar",context).append(button);
+
+                        //add specific buttons to add time to each contract of this relation
                         if (relation.contracts)
                         {
                             $.each(relation.contracts, function(i, contract_id)
