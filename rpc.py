@@ -155,8 +155,8 @@ def rpc_get(filename):
         session['context'].reinit()
 
         result=models.common.call_rpc(session['context'], get_module, get_class, get_method, *get_params)
-  
         session.save()
+        print(result)
         return(result)
 
     except (Exception) as e:

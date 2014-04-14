@@ -227,7 +227,6 @@ class Invoices(models.core.Protected.Protected):
     """downloads pdf version of the invoice """
     @Acl(roles="finance")
     def get_pdf(self,_id):
-
         # from reportlab.lib.pagesizes import letter, A4
         # from reportlab.lib.enums import TA_RIGHT
         # from reportlab.pdfbase import pdfmetrics
@@ -307,7 +306,12 @@ class Invoices(models.core.Protected.Protected):
         doc.build(elements)
         buffer.seek(0)
 
-        return(buffer)
+        #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
+        response=bottle.HTTPResponse(body=buffer)
+        response.set_header('Content-Type', 'application/octet-stream')
+        response.set_header('Content-Disposition', "attachment;filename=test.pdf"  );
+
+        return(response)
 
 
 

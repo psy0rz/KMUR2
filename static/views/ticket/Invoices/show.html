@@ -11,6 +11,12 @@ var form=new ControlForm({
     'create_view_params': view.params,
 });
 
+
+$(".on-click-pdf").click(function()
+{
+    document.location="/rpc/ticket/Invoices/get_pdf/"+view.params._id;
+});
+
 </script>
 
 <div>
@@ -97,9 +103,8 @@ var form=new ControlForm({
 
 
 <div class='viewErrorClass floatingBar'>
-    <button class='control-on-click-save' >Save</button>
-    <button class='control-on-click-del control-hide-on-new' >Delete</button>
-    <button class='control-on-click-cancel' >Cancel</button>
+    <button class='control-on-click-cancel' >Back</button>
+    <button class='on-click-pdf' >Download pdf</button>
     <span class='viewErrorText'></span>
 </div>
 
