@@ -67,15 +67,15 @@ $(".on-click-pdf").click(function()
 <p>
 
 
-<table style='width:100%' control-view="ticket.Invoices.edit">
+<table class='table-grid' style='width:100%' control-view="ticket.Invoices.edit">
     <thead >
         <tr class='field-meta-put' field-key='items' >
-            <td class='field-meta-put' field-key='items.amount' field-meta-key='desc' style='border-bottom-style: solid'>
-            <td class='field-meta-put' field-key='items.desc' field-meta-key='desc' style='border-bottom-style: solid'>
-            <td class='field-meta-put' field-key='items.price' field-meta-key='desc' style='border-bottom-style: solid'>
-            <td class='field-meta-put' field-key='items.tax' field-meta-key='desc' style='border-bottom-style: solid'>
-            <td class='field-meta-put' field-key='items.calc_total' field-meta-key='desc' style='border-bottom-style: solid'>
-            <td class='field-meta-put' field-key='items.calc_total_tax' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.amount' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.desc' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.price' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.tax' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.calc_total' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.calc_total_tax' field-meta-key='desc' style='border-bottom-style: solid'>
         </tr>
     </thead>
     <tbody>
@@ -98,12 +98,12 @@ $(".on-click-pdf").click(function()
                 <span class='field-put' field-key='items.calc_total_tax' ></span>
         </tr>
         <tr>
-            <td colspan=4>
-            <td style='text-align: right; font-weight: bold; border-top-style: solid'>
+            <td colspan=4 style='border:none'>
+            <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
                 <span class='field-put' field-key='currency'></span>
                 <span class='field-put' field-key='calc_total'></span>
 
-            <td style='text-align: right; font-weight: bold; border-top-style: solid'>
+            <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
                 <span class='field-put' field-key='currency'></span>
                 <span class='field-put' field-key='calc_total_tax'></span>
         </tr>
