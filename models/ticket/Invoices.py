@@ -27,7 +27,7 @@ class Invoices(models.core.Protected.Protected):
                 readonly=True
 
 
-        # settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+        settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
         # status_choices=[]
 
         # for choice in settings['invoice_status']:
@@ -101,6 +101,8 @@ class Invoices(models.core.Protected.Protected):
                     'calc_total_tax': fields.Number(desc='with tax', decimals=2, readonly=readonly),
 
                     'notes': fields.String(desc='Notes'),
+
+                    'currency': fields.String(desc='Currency', default=settings['currency'])
 
                 }),
                 list_key='_id'
@@ -227,85 +229,79 @@ class Invoices(models.core.Protected.Protected):
     """downloads pdf version of the invoice """
     @Acl(roles="finance")
     def get_pdf(self,_id):
-        # from reportlab.lib.pagesizes import letter, A4
-        # from reportlab.lib.enums import TA_RIGHT
-        # from reportlab.pdfbase import pdfmetrics
-        # from reportlab.pdfbase.ttfonts import TTFont
-        # from reportlab.platypus import SimpleDocTemplate, Paragraph
-        # from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        # from reportlab.lib.enums import TA_CENTER
-        # from io import BytesIO
-    
-        # buffer = BytesIO()
 
-        # doc = SimpleDocTemplate(buffer,
-        #                         rightMargin=72,
-        #                         leftMargin=72,
-        #                         topMargin=72,
-        #                         bottomMargin=72,
-        #                         pagesize=A4)
- 
-        # # Our container for 'Flowable' objects
-        # elements = []
- 
-        # # A large collection of style sheets pre-made for us
-        # styles = getSampleStyleSheet()
-        # # styles.add(ParagraphStyle(name='RightAlign', fontName='Arial', alignment=TA_RIGHT))
-        # styles.add(ParagraphStyle(name='RightAlign', alignment=TA_RIGHT))
- 
-        # # Draw things on the PDF. Here's where the PDF generation happens.
-        # # See the ReportLab documentation for the full list of functionality.
-        # elements.append(Paragraph('My User Names', styles['RightAlign']))
- 
-        # # Need a place to store our table rows
-        # table_data = [
-        #     [ "geert", "moi", "keutel"],
-        #     [ "geert", "moi", "keutel"],
-        #     [ "geert", "moi", "keutel"],
-        #     [ "geert", "moi", "keutel"],
-        # ]
-
-
-        # # Create the table
-        # user_table = Table(table_data, colWidths=[doc.width/3.0]*3)
-        # # user_table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-        # #                                 ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
-        # elements.append(user_table)
-        # # doc.build(elements, onFirstPage=self._header_footer, onLaterPages=self._header_footer,
-        # #           canvasmaker=NumberedCanvas)
-        # doc.build(elements)
- 
-        # # Get the value of the BytesIO buffer and write it to the response.
-        # # pdf = buffer.getvalue()
-        # # buffer.close()
-        # return (buffer)
-
-
-        # return bottle.static_file("blah.pdf", root="/", download=True)
-
+        doc=self.get(_id)
 
         from reportlab.lib import colors
-        from reportlab.lib.pagesizes import letter
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+        from reportlab.lib.pagesizes import A4
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
         from io import BytesIO
-    
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.units import cm    
+
+        styles=getSampleStyleSheet()
+
+        # container for the 'Flowable' pdf objects
+        pdf_elements = []
+         
+        #convert invoice items to table
+        table_data=[]
+
+        #items heading
+        meta=self.get_meta().meta['meta'].meta['meta']['items'].meta['meta'].meta['meta']
+        table_data.append(
+            [
+                meta['amount'].meta['desc'],
+                meta['desc'].meta['desc'],
+                meta['price'].meta['desc'],
+                meta['tax'].meta['desc'],
+                meta['calc_total'].meta['desc'],
+                meta['calc_total_tax'].meta['desc'],
+            ])
+
+        #items
+        for item in doc['items']:
+            table_data.append([
+                    item['amount'],
+                    Paragraph(item['desc'], styles["Normal"]),
+                    "{} {}".format(doc['currency'], item['price']),
+                    "{}%".format(item['tax']),
+                    "{} {}".format(doc['currency'], item['calc_total']),
+                    "{} {}".format(doc['currency'], item['calc_total_tax'])
+                ])
+
+        #totals
+        table_data.append([
+            "",
+            "",
+            "",
+            "Grand totals:",
+            "{} {}".format(doc['currency'], doc['calc_total']),
+            "{} {}".format(doc['currency'], doc['calc_total_tax']),
+            ])
+
+        #generate table and set cell styles
+        table=Table(table_data, colWidths=[2*cm, 8*cm, 2*cm, 1*cm, 2*cm])
+        table.setStyle(TableStyle([
+                ('GRID', (0,0), (-1,-2), 0.5, colors.gray), #global grid (last line no grid)
+                ('LINEBELOW', (0,0), (-1,0), 2, colors.black), #header line
+                ('ALIGN', (-4,0), (-1,-1), 'RIGHT'), #right align last 4 colums
+                ('ALIGN', (0,0), (0,-1), 'RIGHT'), #right align amount
+                ('VALIGN', (0,0), (-1,-1), 'TOP'), #align all rows to top
+                ('GRID', (-2,-1), (-1,-1), 0.5, colors.gray), #totals grid
+                ('LINEABOVE', (-2,-1), (-1,-1), 2, colors.black), #totals line
+
+            ]))
+        pdf_elements.append(table)
+
+
+        #generate pdf from elements
         buffer = BytesIO()
-         
-        doc = SimpleDocTemplate(buffer, pagesize=letter)
-        # container for the 'Flowable' objects
-        elements = []
-         
-        data= [['00', '01', '02', '03', '04'],
-               ['10', '11', '12', '13', '14'],
-               ['20', '21', '22', '23', '24'],
-               ['30', '31', '32', '33', '34']]
-        t=Table(data)
-        t.setStyle(TableStyle([('BACKGROUND',(1,1),(-2,-2),colors.green),
-                               ('TEXTCOLOR',(0,0),(1,-1),colors.red)]))
-        elements.append(t)
-        doc.build(elements)
+        pdf = SimpleDocTemplate(buffer, pagesize=A4)        
+        pdf.build(pdf_elements)
         buffer.seek(0)
 
+        #create bottle-http response
         #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
         response=bottle.HTTPResponse(body=buffer)
         response.set_header('Content-Type', 'application/octet-stream')

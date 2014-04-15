@@ -82,15 +82,30 @@ $(".on-click-pdf").click(function()
         <tr class='field-meta-put field-list-source-hide field-list-source' field-key='items' field-list-view="ticket.Invoices.edit">
             <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.amount'>
             <td class='field-put control-on-click-view' field-key='items.desc'>
-            <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.price'>
-            <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.tax'>
-            <td class='field-put' field-key='items.calc_total' style='width: 5em; text-align: right;'></td>
-            <td class='field-put' field-key='items.calc_total_tax' style='width: 5em; text-align: right;'></td>
+            <td style='width: 5em; text-align: right;'>
+                <span class='field-put' field-key='currency'></span>
+                <span class='field-put control-on-click-view'  field-key='items.price'></span>
+
+            <td style='width: 5em; text-align: right;' class='control-on-click-view'>
+                <span class='field-put' field-key='items.tax'></span>%
+
+            <td style='width: 5em; text-align: right;'>
+                <span class='field-put' field-key='currency'></span>
+                <span class='field-put' field-key='items.calc_total' ></span>
+
+            <td style='width: 5em; text-align: right;'>
+                <span class='field-put' field-key='currency'></span>
+                <span class='field-put' field-key='items.calc_total_tax' ></span>
         </tr>
         <tr>
             <td colspan=4>
-            <td class='field-put' field-key='calc_total' style='text-align: right; font-weight: bold; border-top-style: solid'>
-            <td class='field-put' field-key='calc_total_tax' style='text-align: right; font-weight: bold; border-top-style: solid'>
+            <td style='text-align: right; font-weight: bold; border-top-style: solid'>
+                <span class='field-put' field-key='currency'></span>
+                <span class='field-put' field-key='calc_total'></span>
+
+            <td style='text-align: right; font-weight: bold; border-top-style: solid'>
+                <span class='field-put' field-key='currency'></span>
+                <span class='field-put' field-key='calc_total_tax'></span>
         </tr>
 
     </tbody>
