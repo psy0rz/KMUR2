@@ -230,20 +230,28 @@ class Invoices(models.core.Protected.Protected):
     @Acl(roles="finance")
     def get_pdf(self,_id):
 
-        doc=self.get(_id)
+        invoice=self.get(_id)
 
         from reportlab.lib import colors
         from reportlab.lib.pagesizes import A4
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Frame, Preformatted, Spacer
         from io import BytesIO
-        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.lib.units import cm    
 
         styles=getSampleStyleSheet()
 
+        styles.add(ParagraphStyle(name='Small',
+                                  parent=styles['Normal'],
+                                  fontSize=8)
+                   )
+
         # container for the 'Flowable' pdf objects
         pdf_elements = []
          
+        #white space to allow room for headings on first page
+        pdf_elements.append(Spacer(0,10*cm))
+
         #convert invoice items to table
         table_data=[]
 
@@ -260,14 +268,14 @@ class Invoices(models.core.Protected.Protected):
             ])
 
         #items
-        for item in doc['items']:
+        for item in invoice['items']:
             table_data.append([
                     item['amount'],
                     Paragraph(item['desc'], styles["Normal"]),
-                    "{} {}".format(doc['currency'], item['price']),
+                    "{} {}".format(invoice['currency'], item['price']),
                     "{}%".format(item['tax']),
-                    "{} {}".format(doc['currency'], item['calc_total']),
-                    "{} {}".format(doc['currency'], item['calc_total_tax'])
+                    "{} {}".format(invoice['currency'], item['calc_total']),
+                    "{} {}".format(invoice['currency'], item['calc_total_tax'])
                 ])
 
         #totals
@@ -276,8 +284,8 @@ class Invoices(models.core.Protected.Protected):
             "",
             "",
             "Grand totals:",
-            "{} {}".format(doc['currency'], doc['calc_total']),
-            "{} {}".format(doc['currency'], doc['calc_total_tax']),
+            "{} {}".format(invoice['currency'], invoice['calc_total']),
+            "{} {}".format(invoice['currency'], invoice['calc_total_tax']),
             ])
 
         #generate table and set cell styles
@@ -294,11 +302,37 @@ class Invoices(models.core.Protected.Protected):
             ]))
         pdf_elements.append(table)
 
+        #print adress info and extra stuff on first page
+        def first_page(canvas, pdf):
+            canvas.saveState()
+
+            #senders adress and company info
+            from_frame=Frame(14*cm, 21*cm, 6*cm, 6*cm, showBoundary=0)
+            from_frame.addFromList([
+                Preformatted(
+                    invoice['from_copy']['company']+"\n"+
+                    invoice['from_copy']['address']+"\n"+
+                    invoice['from_copy']['zip_code']+"  "+invoice['from_copy']['city'].upper()+"\n"+
+                    invoice['from_copy']['province']+"\n"+
+                    invoice['from_copy']['country']+"\n"+
+                    "\n"+
+                    invoice['from_copy']['mail_to']+"\n"+
+                    "\n"+
+                    "KVK: "+invoice['from_copy']['coc_nr']+"\n"+
+                    "BTW: "+invoice['from_copy']['vat_nr']+"\n"+
+                    "\n"+
+                    "IBAN: "+invoice['from_copy']['iban_nr']+"\n"+
+                    "BIC: "+invoice['from_copy']['bic_code']+"\n"
+                    ,style=styles['Small']
+                )
+            ], canvas)
+            canvas.restoreState()
+
 
         #generate pdf from elements
         buffer = BytesIO()
         pdf = SimpleDocTemplate(buffer, pagesize=A4)        
-        pdf.build(pdf_elements)
+        pdf.build(pdf_elements, onFirstPage=first_page)
         buffer.seek(0)
 
         #create bottle-http response
