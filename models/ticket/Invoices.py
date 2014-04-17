@@ -11,6 +11,22 @@ from fields import FieldError
 import bottle
 import time
 
+from_format="""{company}
+{address}
+{zip_code}  {city}
+{province}
+{country}
+
+{mail_to}
+
+KVK nr: {coc_nr}
+BTW: {vat_nr}
+
+IBAN: {iban_nr}
+BIC: {bic_code}
+"""
+
+
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
     '''
@@ -43,7 +59,7 @@ class Invoices(models.core.Protected.Protected):
 
                     #filled automatcly when invoice is "sent"
                     #after sending, most of the invoice may no longer be changed
-                    'invoice_nr': fields.Number(desc='Invoice number',readonly=readonly),
+                    'invoice_nr': fields.String(desc='Invoice number',readonly=readonly),
                     'sent': fields.Bool(desc='Sent'),
                     'sent_date': fields.Timestamp(desc='Invoice date',readonly=readonly),
 
@@ -82,7 +98,7 @@ class Invoices(models.core.Protected.Protected):
                         min=1,
                         readonly=readonly),
 
-                    #invoice-data should be immutable once they're sent to the customer
+                    #invoice-data should be immutable once they're sent to the customer, so we make a copy
                     'from_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
                     'to_copy': models.ticket.Relations.Relations.meta.meta['meta'].meta['meta']['invoice'],
 
@@ -131,6 +147,17 @@ class Invoices(models.core.Protected.Protected):
 
         settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
 
+        if 'invoice_nr' in doc or 'sent_date' in doc:
+            raise FieldError("Cant set invoice nr or sent_date this way")
+
+
+        if 'from_copy' in doc or 'to_copy' in doc:
+            raise FieldError("Cant set from_copy or to_copy this way")
+
+        #make sure its always set to make coding easier
+        if not '_id' in doc:
+            doc['invoice_nr']=""
+
         if 'sent' in doc:
             raise FieldError("Cant modify sent-status this way")
 
@@ -144,10 +171,12 @@ class Invoices(models.core.Protected.Protected):
             doc['from_relation']=settings['from_relation']
             doc['from_copy']=call_rpc(self.context, 'ticket', 'Relations', 'get', doc['from_relation'])['invoice']
 
+
         if '_id' in doc:
-          log_txt="Changed invoice {title}".format(**doc)
+            old_doc=self.get(doc['_id'])
+            log_txt="Changed invoice {invoice_nr} for {company}".format(invoice_nr=old_doc['invoice_nr'], company=old_doc['to_copy']['company'])
         else:
-          log_txt="Created new invoice {title}".format(**doc)
+            log_txt="Created new invoice for {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company'])
 
         ret=self._put(doc)
         self.event("changed",ret)
@@ -181,10 +210,10 @@ class Invoices(models.core.Protected.Protected):
         update_doc['_id']=_id
         update_doc['sent']=True
 
-        if not 'invoice_nr' in doc:
+        if doc['invoice_nr']=="":
             settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
             settings['invoice_nr']=settings['invoice_nr']+1
-            update_doc['invoice_nr']=settings['invoice_nr']
+            update_doc['invoice_nr']=str(settings['invoice_nr'])
             update_doc['sent_date']=time.time()
 
         ret=self._put(update_doc)
@@ -244,17 +273,17 @@ class Invoices(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
-        if 'send' in doc and doc['sent']:
-            raise FieldError("invoice already was sent, cannot change or delete it.")
+        if 'sent' in doc and doc['sent']:
+            raise FieldError("invoice already was sent, cannot change or delete it. you have to revoke it first.")
 
-        if 'invoice_nr' in doc:
+        if doc['invoice_nr']!="":
             raise FieldError("invoice already has an invoice_nr, its NOT allowed to have holes in your bookkeeping so you can never delete this one.")
 
 
         ret=self._delete(_id)
         self.event("deleted",ret)
 
-        self.info("Deleted invoice {title}".format(**doc))
+        self.info("Deleted invoice {invoice_nr} to {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
 
         return(ret)
 
@@ -349,24 +378,10 @@ class Invoices(models.core.Protected.Protected):
             canvas.saveState()
 
             #senders adress and company info
-            from_frame=Frame(14*cm, 21*cm, 6*cm, 6*cm, showBoundary=0)
+            #TODO: put this in a template
+            from_frame=Frame(14*cm, 21*cm, 10*cm, 6*cm, showBoundary=0)
             from_frame.addFromList([
-                Preformatted(
-                    invoice['from_copy']['company']+"\n"+
-                    invoice['from_copy']['address']+"\n"+
-                    invoice['from_copy']['zip_code']+"  "+invoice['from_copy']['city'].upper()+"\n"+
-                    invoice['from_copy']['province']+"\n"+
-                    invoice['from_copy']['country']+"\n"+
-                    "\n"+
-                    invoice['from_copy']['mail_to']+"\n"+
-                    "\n"+
-                    "KVK: "+invoice['from_copy']['coc_nr']+"\n"+
-                    "BTW: "+invoice['from_copy']['vat_nr']+"\n"+
-                    "\n"+
-                    "IBAN: "+invoice['from_copy']['iban_nr']+"\n"+
-                    "BIC: "+invoice['from_copy']['bic_code']+"\n"
-                    ,style=styles['Small']
-                )
+                Preformatted(from_format.format(**invoice['from_copy']),style=styles['Small'])
             ], canvas)
             canvas.restoreState()
 
