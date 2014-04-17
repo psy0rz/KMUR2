@@ -198,6 +198,11 @@
 	padding-bottom:3em;	
 }
 
+.hide
+{
+	display: none;
+}
+
 @media print
 {
 	.floatingBar

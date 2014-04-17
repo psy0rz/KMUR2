@@ -9,6 +9,7 @@ import models.ticket.InvoiceSettings
 import time
 from fields import FieldError
 import bottle
+import time
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -133,6 +134,7 @@ class Invoices(models.core.Protected.Protected):
         if 'sent' in doc:
             raise FieldError("Cant modify sent-status this way")
 
+        #store the calculated results (so we always return the same results in the future according to tax rules)
         if 'items' in doc:
             doc=self.calc(**doc)
 
@@ -155,6 +157,40 @@ class Invoices(models.core.Protected.Protected):
 
         return(ret)
 
+
+    @Acl(roles="finance")
+    def send(self, _id):
+        """send the invoice to the customer.
+
+            Gives the invoice a invoice number and data if it hasnt got one already and marks it as sent.
+
+            If the mail_to field is set in to_copy, the invoice is mailed to that address.
+            If the print is true in to_copy, the invoice is printed.
+
+            After this, most of the invoice cant be changed anymore, according to dutch tax rules.
+
+        """
+
+        doc=self.get(_id)
+
+        if 'sent' in doc and doc['sent']==True:
+            raise FieldError("Invoice is already sent")
+
+        update_doc={}
+
+        update_doc['_id']=_id
+        update_doc['sent']=True
+
+        if not 'invoice_nr' in doc:
+            settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+            settings['invoice_nr']=settings['invoice_nr']+1
+            update_doc['invoice_nr']=settings['invoice_nr']
+            update_doc['sent_date']=time.time()
+
+        ret=self._put(update_doc)
+        self.event("changed",ret)
+
+        self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=update_doc['invoice_nr'], company=doc['to_copy']['company']))
 
 
     @Acl(roles="finance")
@@ -199,6 +235,8 @@ class Invoices(models.core.Protected.Protected):
     @Acl(roles="finance")
     def get(self, _id):
         # return(self.calc(**self._get(_id)))
+        #We dont do any processing: we always want to return the invoice in its original unaltered form, as this is required by tax-rules.
+        #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
         return(self._get(_id))
 
     @Acl(roles="finance")
@@ -231,6 +269,10 @@ class Invoices(models.core.Protected.Protected):
     def get_pdf(self,_id):
 
         invoice=self.get(_id)
+
+        if not 'sent' in invoice or invoice['sent']==False:
+            raise FieldError("Invoice is not sent yet")
+
 
         from reportlab.lib import colors
         from reportlab.lib.pagesizes import A4
