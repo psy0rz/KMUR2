@@ -169,12 +169,10 @@ ControlBase.prototype.attach_event_handlers=function()
     {
         var editView={};
 
-
-
         editView.x=event.clientX;
         editView.y=event.clientY;
 
-        editView.focus=$(this).attr("field-key");
+        editView.focus=Field.Base.from_element_get_data_keys($(this));
 
         var attribute_element;
         if ($(this).attr("control-view"))

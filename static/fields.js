@@ -416,7 +416,7 @@ Field.Dict.get=function(key, meta, context)
 
 Field.Dict.find_element=function(key, meta, context, data_keys)
 {
-//    console.log("Dict.find_element", key, meta, context, data_keys);
+    console.log("Dict.find_element", key, meta, context, data_keys);
 
     var this_key=data_keys[0];
     var sub_keys=data_keys.slice(1);
@@ -963,7 +963,7 @@ Field.List.from_element_add=function(key, element)
 */
 Field.List.find_element=function(key, meta, context, data_keys)
 {
-//    console.log("Field.List.find_element", key, meta, context, data_keys);
+    console.log("Field.List.find_element", key, meta, context, data_keys);
 
     var list_item_id=data_keys[0];
     var sub_keys=data_keys.slice(1);
@@ -978,11 +978,8 @@ Field.List.find_element=function(key, meta, context, data_keys)
     var selector='.field-list-item[field-key="'+key+'"]';
     var sub_context;
 
-    //does the list use indexes or list-keys to identify an item?
-    if ('list_key' in meta)
-        sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', list_context);
-    else   
-        sub_context=$(selector, list_context).eq(list_item_id);
+    sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', list_context);
+
 
     //no more keys left?
     if (sub_keys.length==0)
