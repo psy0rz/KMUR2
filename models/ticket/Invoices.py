@@ -269,7 +269,7 @@ class Invoices(models.core.Protected.Protected):
                 'items': invoices[0]['items']
             }
             update_doc['items'].extend(items)
-            self.put(**update_doc)
+            ret=self.put(**update_doc)
         #create new invoice
         else:
             new_doc={
@@ -278,9 +278,9 @@ class Invoices(models.core.Protected.Protected):
                 'currency': currency,
                 'allowed_users': [ self.context.session['user_id'] ]
             }
-            self.put(**new_doc)
+            ret=self.put(**new_doc)
 
-
+        return(ret)
 
     @Acl(roles="finance")
     def calc(self, **doc):

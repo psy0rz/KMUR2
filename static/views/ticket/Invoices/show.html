@@ -14,23 +14,80 @@ var form=new ControlForm({
     {
         if (result.data.sent)
         {
-            $(".on-click-revoke, .on-click-credit, .on-click-pdf").show();
+            $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf", context).show();
         }
         else
         {
-            $(".on-click-send").show();
+            $(".on-click-send",context).show();
+
+            if (result.data.invoice_nr=="")
+                $(".on-click-delete",context).show();
         }
+
+        $(".on-click-credit", context).click(function()
+        {
+            rpc("ticket.Invoices.add_items", { 
+                to_relation: result.data.to_relation,
+                currency: result.data.currency,
+                items: [{
+                    amount: 1,
+                    tax: 0,
+                    price: -result.data.calc_total_tax,
+                    desc: "Credit invoice "+result.data.invoice_nr
+                }] 
+            }, function(result)
+            {
+                if (!viewShowError(result, context))
+                {
+                    //view the invoice we've just changed/created
+                    viewCreate({}, 
+                    {
+                        name: "ticket.Invoices.show",
+                        params: {
+                            _id: result.data._id
+                        },
+                        mode: 'main',
+
+                    });
+                }
+            });
+        });
+
+        $(".on-click-copy", context).click(function()
+        {
+            rpc("ticket.Invoices.add_items", { 
+                to_relation: result.data.to_relation,
+                currency: result.data.currency,
+                items: result.data.items
+            }, function(result)
+            {
+                if (!viewShowError(result, context))
+                {
+                    //view the invoice we've just changed/created
+                    viewCreate({}, 
+                    {
+                        name: "ticket.Invoices.show",
+                        params: {
+                            _id: result.data._id
+                        },
+                        mode: 'main',
+
+                    });
+                }
+            });
+        });
+
     }
 });
 
 
-$(".on-click-pdf").click(function()
+$(".on-click-pdf", context).click(function()
 {
     document.location="/rpc/ticket/Invoices/get_pdf/"+view.params._id;
 });
 
 
-$(".on-click-send").click(function()
+$(".on-click-send", context).click(function()
 {
     rpc("ticket.Invoices.send", { _id:view.params._id }, function(result)
         {
@@ -42,7 +99,7 @@ $(".on-click-send").click(function()
         });
 });
 
-$(".on-click-revoke").click(function()
+$(".on-click-revoke", context).click(function()
 {
     rpc("ticket.Invoices.revoke", { _id:view.params._id }, function(result)
         {
@@ -50,6 +107,17 @@ $(".on-click-revoke").click(function()
             {
                 //reload the view
                 viewLoad(view);
+            }
+        });
+});
+
+$(".on-click-delete", context).click(function()
+{
+    rpc("ticket.Invoices.delete", { _id:view.params._id }, function(result)
+        {
+            if (!viewShowError(result, context))
+            {
+                window.history.back();
             }
         });
 });
@@ -155,6 +223,8 @@ $(".on-click-revoke").click(function()
     <button class='hide on-click-pdf' >Download pdf</button>
     <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
+    <button class='hide on-click-delete' >Delete invoice</button>
+    <button class='hide on-click-copy' >Copy invoice</button>
     <span class='viewErrorText'></span>
 </div>
 

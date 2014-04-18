@@ -440,6 +440,10 @@ ControlForm.prototype.attach_event_handlers=function()
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(data)
     { 
+        //not our data?
+        //FIXME: we should look at list_key instead assuming its always _id.
+        if (data._id!=this_control.params.get_params._id)
+            return(false);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
