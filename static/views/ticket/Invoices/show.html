@@ -9,6 +9,7 @@ var form=new ControlForm({
     'title'           : 'View invoice {invoice_nr}',
     'favorite_menu'   : 'invoices',
     'create_view_params': view.params,
+    'on_change'       : 'put',
     'get_result'      : function(result)
     {
         if (result.data.sent)
@@ -110,8 +111,8 @@ $(".on-click-send").click(function()
                 <span class='field-put' field-key='currency'></span>
                 <span class='field-put control-on-click-view'  field-key='items.price'></span>
 
-            <td style='width: 5em; text-align: right;' class='control-on-click-view'>
-                <span class='field-put' field-key='items.tax'></span>%
+            <td style='width: 5em; text-align: right;' >
+                <span class='field-put control-on-click-view' field-key='items.tax'></span>%
 
             <td style='width: 5em; text-align: right;'>
                 <span class='field-put' field-key='currency'></span>

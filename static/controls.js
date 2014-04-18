@@ -199,7 +199,7 @@ ControlBase.prototype.attach_event_handlers=function()
 
         viewCreate(
             {
-                creator: $(this)
+                //NO, this confuses lists: creator: $(this)
             },
             editView);
 
@@ -321,6 +321,7 @@ ControlForm.prototype.get=function(request_params)
 //put data into the fields of the current form
 ControlForm.prototype.field_put=function(data, options)
 {
+    // console.error("FIELD_PUT", data, options);
     Field.Dict.put('', this.meta, this.context, data, options);
     this.params.field_put(data, options);
 
@@ -439,16 +440,17 @@ ControlForm.prototype.attach_event_handlers=function()
     //some  control changed/added an item in our class, so update the form
     $(context).subscribe(this.params.class+'.changed', "form", function(data)
     { 
-        console.log("ControlForm: data on server has changed",this_control);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
         {
+            console.log("ControlForm: data on server has changed, reloading view", this_control,data);
             viewLoad(this_control.params.view);
         }
         //re-get the data and show changes
         else if (this_control.params.on_change=='get')
         {
+            console.log("ControlForm: data on server has changed, regetting data", this_control,data);
             this_control.get({ 
                 show_changes: true,
                 list_update: true 
@@ -456,10 +458,19 @@ ControlForm.prototype.attach_event_handlers=function()
         }
         else if (this_control.params.on_change=='put')
         {
-            Field.Dict.put('', this_control.meta, this_control.context, data, {
+            console.log("ControlForm: data on server has changed, putting data", this_control,data);
+            this_control.field_put(data, {
                 show_changes:true,
                 list_update: true
             });
+            // Field.Dict.put('', this_control.meta, this_control.context, data, {
+            //     show_changes:true,
+            //     list_update: true
+            // });
+        }
+        else
+        {
+            console.log("ControlForm: data on server has changed, ignoring", this_control,data);            
         }
         return(false);
     });
@@ -814,17 +825,18 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.changed', "list", function(data)
     { 
 
-        console.log("ControlList: data on server has changed", data, this_control.params);
 
         //reload the whole view
         if (this_control.params.on_change=='reload')
         {
+            console.log("ControlList: data on server has changed, reloading", data, this_control.params);
             viewLoad(this_control.params.view);
         }
         //re-get the data
         else if (this_control.params.on_change=='get')
         {
 
+            console.log("ControlList: data on server has changed, regetting data", data, this_control.params);
             this_control.get_delayed({
                     list_no_remove: false,
                     list_update: true,
@@ -834,6 +846,7 @@ ControlList.prototype.attach_event_handlers=function()
         //only put the new data into the list
         else if (this_control.params.on_change=='put')
         {
+            console.log("ControlList: data on server has changed, putting data", data, this_control.params);
             Field.List.put(
                 this_control.list_source_element.attr("field-key"),
                 this_control.meta,
@@ -847,6 +860,10 @@ ControlList.prototype.attach_event_handlers=function()
 
                 }
             );
+        }
+        else
+        {
+            console.log("ControlList: data on server has changed, ignoring", data, this_control.params);
         }
 
         return(false);

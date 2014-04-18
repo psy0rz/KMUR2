@@ -416,7 +416,7 @@ Field.Dict.get=function(key, meta, context)
 
 Field.Dict.find_element=function(key, meta, context, data_keys)
 {
-    console.log("Dict.find_element", key, meta, context, data_keys);
+    // console.log("Dict.find_element", key, meta, context, data_keys);
 
     var this_key=data_keys[0];
     var sub_keys=data_keys.slice(1);
@@ -771,20 +771,16 @@ Field.List.put=function(key, meta, context, data, options)
             //update mode
             if (options.list_update)
             {
+                var list_id;                
                 if (meta.list_key)
-                {
-                    //try to find existing element
-                    //the field-key and field-list-id should both match
-                    update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[meta.list_key]+'"]', parent);
-                    if (update_element.length==0)
-                        update_element=undefined;
-                }
+                    list_id=item_value[meta.list_key];
                 else
-                {
-                    //just use plain item_nr array adressing:
-                    if (item_nr < existing_items.length)
-                        update_element=$(existing_items[item_nr]);
-                }
+                    list_id=item_nr;
+                //try to find existing element
+                //the field-key and field-list-id should both match
+                update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+list_id+'"]', parent);
+                if (update_element.length==0)
+                    update_element=undefined;
             }
             
             //not found? clone new element
@@ -964,7 +960,7 @@ Field.List.from_element_add=function(key, element)
 */
 Field.List.find_element=function(key, meta, context, data_keys)
 {
-    console.log("Field.List.find_element", key, meta, context, data_keys);
+    // console.log("Field.List.find_element", key, meta, context, data_keys);
 
     var list_item_id=data_keys[0];
     var sub_keys=data_keys.slice(1);
