@@ -14,7 +14,7 @@ var form=new ControlForm({
     {
         if (result.data.sent)
         {
-            $(".on-click-unsend, .on-click-credit, .on-click-pdf").show();
+            $(".on-click-revoke, .on-click-credit, .on-click-pdf").show();
         }
         else
         {
@@ -33,6 +33,18 @@ $(".on-click-pdf").click(function()
 $(".on-click-send").click(function()
 {
     rpc("ticket.Invoices.send", { _id:view.params._id }, function(result)
+        {
+            if (!viewShowError(result, context))
+            {
+                //reload the view
+                viewLoad(view);
+            }
+        });
+});
+
+$(".on-click-revoke").click(function()
+{
+    rpc("ticket.Invoices.revoke", { _id:view.params._id }, function(result)
         {
             if (!viewShowError(result, context))
             {
@@ -108,29 +120,24 @@ $(".on-click-send").click(function()
             <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.amount'>
             <td class='field-put control-on-click-view' field-key='items.desc'>
             <td style='width: 5em; text-align: right;'>
-                <span class='field-put' field-key='currency'></span>
-                <span class='field-put control-on-click-view'  field-key='items.price'></span>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put control-on-click-view'  field-key='items.price'></span>
 
             <td style='width: 5em; text-align: right;' >
                 <span class='field-put control-on-click-view' field-key='items.tax'></span>%
 
             <td style='width: 5em; text-align: right;'>
-                <span class='field-put' field-key='currency'></span>
-                <span class='field-put' field-key='items.calc_total' ></span>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='items.calc_total' ></span>
 
             <td style='width: 5em; text-align: right;'>
-                <span class='field-put' field-key='currency'></span>
-                <span class='field-put' field-key='items.calc_total_tax' ></span>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='items.calc_total_tax' ></span>
         </tr>
         <tr>
             <td colspan=4 style='border:none'>
             <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
-                <span class='field-put' field-key='currency'></span>
-                <span class='field-put' field-key='calc_total'></span>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='calc_total'></span>
 
             <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
-                <span class='field-put' field-key='currency'></span>
-                <span class='field-put' field-key='calc_total_tax'></span>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='calc_total_tax'></span>
         </tr>
 
     </tbody>
@@ -146,7 +153,7 @@ $(".on-click-send").click(function()
     <button class='control-on-click-cancel' >Back</button>
     <button class='hide on-click-send' >Send invoice</button>
     <button class='hide on-click-pdf' >Download pdf</button>
-    <button class='hide on-click-unsend' >Revoke invoice</button>
+    <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
     <span class='viewErrorText'></span>
 </div>

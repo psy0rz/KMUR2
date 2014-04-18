@@ -216,10 +216,39 @@ class Invoices(models.core.Protected.Protected):
             update_doc['invoice_nr']=str(settings['invoice_nr'])
             update_doc['sent_date']=time.time()
 
-        ret=self._put(update_doc)
-        self.event("changed",ret)
+        self._put(update_doc)
 
-        self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=update_doc['invoice_nr'], company=doc['to_copy']['company']))
+        doc=self._get(_id)
+        self.event("changed",doc)
+        self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+
+    @Acl(roles="finance")
+    def revoke(self, _id):
+        """revoke an invoice thats already been send (e.g. unsend it)
+
+            Make sure to destroy any printed invoice that you or the customer have.
+
+            After revoking an invoice you can edit it. Use this to make corrections on invoice you havent actually send in real life yet.
+
+            Try to prevent this, the offical way to revert an invoice it to make a credit invoice. 
+        """
+
+        doc=self.get(_id)
+
+        if doc['sent']==False:
+            raise FieldError("Invoice is not sent yet.")
+
+        doc['sent']=False
+
+        ret=self._put(doc)
+        self.event("changed",ret)
+        self.warning("Revoked invoice {invoice_nr} sent to {company}. Dont forget to destroy all copies.".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+
+
+    @Acl(roles="finance")
+    def add_items():
+        """adds specified items to the last unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
+        """
 
 
     @Acl(roles="finance")
