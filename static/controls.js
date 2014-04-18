@@ -303,7 +303,7 @@ ControlForm.prototype.get_meta_result=function(result, request_params)
 
 ControlForm.prototype.get=function(request_params)
 {
-    console.log(this.params.get_params);
+//    console.log(this.params.get_params);
     //its not possible to 'get' data from a form when there are no get_parameters specified.
     //unless get_parmas is explicitly undefined.
     if (this.params.get_params!=undefined && Object.keys(this.params.get_params).length==0)
@@ -330,7 +330,6 @@ ControlForm.prototype.get_result=function(result, request_params)
 {
     this.params.get_result(result, request_params);
 
-    this.focus();
 
     // $(".control-on-click-save", this.context).prop("disabled", false);
     if (('data' in result) && (result.data != null) )
@@ -398,6 +397,7 @@ ControlForm.prototype.get_result=function(result, request_params)
         });
     }
     
+    this.focus();
 }
 
 
@@ -503,6 +503,7 @@ ControlForm.prototype.focus=function()
         element=Field[this.meta.type].find_element('', this.meta, this.context, Field.Base.keys(this.params.default_focus));
     else
         element=$(".control-default-focus", this.context);
+
 
     $(':input', element).focus();
     element.focus();

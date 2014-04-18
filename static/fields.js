@@ -437,6 +437,7 @@ Field.Dict.find_element=function(key, meta, context, data_keys)
     var selector='.field-put[field-key="'+key_str+'"]';
     var sub_context=$(selector, context);
 
+
     //if the selector is not found, just keep looking in the same context for the next one
     if (sub_context.length==0)
         sub_context=context;
@@ -974,6 +975,8 @@ Field.List.find_element=function(key, meta, context, data_keys)
     // console.log("list_item_id", list_item_id);
     // console.log("sub_keys", sub_keys);
     // console.log("sub_meta", sub_meta);
+
+
 
     var selector='.field-list-item[field-key="'+key+'"]';
     var sub_context;
