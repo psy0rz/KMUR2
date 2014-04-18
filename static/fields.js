@@ -781,6 +781,7 @@ Field.List.put=function(key, meta, context, data, options)
                 update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+list_id+'"]', parent);
                 if (update_element.length==0)
                     update_element=undefined;
+                FIXME: moet toch op volgorde..ivm drag drop en neiuwe items
             }
             
             //not found? clone new element

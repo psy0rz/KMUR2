@@ -32,7 +32,7 @@ class Invoices(models.core.Protected.Protected):
     '''
 
     
-    @Acl(roles=["everyone"])
+    @Acl(roles=["finance"])
     def get_meta(self, *args, _id=None, **kwarg):
 
         readonly=False
@@ -154,12 +154,13 @@ class Invoices(models.core.Protected.Protected):
         if 'from_copy' in doc or 'to_copy' in doc:
             raise FieldError("Cant set from_copy or to_copy this way")
 
+        if 'sent' in doc:
+            raise FieldError("Cant modify sent-status this way")
+
         #make sure its always set to make coding easier
         if not '_id' in doc:
             doc['invoice_nr']=""
-
-        if 'sent' in doc:
-            raise FieldError("Cant modify sent-status this way")
+            doc['sent']=False
 
         #store the calculated results (so we always return the same results in the future according to tax rules)
         if 'items' in doc:
@@ -246,9 +247,36 @@ class Invoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def add_items():
-        """adds specified items to the last unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
+    def add_items(self, to_relation, items):
+        """adds specified items to the an unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
         """
+
+        #find a unsent invoice
+        invoices=self.get_all(match={
+            'to_relation':to_relation,
+            'sent': False,
+        },
+        limit=1,
+        )
+
+
+
+        #use existing
+        if len(invoices)>0:
+            update_doc=
+            {
+                '_id': invoices[0]['_id']
+                'items': invoices[0]['items']
+            }
+            update_doc['items'].append(items)
+            self.put(update_doc)
+        #create new invoice
+
+
+
+
+
+
 
 
     @Acl(roles="finance")
