@@ -247,7 +247,7 @@ class Invoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def add_items(self, to_relation, items):
+    def add_items(self, to_relation, currency, items):
         """adds specified items to the an unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
         """
 
@@ -255,27 +255,30 @@ class Invoices(models.core.Protected.Protected):
         invoices=self.get_all(match={
             'to_relation':to_relation,
             'sent': False,
+            'currency': currency
         },
         limit=1,
+        sort=[ ( '_id', 1) ]
+
         )
 
-
-
-        # #use existing
-        # if len(invoices)>0:
-        #     update_doc=
-        #     {
-        #         '_id': invoices[0]['_id']
-        #         'items': invoices[0]['items']
-        #     }
-        #     update_doc['items'].append(items)
-        #     self.put(update_doc)
-        # #create new invoice
-
-
-
-
-
+        #use existing
+        if len(invoices)>0:
+            update_doc={
+                '_id': invoices[0]['_id'],
+                'items': invoices[0]['items']
+            }
+            update_doc['items'].extend(items)
+            self.put(**update_doc)
+        #create new invoice
+        else:
+            new_doc={
+                'to_relation': to_relation,
+                'items':    items,
+                'currency': currency,
+                'allowed_users': [ self.context.session['user_id'] ]
+            }
+            self.put(**new_doc)
 
 
 
