@@ -261,16 +261,16 @@ class Invoices(models.core.Protected.Protected):
 
 
 
-        #use existing
-        if len(invoices)>0:
-            update_doc=
-            {
-                '_id': invoices[0]['_id']
-                'items': invoices[0]['items']
-            }
-            update_doc['items'].append(items)
-            self.put(update_doc)
-        #create new invoice
+        # #use existing
+        # if len(invoices)>0:
+        #     update_doc=
+        #     {
+        #         '_id': invoices[0]['_id']
+        #         'items': invoices[0]['items']
+        #     }
+        #     update_doc['items'].append(items)
+        #     self.put(update_doc)
+        # #create new invoice
 
 
 

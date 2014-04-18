@@ -771,17 +771,18 @@ Field.List.put=function(key, meta, context, data, options)
             //update mode
             if (options.list_update)
             {
-                var list_id;                
-                if (meta.list_key)
-                    list_id=item_value[meta.list_key];
-                else
-                    list_id=item_nr;
                 //try to find existing element
-                //the field-key and field-list-id should both match
-                update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+list_id+'"]', parent);
+                if (meta.list_key)
+                {
+                    //the field-key and field-list-id should both match
+                    update_element=$('.field-list-item[field-key="'+key+'"][field-list-id="'+item_value[meta.list_key]+'"]', parent);
+                }
+                else
+                {
+                    update_element=$('.field-list-item[field-key="'+key+'"]', parent).eq(item_nr);
+                }
                 if (update_element.length==0)
                     update_element=undefined;
-                FIXME: moet toch op volgorde..ivm drag drop en neiuwe items
             }
             
             //not found? clone new element
@@ -978,7 +979,10 @@ Field.List.find_element=function(key, meta, context, data_keys)
     var selector='.field-list-item[field-key="'+key+'"]';
     var sub_context;
 
-    sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', list_context);
+    if (meta.list_key)        
+        sub_context=$(selector+'[field-list-id="'+list_item_id+'"]', list_context);
+    else
+        sub_context=$(selector, list_context).eq(list_item_id);
 
 
     //no more keys left?
