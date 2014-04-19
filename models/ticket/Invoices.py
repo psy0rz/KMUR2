@@ -161,6 +161,7 @@ class Invoices(models.core.Protected.Protected):
         if not '_id' in doc:
             doc['invoice_nr']=""
             doc['sent']=False
+            doc['payed']=False
 
         #store the calculated results (so we always return the same results in the future according to tax rules)
         if 'items' in doc:
@@ -276,7 +277,8 @@ class Invoices(models.core.Protected.Protected):
                 'to_relation': to_relation,
                 'items':    items,
                 'currency': currency,
-                'allowed_users': [ self.context.session['user_id'] ]
+                'allowed_users': [ self.context.session['user_id'] ],
+                'title': "Invoice"
             }
             ret=self.put(**new_doc)
 

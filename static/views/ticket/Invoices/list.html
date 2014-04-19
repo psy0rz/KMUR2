@@ -1,6 +1,6 @@
 
 <script>
-    new ControlList({
+    var form=new ControlList({
         'view'            	: view,
         'class'        		: 'ticket.Invoices',
         'get_params'        : view.params,
@@ -9,40 +9,83 @@
         'favorite_menu'     : 'invoices',
     });
 
+    $(".tabs", context).tabs({
+        'activate': function(event, ui)
+        {
+            if (ui.newTab.attr("status")=="all")
+                form.params.get_params.match={};
+
+            if (ui.newTab.attr("status")=="unsent")
+                form.params.get_params.match={
+                    "sent": false
+                };
+
+            if (ui.newTab.attr("status")=="unpayed")
+                form.params.get_params.match={
+                    "sent": true,
+                    "payed": false
+                };
+
+            if (ui.newTab.attr("status")=="payed")
+                form.params.get_params.match={
+                    "sent": true,
+                    "payed": true
+                };
+
+            form.get_delayed({});
+            form.focus();
+        } 
+    });
+
+
 </script>
 
-<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-<input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
+<div class="tabs">
+    <ul>
+        <li status="all">           <a href="#dummytab">All</a></li>
+        <li status="unsent">        <a href="#dummytab">Unsent</a></li>
+        <li status="unpayed">       <a href="#dummytab">Unpayed</a></li>
+        <li status="payed">         <a href="#dummytab">Payed</a></li>
+    </ul>
+    <div id="dummytab">
+ 
+    <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+    <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
 
-<table >
-    <tr class='ui-widget-header'>
-        <th>
-        <th class='field-meta-put control-on-click-order control-order-desc' field-key='sent_date' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='invoice_nr' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
-    	<th class='field-meta-put control-on-click-order' field-key='to_copy.company' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='notes' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='calc_total' field-meta-key='desc'>
-        <th class='field-meta-put control-on-click-order' field-key='calc_total_tax' field-meta-key='desc'>
-    	<th>
-    </tr>
+    <table >
+        <tr class='ui-widget-header'>
+            <th>
+            <th class='field-meta-put control-on-click-order control-order-desc' field-key='sent_date' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='invoice_nr' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
+        	<th class='field-meta-put control-on-click-order' field-key='to_copy.company' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='calc_total' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='calc_total_tax' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='sent' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='payed' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order' field-key='notes' field-meta-key='desc'>
+        	<th>
+        </tr>
 
 
-    <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Invoices.edit">
-        <td class='field-list-on-click-view show-button-style' field-list-view="ticket.Invoices.show">&nbsp;
+        <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Invoices.edit">
+            <td class='field-list-on-click-view show-button-style' field-list-view="ticket.Invoices.show">&nbsp;
 
-        <td class='field-put field-list-on-click-view' field-key='sent_date' >
-        <td class='field-put field-list-on-click-view' field-key='invoice_nr' >
-        <td class='field-put field-list-on-click-view' field-key='title' >
-        <td class='field-put field-list-on-click-view' field-key='to_copy.company' >
-        <td class='field-put field-list-on-click-view' field-key='notes' >
-        <td class='field-put field-list-on-click-view' field-key='calc_total' >
-        <td class='field-put field-list-on-click-view' field-key='calc_total_tax' >
+            <td class='field-put field-list-on-click-view' field-key='sent_date' >
+            <td class='field-put field-list-on-click-view' field-key='invoice_nr' >
+            <td class='field-put field-list-on-click-view' field-key='title' >
+            <td class='field-put field-list-on-click-view' field-key='to_copy.company' >
+            <td class='field-put field-list-on-click-view' field-key='calc_total' >
+            <td class='field-put field-list-on-click-view' field-key='calc_total_tax' >
+            <td class='field-put field-list-on-click-view' field-key='sent' >
+            <td class='field-put field-list-on-click-view' field-key='payed' >
+            <td class='field-put field-list-on-click-view' field-key='notes' >
 
-    	<td class='control-on-click-del ui-icon ui-icon-trash'>
-    </tr>
+        	<td class='control-on-click-del ui-icon ui-icon-trash'>
+        </tr>
 
-</table>
+    </table>
+</div>
 
 <div class='floatingBar viewErrorClass'>
     <button class='control-on-click-view' control-view='ticket.Invoices.edit' field-key='title' >Create new invoice</button>

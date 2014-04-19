@@ -123,41 +123,28 @@ $(".on-click-delete", context).click(function()
 });
 
 </script>
+<div control-view="ticket.Invoices.edit">
 
-<div>
-    <fieldset class='inline-block'>
-        <legend>To:</legend>        
-        <div class='field-put' field-key='to_copy.company'></div>
-        <div class='field-put' field-key='to_copy.department'></div>
-        <div class='field-put' field-key='to_copy.address'></div>
-        <div><span class='field-put' field-key='to_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='to_copy.city'></span></div>
-        <div class='field-put' field-key='to_copy.province'></div>
-        <div class='field-put' field-key='to_copy.country'></div>
+<h1 class='field-put control-on-click-view' field-key='title'></h1>
 
-    </fieldset>
+<fieldset class='inline-block control-on-click-view' field-key='to_relation' >
+    <legend>To:</legend>        
+    <div class='field-put' field-key='to_copy.company'></div>
+    <div class='field-put' field-key='to_copy.department'></div>
+    <div class='field-put' field-key='to_copy.address'></div>
+    <div><span class='field-put' field-key='to_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='to_copy.city'></span></div>
+    <div class='field-put' field-key='to_copy.province'></div>
+    <div class='field-put' field-key='to_copy.country'></div>
 
-    <fieldset class='inline-block' style='float: right'>
-        <legend>From:</legend>        
-        <div class='field-put' field-key='from_copy.company'></div>
-        <div class='field-put' field-key='from_copy.department'></div>
-        <div class='field-put' field-key='from_copy.address'></div>
-        <div><span class='field-put' field-key='from_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='from_copy.city'></span></div>
-        <div class='field-put' field-key='from_copy.province'></div>
-        <div class='field-put' field-key='from_copy.country'></div>
-        <p>
-        <div>BTW: <span class='field-put' field-key='from_copy.vat_nr'></span></div>
-        <div>KVK: <span class='field-put' field-key='from_copy.coc_nr'></span></div>
-        <p>
-        <div>IBAN: <span class='field-put' field-key='from_copy.iban_nr'></span></div>
-        <div>BIC: <span class='field-put' field-key='from_copy.bic_code'></span></div>
-    </fieldset>
-</div>
+</fieldset>
 
-<p>
-
-<fieldset class='inline-block control-hide-on-new'>
+<fieldset class='inline-block'>
     <legend>Status</legend>        
     <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='sent' field-meta-key='desc'>
+            <td class='field-put value' field-key='sent'>
+        </tr>
         <tr>
             <td class='field-meta-put' field-key='invoice_nr' field-meta-key='desc'>
             <td class='field-put value' field-key='invoice_nr'>
@@ -166,13 +153,39 @@ $(".on-click-delete", context).click(function()
             <td class='field-meta-put' field-key='sent_date' field-meta-key='desc'>
             <td class='field-put value' field-key='sent_date'>
         </tr>
+        <tr>
+            <td class='field-meta-put' field-key='payed' field-meta-key='desc'>
+            <td class='field-put value' field-key='payed'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='payed_date' field-meta-key='desc'>
+            <td class='field-put value' field-key='payed_date'>
+        </tr>
     </table>
 </fieldset>
+
+<fieldset class='inline-block' >
+    <legend>From:</legend>        
+    <div class='field-put' field-key='from_copy.company'></div>
+    <div class='field-put' field-key='from_copy.department'></div>
+    <div class='field-put' field-key='from_copy.address'></div>
+    <div><span class='field-put' field-key='from_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='from_copy.city'></span></div>
+    <div class='field-put' field-key='from_copy.province'></div>
+    <div class='field-put' field-key='from_copy.country'></div>
+    <p>
+    <div>BTW: <span class='field-put' field-key='from_copy.vat_nr'></span></div>
+    <div>KVK: <span class='field-put' field-key='from_copy.coc_nr'></span></div>
+    <p>
+    <div>IBAN: <span class='field-put' field-key='from_copy.iban_nr'></span></div>
+    <div>BIC: <span class='field-put' field-key='from_copy.bic_code'></span></div>
+</fieldset>
+
+
 
 <p>
 
 
-<table class='table-grid' style='width:100%' control-view="ticket.Invoices.edit">
+<table class='table-grid' style='width:100%' >
     <thead >
         <tr class='field-meta-put' field-key='items' >
             <th class='field-meta-put' field-key='items.amount' field-meta-key='desc' style='border-bottom-style: solid'>
@@ -211,20 +224,21 @@ $(".on-click-delete", context).click(function()
     </tbody>
 </table>
 
-<p class='field-put' field-key='notes'>
+<p class='field-put control-on-click-view' field-key='notes'>
 
 
+</div>
 
 
 
 <div class='viewErrorClass floatingBar'>
-    <button class='control-on-click-cancel' >Back</button>
     <button class='hide on-click-send' >Send invoice</button>
     <button class='hide on-click-pdf' >Download pdf</button>
     <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
     <button class='hide on-click-delete' >Delete invoice</button>
     <button class='hide on-click-copy' >Copy invoice</button>
+    <button class='control-on-click-cancel' >Cancel</button>
     <span class='viewErrorText'></span>
 </div>
 
