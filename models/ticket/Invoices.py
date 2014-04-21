@@ -241,6 +241,7 @@ class Invoices(models.core.Protected.Protected):
             raise FieldError("Invoice is not sent yet.")
 
         doc['sent']=False
+        doc['payed']=False
 
         ret=self._put(doc)
         self.event("changed",ret)

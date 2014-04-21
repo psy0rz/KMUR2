@@ -237,7 +237,10 @@ params:
 
     default             default values to put before putting actual data.
 
-    field_put           called after putting the data to the form fields. for existing forms the data is the get_result, for new forms its the default variable.
+    field_put           called after putting the data to the form fields. 
+                        for existing forms the data is the get_result, for new forms its the default variable.
+                        this is also triggered on change-events.
+                        parameters only contain data (unlike the get_result function which is called with complete rpc-results including errors)
 
 */
 function ControlForm(params)

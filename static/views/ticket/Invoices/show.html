@@ -9,31 +9,45 @@ var form=new ControlForm({
     'title'           : 'View invoice {invoice_nr}',
     'favorite_menu'   : 'invoices',
     'create_view_params': view.params,
-    'on_change'       : 'put',
-    'get_result'      : function(result)
+    'on_change'       : 'get', //we need complete data, not only the changes
+    'field_put'      : function(data)
     {
-        if (result.data.sent)
+        //var data=data;
+
+        //rehide everything
+        $(".hide", context).hide();
+
+        if (data.sent)
         {
             $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf", context).show();
+
+            if (data.payed)
+                $(".on-click-unpayed",context).show();
+            else
+                $(".on-click-payed",context).show();
+
         }
         else
         {
             $(".on-click-send",context).show();
 
-            if (result.data.invoice_nr=="")
+            if (data.invoice_nr=="")
                 $(".on-click-delete",context).show();
         }
 
-        $(".on-click-credit", context).click(function()
+
+
+
+        $(".on-click-credit", context).off().click(function()
         {
             rpc("ticket.Invoices.add_items", { 
-                to_relation: result.data.to_relation,
-                currency: result.data.currency,
+                to_relation: data.to_relation,
+                currency: data.currency,
                 items: [{
                     amount: 1,
                     tax: 0,
-                    price: -result.data.calc_total_tax,
-                    desc: "Credit invoice "+result.data.invoice_nr
+                    price: -data.calc_total_tax,
+                    desc: "Credit invoice "+data.invoice_nr
                 }] 
             }, function(result)
             {
@@ -53,12 +67,12 @@ var form=new ControlForm({
             });
         });
 
-        $(".on-click-copy", context).click(function()
+        $(".on-click-copy", context).off().click(function()
         {
             rpc("ticket.Invoices.add_items", { 
-                to_relation: result.data.to_relation,
-                currency: result.data.currency,
-                items: result.data.items
+                to_relation: data.to_relation,
+                currency: data.currency,
+                items: data.items
             }, function(result)
             {
                 if (!viewShowError(result, context))
@@ -91,11 +105,7 @@ $(".on-click-send", context).click(function()
 {
     rpc("ticket.Invoices.send", { _id:view.params._id }, function(result)
         {
-            if (!viewShowError(result, context))
-            {
-                //reload the view
-                viewLoad(view);
-            }
+            viewShowError(result, context);
         });
 });
 
@@ -103,11 +113,7 @@ $(".on-click-revoke", context).click(function()
 {
     rpc("ticket.Invoices.revoke", { _id:view.params._id }, function(result)
         {
-            if (!viewShowError(result, context))
-            {
-                //reload the view
-                viewLoad(view);
-            }
+            viewShowError(result, context);
         });
 });
 
@@ -121,6 +127,35 @@ $(".on-click-delete", context).click(function()
             }
         });
 });
+
+$(".on-click-payed", context).click(function()
+{
+    rpc("ticket.Invoices.put", { 
+            _id:view.params._id,
+            payed: true,
+            payed_date: new Date().getTime()/1000 
+        }, 
+        function(result)
+        {
+            viewShowError(result, context);
+        });
+});
+
+
+$(".on-click-unpayed", context).click(function()
+{
+    rpc("ticket.Invoices.put", { 
+            _id:view.params._id,
+            payed: false,
+        }, 
+        function(result)
+        {
+            viewShowError(result, context);
+        });
+});
+
+
+
 
 </script>
 <div control-view="ticket.Invoices.edit">
@@ -238,7 +273,9 @@ $(".on-click-delete", context).click(function()
     <button class='hide on-click-credit' >Credit invoice</button>
     <button class='hide on-click-delete' >Delete invoice</button>
     <button class='hide on-click-copy' >Copy invoice</button>
-    <button class='control-on-click-cancel' >Cancel</button>
+    <button class='hide on-click-payed' >Mark as payed</button>
+    <button class='hide on-click-unpayed' >Mark as un-payed</button>
+    <button class='control-on-click-cancel' >Back</button>
     <span class='viewErrorText'></span>
 </div>
 
