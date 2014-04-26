@@ -36,7 +36,7 @@ to_format="""{company}
 {country}
 """
 
-
+date_format="""Date: %d-%m-%Y"""
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -398,9 +398,12 @@ class Invoices(models.core.Protected.Protected):
         #title
         pdf_elements.append(Preformatted(invoice['title'],style=styles['Title']))
 
-         
-        #white space to allow room for headings on first page
-        pdf_elements.append(Spacer(0,10*cm))
+        pdf_elements.append(Spacer(0, 5*cm))
+
+        #invoice date
+        pdf_elements.append(Preformatted(time.strftime(date_format, time.localtime(invoice['sent_date'])), style=styles['Normal']))
+
+        pdf_elements.append(Spacer(0, 3*cm))
 
         #convert invoice items to table
         table_data=[]
