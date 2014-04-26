@@ -43,6 +43,7 @@ class TicketObjects(models.core.Protected.Protected):
                     check_exists=False,
                     resolve=False,
                     list=False),
+                'billing_invoice_id':models.mongodb.FieldId(desc='Billing invoice'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -94,17 +95,20 @@ class TicketObjects(models.core.Protected.Protected):
 
 
         if '_id' in doc:
-          log_txt="Changed task note '{title}'".format(**doc)
-          # if 'create_time' in doc:
-          #   del doc['create_time']            
+            old_doc=self.get(doc['_id'])
+            if 'billing_invoice_id' in old_doc:
+                raise fields.FieldError("This item is already billed, you cannot change it anymore.")
+
+
+            log_txt="Changed task note '{title}'".format(**doc)
         else:
-          log_txt="Created new task note 'title'".format(**doc)
-          # doc['create_time']=time.time()
+            log_txt="Created new task note 'title'".format(**doc)
 
         ret=self._put(doc)
 
         self.event("changed", ret)
 
+        #dont log ticket-change stuff
         if ret['type']!='change':
             self.info(log_txt)
 

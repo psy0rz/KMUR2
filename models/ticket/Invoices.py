@@ -12,6 +12,7 @@ import bottle
 import time
 
 from_format="""{company}
+{department}
 {address}
 {zip_code}  {city}
 {province}
@@ -25,6 +26,16 @@ BTW: {vat_nr}
 IBAN: {iban_nr}
 BIC: {bic_code}
 """
+
+retour_format=">> Retour adres: {address} {zip_code}  {city} ({country})"
+
+to_format="""{company}
+{department}
+{address}
+{zip_code}  {city}
+{country}
+"""
+
 
 
 class Invoices(models.core.Protected.Protected):
@@ -279,7 +290,8 @@ class Invoices(models.core.Protected.Protected):
                 'items':    items,
                 'currency': currency,
                 'allowed_users': [ self.context.session['user_id'] ],
-                'title': "Invoice"
+                'title': "Invoice",
+                'notes': ""
             }
             ret=self.put(**new_doc)
 
@@ -382,6 +394,10 @@ class Invoices(models.core.Protected.Protected):
 
         # container for the 'Flowable' pdf objects
         pdf_elements = []
+
+        #title
+        pdf_elements.append(Preformatted(invoice['title'],style=styles['Title']))
+
          
         #white space to allow room for headings on first page
         pdf_elements.append(Spacer(0,10*cm))
@@ -436,16 +452,28 @@ class Invoices(models.core.Protected.Protected):
             ]))
         pdf_elements.append(table)
 
+
+        #notes
+        pdf_elements.append(Preformatted(invoice['notes'],style=styles['Italic']))
+
         #print adress info and extra stuff on first page
         def first_page(canvas, pdf):
             canvas.saveState()
 
             #senders adress and company info
-            #TODO: put this in a template
-            from_frame=Frame(14*cm, 21*cm, 10*cm, 6*cm, showBoundary=0)
+            from_frame=Frame(14*cm, 21*cm, 12*cm, 8*cm, showBoundary=0)
             from_frame.addFromList([
                 Preformatted(from_format.format(**invoice['from_copy']),style=styles['Small'])
             ], canvas)
+
+
+            #customer adress and info
+            to_frame=Frame(2*cm, 19.5*cm, 10*cm, 6*cm, showBoundary=0)
+            to_frame.addFromList([
+                Preformatted(retour_format.format(**invoice['from_copy']),style=styles['Small']),
+                Preformatted(to_format.format(**invoice['to_copy']),style=styles['Normal'])
+            ], canvas)
+
             canvas.restoreState()
 
 
