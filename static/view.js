@@ -28,19 +28,19 @@ $(document).ready(function()
     { 'unescape': true } //dont urlencode   
     );
 
-    //endless scrolling stuff.
-    //send an event to the last mainview (e.g. the one that is visble and on the foreground)
-    var prevHeight=0;
-    $(window).scroll(function()
-    {
-        // console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
-        var height=$(document).height();
-        if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
-        {
-            prevHeight=$(document).height();
-            $("#views .viewMain:last").trigger("view.scrolledBottom");
-        }
-    });
+    // //endless scrolling stuff.
+    // //send an event to the last mainview (e.g. the one that is visble and on the foreground)
+    // var prevHeight=0;
+    // $(window).scroll(function()
+    // {
+    //     // console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
+    //     var height=$(document).height();
+    //     if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
+    //     {
+    //         prevHeight=$(document).height();
+    //         $("#views .viewMain:last").trigger("view.scrolledBottom");
+    //     }
+    // });
 
 });
 

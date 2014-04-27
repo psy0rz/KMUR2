@@ -149,7 +149,12 @@
 
 .viewMain
 {
-	
+	overflow: auto;
+	left: 16em;
+	right: 0em;
+	top: 2em;
+	bottom: 2.5em;
+	position: fixed;
 }
 
 

@@ -771,16 +771,18 @@ ControlList.prototype.get_result=function(result, request_params)
         );
 
         //only if enabled and when we're visible
-        if (this.params.endless_scrolling && this.context.css("display")!="none")
+        if (this.params.endless_scrolling)// && this.context.css("display")!="none")
         {
-            //console.log("checking", result.data.length, $(window).scrollTop(), $(document).scrollTop());
-            //we dont have enough items to overflow the window enough, and there are still items left on the server?
+            var scroll_height=$(this.context).prop('scrollHeight');
+            var height=$(this.context).height();
+//            var top=$(this.context).scrollTop();
+
             if  ( 
-                    ($(window).height()*2)+$(window).scrollTop() > $(document).height() && 
-                    result.data.length>=this.params.get_params.limit
+                    scroll_height< height*2 && //not fully filled?   
+                    result.data.length>=this.params.get_params.limit //more data available?
                 )
             {
-                console.debug("endless scroll getting more data because document height is not reached yet ", this.params.get_params.skip);
+                console.debug("endless scroll getting more data because height is not reached yet ", this.params.get_params.skip);
                 this.get_delayed({
                     list_no_remove: true,
                     list_update: true,
@@ -1130,18 +1132,44 @@ ControlList.prototype.attach_event_handlers=function()
     //enable endless scrolling?
     if (this_control.params.endless_scrolling)
     {
-        $(context).on("view.scrolledBottom",function()
+
+        var prev_height=0;
+        $(this.context).off("scroll").on("scroll",function()
         {
-            this_control.params.get_params.skip+=this_control.params.get_params.limit;
-            //NOTE: maybe we should create a small overlap to allow for deleted items on the server?
-            console.debug("endless scroll skip is ", this_control.params.get_params.skip);
-            this_control.get_delayed({
-                list_no_remove: true,
-                list_update: true,
-                list_continue: true
- 
-            });
+            var scroll_height=$(this).prop('scrollHeight');
+            var height=$(this).height();
+            var top=$(this).scrollTop();
+
+            console.log("endless scroll event checking", height, scroll_height, top);
+            //scroll_height has changed and we almost scrolled to the bottom?
+            if (scroll_height!=prev_height && top>=scroll_height-(height*2))
+            {
+                prev_height=scroll_height;
+
+                console.debug("endless scrolling: almost scrolled to end, getting more data");
+                this_control.get_delayed({
+                    list_no_remove: true,
+                    list_update: true,
+                    list_continue: true
+     
+                });
+
+            }
         });
+
+
+        // $(context).on("view.scrolledBottom",function()
+        // {
+        //     this_control.params.get_params.skip+=this_control.params.get_params.limit;
+        //     //NOTE: maybe we should create a small overlap to allow for deleted items on the server?
+        //     console.debug("endless scroll skip is ", this_control.params.get_params.skip);
+        //     this_control.get_delayed({
+        //         list_no_remove: true,
+        //         list_update: true,
+        //         list_continue: true
+ 
+        //     });
+        // });
     }
 
     //create a handler to edit in place
