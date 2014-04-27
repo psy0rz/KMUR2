@@ -654,6 +654,11 @@ params:
     endless_scrolling:  set to true to activate endless scrolling. 
                         (by default get_params.limit will be set to 25 but you can specify a different value)
 
+    scroll_context:     selector that specified context for endless scrolling. 
+                        sometimes its usefull to use a parent or child of the normal context that scrolls. 
+                        by default its set to the context.
+                        note: this is not used "relative" in the current context or view, so be sure to specify it correctly.
+
     favorite_menu       up on openening and saving add/upate favorite to specified menu.
     favorite_key        the result-key to use as favorite identifier (defaults to _id)
 
@@ -686,6 +691,11 @@ function ControlList(params)
             this.params.get_params.limit=25;
 
         this.params.get_params.skip=0;
+
+        if (this.params.scroll_context)
+            this.scroll_context=$(this.params.scroll_context);
+        else
+            this.scroll_context=this.context;
     }
 
     this.list_source_element=$(".field-list-source:first", this.context);
@@ -773,9 +783,8 @@ ControlList.prototype.get_result=function(result, request_params)
         //only if enabled and when we're visible
         if (this.params.endless_scrolling)// && this.context.css("display")!="none")
         {
-            var scroll_height=$(this.context).prop('scrollHeight');
-            var height=$(this.context).height();
-//            var top=$(this.context).scrollTop();
+            var scroll_height=$(this.scroll_context).prop('scrollHeight');
+            var height=$(this.scroll_context).height();
 
             if  ( 
                     scroll_height< height*2 && //not fully filled?   
@@ -1134,13 +1143,13 @@ ControlList.prototype.attach_event_handlers=function()
     {
 
         var prev_height=0;
-        $(this.context).off("scroll").on("scroll",function()
+        $(this.scroll_context).off("scroll").on("scroll",function()
         {
             var scroll_height=$(this).prop('scrollHeight');
             var height=$(this).height();
             var top=$(this).scrollTop();
 
-            console.log("endless scroll event checking", height, scroll_height, top);
+            // console.log("endless scroll event checking", height, scroll_height, top);
             //scroll_height has changed and we almost scrolled to the bottom?
             if (scroll_height!=prev_height && top>=scroll_height-(height*2))
             {
