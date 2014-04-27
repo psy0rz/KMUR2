@@ -758,6 +758,7 @@ ControlList.prototype.get_delayed=function(request_params)
 
 ControlList.prototype.get_result=function(result, request_params)
 {
+
     this.getting=false;
     if (this.get_again)
     {
@@ -771,7 +772,7 @@ ControlList.prototype.get_result=function(result, request_params)
 
     if ('data' in result)
     {
-//        console.error("updateing", request_params);
+        // console.error("updateing", JSON.stringify(request_params));
         Field.List.put(
             '',
             this.meta,
@@ -856,7 +857,7 @@ ControlList.prototype.attach_event_handlers=function()
 
             console.log("ControlList: data on server has changed, regetting data", data, this_control.params);
             this_control.get_delayed({
-                    list_no_remove: false,
+                    list_no_remove: true,
                     list_update: true,
                     show_changes: true
             });
