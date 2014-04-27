@@ -396,7 +396,7 @@ Field.Dict.get=function(key, meta, context)
         {
             //in case of a dict we keep the same context
             var sub_ret=Field.Dict.get(key_str, thismeta, context);
-            if (Object(sub_ret)>0)
+            if (Object.keys(sub_ret).length>0)
                 ret[sub_key]=sub_ret;
         }
         else

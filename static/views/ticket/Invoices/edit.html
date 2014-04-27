@@ -5,14 +5,15 @@
 var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Invoices',
-    'get_params'      : view.params,
+    'get_params'      : { '_id': view.params._id},
     'default_focus'   : 'title',
     'title'           : 'Edit invoice {invoice_nr}',
     'title_new'       : 'New invoice',
     'favorite_menu'   : 'invoices',
     'default'         : { 
         'allowed_users': [ session.user_id ],
-        'allowed_groups': [ ]
+        'allowed_groups': [ ],
+        'to_relation': view.params.to_relation
     }
 });
 
