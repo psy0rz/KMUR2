@@ -120,12 +120,14 @@
 {
 	border-width: 1px;
 	border-bottom-style: dashed;
+	
 }
 
 .inline-block
 {
 	display:inline-block;
 	vertical-align: top;
+	margin-bottom: 1em;
 }
 
 .nowrap

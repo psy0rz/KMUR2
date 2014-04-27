@@ -15,8 +15,8 @@ class Tickets(models.core.Protected.Protected):
             '_id': models.mongodb.FieldId(),
             'title': fields.String(min=3, desc='Task', size=100),
             'desc': fields.String(desc='Description'),
-            'start_date': fields.Timestamp(desc='Start date'),
-            'due_date': fields.Timestamp(desc='Due date'),
+            'start_date': fields.Timestamp(desc='Start'),
+            'due_date': fields.Timestamp(desc='Due'),
             'ticket_completed': fields.Bool(desc='Completed'),
             'ticket_status': fields.Select(desc='Status', choices=[
                 ('none', 'None'),

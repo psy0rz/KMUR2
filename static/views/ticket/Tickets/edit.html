@@ -4,7 +4,7 @@
 var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Tickets',
-    'get_params'      :  view.params,
+    'get_params'      : { '_id': view.params._id },
     'default_focus'   : 'title',
     'title'           : 'Edit task {title}',
     'title_new'       : 'New task',
@@ -12,7 +12,8 @@ var form=new ControlForm({
     'default'         : { 
         'owner': session.user_id,
         'allowed_groups': [ ],
-        'start_date': new Date().getTime()/1000
+        'start_date': new Date().getTime()/1000,
+        'relations': view.params.relations
     }
 });
 

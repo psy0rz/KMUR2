@@ -138,6 +138,10 @@ class TicketObjects(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
+        if 'billing_invoice_id' in doc:
+            raise fields.FieldError("This item is already billed, you cannot delete it.")
+
+
         ret=self._delete(_id)
 
         self.event("deleted", ret)
