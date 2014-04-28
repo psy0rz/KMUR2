@@ -30,7 +30,10 @@
 {
 }
 
-
+td
+{
+	padding-right:0.5em;
+}
 
 /* A main menu item */
 .menuMain

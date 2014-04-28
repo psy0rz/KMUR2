@@ -849,7 +849,7 @@ Field.List.put=function(key, meta, context, data, options)
     {
         if (options.show_changes)
         {
-            $('.field-list-delete[field-key="'+key+'"]', parent).hide(1000, function()
+            $('.field-list-delete[field-key="'+key+'"]', parent).removeClass("field-list-item").hide(1000, function()
                     {
                         $(this).remove();
                     });
