@@ -9,6 +9,10 @@ var form=new ControlForm({
     'title'           : 'Edit ticket note {title}',
     'title_new'       : 'New ticket note',
     // 'favorite_menu'   : 'ticket',
+    'put_params'      : {
+        '_id': view.params._id,
+        'type': view.params.type
+    },
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'tickets': [ view.params.ticket_id ],
@@ -18,23 +22,28 @@ var form=new ControlForm({
         'billing_relation': view.params.billing_relation,
         'billing_contract': view.params.billing_contract,
         'type': view.params.type
-
     },
     'field_put': function(data, options)
     {
         $(".show-on", context).hide();
+        $(".show-on .field-get").removeClass("field-get").addClass("field-get-disabled");
+
         if (data)
         {
+            form.params.put_params['type']=data['type'];        
             $(".show-on-"+data['type'], context).show();
+            $(".show-on-"+data['type']+" .field-get-disabled", context).removeClass("field-get-disabled").addClass("field-get");
+
             var delta=data.end_time-data.start_time;
             $('.delta',context).text(delta/60);
         }
 
-        $(context).on('field_changed', '[field-key="type"]',function(e, key, meta, element, data)
-        {
-            $(".show-on", context).hide();
-            $(".show-on-"+data, context).show();
-        });
+        //dont make the type changable, its only confusing and unneccesary
+        // $(context).on('field_changed', '[field-key="type"]',function(e, key, meta, element, data)
+        // {
+        //     $(".show-on", context).hide();
+        //     $(".show-on-"+data, context).show();
+        // });
 
         //calculate worked minutes
         $(context).on('field_changed', '[field-key="start_time"], [field-key="end_time"]',function(e, key, meta, element, data)
@@ -44,6 +53,8 @@ var form=new ControlForm({
             {
                 var delta=form_data.end_time-form_data.start_time;
                 $('.delta',context).text(delta/60);
+
+                $('.field-input[field-key="minutes"]', context).val(delta/60);
             }
         });
        
@@ -54,8 +65,10 @@ var form=new ControlForm({
 //this function is called just before doing a search in the billing_contract field.
 $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", function(params)
 {
+
     //get the currently selected billing_relation:
-    var relation=$('.field-list-item[field-key="billing_relation"]', context).data("field-data");
+    var relation=$('.field-dict-raw[field-key="billing_relation"]', context).data("field-data");
+
 
     if (!relation || !relation['contracts'])
         return(false);
@@ -71,11 +84,10 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 </script>
 
 
+<h1 class='ticket-object'><span class='field-put' field-key='type'></span></h1>
+
+
 <table class='inline-block'>
-    <tr>
-        <td class='field-meta-put' field-key='type' field-meta-key='desc'>
-        <td class='field-meta-put' field-key='type'>
-    </tr>
     <tr>
         <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
         <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
@@ -100,7 +112,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 </table>
 
 
-<fieldset class='show-on show-on-time show-on-phone show-on-email' >
+<fieldset class='inline-block show-on show-on-time show-on-phone show-on-email' >
     <legend>Billing</legend>
     <table class='inline-block'>
         <tr>
@@ -119,7 +131,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
         </tr>
         <tr>
             <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
-            <td class='field-meta-put' field-key='billing_relation'>
+            <td class='field-meta-put ' field-key='billing_relation'>
                 <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
                     <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
                     <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
@@ -147,8 +159,9 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 
 
 
+<br>
 
-<fieldset >
+<fieldset class='inline-block'>
 <legend>Sharing</legend>
 
     <fieldset class='inline-block'>

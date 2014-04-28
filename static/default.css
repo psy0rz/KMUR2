@@ -177,6 +177,7 @@
 
 .floatingBar
 {
+	z-index: -100;
 	position: fixed;
 	left: 15em;
 	right: 0em;

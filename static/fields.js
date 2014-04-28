@@ -351,8 +351,10 @@ Field.Dict.meta_put=function(key, meta, context, options)
 Field.Dict.put=function(key, meta, context, data, options)
 {
     //also store raw input?
-    if (context.hasClass("field-dict-raw"))
+    //its important to check field-key, since recursing into a subdict will keep the same context. this would overwrite our data.
+    if (context.hasClass("field-dict-raw") && key==context.attr("field-key"))
     {
+        // console.error("putting it", data,context[0]);
         context.data("field-data",data);
     }
 

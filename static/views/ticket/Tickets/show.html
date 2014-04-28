@@ -83,10 +83,10 @@ var form=new ControlForm({
                         var span=$("<span class='ticket-add-time-button-style'></span>");
                         span.text(relation.title);
 
-                        var button=$("<button class='on-click-new-ticket-time'></button>");
-                        button.append(span);
-                        button.attr("relation-id",relation._id);
-                        $(".floatingBar",context).append(button);
+                        // var button=$("<button class='on-click-new-ticket-time'></button>");
+                        // button.append(span);
+                        // button.attr("relation-id",relation._id);
+                        // $(".floatingBar",context).append(button);
 
                         //add specific buttons to add time to each contract of this relation
                         if (relation.contracts)
@@ -240,7 +240,7 @@ new ControlListRelated({
 
 <fieldset class='control-hide-on-new'>
     <legend>Task history and notes</legend>
-    <div class='ticket-objects' style='overflow: auto; max-height:40em;'>
+    <div class='ticket-objects' style='overflow: auto; max-height:30em;'>
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
 
@@ -248,15 +248,33 @@ new ControlListRelated({
             <tr class='ui-widget-header'>
                 <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
+                <th colspan=3>Billing
                 <th>
             </tr>
 
             <tr class='colorRows ticket-object field-list-source field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
                 <td class='field-list-on-click-view field-put' field-key='type' nowrap>
                 <td class='field-list-on-click-view field-put' field-key='create_time' nowrap field-timestamp-allow-time>
+
+                <td class='field-meta-put' field-key='billing_relation'>
+                    <span class='field-list-source field-list-source-hide field-list-on-click-view' field-key='billing_relation' >
+                        <span class='field-put' field-key='billing_relation.title'></span>
+                    </span>
+
+
+                <td class='field-meta-put' field-key='billing_contract'>
+                    <span class='field-list-source field-list-source-hide field-list-on-click-view' field-key='billing_contract' >
+                        <span class='field-put ' field-key='billing_contract.title'></span>
+                    </span>
+
+                <td class='field-list-on-click-view field-put' field-key='minutes'>
+
+
                 <td>
                     <div class='field-list-on-click-view field-put' field-key='title' style='font-weight:bold'></div>
                     <div class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'></div>
+
+
             </tr>
         </table>
     </div>
@@ -265,7 +283,5 @@ new ControlListRelated({
 <div class='floatingBar viewErrorClass'>
     <button class='on-click-back' >Back</button>
     <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
-
-
     <span class='viewErrorText'></span>
 </div>

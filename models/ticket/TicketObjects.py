@@ -84,8 +84,9 @@ class TicketObjects(models.core.Protected.Protected):
     def put(self, **doc):
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         
-        if ('billing_contract' in doc)  ^  ('billing_relation' in doc):
-            raise fields.FieldError("Please specify complete billing information", 'billing_contract')
+        if ('billing_contract' in doc)  or  ('billing_relation' in doc):
+            if doc['billing_contract']==None or doc['billing_relation']==None:
+                raise fields.FieldError("Please specify complete billing information", 'billing_contract')
 
         #verify the billing contract is allowed for this relation
         if 'billing_contract' in doc and doc['billing_contract']!=None and doc['billing_relation']!=None:
