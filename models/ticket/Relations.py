@@ -68,7 +68,10 @@ class Relations(models.core.Protected.Protected):
                     'coc_nr': fields.String(desc='Chamber of commerce number'),
                     'iban_nr': fields.String(desc='Bank IBAN'),
                     'bic_code': fields.String(desc='BIC Code'),
+                    'currency': fields.String(desc='Currency', default='€'),
+                    'tax': fields.Number(desc='Tax %', default='21', min=0, max=100),
                     'mail_to': fields.Email(desc='Mail to', required=False),
+
                     'print': fields.Bool(desc='Send hardcopy'),
 
                 },

@@ -1,0 +1,175 @@
+
+<script>
+
+var relation=new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.Relations',
+    'get_params'      : view.params,
+    'default_focus'   : 'title',
+    'title'           : 'View relation {title}',
+    'favorite_menu'   : 'relations',
+    'on_change'       : 'put',
+    'create_view_params': view.params,
+    'context'         : '.relation'
+});
+
+var tickets=new ControlListRelated({
+    'view'              : view,
+    'context'           : '.tickets',
+    'class'             : 'ticket.Tickets',
+    'endless_scrolling' : true,
+    'related_key'       : 'relations',
+    'related_value'     : view.params._id,
+    'create_view_params': {
+        'relations': [ view.params._id ]
+    }
+});
+
+
+var invoices=new ControlListRelated({
+    'view'              : view,
+    'get_meta_params'   : {},
+    'context'           : '.invoices',
+    'class'             : 'ticket.Invoices',
+    'endless_scrolling' : true,
+    'related_key'       : 'to_relation',
+    'related_value'     : view.params._id,
+    'create_view_params': {
+        'to_relation': view.params._id 
+    }
+});
+
+
+
+</script>
+
+<div control-view="ticket.Relations.edit" class='relation'>
+
+    <h1 class='field-put control-on-click-view' field-key='title' field-meta-key='desc'></h1>
+
+    <fieldset class='inline-block' >
+        <legend class='field-meta-put' field-key='desc' field-meta-key='desc'></legend>
+        <div class='field-put control-on-click-view' field-key='desc' style='white-space: pre-wrap'>
+        </div>
+    </fieldset>
+
+
+    <fieldset class='inline-block'>
+        <legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
+        <table >
+            <tbody class=''>
+                <tr class='field-put field-list-source field-list-source-hide' field-key='emails'>
+                    <td class='field-put control-on-click-view value' field-key='emails.email'>
+                    <td class='field-put control-on-click-view value' field-key='emails.desc'>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+
+    <fieldset class='inline-block'>
+        <legend class='field-meta-put' field-key='phones' field-meta-key='desc'></legend>
+        <table >
+            <tbody class=''>
+                <tr class='field-put field-list-source field-list-source-hide' field-key='phones'>
+                    <td class='field-put control-on-click-view value' field-key='phones.phone'>
+                    <td class='field-put control-on-click-view value' field-key='phones.desc'>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+
+    <fieldset class='inline-block'>
+        <legend class='field-meta-put' field-key='contracts' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='contracts'>
+            <tr class='field-put field-list-source field-list-source-hide' field-key='contracts'>
+                <td class='field-put control-on-click-view value' field-key='contracts.title'>
+            </tr>
+        </table>
+    </fieldset>
+
+    <div class='floatingBar viewErrorClass'>
+        <button class='control-on-click-view' >Edit</button>
+        <button class='control-on-click-cancel' >Back</button>
+        <span class='viewErrorText'></span>
+    </div>
+
+
+</div>
+
+<br>
+
+<fieldset class='inline-block'>
+    <legend>Tasks</legend>
+
+    <div class='tickets inline-block' style='overflow: auto; max-height:15em;'>
+
+        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title desc'>
+        <a control-view='ticket.Tickets.edit' class='control-on-click-view' href='#'>Create new task</a>
+        <table >
+            <tr class='ui-widget-header'>
+                <th>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_completed'>
+                <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='start_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-desc' field-key='ticket_priority' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
+                <td class='field-list-on-click-view ticket-show-button-style' field-list-view="ticket.Tickets.show">&nbsp;
+
+                <td class='field-put control-list-on-click-edit ticket-check-style' field-key='ticket_completed' field-no-text>
+                <td class='field-put control-list-on-click-edit' field-key='title' >
+                <td class='field-put control-list-on-click-edit' field-key='start_date' nowrap>
+                <td class='field-put control-list-on-click-edit' field-key='due_date' nowrap>
+                <td class='field-put control-list-on-click-edit' field-key='ticket_priority' nowrap>
+                <td class='field-put control-list-on-click-edit' field-key='ticket_status' nowrap>
+
+                <td class='control-on-click-del ui-icon ui-icon-trash'>
+            </tr>
+
+        </table>
+    </div>
+</fieldset>
+
+
+<fieldset class='inline-block'>
+    <legend>Invoices</legend>
+
+    <div class='invoices inline-block' style='overflow: auto; max-height:15em;'>
+
+        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
+        <a control-view='ticket.Invoices.edit' class='control-on-click-view' href='#'>Create new invoice</a>
+     
+        <table >
+            <tr class='ui-widget-header'>
+                <th>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='sent' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='payed' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='sent_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='invoice_nr' field-meta-key='desc'>
+                <th>
+            </tr>
+
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Invoices.edit">
+                <td class='field-list-on-click-view show-button-style' field-list-view="ticket.Invoices.show">&nbsp;
+
+                <td class='field-put field-list-on-click-view' field-key='sent' >
+                <td class='field-put field-list-on-click-view' field-key='payed' >
+                <td class='field-put field-list-on-click-view' field-key='sent_date' >
+                <td class='field-put field-list-on-click-view' field-key='invoice_nr' >
+
+                <td class='control-on-click-del ui-icon ui-icon-trash'>
+            </tr>
+
+        </table>
+
+    </div>
+</fieldset>
+
+

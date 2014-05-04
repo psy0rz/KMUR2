@@ -12,6 +12,18 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
+        $(".on-click-edit", context).click(function()
+        {
+            viewCreate({ creator: context },
+            {
+                name: 'ticket.Tickets.edit',
+                mode: 'main',
+                params: {
+                    _id: view.params._id,
+                }
+            });
+        });
+
 
         $(".on-click-new-ticket-note", context).click(function()
         {
@@ -282,6 +294,7 @@ new ControlListRelated({
 
 <div class='floatingBar viewErrorClass'>
     <button class='on-click-back' >Back</button>
+    <button class='on-click-edit' >Edit</button>
     <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
     <span class='viewErrorText'></span>
 </div>

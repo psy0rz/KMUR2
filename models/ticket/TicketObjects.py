@@ -131,7 +131,7 @@ class TicketObjects(models.core.Protected.Protected):
             if len(tickets)>0:
                 return(ticket_object)
 
-
+        #try a normal protected read. (object is only readable if use has explicit group or user permissions)
         return(self._get(_id))
 
     @Acl(roles="user")

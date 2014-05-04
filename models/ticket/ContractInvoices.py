@@ -4,19 +4,19 @@ import models.core.Protected
 import models.core.Users
 import models.core.Groups
 import models.mongodb
+import models.ticket.Contracts
+import models.ticket.Invoices
+import models.ticket.Relations
 
-class Contracts(models.core.Protected.Protected):
-    '''Hourly billing contracts with relations. 
+class ContractsInvoices(models.core.Protected.Protected):
+    '''Keeps a record of all hours that where already bought and invoiced.
 
-    used to book time for customers and add it to invoices
     '''
     
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'active': fields.Bool(desc='Active', default=1),
-                'title': fields.String(min=3, desc='Title', size=100),
-                'desc': fields.String(desc='Description'),
+                'create_date': fields.Timestamp(desc='Date'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -29,17 +29,28 @@ class Contracts(models.core.Protected.Protected):
                     resolve=False,
                     check_exists=False,
                     list=True),
-                'type': fields.Select(desc="Billing",
-                                                      choices=[
-                                                      ("post", "Post"),
-                                                      ("prepay", "Prepayed montly"),
-                                                    ]),
-                'price': fields.Number(desc='Price'),
-                'currency': fields.String(desc='Currency', default='€'),
-                'minutes': fields.Number(desc='Time', default=60),
-                'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
-                'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
-                'tax': fields.Number(desc='Tax', default=21),
+                'relation': models.mongodb.Relation(
+                    desc='Relation',
+                    model=models.ticket.Relations.Relations,
+                    resolve=False,
+                    check_exists=True,
+                    list=False),
+                'contract': models.mongodb.Relation(
+                    desc='Contract',
+                    model=models.ticket.Contracts.Contracts,
+                    resolve=False,
+                    check_exists=True,
+                    list=False),
+                'invoice': models.mongodb.Relation(
+                    desc='Invoice',
+                    model=models.ticket.Invoices.Invoices,
+                    resolve=False,
+                    check_exists=True,
+                    list=False),
+                'minutes_used': fields.Number(desc='Used minutes'),
+                'minutes_bought': fields.Number(desc='Bought minutes'),
+                #balance should be 0 in post-payed contracts, and can be negative in pre-payed.
+                'minutes_balance': fields.Number(desc='Balance'), 
             }),
             list_key='_id'
         )

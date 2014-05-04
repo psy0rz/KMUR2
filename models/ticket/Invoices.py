@@ -118,7 +118,7 @@ class Invoices(models.core.Protected.Protected):
                                 'amount': fields.Number(desc='Amount',size=5, decimals=2),
                                 'desc': fields.String(desc='Description', size=80),
                                 'price': fields.Number(desc='Price', size=5,decimals=2),
-                                'tax': fields.Number(desc='Tax', default=21, size=5, decimals=2),
+                                'tax': fields.Number(desc='Tax', default=21, size=5, decimals=2,min=0, max=100),
                                 'calc_total': fields.Number(desc='Total',decimals=2),
                                 'calc_total_tax': fields.Number(desc='with tax',decimals=2),
                             }),
@@ -260,19 +260,23 @@ class Invoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def add_items(self, to_relation, currency, items):
+    def add_items(self, to_relation, items, currency=None):
         """adds specified items to the an unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
         """
 
-        #find a unsent invoice
-        invoices=self.get_all(match={
-            'to_relation':to_relation,
-            'sent': False,
-            'currency': currency
-        },
-        limit=1,
-        sort=[ ( '_id', 1) ]
+        if currency==None:
+            relation=call_rpc(self.context, "ticket", "Relations", "get", _id=to_relation)
+            currency=relation['invoice']['currency']
 
+        #find a unsent invoice
+        invoices=self.get_all(
+            match={
+                'to_relation':to_relation,
+                'sent': False,
+                'currency': currency
+            },
+            limit=1,
+            sort=[ ( '_id', 1) ]
         )
 
         #use existing
