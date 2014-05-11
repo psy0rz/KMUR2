@@ -43,7 +43,8 @@ class TicketObjects(models.core.Protected.Protected):
                     check_exists=False,
                     resolve=False,
                     list=False),
-                'billing_invoice_id':models.mongodb.FieldId(desc='Billing invoice'),
+                'billing_invoice':models.mongodb.FieldId(desc='Billing invoice'),
+                'billing_invoiced':fields.Bool(desc='Invoiced'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -97,9 +98,8 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
-            if 'billing_invoice_id' in old_doc:
+            if 'billing_invoiced' in old_doc:
                 raise fields.FieldError("This item is already billed, you cannot change it anymore.")
-
 
             log_txt="Changed task note '{title}'".format(**doc)
         else:
@@ -139,7 +139,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
-        if 'billing_invoice_id' in doc:
+        if 'billing_invoiced' in doc:
             raise fields.FieldError("This item is already billed, you cannot delete it.")
 
 
@@ -159,6 +159,7 @@ class TicketObjects(models.core.Protected.Protected):
 
     @Acl(roles="user")
     def get_all_by_ticket(self, ticket_id, **params):
+        '''get all ticket_objects for a certain ticket. this allows access to ticketobjects you normally dont have access to'''
         #make sure we have access to the ticket
         ticket_model=models.ticket.Tickets.Tickets(self.context)
         ticket_model.get(ticket_id)

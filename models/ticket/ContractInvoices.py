@@ -68,6 +68,11 @@ class ContractsInvoices(models.core.Protected.Protected):
 
     read=write
 
+
+    @Acl(roles="finance")
+    def get_(self, **doc):
+
+
     @Acl(roles="finance")
     def put(self, **doc):
 

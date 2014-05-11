@@ -35,7 +35,7 @@ class Contracts(models.core.Protected.Protected):
                                                       ("prepay", "Prepayed montly"),
                                                     ]),
                 'price': fields.Number(desc='Price'),
-                'currency': fields.String(desc='Currency', default='€'),
+                'currency': fields.String(desc='Currency', default='€', size=5),
                 'minutes': fields.Number(desc='Time', default=60),
                 'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
                 'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
