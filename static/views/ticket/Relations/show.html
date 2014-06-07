@@ -148,6 +148,41 @@ var invoices=new ControlListRelated({
     </div>
 </fieldset>
 
+<fieldset class='inline-block'>
+    <legend>Latest work</legend>
+
+    <div class='ticket-objects inline-block' style='overflow: auto; max-height:15em;'>
+        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
+
+        <table>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
+                <th colspan=1>Time
+                <th>
+            </tr>
+
+            <tr class='colorRows ticket-object field-list-source field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
+                <td class='field-list-on-click-view field-put' field-key='type' nowrap>
+                <td class='field-list-on-click-view field-put' field-key='create_time' nowrap field-timestamp-allow-time>
+
+
+                <td class='field-list-on-click-view field-put' field-key='minutes'>
+
+
+                <td>
+                    <div class='field-list-on-click-view field-put' field-key='title' style='font-weight:bold'></div>
+                    <div class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'></div>
+
+
+            </tr>
+        </table>
+
+    </div>
+</fieldset>
+
+<br>
 
 <fieldset class='inline-block'>
     <legend>Invoices</legend>
@@ -186,39 +221,5 @@ var invoices=new ControlListRelated({
 </fieldset>
 
 
-<br>
 
-<fieldset class='inline-block'>
-    <legend>Latest billable work done</legend>
-
-    <div class='ticket-objects inline-block' style='overflow: auto; max-height:15em;'>
-        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
-
-        <table>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
-                <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
-                <th colspan=1>Time
-                <th>
-            </tr>
-
-            <tr class='colorRows ticket-object field-list-source field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
-                <td class='field-list-on-click-view field-put' field-key='type' nowrap>
-                <td class='field-list-on-click-view field-put' field-key='create_time' nowrap field-timestamp-allow-time>
-
-
-                <td class='field-list-on-click-view field-put' field-key='minutes'>
-
-
-                <td>
-                    <div class='field-list-on-click-view field-put' field-key='title' style='font-weight:bold'></div>
-                    <div class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'></div>
-
-
-            </tr>
-        </table>
-
-    </div>
-</fieldset>
 
