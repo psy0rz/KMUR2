@@ -52,6 +52,17 @@ var invoices=new ControlListRelated({
     }
 });
 
+var contract_invoices=new ControlList({
+    'view'              : view,
+    'context'           : '.contract-invoices',
+    'class'             : 'ticket.ContractInvoices',
+    'endless_scrolling' : true,
+    'get_params'        : {
+        'match': {
+            'relation': view.params._id,
+        }
+    }
+});
 
 
 </script>
@@ -220,6 +231,45 @@ var invoices=new ControlListRelated({
     </div>
 </fieldset>
 
+
+
+<fieldset class='inline-block'>
+    <legend>Hour budget</legend>
+
+    <div class='contract-invoices inline-block' style='overflow: auto; max-height:15em;'>
+
+        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
+        <a control-view='ticket.Invoices.edit' class='control-on-click-view' href='#'>Create new ?</a>
+     
+        <table >
+            <tr class='ui-widget-header'>
+                <th>
+                <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='contract' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='minutes_used' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='minutes_bought' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>
+                <th>
+            </tr>
+
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Invoices.edit">
+                <td class='field-list-on-click-view show-button-style' field-list-view="ticket.Invoices.show">&nbsp;
+
+                <td class='field-put field-list-on-click-view' field-key='create_date' >
+                <td class='field-put field-list-on-click-view' field-key='contract.title' >
+                <td class='field-put field-list-on-click-view' field-key='minutes_used' >
+                <td class='field-put field-list-on-click-view' field-key='minutes_bought' >
+                <td class='field-put field-list-on-click-view' field-key='minutes_balance' >
+
+                <td class='control-on-click-del ui-icon ui-icon-trash'>
+            </tr>
+
+        </table>
+
+    </div>
+</fieldset>
 
 
 

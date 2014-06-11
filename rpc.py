@@ -102,9 +102,6 @@ def rpc_post():
         #call method with specified parameters
         result['data']=rpc_method(**request['params'])
 
-        if 'context' in session:
-            result.update(session['context'].get_results())
-
     except (fields.FieldError, Exception) as e:
         traceback.print_exc()
         if isinstance(e, fields.FieldError):
@@ -114,6 +111,9 @@ def rpc_post():
             }
         else:
             result['error'] = { 'message': e.__class__.__name__ + ": " + str(e) }
+    
+    if 'context' in session:
+        result.update(session['context'].get_results())
 
     session.save()
 
@@ -192,7 +192,7 @@ application = beaker.middleware.SessionMiddleware(
                                           bottle.default_app(),
                                           session_opts)
 
-#standaline/debug mode:
+#standalone/debug mode:
 if __name__ == '__main__':
     bottle.debug(True)
     bottle.run(reloader=True, app=application, host='localhost', port=8080)

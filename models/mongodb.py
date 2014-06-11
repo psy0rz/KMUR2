@@ -406,7 +406,7 @@ class Base(models.common.Base):
         gte:    dict of keys that should be greater than or equal to value
         lte:    dict of keys that should be less than or equal to value 
 
-        spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists. NOTE: these are not converted to internal format and do not function with mongo identifiers
+        spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists. NOTE: these are not converted to internal format and therefore do not function with unconverted mongo id's
 
 
         '''

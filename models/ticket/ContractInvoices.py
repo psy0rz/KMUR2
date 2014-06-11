@@ -8,7 +8,7 @@ import models.ticket.Contracts
 import models.ticket.Invoices
 import models.ticket.Relations
 
-class ContractsInvoices(models.core.Protected.Protected):
+class ContractInvoices(models.core.Protected.Protected):
     '''Keeps a record of all hours that where already bought and invoiced.
 
     '''
@@ -17,6 +17,7 @@ class ContractsInvoices(models.core.Protected.Protected):
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
                 'create_date': fields.Timestamp(desc='Date'),
+                'desc': fields.String(desc='Description'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -49,7 +50,7 @@ class ContractsInvoices(models.core.Protected.Protected):
                     list=False),
                 'minutes_used': fields.Number(desc='Used minutes'),
                 'minutes_bought': fields.Number(desc='Bought minutes'),
-                #balance should be 0 in post-payed contracts, and can be negative in pre-payed.
+                #balance should usually be 0 in post-payed contracts, and can be negative in pre-payed.
                 'minutes_balance': fields.Number(desc='Balance'), 
             }),
             list_key='_id'
@@ -69,9 +70,41 @@ class ContractsInvoices(models.core.Protected.Protected):
     read=write
 
 
-    @Acl(roles="finance")
-    def get_(self, **doc):
+    # @Acl(roles="finance")
+    # def get_(self, **doc):
 
+    @Acl(roles="finance")
+    def invoice_all(self):
+        """invoice all contracts and open hours"""
+
+
+        #all relations with contracts
+        relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
+            fields=[ "contracts" ], 
+            spec_and=[ { 
+                "contracts": { 
+                    "$not": { 
+                        "$size": 0
+                        }
+                    }
+                } ]   
+             )
+
+
+        for relation in relations:
+            self.debug(relation)
+            for contract in relation["contracts"]:
+                #get uninvoiced hours for this relation,contract combo
+                hours=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all', 
+                    fields=["title", "minutes"],
+                    match={
+                        "billing_relation": relation["_id"],
+                        "billing_contract": contract,
+                        "billing_invoiced": False,
+                    })
+                self.debug(hours)
+
+        #nadenken over correcties ...
 
     @Acl(roles="finance")
     def put(self, **doc):
