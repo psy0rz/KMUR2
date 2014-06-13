@@ -92,7 +92,6 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
         for relation in relations:
-            self.debug(relation)
             for contract in relation["contracts"]:
                 #get uninvoiced hours for this relation,contract combo
                 hours=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all', 

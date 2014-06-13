@@ -98,12 +98,15 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
-            if 'billing_invoiced' in old_doc:
+            if 'billing_invoiced' in old_doc and old_doc['billing_invoiced']:
                 raise fields.FieldError("This item is already billed, you cannot change it anymore.")
 
             log_txt="Changed task note '{title}'".format(**doc)
         else:
             log_txt="Created new task note 'title'".format(**doc)
+
+        if not 'billing_invoiced' in doc:
+            doc['billing_invoiced']=False
 
         ret=self._put(doc)
 
