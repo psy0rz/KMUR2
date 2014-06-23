@@ -80,7 +80,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
         #all relations with contracts
         relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
-            fields=[ "contracts" ], 
+            fields=[ "contracts", "invoice" ], 
             spec_and=[ { 
                 "contracts": { 
                     "$not": { 
@@ -92,15 +92,48 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
         for relation in relations:
-            for contract in relation["contracts"]:
+            for contract_id in relation["contracts"]:
                 #get uninvoiced hours for this relation,contract combo
-                hours=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all', 
+                ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all', 
                     fields=["title", "minutes"],
                     match={
                         "billing_relation": relation["_id"],
-                        "billing_contract": contract,
+                        "billing_contract": contract_id,
                         "billing_invoiced": False,
                     })
+
+                #get contract
+                contract=call_rpc('ticket', 'Contracts', 'get', _id=contract_id)
+
+                for ticket_object in ticket_objects:
+                    #make sure it has the minimum minutes
+                    minutes=ticket_objects['minutes']
+                    if  minutes<contract['minutes_minimum']:
+                        minutes=contract['minutes_minimum']
+
+                    #round up to whole minute-blocks
+                    #e.g when minutes_rounding=15:
+                    #14 becomes 15 minutes. but 16 becomes 30 minutes.
+                    minutes=((minutes+contract['minutes_rounding']-1)//contract['minutes_rounding'])*contract['minutes_rounding']
+
+                    #determine price:
+                    if contract['type']=='post':
+                        price=(contract['price']*minutes)/contract['minutes']
+                    elif contract['type']=='prepay':
+                        price=0
+                    else
+                        raise fields.FieldError("Unknown contract type: "+contract['type'])
+
+                    ticket_object['billing_invoiced']=True
+                    ticket_object['billing_invoice']=call_rpc('ticket', 'Invoices', 'add_items', 
+                         to_relation=hour['billing_relation'],
+                         items=[{
+                            'amount': minutes/60,
+                            'desc':ticket_object['title'],
+                            'price':,
+                            'tax': relation['invoice']['tax']
+                         }]
+                    )
                 self.debug(hours)
 
         #nadenken over correcties ...

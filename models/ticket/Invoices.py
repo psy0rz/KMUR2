@@ -298,7 +298,7 @@ class Invoices(models.core.Protected.Protected):
                 'notes': ""
             }
             ret=self.put(**new_doc)
-
+            
         return(ret)
 
     @Acl(roles="finance")
