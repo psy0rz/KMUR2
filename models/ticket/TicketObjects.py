@@ -43,7 +43,7 @@ class TicketObjects(models.core.Protected.Protected):
                     check_exists=False,
                     resolve=False,
                     list=False),
-                'billing_invoice':models.mongodb.FieldId(desc='Billing invoice'),
+                'billing_contract_invoice':models.mongodb.FieldId(desc='Billing contract invoice'),
                 'billing_invoiced':fields.Bool(desc='Invoiced'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
@@ -113,7 +113,7 @@ class TicketObjects(models.core.Protected.Protected):
         self.event("changed", ret)
 
         #dont log ticket-change stuff
-        if ret['type']!='change':
+        if 'type' in ret and ret['type']!='change':
             self.info(log_txt)
 
         return(ret)

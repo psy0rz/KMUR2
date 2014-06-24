@@ -132,7 +132,7 @@ class Context(object):
 
         events are tupple of eventnames and values. the GUI can use this to take actions.
 
-        usually events are named like 'model.module.classname.changed' or deleted.
+        usually events are named like 'model.module.classname.changed' or .deleted.
         '''
 
         self._events.append( (name,value) )
