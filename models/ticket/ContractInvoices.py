@@ -94,7 +94,6 @@ class ContractInvoices(models.core.Protected.Protected):
 
         for relation in relations:
 
-            print(relation)
             #traverse all contracts for this relation
             for contract_id in relation["contracts"]:
                 #get contract
