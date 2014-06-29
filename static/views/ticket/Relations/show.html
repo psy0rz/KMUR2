@@ -239,14 +239,14 @@ var contract_invoices=new ControlList({
     <div class='contract-invoices inline-block' style='overflow: auto; max-height:15em;'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='desc'>
         <a control-view='ticket.Invoices.edit' class='control-on-click-view' href='#'>Create new ?</a>
      
         <table >
             <tr class='ui-widget-header'>
                 <th>
-                <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_date' field-meta-key='desc'>
-                <th class='field-meta-put control-on-click-order' field-key='contract' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-desc' field-key='date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='desc' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_used' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_bought' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>
@@ -257,8 +257,8 @@ var contract_invoices=new ControlList({
             <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Invoices.edit">
                 <td class='field-list-on-click-view show-button-style' field-list-view="ticket.Invoices.show">&nbsp;
 
-                <td class='field-put field-list-on-click-view' field-key='create_date' >
-                <td class='field-put field-list-on-click-view' field-key='contract.title' >
+                <td class='field-put field-list-on-click-view' field-key='date' >
+                <td class='field-put field-list-on-click-view' field-key='desc' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_used' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_bought' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_balance' >

@@ -117,10 +117,11 @@ class ContractInvoices(models.core.Protected.Protected):
                     )
 
                 #should we generate this the contract_invoice of this month?
-                if len(latest_contract_invoices)==0 or contract_invoice_date.timestamp()==latest_contract_invoices[0]['date']:
+                if len(latest_contract_invoices)==0 or contract_invoice_date.timestamp()!=latest_contract_invoices[0]['date']:
+                    title=contract['title']+" "+contract_invoice_date.strftime("%B %Y")
                     contract_invoice={
                         'date': contract_invoice_date.timestamp(),
-                        'desc': contract['title']+" "+contract_invoice_date.strftime("%B %Y"),
+                        'desc': title,
                         'allowed_users': [ self.context.session['user_id'] ],
                         'relation': relation['_id'],
                         'contract': contract['_id'],
@@ -143,7 +144,7 @@ class ContractInvoices(models.core.Protected.Protected):
                              to_relation=relation['_id'],
                              items=[{
                                 'amount': 1,
-                                'desc':contract['title'],
+                                'desc':title,
                                 'price': contract['price'],
                                 'tax': relation['invoice']['tax']
                              }]
@@ -188,7 +189,7 @@ class ContractInvoices(models.core.Protected.Protected):
                              to_relation=relation['_id'],
                              items=[{
                                 'amount': minutes/60,
-                                'desc':ticket_object['title'],
+                                'desc':"["+contract['title']+"] "+ticket_object['title'],
                                 'price': price,
                                 'tax': relation['invoice']['tax']
                              }]
