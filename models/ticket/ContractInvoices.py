@@ -72,7 +72,33 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
     # @Acl(roles="finance")
+
+
     # def get_(self, **doc):
+
+    @Acl(roles="finance")
+    def recalc_budget(self, relation, contract):
+        """recalculate budget of all contract invoices of specified relation,contract combo"""
+
+        contract_invoices=self.get_all(
+                match={
+                "relation": relation,
+                "contract": contract,
+                },
+                fields=[ "minutes_used", "minutes_bought" ], 
+                sort=[ ( 'date', -1 )]
+            )
+
+        minutes_balance=0
+        for contract_invoice in contract_invoices:
+            minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
+            if contract_invoice["minutes_balance"]!=minutes_balance:
+                contract_invoice['minutes_balance']=minutes_balance
+                self.put(
+                    **contract_invoice
+                    )
+
+
 
     @Acl(roles="finance")
     def invoice_all(self):
@@ -218,8 +244,10 @@ class ContractInvoices(models.core.Protected.Protected):
           log_txt="Created new contract invoice {desc}".format(**doc)
 
         ret=self._put(doc)
-        self.event("changed",ret)
 
+        self.recalc_budget(doc['contract'], doc['invoice'])
+
+        self.event("changed",ret)
         self.info(log_txt)
 
         return(ret)
