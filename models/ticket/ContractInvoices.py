@@ -57,7 +57,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 'minutes_used': fields.Number(desc='Used minutes'),
                 'minutes_bought': fields.Number(desc='Bought minutes'),
                 #balance should usually be 0 in post-payed contracts, and can be negative in pre-payed.
-                'minutes_balance': fields.Number(desc='Balance'), 
+                'minutes_balance': fields.Number(desc='Budget'), 
             }),
             list_key='_id'
         )
