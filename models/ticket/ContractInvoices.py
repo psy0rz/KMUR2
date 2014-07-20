@@ -9,6 +9,8 @@ import models.ticket.Invoices
 import models.ticket.Relations
 import datetime
 
+import bson.objectid
+
 class ContractInvoices(models.core.Protected.Protected):
     '''Keeps a record of all hours that where already bought and invoiced.
 
@@ -43,6 +45,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     resolve=False,
                     check_exists=True,
                     list=False),
+                'contract_title': fields.String(desc='Contract'),
                 'invoice': models.mongodb.Relation(
                     desc='Invoice',
                     model=models.ticket.Invoices.Invoices,
@@ -85,8 +88,8 @@ class ContractInvoices(models.core.Protected.Protected):
                 "relation": relation,
                 "contract": contract,
                 },
-                fields=[ "minutes_used", "minutes_bought" ], 
-                sort=[ ( 'date', -1 )]
+                fields=[ "minutes_used", "minutes_bought", "minutes_balance", "desc" ], 
+                sort=[ ( 'date', 1 )]
             )
 
         minutes_balance=0
@@ -144,10 +147,10 @@ class ContractInvoices(models.core.Protected.Protected):
 
                 #should we generate this the contract_invoice of this month?
                 if len(latest_contract_invoices)==0 or contract_invoice_date.timestamp()!=latest_contract_invoices[0]['date']:
-                    title=contract['title']+" "+contract_invoice_date.strftime("%B %Y")
+                    title=contract['title']
                     contract_invoice={
                         'date': contract_invoice_date.timestamp(),
-                        'desc': title,
+                        'desc': contract_invoice_date.strftime("%B %Y"),
                         'allowed_users': [ self.context.session['user_id'] ],
                         'relation': relation['_id'],
                         'contract': contract['_id'],
@@ -221,7 +224,7 @@ class ContractInvoices(models.core.Protected.Protected):
                              }]
                         )
 
-                        #update minutes used and bought
+                        #update minutes used and bought and invoice id
                         contract_invoice['minutes_used']+=minutes
                         contract_invoice['invoice']=invoice['_id']
                         if contract['type']=='post':
@@ -243,9 +246,14 @@ class ContractInvoices(models.core.Protected.Protected):
         else:
           log_txt="Created new contract invoice {desc}".format(**doc)
 
+        if 'contract' in doc:
+            contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=doc['contract'])
+            doc['contract_title']=contract['title']
+
         ret=self._put(doc)
 
-        self.recalc_budget(doc['contract'], doc['invoice'])
+        if 'relation' in doc and 'contract' in doc:
+            self.recalc_budget(doc['relation'], doc['contract'])
 
         self.event("changed",ret)
         self.info(log_txt)
@@ -260,8 +268,8 @@ class ContractInvoices(models.core.Protected.Protected):
     def delete(self, _id):
 
         doc=self._get(_id)
-
         ret=self._delete(_id)
+        self.recalc_budget(doc['relation'], doc['contract'])
         self.event("deleted",ret)
 
         self.info("Deleted contract invoice {desc}".format(**doc))
