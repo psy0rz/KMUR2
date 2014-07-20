@@ -2209,7 +2209,7 @@ Field.Relation.put=function(key, meta, context, data, options)
     {
         if (! ('get_meta_cache' in meta))
         {
-            console.error("relation.put: no meta-data resolved. use field-put-meta instead of field-put.");
+            console.error("relation.put: no meta-data resolved. use field-meta-put instead of field-put.");
         }
     }
 }

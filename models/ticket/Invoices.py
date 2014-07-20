@@ -130,7 +130,7 @@ class Invoices(models.core.Protected.Protected):
 
                     'notes': fields.String(desc='Notes'),
 
-                    'currency': fields.String(desc='Currency', default=settings['currency'])
+                    'currency': fields.String(desc='Currency', default=settings['currency'], readonly=readonly)
 
                 }),
                 list_key='_id'

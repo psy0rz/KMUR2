@@ -1,0 +1,137 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.ContractInvoices',
+    'get_params'      : { '_id': view.params._id },
+    'default_focus'   : 'desc',
+    'title'           : 'Edit contract invoice {desc}',
+    'title_new'       : 'New contract invoice',
+    'default'         : { 
+        'allowed_users': [ session.user_id ],
+        'allowed_groups': [ ],
+        'relation': view.params.relation,
+        'date': new Date().getTime()/1000
+    }
+});
+
+
+
+</script>
+
+<table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='desc'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='date' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='date'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='relation' field-meta-key='desc'>
+        <td class='field-meta-put ' field-key='relation'>
+            <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
+                <span class='field-put field-list-on-click-view' field-key='relation.title' style='font-weight: bold'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+            </span>
+            <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+            <br>
+            <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='contract' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='contract'>
+            <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='contract' field-list-view="ticket.Contracts.edit">
+                <span class='field-put field-list-on-click-view' field-key='contract.title' style='font-weight: bold'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+            </span>
+            <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+            <br>
+            <a class='field-list-on-click-view' field-key='title' href='#'>Create new contract</a>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='invoice' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='invoice'>
+            <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='invoice' field-list-view="ticket.Invoices.edit">
+                <span class='field-put field-list-on-click-view' field-key='invoice.title' style='font-weight: bold'></span>
+                <span class='field-put field-list-on-click-view' field-key='invoice.invoice_nr' style='font-weight: bold'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+            </span>
+            <input  class='field-relation-on-change-autocomplete' search-keys='title invoice_nr' result-format='{title} {invoice_nr}' size=10/>
+            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+            <br>
+            <a class='field-list-on-click-view' field-key='title' href='#'>Create new invoice</a>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes_used' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes_used'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes_bought' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes_bought'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='minutes_rounding' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='minutes_rounding'>
+    </tr>
+</table>
+
+<fieldset>
+    <legend>Sharing</legend>        
+    <fieldset class='inline-block'>
+        <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='allowed_users'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='allowed_users.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
+                <td class='field-put field-list-on-click-view' field-key='allowed_users.fullname'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset class='inline-block'>
+        <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
+        <table class='field-meta-put' field-key='allowed_groups'>
+            <tr class='ui-widget-header'>
+                <th class='field-meta-put' field-key='allowed_groups.name' field-meta-key='desc'>
+                <th>
+            </tr>
+
+            <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                <td class='field-put field-list-on-click-view' field-key='allowed_groups.name'>
+                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' />
+                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
+            </tr>
+            <tr>
+                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new group</a>
+            </tr>
+        </table>
+    </fieldset>
+</fieldset>
+
+
+<div class='viewErrorClass floatingBar'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-del control-hide-on-new' >Delete</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
+</div>
+
