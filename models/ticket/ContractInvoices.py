@@ -189,7 +189,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
                     #get uninvoiced hours for this relation,contract combo
                     ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
-                        fields=["title", "minutes"],
+                        fields=["title", "minutes", "minutes_factor" ],
                         match={
                             "billing_relation": relation["_id"],
                             "billing_contract": contract_id,
@@ -198,10 +198,14 @@ class ContractInvoices(models.core.Protected.Protected):
 
                     #traverse all the un-invoiced ticket_objects
                     for ticket_object in ticket_objects:
-                        #make sure it has the minimum minutes
                         minutes=ticket_object['minutes']
+
+                        #make sure it has the minimum minutes
                         if  minutes<contract['minutes_minimum']:
                             minutes=contract['minutes_minimum']
+
+                        #apply factor 
+                        minutes=minutes*ticket_object['minutes_factor']
 
                         #round up to whole minute-blocks
                         #e.g when minutes_rounding=15:
@@ -217,11 +221,15 @@ class ContractInvoices(models.core.Protected.Protected):
                             raise fields.FieldError("Unknown contract type: "+contract['type'])
 
                         #add to invoice
+                        invoice_desc="["+contract['title']+"] "+ticket_object['title']
+                        if ticket_object['minutes_factor']!=1:
+                            invoice_desc=invoice_desc+"\n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+
                         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
                              to_relation=relation['_id'],
                              items=[{
                                 'amount': minutes/60,
-                                'desc':"["+contract['title']+"] "+ticket_object['title'],
+                                'desc':invoice_desc,
                                 'price': price,
                                 'tax': relation['invoice']['tax']
                              }]

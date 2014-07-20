@@ -19,6 +19,17 @@ class TicketObjects(models.core.Protected.Protected):
                 'start_time': fields.Timestamp(desc='Start time'),
                 'end_time': fields.Timestamp(desc='End time'),
                 'minutes': fields.Number(desc='Billable minutes', size=10),
+                'minutes_factor': fields.Select(desc='Billing rate', choices=[
+                    (0, '0%'),
+                    (0.25, '25%'),
+                    (0.5, '50%'),
+                    (0.75, '75%'),
+                    (1, '100%'),
+                    (1.25, '125%'),
+                    (1.50, '150%'),
+                    (1.75, '175%'),
+                    (2, '200%'),
+                ], default=1),
                 'title': fields.String(min=3, desc='Title', size=100),
                 'text': fields.String(desc='Text'),
                 'type': fields.Select(desc='Type', choices=[

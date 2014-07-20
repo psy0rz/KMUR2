@@ -101,7 +101,7 @@ $(".on-click-contract-invoices-invoice-all").click(function()
     //this should be a cronjob as well
     rpc("ticket.ContractInvoices.invoice_all",{}, function(result)
     {
-
+        viewShowError(result, context);
     });
     return(false);
 });
