@@ -397,6 +397,10 @@ class Timestamp(Base):
         if not super(Timestamp, self).check(context, data):
             return
 
+        if 'required' in self.meta and self.meta['required']:
+            if data==None:
+                raise FieldError("Please specify a date")
+
         if not isinstance(data, (int)) and not isinstance(data, (float)) and data!=None:
             raise FieldError("A timestamp should be an integer or Null")
 

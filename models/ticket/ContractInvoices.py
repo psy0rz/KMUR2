@@ -19,7 +19,7 @@ class ContractInvoices(models.core.Protected.Protected):
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
-                'date': fields.Timestamp(desc='Date'),
+                'date': fields.Timestamp(desc='Date', required=True),
                 'desc': fields.String(desc='Description'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
@@ -36,12 +36,14 @@ class ContractInvoices(models.core.Protected.Protected):
                 'relation': models.mongodb.Relation(
                     desc='Relation',
                     model=models.ticket.Relations.Relations,
+                    min=1,
                     resolve=False,
                     check_exists=True,
                     list=False),
                 'contract': models.mongodb.Relation(
                     desc='Contract',
                     model=models.ticket.Contracts.Contracts,
+                    min=1,
                     resolve=False,
                     check_exists=True,
                     list=False),
@@ -95,7 +97,7 @@ class ContractInvoices(models.core.Protected.Protected):
         minutes_balance=0
         for contract_invoice in contract_invoices:
             minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
-            if contract_invoice["minutes_balance"]!=minutes_balance:
+            if 'minutes_balance' not in contract_invoice or contract_invoice["minutes_balance"]!=minutes_balance:
                 contract_invoice['minutes_balance']=minutes_balance
                 self.put(
                     **contract_invoice

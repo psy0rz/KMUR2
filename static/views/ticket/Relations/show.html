@@ -60,7 +60,10 @@ var contract_invoices=new ControlList({
     'get_params'        : {
         'match': {
             'relation': view.params._id,
-        }
+        },
+    },
+    'create_view_params': {
+        'relation': view.params._id 
     }
 });
 
@@ -259,7 +262,7 @@ var contract_invoices=new ControlList({
                 <td class='field-list-on-click-view show-button-style' field-list-view="ticket.ContractInvoices.show">&nbsp;
 
                 <td class='field-put field-list-on-click-view' field-key='date' >
-                <td class='field-put field-list-on-click-view' field-key='contract_title' >
+                <td class='field-put ' field-key='contract_title' >
                 <td class='field-put field-list-on-click-view' field-key='desc' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_used' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_bought' >
