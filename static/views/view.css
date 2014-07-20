@@ -15,6 +15,11 @@
 	background-color: #dddddd;
 }
 
+a:hover
+{
+	background-color: #dddddd;
+
+}
 
 .field-list-on-drag-sort
 {
@@ -245,6 +250,13 @@
 {
 	background: url("../icons/clock.png") left center no-repeat; 
 	padding-left:20px;
+}
+
+.ticket-add-time-link-style
+{
+	background: url("../icons/clock.png") left center no-repeat; 
+	padding-left:20px;
+	margin-left:20px;
 }
 
 .ticket-add-note-button-style

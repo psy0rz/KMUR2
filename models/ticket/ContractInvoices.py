@@ -97,7 +97,7 @@ class ContractInvoices(models.core.Protected.Protected):
         minutes_balance=0
         for contract_invoice in contract_invoices:
             minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
-            if 'minutes_balance' not in contract_invoice or contract_invoice["minutes_balance"]!=minutes_balance:
+            if ('minutes_balance' not in contract_invoice) or (contract_invoice["minutes_balance"]!=minutes_balance):
                 contract_invoice['minutes_balance']=minutes_balance
                 self.put(
                     **contract_invoice
@@ -130,16 +130,6 @@ class ContractInvoices(models.core.Protected.Protected):
                 #get contract
                 contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
 
-                #get the last contract_invoice that was generated for this relation,contract combo:
-                latest_contract_invoices=self.get_all(
-                        match={
-                        "relation": relation["_id"],
-                        "contract": contract_id,
-                        },
-                        limit=1,
-                        sort=[ ( 'date', -1 )]
-                    )
-
                 #contracts are invoiced on the first day of the month, at 00:00
                 contract_invoice_date=datetime.datetime(
                         year=datetime.datetime.now().year,
@@ -147,8 +137,19 @@ class ContractInvoices(models.core.Protected.Protected):
                         day=1
                     )
 
+                #check if its already generated for this month and relation,contract combo
+                latest_contract_invoices=self.get_all(
+                        match={
+                            "relation": relation["_id"],
+                            "contract": contract_id,
+                            "date": contract_invoice_date.timestamp()
+                        },
+                        limit=1,
+                        sort=[ ( 'date', -1 )]
+                    )
+
                 #should we generate this the contract_invoice of this month?
-                if len(latest_contract_invoices)==0 or contract_invoice_date.timestamp()!=latest_contract_invoices[0]['date']:
+                if len(latest_contract_invoices)==0 :
                     title=contract['title']
                     contract_invoice={
                         'date': contract_invoice_date.timestamp(),

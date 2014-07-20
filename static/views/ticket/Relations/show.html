@@ -10,7 +10,48 @@ var relation=new ControlForm({
     'favorite_menu'   : 'relations',
     'on_change'       : 'put',
     'create_view_params': view.params,
-    'context'         : '.relation'
+    'context'         : '.relation',
+    'get_result': function(result){
+        $(".ticket-object-add-links", context).on('click',".on-click-new-ticket-time", function()
+        {
+            viewCreate({ creator: context },
+            {
+                name: 'ticket.TicketObjects.edit',
+                mode: 'main',
+                params: {
+                    ticket_id: view.params._id,
+                    type: 'time',
+                    billing_relation: view.params._id,
+                    billing_contract: $(this).attr("contract-id")
+                }
+            });
+            return(false);
+        });
+    },
+    'field_put': function(result)
+    {
+        //remove old time links
+        $(".on-click-new-ticket-time",context).remove();
+
+    }
+});
+
+
+//create links to add time for each active contract
+$('.field-list-source[field-key="contracts"]', context).on("field_list_post_put", function(e, list_element, data)
+{
+    var span;
+
+    //only add if not exists yet
+    span=$('.ticket-object-add-links [contract-id="'+data._id+'"]', context);
+    if (span.length==0)
+    {
+        span=$("<a class='ticket-add-time-link-style on-click-new-ticket-time' href='#'></a> ");
+        $(".ticket-object-add-links",context).append(span);
+        span.attr("contract-id",data._id);
+    }
+
+    span.text(data.title);
 });
 
 var tickets=new ControlListRelated({
@@ -22,18 +63,6 @@ var tickets=new ControlListRelated({
     'related_value'     : view.params._id,
     'create_view_params': {
         'relations': [ view.params._id ]
-    }
-});
-
-var tickets_objects=new ControlList({
-    'view'              : view,
-    'context'           : '.ticket-objects',
-    'class'             : 'ticket.TicketObjects',
-    'endless_scrolling' : true,
-    'get_params'        : {
-        'match': {
-            'billing_relation': view.params._id,
-        }
     }
 });
 
@@ -65,6 +94,28 @@ var contract_invoices=new ControlList({
     'create_view_params': {
         'relation': view.params._id 
     }
+});
+
+$(".on-click-contract-invoices-invoice-all").click(function()
+{
+    //this should be a cronjob as well
+    rpc("ticket.ContractInvoices.invoice_all",{}, function(result)
+    {
+
+    });
+    return(false);
+});
+
+var tickets_objects=new ControlList({
+    'view'              : view,
+    'context'           : '.ticket-objects',
+    'class'             : 'ticket.TicketObjects',
+    'endless_scrolling' : true,
+    'get_params'        : {
+        'match': {
+            'billing_relation': view.params._id,
+        }
+    },
 });
 
 
@@ -169,6 +220,9 @@ var contract_invoices=new ControlList({
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
 
+        <span class='ticket-object-add-links'>
+        </span>
+
         <table>
             <tr class='ui-widget-header'>
                 <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
@@ -214,7 +268,6 @@ var contract_invoices=new ControlList({
                 <th class='field-meta-put control-on-click-order control-order-asc' field-key='payed' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order control-order-asc' field-key='sent_date' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='invoice_nr' field-meta-key='desc'>
-                <th>
             </tr>
 
 
@@ -226,7 +279,6 @@ var contract_invoices=new ControlList({
                 <td class='field-put field-list-on-click-view' field-key='sent_date' >
                 <td class='field-put field-list-on-click-view' field-key='invoice_nr' >
 
-                <td class='control-on-click-del ui-icon ui-icon-trash'>
             </tr>
 
         </table>
@@ -237,13 +289,16 @@ var contract_invoices=new ControlList({
 
 
 <fieldset class='inline-block'>
-    <legend>Hour budget</legend>
+    <legend>Time budget</legend>
 
     <div class='contract-invoices inline-block' style='overflow: auto; max-height:15em;'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='desc'>
+        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='contract_title desc'>
+
         <a control-view='ticket.ContractInvoices.edit' class='control-on-click-view' href='#'>Add...</a>
+
+        <a class='on-click-contract-invoices-invoice-all' href='#'>Auto invoice all</a>
      
         <table >
             <tr class='ui-widget-header'>
@@ -254,7 +309,6 @@ var contract_invoices=new ControlList({
                 <th class='field-meta-put control-on-click-order' field-key='minutes_used' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_bought' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>
-                <th>
             </tr>
 
 
@@ -268,7 +322,6 @@ var contract_invoices=new ControlList({
                 <td class='field-put field-list-on-click-view' field-key='minutes_bought' >
                 <td class='field-put field-list-on-click-view' field-key='minutes_balance' >
 
-                <td class='control-on-click-del ui-icon ui-icon-trash'>
             </tr>
 
         </table>
