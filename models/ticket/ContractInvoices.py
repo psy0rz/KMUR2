@@ -150,7 +150,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
                 #should we generate this the contract_invoice of this month?
                 if len(latest_contract_invoices)==0 :
-                    title=contract['title']
+                    title=contract['title']+" "+contract_invoice_date.strftime("%B %Y")
                     contract_invoice={
                         'date': contract_invoice_date.timestamp(),
                         'desc': contract_invoice_date.strftime("%B %Y"),
