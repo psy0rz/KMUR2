@@ -1,26 +1,31 @@
 import fields
 import models.core.ModuleSettings
-import models.ticket.Relations
+from models.common import *
 
 class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
-    
-    meta = fields.List(
-            fields.Dict({
-                'invoice_nr': fields.Number(desc='Next invoice number', default=0),
-                'from_relation': models.mongodb.Relation(
-                    desc='Send invoices from',
-                    model=models.ticket.Relations.Relations,
-                    resolve=False,
-                    check_exists=True,
-                    list=False),
-                'invoice_status': fields.List(
-                    fields.Dict({
-                            'title': fields.String(desc="Title",min=3),
-                            'days': fields.Number(desc="Auto-set after days",min=0),
-                        }),
-                    desc="Invoice statuses"
-                ),
-            }),
-        )
 
+    @Acl(roles=["everyone"])
+    def get_meta(self, *args, _id=None, **kwarg):
+        import models.ticket.Relations
 
+        meta = fields.List(
+                fields.Dict({
+                    'invoice_nr': fields.Number(desc='Next invoice number', default=0),
+                    'currency': fields.String(desc='Default currency', default='€'),
+                    'from_relation': models.mongodb.Relation(
+                        desc='Send invoices from',
+                        model=models.ticket.Relations.Relations,
+                        resolve=False,
+                        check_exists=True,
+                        list=False),
+                    'invoice_status': fields.List(
+                        fields.Dict({
+                                'title': fields.String(desc="Title",min=3),
+                                'days': fields.Number(desc="Auto-set after days",min=0),
+                            }),
+                        desc="Invoice statuses"
+                    ),
+                }),
+            )
+
+        return(meta)

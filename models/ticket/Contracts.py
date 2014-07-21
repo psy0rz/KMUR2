@@ -4,45 +4,49 @@ import models.core.Protected
 import models.core.Users
 import models.core.Groups
 import models.mongodb
+import models.ticket.InvoiceSettings
 
 class Contracts(models.core.Protected.Protected):
     '''Hourly billing contracts with relations. 
 
     used to book time for customers and add it to invoices
     '''
-    
-    meta = fields.List(
-            fields.Dict({
-                '_id': models.mongodb.FieldId(),
-                'active': fields.Bool(desc='Active', default=1),
-                'title': fields.String(min=3, desc='Title', size=100),
-                'desc': fields.String(desc='Description'),
-                'allowed_groups': models.mongodb.Relation(
-                    desc='Groups with access',
-                    model=models.core.Groups.Groups,
-                    resolve=False,
-                    check_exists=False,
-                    list=True),
-                'allowed_users': models.mongodb.Relation(
-                    desc='Users with access',
-                    model=models.core.Users.Users,
-                    resolve=False,
-                    check_exists=False,
-                    list=True),
-                'type': fields.Select(desc="Billing",
-                                                      choices=[
-                                                      ("post", "Post"),
-                                                      ("prepay", "Prepayed montly"),
-                                                    ]),
-                'price': fields.Number(desc='Price'),
-                'currency': fields.String(desc='Currency', default='€', size=5),
-                'minutes': fields.Number(desc='Time', default=60),
-                'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
-                'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
-                'tax': fields.Number(desc='Tax', default=21),
-            }),
-            list_key='_id'
-        )
+
+    @Acl(roles=["everyone"])
+    def get_meta(self, *args, _id=None, **kwarg):    
+        meta = fields.List(
+                fields.Dict({
+                    '_id': models.mongodb.FieldId(),
+                    'active': fields.Bool(desc='Active', default=1),
+                    'title': fields.String(min=3, desc='Title', size=100),
+                    'desc': fields.String(desc='Description'),
+                    'allowed_groups': models.mongodb.Relation(
+                        desc='Groups with access',
+                        model=models.core.Groups.Groups,
+                        resolve=False,
+                        check_exists=False,
+                        list=True),
+                    'allowed_users': models.mongodb.Relation(
+                        desc='Users with access',
+                        model=models.core.Users.Users,
+                        resolve=False,
+                        check_exists=False,
+                        list=True),
+                    'type': fields.Select(desc="Billing",
+                                                          choices=[
+                                                          ("post", "Post"),
+                                                          ("prepay", "Prepayed montly"),
+                                                        ]),
+                    'price': fields.Number(desc='Price'),
+                    'currency': fields.String(desc='Currency', default=models.ticket.InvoiceSettings.InvoiceSettings(self.context)['currency']),
+                    'minutes': fields.Number(desc='Time', default=60),
+                    'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
+                    'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
+                    'tax': fields.Number(desc='Tax', default=21),
+                }),
+                list_key='_id'
+            )
+        return(meta)
 
     write={
         'allowed_groups': {

@@ -174,6 +174,7 @@ class ContractInvoices(models.core.Protected.Protected):
                         #add prepayed contract price to invoice
                         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
                              to_relation=relation['_id'],
+                             currency=contract['currency'],
                              items=[{
                                 'amount': 1,
                                 'desc':title,
@@ -227,6 +228,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
                         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
                              to_relation=relation['_id'],
+                             currency=contract['currency'],
                              items=[{
                                 'amount': minutes/60,
                                 'desc':invoice_desc,

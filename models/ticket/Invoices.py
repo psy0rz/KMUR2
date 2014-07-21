@@ -260,13 +260,10 @@ class Invoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def add_items(self, to_relation, items, currency=None):
+    def add_items(self, to_relation, items, currency):
         """adds specified items to the an unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
         """
 
-        if currency==None:
-            relation=call_rpc(self.context, "ticket", "Relations", "get", _id=to_relation)
-            currency=relation['invoice']['currency']
 
         #find a unsent invoice
         invoices=self.get_all(
