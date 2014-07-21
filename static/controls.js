@@ -665,10 +665,12 @@ params:
 
     on_change           what to do when our class changes:
                             put: only put the new data into the list. 
-                                 ignores sorting and filtering, but gives best feedback to user. 
+                                 ignores sorting and filtering, but usually gives best feedback to user.
                                  ignores new items. 
-                            get: re-get the list, honoring sorting and filtering settings (default). 
-                            reload: re-load the whole view
+                            putnew: same as put, but also adds new items. 
+                            get: re-get the list, honoring sorting and filtering settings (default).
+                                 can be annoying in some cases, since items might disappear when they're no longer in scope of the list.
+                            reload: re-load the whole view. slow and annoying, but might be neccesary sometimes
 
 */
 function ControlList(params)
@@ -893,7 +895,7 @@ ControlList.prototype.attach_event_handlers=function()
             });
         }
         //only put the new data into the list
-        else if (this_control.params.on_change=='put')
+        else if (this_control.params.on_change=='put' || this_control.params.on_change=='putnew')
         {
             console.log("ControlList: data on server has changed, putting data", data, this_control.params);
             Field.List.put(
@@ -903,7 +905,7 @@ ControlList.prototype.attach_event_handlers=function()
                 [ data ],
                 {
                     list_no_remove: true,
-                    list_no_add: true, //we cant be sure if the data should be added to this list
+                    list_no_add: this_control.params.on_change=='put', //we cant be sure if the data should be added to this list in most cases
                     list_update: true,
                     show_changes: true
 
