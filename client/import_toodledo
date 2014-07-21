@@ -5,6 +5,7 @@ import json
 import rpc
 import sys
 import xml.etree.ElementTree
+import datetime
 
 parser = argparse.ArgumentParser(description='Toodledo importer v1.0')
 
@@ -24,11 +25,43 @@ result=rpc_client.request("core.Users.login", name=args.user, password=args.pass
 #read and parse XML
 element=xml.etree.ElementTree.parse(args.file[0])
 
-1#traverse all todo items
-for child in element.findall("item"):
-	import_id=child.find("id").text
-	print ("Checking ID "+import_id)
-	result=rpc_client.request("ticket.Tickets.get_all", match={ "import_id": import_id })
-	print(result)
 
-    #print (child.find("title").text)
+#note: might be incomplete
+priorities={
+	"Low": 2,
+	"Medium": 3,
+	"High": 4
+}
+
+#traverse all todo items
+for child in element.findall("item"):
+	#determine uniq id so we can check if it already exists in tracer
+	import_id=child.find("id").text
+	result=rpc_client.request("ticket.Tickets.get_all", match={ "import_id": import_id })
+
+	if len(result["data"])!=0:
+		print ("Already imported ID "+import_id)
+	else:
+		print ("Adding ID "+import_id)
+		doc={
+			"import_id": import_id,
+			"title": child.find("title").text,
+			"desc": child.find("note").text,
+			"start_date": None,
+			"due_date": None,
+			"ticket_priority": priorities[child.find("priority").text],
+			"ticket_completed": child.find("completed").text!="0000-00-00"
+		}
+
+
+		startdate=child.find("startdate").text
+		if startdate!=None and startdate!="":
+			doc["start_date"]=datetime.datetime.strptime(startdate, "%Y-%m-%d").timestamp()
+
+		duedate=child.find("duedate").text
+		if duedate!=None and duedate!="":
+			doc["due_date"]=datetime.datetime.strptime(duedate, "%Y-%m-%d").timestamp()
+
+		print(doc)
+
+
