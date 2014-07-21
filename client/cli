@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import rpc
+import sys
+
+parser = argparse.ArgumentParser(description='Tracer RPC commandline interface 1.0')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', default='admin', help='user to login. default: %(default)s')
+parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('--json', action='store_true', help='interpret parameters as raw JSON data. (usefull when you want to pass complexer data type like subarrays or dicts) dont forget to use single quotes around the json string.')
+parser.add_argument('--short', action='store_true', help='return short single-line JSON output (for scripting)')
+parser.add_argument('--verbose', action='store_true', help='request verbose mode (module help output)')
+parser.add_argument('command',  nargs=1, help='RPC function to call. example: core.Users.get_all')
+parser.add_argument('params',  default=[], nargs='*', help='RPC parameters. can be in foo=bar form or JSON string when using --json.')
+
+args = parser.parse_args()
+
+def print_result(result):
+	if args.short:
+		print(result)
+	else:
+		print(json.dumps(result, indent='\t'))
+
+#initialise the rpc client class
+rpc_client=rpc.RpcClient(args.url)
+
+#first login using the specified user and pass
+result=rpc_client.request("core.Users.login", {
+	"name": args.user,
+	"password": args.password
+	})
+
+#abort on error
+if 'error' in result:
+	print_result(result)
+	sys.exit(1)
+
+#determine rpc parameters
+params={}
+if args.json and len(args.params)!=0:
+	params=json.loads(" ".join(args.params))
+else:
+	for param in args.params:
+		(key,value)=param.split("=")
+		params[key]=value
+
+#now perform the user specified command with specfied parameters
+result=rpc_client.request(args.command[0], params, help=args.verbose)
+print_result(result)
+
+if 'error' in result:
+	sys.exit(1)
+else:
+	sys.exit(0)
+
+
+
