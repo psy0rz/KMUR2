@@ -239,8 +239,8 @@ class Tickets(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self,  **kwargs):
-        return(self._get(**kwargs))
+    def get(self, _id=None, **kwargs):
+        return(self._get(_id, **kwargs))
 
     @Acl(roles="user")
     def delete(self, _id):

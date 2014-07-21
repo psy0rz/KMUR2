@@ -20,7 +20,7 @@ args = parser.parse_args()
 rpc_client=rpc.RpcClient(args.url)
 
 #first login using the specified user and pass
-result=rpc_client.request("core.Users.login", name=args.user, password=args.password)
+user=rpc_client.request("core.Users.login", name=args.user, password=args.password)
 
 #read and parse XML
 element=xml.etree.ElementTree.parse(args.file[0])
@@ -28,9 +28,18 @@ element=xml.etree.ElementTree.parse(args.file[0])
 
 #note: might be incomplete
 priorities={
-	"Low": 2,
-	"Medium": 3,
-	"High": 4
+	"Low": '2',
+	"Medium": '3',
+	"High": '4'
+}
+
+statusses={
+	"Next Action": "next_action",
+	"None": "none",
+	"Planning": "project",
+	"Reference": "reference",
+	"Someday": "someday",
+	"Waiting": "waiting"
 }
 
 #traverse all todo items
@@ -45,14 +54,27 @@ for child in element.findall("item"):
 		print ("Adding ID "+import_id)
 		doc={
 			"import_id": import_id,
-			"title": child.find("title").text,
-			"desc": child.find("note").text,
+			"title": "",
+			"desc": "",
 			"start_date": None,
 			"due_date": None,
 			"ticket_priority": priorities[child.find("priority").text],
-			"ticket_completed": child.find("completed").text!="0000-00-00"
+			"ticket_completed": child.find("completed").text!="0000-00-00",
+			"owner": user['data']['user_id'],
+			"allowed_groups": [] ,
+			"deligated_users": [], 
+			"relations": [],
+			"tickets": [],
+			"ticket_status": statusses[child.find("status").text]
 		}
 
+		title=child.find("title").text
+		if title!=None:
+			doc["title"]=title
+
+		note=child.find("note").text
+		if note!=None:
+			doc["desc"]=note
 
 		startdate=child.find("startdate").text
 		if startdate!=None and startdate!="":
@@ -63,5 +85,8 @@ for child in element.findall("item"):
 			doc["due_date"]=datetime.datetime.strptime(duedate, "%Y-%m-%d").timestamp()
 
 		print(doc)
+		rpc_client.request("ticket.Tickets.put", **doc)
+
+print("DONE")
 
 
