@@ -18,25 +18,12 @@ parser.add_argument('params',  default=[], nargs='*', help='RPC parameters. can 
 
 args = parser.parse_args()
 
-def print_result(result):
-	if args.short:
-		print(result)
-	else:
-		print(json.dumps(result, indent='\t'))
 
 #initialise the rpc client class
 rpc_client=rpc.RpcClient(args.url)
 
 #first login using the specified user and pass
-result=rpc_client.request("core.Users.login", {
-	"name": args.user,
-	"password": args.password
-	})
-
-#abort on error
-if 'error' in result:
-	print_result(result)
-	sys.exit(1)
+result=rpc_client.request("core.Users.login", name=args.user, password=args.password)
 
 #determine rpc parameters
 params={}
@@ -48,13 +35,14 @@ else:
 		params[key]=value
 
 #now perform the user specified command with specfied parameters
-result=rpc_client.request(args.command[0], params, help=args.verbose)
-print_result(result)
+result=rpc_client.request(args.command[0], help=args.verbose, **params)
 
-if 'error' in result:
-	sys.exit(1)
+#print the result
+if args.short:
+	print(result)
 else:
-	sys.exit(0)
+	print(json.dumps(result, indent='\t'))
+
 
 
 

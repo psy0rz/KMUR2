@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import rpc
+import sys
+import xml.etree.ElementTree
+
+parser = argparse.ArgumentParser(description='Toodledo importer v1.0')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', default='admin', help='user to login. default: %(default)s')
+parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('file',  nargs=1, help='toodle XML export file')
+
+args = parser.parse_args()
+
+#initialise the rpc client class
+rpc_client=rpc.RpcClient(args.url)
+
+#first login using the specified user and pass
+result=rpc_client.request("core.Users.login", name=args.user, password=args.password)
+
+#read and parse XML
+element=xml.etree.ElementTree.parse(args.file[0])
+
+1#traverse all todo items
+for child in element.findall("item"):
+	import_id=child.find("id").text
+	print ("Checking ID "+import_id)
+	result=rpc_client.request("ticket.Tickets.get_all", match={ "import_id": import_id })
+	print(result)
+
+    #print (child.find("title").text)

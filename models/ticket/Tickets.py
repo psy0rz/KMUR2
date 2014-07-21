@@ -17,6 +17,7 @@ class Tickets(models.core.Protected.Protected):
             'desc': fields.String(desc='Description'),
             'start_date': fields.Timestamp(desc='Start'),
             'due_date': fields.Timestamp(desc='Due'),
+            'import_id': fields.String(desc='Import ID'),
             'ticket_completed': fields.Bool(desc='Completed'),
             'ticket_status': fields.Select(desc='Status', choices=[
                 ('none', 'None'),
@@ -238,8 +239,8 @@ class Tickets(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self, _id, **kwargs):
-        return(self._get(_id,**kwargs))
+    def get(self,  **kwargs):
+        return(self._get(**kwargs))
 
     @Acl(roles="user")
     def delete(self, _id):
