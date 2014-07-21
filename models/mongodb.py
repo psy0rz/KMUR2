@@ -153,7 +153,7 @@ class Relation(fields.Base):
                 result=foreign_object.get_all(
                         fields={ '_id': True },
                         match_in={
-                            foreign_object.meta.meta['list_key']: mongo_ids
+                            foreign_object.get_meta(context).meta['list_key']: mongo_ids
                             }
                         );
 

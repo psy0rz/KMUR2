@@ -144,13 +144,14 @@ class Context(object):
 
         ret = {}
 
-        if hasattr(self, 'log'):
+        if hasattr(self, 'log') and len(self.log.last_logs)>0:
             ret['logs'] = self.log.last_logs
 
         if hasattr(self, '_debug') and self._debug != None:
             ret['debug'] = self._debug
 
-        ret['events']=self._events
+        if hasattr(self, '_events') and len(self._events)>0:
+            ret['events']=self._events
 
         return ret
 
