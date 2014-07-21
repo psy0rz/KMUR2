@@ -1,17 +1,24 @@
-
+--
 <script>
     form=new ControlList({
         'view'            	: view,
         'class'        		: 'ticket.Tickets',
-        'get_params'        : view.params,
+        'get_params'        : {
+            "match": {
+                'ticket_status': 'next_action'
+                }
+        },
         'title'           	: 'Task overview',
+        'on_change'         : 'get',
         'endless_scrolling'	: true,
         'favorite_menu'     : 'ticket'
     });
 
+    //post processing for list-items
     var now=new Date().getTime()/1000;
     $('.field-list-source[field-key=""]', context).on("field_list_post_put", function(e, list_element, data)
     {
+
         if (data)
         {
             $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
@@ -68,13 +75,13 @@
 
 <div class="tabs">
     <ul>
-        <li status="">              <a href="#dummytab">All</a></li>
         <li status="next_action">   <a href="#dummytab">Next action</a></li>
         <li status="project">       <a href="#dummytab">Project</a></li>
         <li status="waiting">       <a href="#dummytab">Waiting for</a></li>
         <li status="someday">       <a href="#dummytab">Someday/Maybe</a></li>
         <li status="reference">     <a href="#dummytab">Reference</a></li>
         <li status="none">          <a href="#dummytab">No status</a></li>
+        <li status="">              <a href="#dummytab">All</a></li>
     </ul>
     <div id="dummytab">
  

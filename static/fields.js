@@ -847,16 +847,19 @@ Field.List.put=function(key, meta, context, data, options)
     //delete stuff that still has the delete-marker in it:
     if (options.list_update)
     {
-        if (options.show_changes)
+        if (!options.list_no_remove)
         {
-            $('.field-list-delete[field-key="'+key+'"]', parent).removeClass("field-list-item").hide(1000, function()
-                    {
-                        $(this).remove();
-                    });
-        }
-        else
-        {
-            $('.field-list-delete[field-key="'+key+'"]', parent).remove();
+            if (options.show_changes)
+            {
+                $('.field-list-delete[field-key="'+key+'"]', parent).removeClass("field-list-item").hide(1000, function()
+                        {
+                            $(this).remove();
+                        });
+            }
+            else
+            {
+                $('.field-list-delete[field-key="'+key+'"]', parent).remove();
+            }
         }
     }
 }

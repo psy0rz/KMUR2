@@ -653,6 +653,7 @@ params:
 
     endless_scrolling:  set to true to activate endless scrolling. 
                         (by default get_params.limit will be set to 25 but you can specify a different value)
+    endless_scrolling_minimum_skip: continue getting data until get_params.skip is at least this value. (mostly used internally on_change)
 
     scroll_context:     selector that specified context for endless scrolling. 
                         sometimes its usefull to use a parent or child of the normal context that scrolls. 
@@ -663,8 +664,10 @@ params:
     favorite_key        the result-key to use as favorite identifier (defaults to _id)
 
     on_change           what to do when our class changes:
-                            put: only put the new data into the list. ignores sorting and filtering, but gives best feedback to user. doesnt work for new items
-                            get: re-get the list, honoring sorting and filtering settings (default)
+                            put: only put the new data into the list. 
+                                 ignores sorting and filtering, but gives best feedback to user. 
+                                 ignores new items. 
+                            get: re-get the list, honoring sorting and filtering settings (default). 
                             reload: re-load the whole view
 
 */
@@ -740,7 +743,14 @@ ControlList.prototype.get_delayed=function(request_params)
         if (request_params.list_continue)
             this.params.get_params.skip+=this.params.get_params.limit;
         else
+        {
             this.params.get_params.skip=0;
+
+            //when "resetting" the list, we also reset the minimum_skip option to prevent getting all the data when it isnt neccesary
+            if (!request_params.list_no_remove)
+                this.params.endless_scrolling_minimum_skip=0; 
+
+        }
     }
 
     if (!this.getting)
@@ -788,15 +798,26 @@ ControlList.prototype.get_result=function(result, request_params)
             var height=$(this.scroll_context).height();
 
             if  ( 
-                    scroll_height< height*2 && //not fully filled?   
+                    ( scroll_height< height*2 ||  //not fully filled?   
+                      this.params.get_params.skip<this.params.endless_scrolling_minimum_skip //not reached minimum_skip yet
+                    )
+                    && 
                     result.data.length>=this.params.get_params.limit //more data available?
                 )
             {
-                console.debug("endless scroll getting more data because height is not reached yet ", this.params.get_params.skip);
+                console.debug("endless scroll getting more data because height or minimum skip is not reached yet ", this.params.get_params.skip);
                 this.get_delayed({
                     list_no_remove: true,
                     list_update: true,
                     list_continue: true
+                });
+            }
+            else
+            {
+                //we're done getting all the data we need. now its safe to delete any list items that where marked for deleting when we started
+                $('.field-list-delete', this.context).removeClass("field-list-delete field-list-item").hide(1000, function()
+                {
+                    $(this).remove();
                 });
             }
         }
@@ -856,6 +877,15 @@ ControlList.prototype.attach_event_handlers=function()
         {
 
             console.log("ControlList: data on server has changed, regetting data", data, this_control.params);
+
+            //make sure we at least get to where we left off.
+            this_control.params.endless_scrolling_minimum_skip=this_control.params.get_params.skip;
+
+            //mark all items as 'deleted'. only after regetting all the data we know which ones really can be deleted.
+            //normale field.list does this, but since we're using endless scrolling that wont work. so we only let field.list remove
+            //the field-list-delete class.
+            $('.field-list-item[field-key=""]', this_control.context).addClass("field-list-delete");
+
             this_control.get_delayed({
                     list_no_remove: true,
                     list_update: true,
@@ -873,7 +903,7 @@ ControlList.prototype.attach_event_handlers=function()
                 [ data ],
                 {
                     list_no_remove: true,
-                    list_no_add: true,
+                    list_no_add: true, //we cant be sure if the data should be added to this list
                     list_update: true,
                     show_changes: true
 
