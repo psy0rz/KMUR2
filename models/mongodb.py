@@ -412,8 +412,8 @@ class Base(models.common.Base):
         '''
 
         meta=self.get_meta()
-        spec_ors=spec_or.copy()
-        spec_ands=spec_and.copy()
+        spec_ors=list(spec_or)
+        spec_ands=list(spec_and)
 
 
         #queries are too complex to do this i think:

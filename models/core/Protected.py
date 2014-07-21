@@ -195,7 +195,7 @@ class Protected(models.mongodb.Base):
 
         if not self.context.has_roles(self.read_roles):
 
-            spec_and=spec_and.copy()
+            spec_and=list(spec_and)
 
             ors=[] #if any one of the check fields matches, then access is allowed
             for meta_key, check in self.read.items():

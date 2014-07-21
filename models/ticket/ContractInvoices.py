@@ -223,7 +223,7 @@ class ContractInvoices(models.core.Protected.Protected):
                         #add to invoice
                         invoice_desc="["+contract['title']+"] "+ticket_object['title']
                         if ticket_object['minutes_factor']!=1:
-                            invoice_desc=invoice_desc+"\n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+                            invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
 
                         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
                              to_relation=relation['_id'],
