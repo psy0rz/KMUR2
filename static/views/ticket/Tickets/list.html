@@ -21,39 +21,43 @@
 
         if (data)
         {
-            $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
             if (!data['ticket_completed'])
             {
                 list_element.removeClass("ticket-completed");
 
-                var delta=(data['due_date']-now)/(24*3600);
-                if (delta<0)
-                    $('[field-key="due_date"]', list_element).addClass("ticket-date-late");
-                else if (delta<2)
-                    $('[field-key="due_date"]', list_element).addClass("ticket-date-now");
-                else if (delta<13)
-                    $('[field-key="due_date"]', list_element).addClass("ticket-date-soon");
-                else
-                    $('[field-key="due_date"]', list_element).addClass("ticket-date-future");
-
-
+                if ('due_date' in data)
+                {
+                    $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
+                    var delta=(data['due_date']-now)/(24*3600);
+                    if (delta<0)
+                        $('[field-key="due_date"]', list_element).addClass("ticket-date-late");
+                    else if (delta<2)
+                        $('[field-key="due_date"]', list_element).addClass("ticket-date-now");
+                    else if (delta<13)
+                        $('[field-key="due_date"]', list_element).addClass("ticket-date-soon");
+                    else
+                        $('[field-key="due_date"]', list_element).addClass("ticket-date-future");
+                }
             }
             else
             {
+                $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
                 list_element.addClass("ticket-completed");
             }
 
 
-            $('.ticket-sharing', list_element).removeClass("ticket-sharing-private ticket-sharing-group ticket-sharing-deligated");
-            //private ticket
-            if (data['allowed_groups'].length==0 && data['deligated_users'].length==0)
-                $('.ticket-sharing', list_element).addClass("ticket-sharing-private");
-            //shared with group
-            else if (data['allowed_groups'].length>0)
-                $('.ticket-sharing', list_element).addClass("ticket-sharing-group");
-            else
-                $('.ticket-sharing', list_element).addClass("ticket-sharing-deligated");
-
+            if ('allowed_groups' in data)
+            {
+                $('.ticket-sharing', list_element).removeClass("ticket-sharing-private ticket-sharing-group ticket-sharing-deligated");
+                //private ticket
+                if (data['allowed_groups'].length==0 && data['deligated_users'].length==0)
+                    $('.ticket-sharing', list_element).addClass("ticket-sharing-private");
+                //shared with group
+                else if (data['allowed_groups'].length>0)
+                    $('.ticket-sharing', list_element).addClass("ticket-sharing-group");
+                else
+                    $('.ticket-sharing', list_element).addClass("ticket-sharing-deligated");
+            }
         }
     });
 

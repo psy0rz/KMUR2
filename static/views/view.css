@@ -5,12 +5,12 @@
 */
 
 
-.control-list-on-click-edit, .control-on-click-del, .control-on-click-add, .field-list-on-click-view, .field-relation-on-click-add, .field-list-on-click-del, .control-on-click-view
+.clickable, .control-list-on-click-edit, .control-on-click-del, .control-on-click-add, .field-list-on-click-view, .field-relation-on-click-add, .field-list-on-click-del, .control-on-click-view
 {
 	cursor:pointer;
 }
 
-.control-list-on-click-edit:hover, .control-on-click-del:hover, .control-on-click-add:hover, .field-list-on-click-view:hover, .field-relation-on-click-add:hover, .field-list-on-click-del:hover, .control-on-click-view:hover
+.clickable:hover, .control-list-on-click-edit:hover, .control-on-click-del:hover, .control-on-click-add:hover, .field-list-on-click-view:hover, .field-relation-on-click-add:hover, .field-list-on-click-del:hover, .control-on-click-view:hover
 {
 	background-color: #dddddd;
 }

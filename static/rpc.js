@@ -154,7 +154,8 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 rpcEnd();
 
                 //first call back, then do events. this is neccesary for inplace editting 
-                callback(result);
+                if (callback != undefined)
+                    callback(result);
 
                 //broadcast events
                 for (i in result.events)

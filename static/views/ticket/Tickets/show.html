@@ -40,6 +40,16 @@ var form=new ControlForm({
 
         });
 
+        $(".on-click-completed", context).click(function()
+        {
+            rpc("ticket.Tickets.put",{
+                _id: view.params._id,
+                ticket_completed: $(".field-bool-false", this).length!=0
+
+            });
+            return(false);
+        });
+
         $(".on-click-back", context).click(function()
         {
             viewClose(view);
@@ -157,7 +167,7 @@ new ControlListRelated({
 <span class='ticket' control-view="ticket.Tickets.edit">
 
     <h1>
-        <span class='field-put control-on-click-view ticket-check-style' field-no-text field-key='ticket_completed'></span>
+        <span class='field-put clickable on-click-completed ticket-check-style' field-no-text field-key='ticket_completed'></span>
         <span class='field-put control-on-click-view' field-key='title'></span>
     </h1>
 
