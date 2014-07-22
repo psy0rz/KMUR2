@@ -12,65 +12,6 @@ var form=new ControlForm({
     'create_view_params': view.params,
     'get_result': function(result)
     {
-        $(".on-click-edit", context).click(function()
-        {
-            viewCreate({ creator: context },
-            {
-                name: 'ticket.Tickets.edit',
-                mode: 'main',
-                params: {
-                    _id: view.params._id,
-                }
-            });
-        });
-
-
-        $(".on-click-new-ticket-note", context).click(function()
-        {
-            viewCreate({ creator: context },
-            {
-                name: 'ticket.TicketObjects.edit',
-                mode: 'main',
-                params: {
-                    ticket_id: view.params._id,
-                    type: 'note'
-
-                }
-            });
-
-        });
-
-        $(".on-click-completed", context).click(function()
-        {
-            rpc("ticket.Tickets.put",{
-                _id: view.params._id,
-                ticket_completed: $(".field-bool-false", this).length!=0
-
-            });
-            return(false);
-        });
-
-        $(".on-click-back", context).click(function()
-        {
-            viewClose(view);
-
-        });
-
-        $(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
-        {
-            viewCreate({ creator: context },
-            {
-                name: 'ticket.TicketObjects.edit',
-                mode: 'main',
-                params: {
-                    ticket_id: view.params._id,
-                    type: 'time',
-                    billing_relation: $(this).attr("relation-id"),
-                    billing_contract: $(this).attr("contract-id")
-                }
-            });
-
-        });
 
     },
     'field_put': function(data)
@@ -139,6 +80,67 @@ var form=new ControlForm({
     }
 });
 
+
+
+$(".on-click-edit", context).click(function()
+{
+    viewCreate({ creator: context },
+    {
+        name: 'ticket.Tickets.edit',
+        mode: 'main',
+        params: {
+            _id: view.params._id,
+        }
+    });
+});
+
+
+$(".on-click-new-ticket-note", context).click(function()
+{
+    viewCreate({ creator: context },
+    {
+        name: 'ticket.TicketObjects.edit',
+        mode: 'main',
+        params: {
+            ticket_id: view.params._id,
+            type: 'note'
+
+        }
+    });
+
+});
+
+$(".on-click-completed", context).click(function()
+{
+    rpc("ticket.Tickets.put",{
+        _id: view.params._id,
+        ticket_completed: $(".field-bool-false", this).length!=0
+
+    });
+    return(false);
+});
+
+$(".on-click-back", context).click(function()
+{
+    viewClose(view);
+
+});
+
+$(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
+{
+    viewCreate({ creator: context },
+    {
+        name: 'ticket.TicketObjects.edit',
+        mode: 'main',
+        params: {
+            ticket_id: view.params._id,
+            type: 'time',
+            billing_relation: $(this).attr("relation-id"),
+            billing_contract: $(this).attr("contract-id")
+        }
+    });
+
+});
 
 
 new ControlList({

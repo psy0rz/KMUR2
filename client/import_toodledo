@@ -84,7 +84,7 @@ for child in element.findall("item"):
 		if duedate!=None and duedate!="":
 			doc["due_date"]=datetime.datetime.strptime(duedate, "%Y-%m-%d").timestamp()
 
-		print(doc)
+		#print(doc)
 		rpc_client.request("ticket.Tickets.put", **doc)
 
 print("DONE")

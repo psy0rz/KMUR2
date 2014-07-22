@@ -88,9 +88,10 @@ class Tickets(models.core.Protected.Protected):
         if '_id' in doc:
             old_doc=self._get(doc['_id'])
 
-        ret=self._put(doc)
+        #make sure ret is a complete document, to make the following code simpeller
+        ret=dict(old_doc)
+        ret.update(self._put(doc))
         self.event("changed", ret)
-
 
         if '_id' in doc:
             #support edits in place that only put small documents
