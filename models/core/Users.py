@@ -4,7 +4,7 @@ import models.mongodb
 
 import models.core.Protected
 import models.core.Groups
-
+import re
 
 
 class Users(models.core.Protected.Protected):
@@ -111,8 +111,18 @@ class Users(models.core.Protected.Protected):
 
         if its ok, it doesnt throw an exception and returns nothing'''
 
+        if name.find("@")==-1:
+            raise fields.FieldError("Please specify a valid name", "name")
+
+
+        #select correct DB
+        (username, domain)=name.split("@")
+        db_postfix=re.sub("[^a-z0-9]","_",domain.lower())
+        self.context.session['db_name']=DB_PREFIX+"_"+db_postfix
+        self.reconnect(force=True)
+
         #FIXME: ugly temporary hack to bootstrap empty DB
-        if name=="tmpadmin":
+        if username=="tmpadmin":
             self.context.session['roles'].append('everyone')
             self.context.session['roles'].append('user')
             self.context.session['roles'].append('admin')
@@ -122,16 +132,16 @@ class Users(models.core.Protected.Protected):
 
         try:
             user = super(models.core.Protected.Protected,self)._get(match={
-                                  'name': name,
+                                  'name': username,
                                   'password': password
                                   })
 
         except models.mongodb.NotFoundError:
-            self.warning("User {} does not exist or used wrong password".format(name))
+            self.warning("User {} does not exist or used wrong password".format(username))
             raise fields.FieldError("Username or password incorrect", "password")
 
         if not user['active']:
-            self.warning("User {} cannot log in because its deactivated".format(name))
+            self.warning("User {} cannot log in because its deactivated".format(username))
             raise fields.FieldError("This user is deactivated", "name")
 
         self.context.session['name'] = user['name']

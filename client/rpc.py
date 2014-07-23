@@ -29,7 +29,6 @@ class RpcClient:
 		#create the request
 		req = urllib.request.Request(
 			url=self.url, 
-			method='POST',
 			data=json.dumps(rpc_data).encode('utf-8'))
 		req.add_header("Content-Type","application/json")
 

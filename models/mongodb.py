@@ -292,11 +292,19 @@ class Base(models.common.Base):
 
     def __init__(self, context=None):
         super(Base, self).__init__(context=context)
+        self.reconnect()
 
-        if not hasattr(context, 'mongodb_connection'):
-            context.mongodb_connection = pymongo.Connection(host=context.session['db_host'], safe=True)
 
-        self.db = context.mongodb_connection[context.session['db_name']]
+    def reconnect(self, force=False):
+        """(re)connect to database which is defined in context.session and set default collection
+
+            normally only called from __init__ and when trying to login (Users.py)
+        """
+
+        if force or not hasattr(self.context, 'mongodb_connection'):
+            self.context.mongodb_connection = pymongo.Connection(host=self.context.session['db_host'], safe=True)
+
+        self.db = self.context.mongodb_connection[self.context.session['db_name']]
 
         self.default_collection = self.__class__.__module__
 

@@ -2,6 +2,8 @@
 
 import re
 
+DB_PREFIX="kmur2"
+
 def call_rpc(context, module, cls, method, *args, **kwargs):
     """resolve and call rpc models from strings, also called from rpc.py
 
@@ -104,8 +106,7 @@ class Context(object):
         self.session['user_id'] = None
         self.session['group_ids'] = None
 
-        #make user configurable. should be database independent?
-        self.session['db_name'] = "kmurtest"
+        self.session['db_name'] = DB_PREFIX #changed when a user logged in, see Users.py
         self.session['db_host'] = "localhost"
 
     def has_roles(self, roles):
