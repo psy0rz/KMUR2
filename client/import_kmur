@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import rpc
+import sys
+import xml.etree.ElementTree
+import datetime
+
+parser = argparse.ArgumentParser(description='Relation importer v1.0')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', default='admin@tracer', help='user to login. default: %(default)s')
+parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('file',  nargs=1, help='XML import file')
+
+args = parser.parse_args()
+
+#initialise the rpc client class
+rpc_client=rpc.RpcClient(args.url)
+
+#first login using the specified user and pass
+user=rpc_client.request("core.Users.login", name=args.user, password=args.password)
+
+#read and parse XML
+element=xml.etree.ElementTree.parse(args.file[0])
+
+
+xml_item_name="gebruikers_gegevens"
+xml_import_id="id"
+
+
+#traverse all items
+for child in element.findall(xml_item_name):
+	#simple getter 
+	def get(name):
+		ret=child.find(name).text
+		if ret!=None:
+			return(ret)
+		else:
+			return("")
+
+	#determine uniq id so we can check if it already exists in tracer
+	import_id="kmur"+get(xml_import_id)
+
+	##### relations
+	result=rpc_client.request("ticket.Relations.get_all", match={ "import_id": import_id })
+
+
+	if len(result["data"])!=0:
+		print ("Already imported ID "+import_id)
+	else:
+
+		if get("passwd") and get("KMA")!="O":
+			print ("Adding user ID "+import_id)
+
+			roles={
+				"K": [ "customer" ],
+				"M": [ "employee", "customer" ],
+				"A": [ "employee", "customer", "admin", "finance" ],
+				"O": []
+			}
+
+			doc={
+				"import_id": import_id,
+				"name": get("naam"),
+				"password": get("passwd"),
+				"roles": roles [ get("KMA") ],
+				"fullname": get("naam"),
+				"active": True,
+
+			}
+
+			print(doc)
+			new_user=rpc_client.request("core.Users.put", **doc)
+			print(new_user)
+			allowed_users=[ user['data']['user_id'], new_user["data"]["_id"] ]
+		else:
+			allowed_users=[ user['data']['user_id'] ]
+
+
+		print ("Adding relation ID "+import_id)
+		doc={
+			"import_id": import_id,
+			"title": get("bedrijfsnaam")  or get("naam") or "no name: "+import_id,
+			"address": get("adres"),
+			"city": get("woonplaats"),
+			"zip_code": get("postcode"),
+			"country": "Nederland",
+			"invoice":{
+				"company": get("bedrijfsnaam"),
+				"department": get("fcontactpers"),
+				"address": get("fadres"),
+				"zip_code": get("fpostcode"),
+				"city": get("fplaats"),
+			},
+			"allowed_users": allowed_users
+		}
+
+		print(doc)
+		rpc_client.request("ticket.Relations.put", **doc)
+
+
+
+
+print("DONE")
+
+

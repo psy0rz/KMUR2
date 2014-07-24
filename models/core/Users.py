@@ -14,12 +14,13 @@ class Users(models.core.Protected.Protected):
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
                 'name': fields.String(min=3, desc='Username'),
-                'password': fields.Password(min=5, desc='Password'),
+                'import_id': fields.String(desc='Import ID'),
+                'password': fields.Password(min=4, desc='Password'),
                 'active': fields.Bool(desc="Enabled", default=True),
                 'roles': fields.MultiSelect(desc="Roles of the user",
                                              choices={
                                                       #make this configurable in a seperate group-module?
-                                                      #All users, including anonymous, have role'everyone'.
+                                                      #All users, including anonymous, have role 'everyone'.
                                                       #All users, except anonymous, have role 'user'
                                                       "admin": "Administrator",
                                                       "employee": "Employee",

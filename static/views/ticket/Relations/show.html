@@ -165,6 +165,27 @@ var tickets_objects=new ControlList({
         </table>
     </fieldset>
 
+    <fieldset class='inline-block'>
+    <legend>Sharing</legend>
+        <table >
+            <tr class='field-meta-put control-on-click-view' field-key='allowed_users'>
+                <td class='field-meta-put' field-key='allowed_users' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide' field-key='allowed_users' field-list-view="core.Users.edit">
+                        <span class='list-span field-put field-list-on-click-view' field-key='allowed_users.name'></span>
+                    </span>
+            </tr>
+
+            <tr class='field-meta-put control-on-click-view'  field-key='allowed_groups'>
+                <td class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                        <span class='list-span field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
+                    </span>
+            </tr>
+        </table>
+    </fieldset>
+
     <div class='floatingBar viewErrorClass'>
         <button class='control-on-click-view' >Edit</button>
         <button class='control-on-click-cancel' >Back</button>

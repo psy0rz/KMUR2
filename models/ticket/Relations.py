@@ -16,6 +16,7 @@ class Relations(models.core.Protected.Protected):
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
                 'title': fields.String(min=3, desc='Title', size=100),
+                'import_id': fields.String(desc='Import ID'),
                 'desc': fields.String(desc='Description'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
