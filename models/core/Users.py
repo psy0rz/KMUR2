@@ -118,7 +118,13 @@ class Users(models.core.Protected.Protected):
         #select correct DB
         (username, domain)=name.split("@")
         db_postfix=re.sub("[^a-z0-9]","_",domain.lower())
-        self.context.session['db_name']=DB_PREFIX+"_"+db_postfix
+        db_name=DB_PREFIX+"_"+db_postfix
+
+        if db_name not in self.context.mongodb_connection.database_names():
+            raise fields.FieldError("Domain not found", "name")
+
+
+        self.context.session['db_name']=db_name
         self.reconnect(force=True)
 
         #FIXME: ugly temporary hack to bootstrap empty DB
