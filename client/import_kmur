@@ -7,7 +7,7 @@ import sys
 import xml.etree.ElementTree
 import datetime
 
-parser = argparse.ArgumentParser(description='Relation importer v1.0')
+parser = argparse.ArgumentParser(description='KMUR Relation and User importer v1.0')
 
 parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
 parser.add_argument('--user', default='admin@tracer', help='user to login. default: %(default)s')

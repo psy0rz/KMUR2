@@ -71,6 +71,7 @@ class Invoices(models.core.Protected.Protected):
                     #filled automatcly when invoice is "sent"
                     #after sending, most of the invoice may no longer be changed
                     'invoice_nr': fields.String(desc='Invoice number',readonly=readonly),
+                    'import_id': fields.String(desc='Import ID'),
                     'sent': fields.Bool(desc='Sent'),
                     'sent_date': fields.Timestamp(desc='Invoice date',readonly=readonly),
 

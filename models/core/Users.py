@@ -72,8 +72,8 @@ class Users(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self, _id):
-        return(self._get(_id,fields={
+    def get(self, _id=None, match=None):
+        return(self._get(_id=_id, match=match, fields={
                 'password': False
             }))
 
