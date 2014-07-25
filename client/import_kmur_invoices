@@ -43,11 +43,20 @@ for child in deel_factuur.findall("deel_factuur"):
 	if not get(child,"factuur_id") in invoice_items:
 		invoice_items[get(child,"factuur_id")]=[]
 
-	invoice_items[get(child,"factuur_id")].append({
-		"amount": get(child,"aantal"),
+	print("Parsing invoice rule " + get(child, "id"))
+
+	item={
 		"desc": get(child,"wat"),
-		"price": get(child,"koste_per_stuk"),
-	})
+		"amount": 0,
+		"price": 0,
+	}
+	if get(child,"aantal"):
+		item["amount"]=float(get(child,"aantal"))
+
+	if get(child,"koste_per_stuk"):
+		item["price"]=float(get(child,"koste_per_stuk").replace(",","."))
+
+	invoice_items[get(child,"factuur_id")].append(item)
 
 
 
@@ -101,7 +110,7 @@ for child in factuur.findall("factuur"):
 			if get(child,"id") in invoice_items:
 				tax=21
 				for item in invoice_items[get(child,"id")]:
-					item["tax"]=tax
+					item["tax"]=21
 					doc["items"].append(item)
 
 			# #tax hacks
@@ -128,7 +137,8 @@ for child in factuur.findall("factuur"):
 
 
 			print(doc)
-			# rpc_client.request("ticket.Relations.put", **doc)
+			print()
+			rpc_client.request("ticket.Invoices.put", **doc)
 
 
 
