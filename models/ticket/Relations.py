@@ -109,8 +109,8 @@ class Relations(models.core.Protected.Protected):
         return(ret)
 
     @Acl(roles="user")
-    def get(self, **doc):
-        return(self._get(**doc))
+    def get(self, *args, **kwargs):
+        return(self._get(*args, **kwargs))
 
     @Acl(roles="user")
     def delete(self, _id):

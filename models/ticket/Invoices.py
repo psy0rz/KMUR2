@@ -152,25 +152,27 @@ class Invoices(models.core.Protected.Protected):
     read=write
 
     @Acl(roles="finance")
-    def put(self, **doc):
+    def put(self, force=False,**doc):
 
         #precheck, to prevent confusing errors for the enduser later on
         self.get_meta(doc).meta['meta'].check(self.context, doc)
 
         settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
 
-        if 'invoice_nr' in doc or 'sent_date' in doc:
-            raise FieldError("Cant set invoice nr or sent_date this way")
+        #use force to skip these checks. this is only recommend for imported invoices from external systems
+        if not force:
+            if 'invoice_nr' in doc or 'sent_date' in doc:
+                raise FieldError("Cant set invoice nr or sent_date this way")
 
 
-        if 'from_copy' in doc or 'to_copy' in doc:
-            raise FieldError("Cant set from_copy or to_copy this way")
+            if 'from_copy' in doc or 'to_copy' in doc:
+                raise FieldError("Cant set from_copy or to_copy this way")
 
-        if 'sent' in doc:
-            raise FieldError("Cant modify sent-status this way")
+            if 'sent' in doc:
+                raise FieldError("Cant modify sent-status this way")
 
-        #make sure its always set to make coding easier
-        if not '_id' in doc:
+        #make sure its always set to make coding easier in other parts in this module
+        if not '_id' in doc and not force:
             doc['invoice_nr']=""
             doc['sent']=False
             doc['payed']=False

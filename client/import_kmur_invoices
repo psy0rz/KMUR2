@@ -93,10 +93,12 @@ for child in factuur.findall("factuur"):
 				"import_id": import_id,
 				"title": get(child, "kenmerken_klant")  or "Invoice",
 				"invoice_nr": get(child,"factuur_omschrijving"),
+				"currency": "€",
+				"notes": "",
 				"sent": True,
 				"sent_date": datetime.datetime.strptime(get(child,"factuur_datum"), "%Y-%m-%d").timestamp(),
-				"payed": "Nederland",
-				"payed_date": "Nederland",
+				"payed": get(child,"betaald")=="1",
+				"payed_date": None,
 				"allowed_users": [ logged_in_user["user_id"] ],
 				"to_relation": relation[0]["_id"],
 				"items": []
@@ -138,7 +140,7 @@ for child in factuur.findall("factuur"):
 
 			print(doc)
 			print()
-			rpc_client.request("ticket.Invoices.put", **doc)
+			rpc_client.request("ticket.Invoices.put", force=True, **doc)
 
 
 

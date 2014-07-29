@@ -48,7 +48,8 @@ for child in element.findall(xml_item_name):
 
 
 	if len(result["data"])!=0:
-		print ("Already imported ID "+import_id)
+		print ("Already imported user ID "+import_id)
+		new_user=result["data"]
 	else:
 
 		if get("passwd") and get("KMA")!="O":
@@ -83,18 +84,34 @@ for child in element.findall(xml_item_name):
 		doc={
 			"import_id": import_id,
 			"title": get("bedrijfsnaam")  or get("naam") or "no name: "+import_id,
+			"desc": "",
+			"contracts": [],
 			"address": get("adres"),
 			"city": get("woonplaats"),
 			"zip_code": get("postcode"),
+			"province": "",
 			"country": "Nederland",
+			"phones": [],
+			"emails": [],
+
 			"invoice":{
 				"company": get("bedrijfsnaam"),
 				"department": get("fcontactpers"),
 				"address": get("fadres"),
 				"zip_code": get("fpostcode"),
 				"city": get("fplaats"),
+				"province": "",
+				"country": "Nederland",
+				"vat_nr": "",
+				"coc_nr": "",
+				"iban_nr": "",
+				"bic_code": "",
+				"tax": 21,
+				"mail_to": None,
+				"print": True,
 			},
-			"allowed_users": allowed_users
+			"allowed_users": allowed_users,
+			"allowed_groups": []
 		}
 
 		print(doc)
