@@ -38,7 +38,7 @@ class RpcClient:
 
 			#abort on error
 			if self.abort_on_error and 'error' in result:
-				print(result)
+				print(json.dumps(result, indent='\t'))
 				sys.exit(1)
 
 			return(result)

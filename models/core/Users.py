@@ -166,6 +166,13 @@ class Users(models.core.Protected.Protected):
         return(self.context.session)
 
     @Acl(roles=["everyone"])
+    def get_session(self):
+        '''get current loggedin session'''
+        return(self.context.session)
+
+
+
+    @Acl(roles=["everyone"])
     def logout(self):
         '''logout the user. name becomes anonymous, roles becomes everyone.
         '''
