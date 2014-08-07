@@ -13,10 +13,8 @@ $(".cancel", context).click(function()
 
 $(".logOut", context).click(function()
 {
-	rpc("users.logout",{},function()
+	rpc("core.Users.logout",{},function()
 	{
-		$.jStorage.flush();
-		$.publish("menu.reload");
 		viewCloseAll();
 	});
 });

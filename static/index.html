@@ -34,13 +34,12 @@
 -->
 
 	<script>
+		//this is the only global variable that the main-application has to deal with. 
+		//usually when creating controls that need to know the user_id or group_ids of the logged in user
+		var session={};
 
 		$(document).ready(function()
 		{
-			//this is the only global variable that the main-application has to deal with. 
-			//usually when creating controls that need to know the user_id or group_ids of the logged in user
-			session=$.jStorage.get("session");
-
 			//menuReload();
 			viewLoad({
 				name: 'webui.Menu.main',
@@ -53,11 +52,12 @@
 				$(this).empty();
 			});
 
-			function update_login(result)
+			//this event is send by core when session is changed or send_session is called
+			$("#login").subscribe("core.Users.changed_session", "login", function(result)
 			{
-				if (result.data.user_id)
+				if (result.user_id)
 				{
-					$(".login-user").text(result.data.name);
+					$(".login-user").text(result.name);
 					$(".on-click-login").hide();
 					$(".on-click-logout").show();
 				}
@@ -67,15 +67,34 @@
 					$(".on-click-login").show();
 					$(".on-click-logout").hide();
 				}
-			}
-
-			$(".on-click-logout").click(function()
-			{
-				rpc("core.Users.logout",{}, update_login);
+				session=result;
+				$.publish("menu.reload", {});
 			});
 
-			//determine session status
-			rpc("core.Users.get_session",{}, update_login);
+			$(".on-click-logout").click(function(event)
+			{
+			    viewCreate({
+			    },{
+			    	params: {},
+			    	name: 'core.Users.logout',
+			    	mode: 'popup'
+			    });
+			    return(false);
+			});
+
+			$(".on-click-login").click(function(event)
+			{
+			    viewCreate({
+			    },{
+			    	params: {},
+			    	name: 'core.Users.login',
+			    	mode: 'popup'
+			    });
+			    return(false);
+			});
+
+			//determine initial session status
+			rpc("core.Users.send_session",{}, function(){;});
 
 
 		});

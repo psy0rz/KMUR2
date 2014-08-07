@@ -6,13 +6,13 @@ new ControlForm({
     'title_new'       : 'Inloggen',
     'get'             : null,
     'put'             : 'core.Users.login',
-    'put_result' : function(result)
-    {
-        $.jStorage.flush();
-        $.jStorage.set("session", result.data);
-        session=result.data;
-        $.publish("menu.reload");
-    }
+    // 'put_result' : function(result)
+    // {
+    //     // $.jStorage.flush();
+    //     // $.jStorage.set("session", result.data);
+    //     // session=result.data;
+    //     // $.publish("menu.reload");
+    // }
 });
 
 </script>

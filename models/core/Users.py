@@ -162,13 +162,13 @@ class Users(models.core.Protected.Protected):
 
         self.info("Logged in.")
 
-        #the frontend might need this information as well:
-        return(self.context.session)
+        self.event("changed_session",self.context.session)
 
     @Acl(roles=["everyone"])
-    def get_session(self):
-        '''get current loggedin session'''
-        return(self.context.session)
+    def send_session(self):
+        '''get current loggedin session (broadcasts an event)'''
+
+        self.event("changed_session",self.context.session)
 
 
 
@@ -181,4 +181,6 @@ class Users(models.core.Protected.Protected):
 
         self.info("Logged out")
         self.context.reset_user()
-        return(self.context.session)
+
+        self.event("changed_session",self.context.session)
+

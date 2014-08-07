@@ -8,7 +8,9 @@
 	//(re)load the menu
 	$(context).subscribe("menu_reload", "menu", function(params)
 	{
-
+		if (meta==undefined)
+			return;
+		
 		rpc(
 			"webui.Menu.get",
 			{},
