@@ -53,6 +53,30 @@
 				$(this).empty();
 			});
 
+			function update_login(result)
+			{
+				if (result.data.user_id)
+				{
+					$(".login-user").text(result.data.name);
+					$(".on-click-login").hide();
+					$(".on-click-logout").show();
+				}
+				else
+				{
+					$(".login-user").text("(not logged in)");
+					$(".on-click-login").show();
+					$(".on-click-logout").hide();
+				}
+			}
+
+			$(".on-click-logout").click(function()
+			{
+				rpc("core.Users.logout",{}, update_login);
+			});
+
+			//determine session status
+			rpc("core.Users.get_session",{}, update_login);
+
 
 		});
 	</script>
@@ -72,6 +96,7 @@
 	top:0em;
 	left:15em;
 	right:0em;
+	min-height: 1em;
 	padding-left:1em;
 	padding-bottom:0.5em;
 	background:#dddddd;
@@ -87,9 +112,9 @@
 	top:0em;
 	right:1em;
 '>
-	<a href='#' class='on-click-login hide'>Login</a>
-	<a href='#' class='on-click-logoff hide'>Logoff</a>
 	<span class='login-user'></span>
+	<a href='#' class='on-click-login hide'>Login</a>
+	<a href='#' class='on-click-logout hide'>Logout</a>
 </div>
 
 

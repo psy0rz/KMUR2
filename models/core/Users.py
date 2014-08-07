@@ -176,8 +176,9 @@ class Users(models.core.Protected.Protected):
     def logout(self):
         '''logout the user. name becomes anonymous, roles becomes everyone.
         '''
-        if self.context.user_id == None:
+        if self.context.session['user_id'] == None:
             raise fields.FieldError("You're not logged in")
 
         self.info("Logged out")
         self.context.reset_user()
+        return(self.context.session)
