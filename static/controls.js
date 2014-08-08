@@ -795,8 +795,8 @@ ControlList.prototype.get_result=function(result, request_params)
             request_params
         );
 
-        //only if enabled and when we're visible
-        if (this.params.endless_scrolling)// && this.context.css("display")!="none")
+        //get more endless scroll-data only if enabled and when we're visible
+        if (this.params.endless_scrolling && this.context.closest(".view").css("display")!="none")
         {
             var scroll_height=$(this.scroll_context).prop('scrollHeight');
             var height=$(this.scroll_context).height();
@@ -1180,11 +1180,12 @@ ControlList.prototype.attach_event_handlers=function()
         var prev_height=0;
         $(this.scroll_context).off("scroll").on("scroll",function()
         {
+
             var scroll_height=$(this).prop('scrollHeight');
             var height=$(this).height();
             var top=$(this).scrollTop();
 
-            // console.log("endless scroll event checking", height, scroll_height, top);
+       
             //scroll_height has changed and we almost scrolled to the bottom?
             if (scroll_height!=prev_height && top>=scroll_height-(height*2))
             {
