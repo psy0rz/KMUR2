@@ -116,12 +116,12 @@ class Invoices(models.core.Protected.Protected):
 
                     'items': fields.List(
                         fields.Dict({
-                                'amount': fields.Number(desc='Amount',size=5, decimals=2),
+                                'amount': fields.Number(desc='Amount',size=5, decimals=3),
                                 'desc': fields.String(desc='Description', size=80),
-                                'price': fields.Number(desc='Price', size=5,decimals=2),
-                                'tax': fields.Number(desc='Tax', default=21, size=5, decimals=2,min=0, max=100),
-                                'calc_total': fields.Number(desc='Total',decimals=2),
-                                'calc_total_tax': fields.Number(desc='with tax',decimals=2),
+                                'price': fields.Number(desc='Price', size=5,decimals=3),
+                                'tax': fields.Number(desc='Tax', default=21, size=5, decimals=3,min=0, max=100),
+                                'calc_total': fields.Number(desc='Total',decimals=3),
+                                'calc_total_tax': fields.Number(desc='with tax',decimals=3),
                             }),
                         desc="Invoice items",
                         readonly=readonly

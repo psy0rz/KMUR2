@@ -72,7 +72,6 @@ for child in factuur.findall("factuur"):
 	if len(result["data"])!=0:
 		print ("Already imported ID "+import_id)
 	else:
-		print ("Adding ID "+import_id)
 
 		#get user _id and relation _id
 		relation=rpc_client.request("ticket.Relations.get_all", match={ 
@@ -80,8 +79,8 @@ for child in factuur.findall("factuur"):
 		})['data']
 		#print(relation)
 
-
 		if relation:
+			print ("Adding ID "+import_id)
 
 			user=rpc_client.request("core.Users.get_all", match={ 
 				"import_id": "kmur"+get(child,"gebruiker_id")
@@ -141,7 +140,8 @@ for child in factuur.findall("factuur"):
 			print(doc)
 			rpc_client.request("ticket.Invoices.put", force=True, **doc)
 
-
+		else:
+			print("No relation found for invoice ", import_id)
 
 
 print("DONE")
