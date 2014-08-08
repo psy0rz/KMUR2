@@ -17,25 +17,5 @@
 						}
 			}
 		]
-	},
-    "system":{
-        "items":[
-            {
-                "title":"Log in",
-                "view":
-                    { 
-                        "name":"core.Users.login",
-                        "mode":"popup"
-                        }
-            },
-            {
-                "title":"Log out",
-                "view":
-                    { 
-                        "name":"core.Users.logout",
-                        "mode":"main"
-                        }
-            }
-        ]
-    }
+	}
 }

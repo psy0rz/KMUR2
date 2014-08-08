@@ -139,7 +139,6 @@ for child in factuur.findall("factuur"):
 
 
 			print(doc)
-			print()
 			rpc_client.request("ticket.Invoices.put", force=True, **doc)
 
 

@@ -522,9 +522,11 @@ ControlForm.prototype.focus=function()
     else
         element=$(".control-default-focus", this.context);
 
-
-    $(':input', element).focus();
-    element.focus();
+    if (element!=this.context && element.length)
+    {
+        $(':input', element).focus();
+        element.focus();
+    }
 }
 
 

@@ -164,6 +164,8 @@ class Users(models.core.Protected.Protected):
 
         self.event("changed_session",self.context.session)
 
+        return(self.context.session)
+
     @Acl(roles=["everyone"])
     def send_session(self):
         '''get current loggedin session (broadcasts an event)'''
