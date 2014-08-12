@@ -1,0 +1,120 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Page Title</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="jquery/jquery.mobile-1.4.3.min.css" />
+	<script src="jquery/jquery-2.1.1.min.js"></script>
+	<script src="jquery/jquery.mobile-1.4.3.min.js"></script>
+	<script>
+		$(function() {
+			$( "[data-role='header'], [data-role='footer']" ).toolbar();
+		});
+
+		// Update the contents of the toolbars
+		$( document ).on( "pageshow", "[data-role='page']", function(event) {
+			$( "[data-role='navbar'] a.ui-btn-active" ).removeClass( "ui-btn-active" );
+			var active=$(this).attr("id");
+			$( "a[href='#"+active+"']" ).addClass( "ui-btn-active" ).text();
+			return(false);
+		});
+
+	</script>
+</head>
+
+<body>
+
+    <div data-role="header" data-position="fixed" data-theme="a" >
+		<a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+        <h1>Jolo's recepten site</h1>
+		<a href="#user" class="ui-btn ui-btn-inline ui-icon-user ui-btn-icon-left">&nbsp;</a>
+    </div>
+
+
+	<div data-role="page" id="recepten"  data-theme="a" >
+
+		<div role="main" class="ui-content">
+			<p>Recepten lalalala
+		</div>
+	</div>
+
+
+
+	<div data-role="page" id="techniek"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<h1>Techniek</h1>
+
+			<ul>
+				<li><img src='bla'> <a href='#techniek_1'>Techniek titel 1</a>
+				<li><img src='bla'> <a href='#techniek_2'>Techniek titel 2</a>
+				<li><img src='bla'> <a href='#techniek_3'>Techniek titel 3</a>
+			</ul>
+		</div>
+	</div>
+
+	<div data-role="page" id="techniek_1"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<h1>Techniek 1</h1>
+
+			<img src='bla'> 
+			Uitleg techniek 1
+		</div>
+	</div>
+
+
+	<div data-role="page" id="tips"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<h1>Basis kooktips</h1>
+
+			<ul>
+				<li><img src='bla'> <a href='#tip_1'>Kooktip titel 1</a>
+				<li><img src='bla'> <a href='#tip_2'>Kooktip titel 2</a>
+				<li><img src='bla'> <a href='#tip_3'>Kooktip titel 3</a>
+			</ul>
+		</div>
+	</div>
+
+
+	<div data-role="page" id="tip_1"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<h1>Tip 1</h1>
+
+			<img src='bla'> 
+			Uitleg tip 1
+		</div>
+	</div>
+
+
+
+	<div data-role="page" id="basis"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<p>Basis enzo
+		</div>
+	</div>
+
+	<div data-role="page" id="user"  data-theme="a">
+
+		<div role="main" class="ui-content">
+			<p>User info
+		</div>
+	</div>
+
+	<div data-role="footer" data-position="fixed" data-theme="a">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#recepten" >Recepten</a></li>
+				<li><a href="#techniek" >Techniek</a></li>
+				<li><a href="#tips" >Tips</a></li>
+				<li><a href="#basis" >Basis</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+
+
+</body>
+</html>
