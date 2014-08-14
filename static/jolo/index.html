@@ -7,18 +7,74 @@
 	<script src="jquery/jquery-2.1.1.min.js"></script>
 	<script src="jquery/jquery.mobile-1.4.3.min.js"></script>
 	<script>
-		$(function() {
+		$(document).ready(function(){
+
 			$( "[data-role='header'], [data-role='footer']" ).toolbar();
-		});
 
-		// Update the contents of the toolbars
-		$( document ).on( "pageshow", "[data-role='page']", function(event) {
-			$( "[data-role='navbar'] a.ui-btn-active" ).removeClass( "ui-btn-active" );
-			var active=$(this).attr("id");
-			$( "a[href='#"+active+"']" ).addClass( "ui-btn-active" ).text();
-			return(false);
-		});
+			// update toolbar
+			$( document ).on( "pageshow", "[data-role='page']", function(event) {
+				$( "[data-role='navbar'] a.ui-btn-active" ).removeClass( "ui-btn-active" );
+				var active=$(this).attr("id");
+				$( "a[href='#"+active+"']" ).addClass( "ui-btn-active" ).text();
+				return(false);
+			});
 
+
+			var recepten=[
+				{ 
+					image: "recept_thumbnail.png",
+					ingredienten: [ "paprika", "ui", "tomaat", "kaas", "salami" ],
+					titel: "Salami pizza",
+					omschrijving: "Blabla pizza met huppelde pup"
+				},
+				
+				{ 
+					image: "recept_thumbnail.png",
+					ingredienten: [ "ham", "kaas", "brood" ],
+					titel: "Tosti",
+					omschrijving: "bla bla tostis zijn lekker"
+				},				
+			]
+
+			// zoek recepten adhv ingredienten:
+		    $("#ingredienten").on('focusout keyup' , function(e)
+	    	{
+
+	            //gezochte ingredienten
+	            var zoek=$(this).val().split(" ");
+
+	            console.log("zoek =", zoek);
+
+	            //resultaten lijst leegmaken
+	            $("#gevonden_recepten").empty();
+
+	
+	            //TODO: deze functie op een server implementeren en aanroepen via ajax json.
+	            //ga alle recepten bij langs
+	            for (recept_nr in recepten)
+	            {
+	            	//ga alle gezochte ingredienten bij langs
+	            	for (ingredient_nr in zoek)
+	            	{
+	            		//bevat het recept dit gezochte ingredient?
+	            		if (recepten[recept_nr]["ingredienten"].indexOf(zoek[ingredient_nr]) != -1)
+	            		{
+	            			//gevonden, maak html en toon op beeld
+	            			var gevonden_recept=recepten[recept_nr];
+
+	            			var html="<div>";
+	            			html+="<h2>"+gevonden_recept["titel"]+"</h2>";
+	            			html+="<img src='"+gevonden_recept["image"]+"'>";
+	            			html+="<p>"+gevonden_recept["omschrijving"]+"</p>";
+	            			html+="</div>";
+	            			console.log(html);
+	            			$("#gevonden_recepten").append(html);
+	            		}
+	            	}
+	            }
+
+			});
+		});
 	</script>
 </head>
 
@@ -32,9 +88,14 @@
 
 
 	<div data-role="page" id="recepten"  data-theme="a" >
-
 		<div role="main" class="ui-content">
 			<p>Recepten lalalala
+
+			<p>Ingredienten in huis: <input id='ingredienten' type='text'></input>
+
+			<p>Gevonden recepten:<p>
+			<div id='gevonden_recepten'>
+			</div>
 		</div>
 	</div>
 
