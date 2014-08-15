@@ -82,13 +82,13 @@ class ContractInvoices(models.core.Protected.Protected):
     # def get_(self, **doc):
 
     @Acl(roles="finance")
-    def recalc_budget(self, relation, contract):
+    def recalc_budget(self, relation_id, contract_id):
         """recalculate budget of all contract invoices of specified relation,contract combo"""
 
         contract_invoices=self.get_all(
                 match={
-                "relation": relation,
-                "contract": contract,
+                "relation": relation_id,
+                "contract": contract_id,
                 },
                 fields=[ "minutes_used", "minutes_bought", "minutes_balance", "desc" ], 
                 sort=[ ( 'date', 1 )]
@@ -103,6 +103,25 @@ class ContractInvoices(models.core.Protected.Protected):
                     **contract_invoice
                     )
 
+
+
+    def round_minutes(self, ticket_object, contract):
+        """perform correct 'rounding' of minutes and factor correction"""
+        minutes=ticket_object["minutes"]
+
+        #make sure it has the minimum minutes
+        if  minutes<contract['minutes_minimum']:
+            minutes=contract['minutes_minimum']
+
+        #apply factor 
+        minutes=minutes*ticket_object['minutes_factor']
+
+        #round up to whole minute-blocks
+        #e.g when minutes_rounding=15:
+        #14 becomes 15 minutes. but 16 becomes 30 minutes.
+        minutes=((minutes+contract['minutes_rounding']-1)//contract['minutes_rounding'])*contract['minutes_rounding']
+
+        return(minutes)
 
 
     @Acl(roles="finance")
@@ -202,19 +221,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
                     #traverse all the un-invoiced ticket_objects
                     for ticket_object in ticket_objects:
-                        minutes=ticket_object['minutes']
-
-                        #make sure it has the minimum minutes
-                        if  minutes<contract['minutes_minimum']:
-                            minutes=contract['minutes_minimum']
-
-                        #apply factor 
-                        minutes=minutes*ticket_object['minutes_factor']
-
-                        #round up to whole minute-blocks
-                        #e.g when minutes_rounding=15:
-                        #14 becomes 15 minutes. but 16 becomes 30 minutes.
-                        minutes=((minutes+contract['minutes_rounding']-1)//contract['minutes_rounding'])*contract['minutes_rounding']
+                        minutes=self.round_minutes(ticket_object, contract)
 
                         #determine price:
                         if contract['type']=='post':
@@ -252,6 +259,56 @@ class ContractInvoices(models.core.Protected.Protected):
                         #update ticket_object
                         ticket_object['billing_contract_invoice']=contract_invoice['_id']
                         call_rpc(self.context, 'ticket', 'TicketObjects', 'put', **ticket_object)
+
+
+    @Acl(roles="finance")
+    def get_budgets(self, relation_id, limit=None, skip=None, sort=None):
+        """calculate all the budgets of a relation, this includes uninvoiced_ticketobjects"""
+
+        relation=call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id)
+
+        budgets=[]
+
+        #traverse all contracts:
+        contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all')
+        for contract in contracts:
+
+            #get budget from latest contract_invoice
+            latest_contract_invoices=self.get_all(
+                    match={
+                        "relation": relation["_id"],
+                        "contract": contract["_id"],
+                    },
+                    limit=1,
+                    sort=[ ( 'date', -1 )]
+                )
+
+            if latest_contract_invoices:
+                minutes_balance=latest_contract_invoices[0]["minutes_balance"]
+            else:
+                minutes_balance=0
+
+
+            #get uninvoiced hours for this relation,contract combo
+            ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+                fields=["title", "minutes", "minutes_factor" ],
+                match={
+                    "billing_relation": relation["_id"],
+                    "billing_contract": contract["_id"],
+                    "billing_contract_invoice": None,
+                })
+
+            for ticket_object in ticket_objects:
+                minutes_balance-=self.round_minutes(ticket_object, contract)
+
+            budgets.append({
+                "_id": contract["_id"],
+                "contract_title": contract["title"],
+                "minutes_balance": minutes_balance
+            })
+
+        return(budgets)
+
 
     @Acl(roles="finance")
     def put(self, **doc):

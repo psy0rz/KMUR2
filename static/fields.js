@@ -1833,7 +1833,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
 
                     //filter those ids out
                     var list_key=meta.meta.list_key;
-                    params['match_nin']={}
+                    params['match_nin']={};
+                    params['limit']=25;
                     if (meta.list)
                         params['match_nin'][list_key]=current_items;
                     else
