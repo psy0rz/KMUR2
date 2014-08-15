@@ -6,6 +6,7 @@ import models.core.Groups
 import models.ticket.Relations
 import models.ticket.Tickets
 import models.ticket.Contracts
+import models.ticket.ContractInvoices
 import models.mongodb
 import time
 
@@ -54,8 +55,12 @@ class TicketObjects(models.core.Protected.Protected):
                     check_exists=False,
                     resolve=False,
                     list=False),
-                'billing_contract_invoice':models.mongodb.FieldId(desc='Billing contract invoice'),
-                'billing_invoiced':fields.Bool(desc='Invoiced'),
+                'billing_contract_invoice': models.mongodb.Relation(
+                    desc='Billing order',
+                    model=models.ticket.ContractInvoices.ContractInvoices,
+                    check_exists=False,
+                    resolve=False,
+                    list=False),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -109,15 +114,15 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
-            if 'billing_invoiced' in old_doc and old_doc['billing_invoiced']:
+            if old_doc['billing_contract_invoice']:
                 raise fields.FieldError("This item is already billed, you cannot change it anymore.")
 
             log_txt="Changed task note '{title}'".format(**doc)
         else:
             log_txt="Created new task note 'title'".format(**doc)
 
-        if not 'billing_invoiced' in doc:
-            doc['billing_invoiced']=False
+        if not 'billing_contract_invoice' in doc:
+            doc['billing_contract_invoice']=None
 
         ret=self._put(doc)
 
@@ -153,7 +158,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
-        if 'billing_invoiced' in doc:
+        if doc["billing_contract_invoice"]:
             raise fields.FieldError("This item is already billed, you cannot delete it.")
 
 

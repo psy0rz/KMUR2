@@ -197,7 +197,7 @@ class ContractInvoices(models.core.Protected.Protected):
                         match={
                             "billing_relation": relation["_id"],
                             "billing_contract": contract_id,
-                            "billing_invoiced": False,
+                            "billing_contract_invoice": None,
                         })
 
                     #traverse all the un-invoiced ticket_objects
@@ -250,7 +250,6 @@ class ContractInvoices(models.core.Protected.Protected):
                         contract_invoice=self.put(**contract_invoice)
 
                         #update ticket_object
-                        ticket_object['billing_invoiced']=True
                         ticket_object['billing_contract_invoice']=contract_invoice['_id']
                         call_rpc(self.context, 'ticket', 'TicketObjects', 'put', **ticket_object)
 
