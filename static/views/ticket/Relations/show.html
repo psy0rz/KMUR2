@@ -90,6 +90,9 @@ var contract_budgets=new ControlList({
     'get_params'        : {
         'relation_id': view.params._id
     },
+    'create_view_params': {
+        'relation_id': view.params._id 
+    }
 });
 
 
@@ -208,7 +211,7 @@ var tickets_objects=new ControlList({
 <fieldset class='inline-block'>
     <legend>Tasks</legend>
 
-    <div class='tickets inline-block' style='overflow: auto; max-height:15em;'>
+    <div class='tickets inline-block' style='overflow: auto; height:15em;'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title desc'>
@@ -245,7 +248,7 @@ var tickets_objects=new ControlList({
 <fieldset class='inline-block'>
     <legend>Latest work</legend>
 
-    <div class='ticket-objects inline-block' style='overflow: auto; max-height:15em;'>
+    <div class='ticket-objects inline-block' style='overflow: auto; height:15em;'>
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
 
@@ -284,7 +287,7 @@ var tickets_objects=new ControlList({
 <fieldset class='inline-block'>
     <legend>Invoices</legend>
 
-    <div class='invoices inline-block' style='overflow: auto; max-height:15em;'>
+    <div class='invoices inline-block' style='overflow: auto; height:15em;'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
@@ -320,20 +323,19 @@ var tickets_objects=new ControlList({
 <fieldset class='inline-block'>
     <legend>Contract budgets</legend>
 
-    <div class='contract-budgets inline-block' style='overflow: auto; max-height:15em;'>
+    <div class='contract-budgets inline-block' style='overflow: auto; height:15em;'>
 
         <a class='on-click-contract-invoices-invoice-all' href='#'>Auto invoice all</a>
+        <a class='control-on-click-view' control-view="ticket.ContractInvoices.list" href='#'>Show orders...</a>
      
         <table >
             <tr class='ui-widget-header'>
-                <th>
                 <th class='field-meta-put control-on-click-order' field-key='contract_title' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>
             </tr>
 
 
             <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.ContractInvoices.edit">
-                <td class='field-list-on-click-view show-button-style' field-list-view="ticket.ContractInvoices.show">&nbsp;
 
                 <td class='field-put ' field-key='contract_title' >
                 <td class='field-put' field-key='minutes_balance' >
