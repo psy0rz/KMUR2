@@ -43,7 +43,7 @@
 	            //gezochte ingredienten
 	            var zoek=$(this).val().split(" ");
 
-	            console.log("zoek =", zoek);
+	            // console.log("zoek =", zoek);
 
 	            //resultaten lijst leegmaken
 	            $("#gevonden_recepten").empty();
@@ -67,7 +67,7 @@
 	            			html+="<img src='"+gevonden_recept["image"]+"'>";
 	            			html+="<p>"+gevonden_recept["omschrijving"]+"</p>";
 	            			html+="</div>";
-	            			console.log(html);
+	            			// console.log(html);
 	            			$("#gevonden_recepten").append(html);
 	            		}
 	            	}

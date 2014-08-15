@@ -36,6 +36,7 @@ class Contracts(models.core.Protected.Protected):
                                                           choices=[
                                                           ("post", "Post"),
                                                           ("prepay", "Prepayed montly"),
+                                                          ("manual", "Manual invoicing"),
                                                         ]),
                     'price': fields.Number(desc='Price'),
                     'currency': fields.String(desc='Currency', default=models.ticket.InvoiceSettings.InvoiceSettings(self.context)['currency']),

@@ -130,6 +130,9 @@ class ContractInvoices(models.core.Protected.Protected):
                 #get contract
                 contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
 
+                if contract["type"]=='manual':
+                    pass;
+
                 #contracts are invoiced on the first day of the month, at 00:00
                 contract_invoice_date=datetime.datetime(
                         year=datetime.datetime.now().year,
@@ -256,6 +259,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
         if '_id' in doc:
           log_txt="Changed contract invoice {desc}".format(**doc)
+          old_doc=self._get(doc["_id"])
         else:
           log_txt="Created new contract invoice {desc}".format(**doc)
 
@@ -267,6 +271,11 @@ class ContractInvoices(models.core.Protected.Protected):
 
         if 'relation' in doc and 'contract' in doc:
             self.recalc_budget(doc['relation'], doc['contract'])
+
+        #recalc previous selected contract
+        if '_id' in doc and 'relation' in old_doc and 'contract' in old_doc:
+            self.recalc_budget(old_doc['relation'], old_doc['contract'])
+
 
         self.event("changed",ret)
         self.info(log_txt)
