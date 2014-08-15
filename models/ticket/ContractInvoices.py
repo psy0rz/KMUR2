@@ -272,6 +272,10 @@ class ContractInvoices(models.core.Protected.Protected):
         #traverse all contracts:
         contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all')
         for contract in contracts:
+            used=False
+
+            if contract["_id"] in relation["contracts"]:
+                used=True
 
             #get budget from latest contract_invoice
             latest_contract_invoices=self.get_all(
@@ -285,6 +289,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
             if latest_contract_invoices:
                 minutes_balance=latest_contract_invoices[0]["minutes_balance"]
+                used=True
             else:
                 minutes_balance=0
 
@@ -299,13 +304,15 @@ class ContractInvoices(models.core.Protected.Protected):
                 })
 
             for ticket_object in ticket_objects:
+                used=True
                 minutes_balance-=self.round_minutes(ticket_object, contract)
 
-            budgets.append({
-                "_id": contract["_id"],
-                "contract_title": contract["title"],
-                "minutes_balance": minutes_balance
-            })
+            if used:
+                budgets.append({
+                    "_id": contract["_id"],
+                    "contract_title": contract["title"],
+                    "minutes_balance": minutes_balance
+                })
 
         return(budgets)
 
