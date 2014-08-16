@@ -107,15 +107,6 @@ $(context).subscribe("ticket.TicketObjects.deleted","budgets", function()
 });
 
 
-$(".on-click-contract-invoices-invoice-all", context).click(function()
-{
-    //this should be a cronjob as well
-    rpc("ticket.ContractInvoices.invoice_all",{}, function(result)
-    {
-        viewShowError(result, context);
-    });
-    return(false);
-});
 
 var tickets_objects=new ControlList({
     'view'              : view,
@@ -137,14 +128,14 @@ var tickets_objects=new ControlList({
     <h1 class='field-put control-on-click-view' field-key='title' field-meta-key='desc'></h1>
 
     <fieldset class='inline-block' >
-        <legend class='field-meta-put' field-key='desc' field-meta-key='desc'></legend>
+        <legend class='field-meta-put control-on-click-view' field-key='desc' field-meta-key='desc'></legend>
         <div class='field-put control-on-click-view' field-key='desc' style='white-space: pre-wrap'>
         </div>
     </fieldset>
 
 
     <fieldset class='inline-block'>
-        <legend class='field-meta-put' field-key='emails' field-meta-key='desc'></legend>
+        <legend class='field-meta-put control-on-click-view' field-key='emails' field-meta-key='desc'></legend>
         <table >
             <tbody class=''>
                 <tr class='field-put field-list-source field-list-source-hide' field-key='emails'>
@@ -156,7 +147,7 @@ var tickets_objects=new ControlList({
     </fieldset>
 
     <fieldset class='inline-block'>
-        <legend class='field-meta-put' field-key='phones' field-meta-key='desc'></legend>
+        <legend class='field-meta-put control-on-click-view' field-key='phones' field-meta-key='desc'></legend>
         <table >
             <tbody class=''>
                 <tr class='field-put field-list-source field-list-source-hide' field-key='phones'>
@@ -168,7 +159,7 @@ var tickets_objects=new ControlList({
     </fieldset>
 
     <fieldset class='inline-block'>
-        <legend >Active contracts</legend>
+        <legend class='control-on-click-view' field-key='contracts'>Active contracts</legend>
         <table class='field-meta-put' field-key='contracts'>
             <tr class='field-put field-list-source field-list-source-hide' field-key='contracts'>
                 <td class='field-put control-on-click-view value' field-key='contracts.title'>
@@ -325,13 +316,12 @@ var tickets_objects=new ControlList({
 
     <div class='contract-budgets inline-block' style='overflow: auto; height:15em;'>
 
-        <a class='on-click-contract-invoices-invoice-all' href='#'>Auto invoice all</a>
         <a class='control-on-click-view' control-view="ticket.ContractInvoices.list" href='#'>Show orders...</a>
      
         <table >
             <tr class='ui-widget-header'>
                 <th class='field-meta-put control-on-click-order' field-key='contract_title' field-meta-key='desc'>
-                <th class='field-meta-put control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>
+                <th class='control-on-click-order' field-key='minutes_balance' field-meta-key='desc'>Minutes
             </tr>
 
 

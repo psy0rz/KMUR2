@@ -7,7 +7,7 @@ var contract_invoice=new ControlForm({
     'get_params'      : view.params,
     'default_focus'   : 'title',
     'on_change'       : 'put',
-    'title'           : 'View contract invoice {contract_title} {desc}',
+    'title'           : 'View contract order {contract_title} {desc}',
     'create_view_params': view.params,
     'context'         : '.contract-invoice'
 });
@@ -37,15 +37,15 @@ var tickets_objects=new ControlList({
         <table class='inline-block'>
             <tr>
                 <td class='field-meta-put' field-key='relation' field-meta-key='desc'>
-                <td class='field-meta-put value control-on-click-view' field-key='relation'>
-                    <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
+                <td class='field-meta-put value' field-key='relation'>
+                    <span class='list-span field-dict-raw field-list-on-click-view field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
                         <span class='field-put' field-key='relation.title'></span>
                     </span>
             </tr>
             <tr>
                 <td class='field-meta-put' field-key='contract' field-meta-key='desc'>
-                <td class='field-meta-put value control-on-click-view' field-key='contract'>
-                    <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='contract' field-list-view="ticket.Contracts.edit">
+                <td class='field-meta-put value' field-key='contract'>
+                    <span class='list-span field-dict-raw field-list-on-click-view field-list-source field-list-source-hide' field-key='contract' field-list-view="ticket.Contracts.edit">
                         <span class='field-put' field-key='contract.title'></span>
                     </span>
             </tr>
@@ -55,8 +55,8 @@ var tickets_objects=new ControlList({
             </tr>
             <tr>
                 <td class='field-meta-put' field-key='invoice' field-meta-key='desc'>
-                <td class='field-meta-put value control-on-click-view' field-key='invoice'>
-                    <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='invoice' field-list-view="ticket.Invoices.edit">
+                <td class='field-meta-put value ' field-key='invoice'>
+                    <span class='list-span field-dict-raw field-list-source field-list-on-click-view field-list-source-hide' field-key='invoice' field-list-view="ticket.Invoices.edit">
                         <span class='field-put' field-key='invoice.title'></span>
                         <span class='field-put' field-key='invoice.invoice_nr'></span>
                     </span>

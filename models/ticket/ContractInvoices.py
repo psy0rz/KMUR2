@@ -57,7 +57,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 'minutes_used': fields.Number(desc='Used minutes'),
                 'minutes_bought': fields.Number(desc='Bought minutes'),
                 #balance should usually be 0 in post-payed contracts, and can be negative in pre-payed.
-                'minutes_balance': fields.Number(desc='Budget'), 
+                'minutes_balance': fields.Number(desc='New budget'), 
             }),
             list_key='_id'
         )
@@ -125,21 +125,24 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def invoice_all(self):
+    def invoice_all(self, relation_id=None):
         """invoice all contracts and open hours"""
 
 
-        #all relations with contracts
-        relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
-            fields=[ "contracts", "invoice" ], 
-            spec_and=[ { 
-                "contracts": { 
-                    "$not": { 
-                        "$size": 0
+        if relation_id:
+            relations=[ call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id) ]
+        else:
+            #all relations with contracts
+            relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
+                fields=[ "contracts", "invoice" ], 
+                spec_and=[ { 
+                    "contracts": { 
+                        "$not": { 
+                            "$size": 0
+                            }
                         }
-                    }
-                } ]   
-             )
+                    } ]   
+                 )
 
 
         for relation in relations:
@@ -147,7 +150,10 @@ class ContractInvoices(models.core.Protected.Protected):
             #traverse all contracts for this relation
             for contract_id in relation["contracts"]:
                 #get contract
-                contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
+                try:
+                    contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
+                except:
+                    pass;
 
                 if contract["type"]=='manual':
                     pass;
