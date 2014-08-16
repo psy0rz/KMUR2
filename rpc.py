@@ -32,8 +32,25 @@ def rpc_post():
 
     try:
         #to see what kind of body the server receives, for debugging purposes:
-        #print bottle.request.body.getvalue()
-        request = bottle.request.json
+        # print ("HEADERS: ", dict(bottle.request.headers))
+        # print ("BODY: ", bottle.request.body.getvalue())
+        # print ("FILES: ", dict(bottle.request.files))
+        # print ("FORMS:", dict(bottle.request.forms))
+        # print ("CONTENTTYPE", request.content-type)
+
+        if bottle.request.headers["content-type"]=="application/json":
+            request = bottle.request.json
+        elif bottle.request.headers["content-type"].find("multipart/form-data")==0:
+            #In case of multipart/form-data, the json-encoded string should be passed inside a form variable called 'rpc'
+            #The uploaded files will be passed to the rpc function by their form-variable names. (overwriting any names in the rpc-parameters)
+            #These will be bottle FileUpload objects.
+            request = json.loads(bottle.request.forms["rpc"])
+            if not "params" in request:
+                request['params']={}
+            request['params'].update(bottle.request.files)
+        else:
+            bottle.response.status=500
+            return("Dont know how to handle content-type: "+bottle.request.headers["content-type"])
 
 
         if "help" in request and request["help"]:
@@ -62,9 +79,6 @@ def rpc_post():
 
         if re.search("^_", request['method']):
             raise Exception("rpc: Methodname may not begin with _")
-
-        if not "params" in request:
-            request['params']={}
 
         #load module and resolve class
         rpc_models = __import__('models.' + request['module'] + '.' + request['class'])

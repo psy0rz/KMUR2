@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Tracer RPC commandline interface 1
 parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
 parser.add_argument('--user', default=None, help='user to login. default: %(default)s')
 parser.add_argument('--password', default=None, help='password. default: %(default)s')
+parser.add_argument('--upload', default=None, help='File to upload')
 parser.add_argument('--json', action='store_true', help='interpret parameters as raw JSON data. (usefull when you want to pass complexer data type like subarrays or dicts) dont forget to use single quotes around the json string.')
 parser.add_argument('--short', action='store_true', help='return short single-line JSON output (for scripting)')
 parser.add_argument('--verbose', action='store_true', help='request verbose mode (module help output)')
@@ -18,32 +19,37 @@ parser.add_argument('params',  default=[], nargs='*', help='RPC parameters. can 
 
 args = parser.parse_args()
 
+try:
+	#initialise the rpc client class
+	rpc_client=rpc.RpcClient(args.url)
 
-#initialise the rpc client class
-rpc_client=rpc.RpcClient(args.url)
+	if args.user != None:
+		#first login using the specified user and pass
+		result=rpc_client.request("core.Users.login", name=args.user, password=args.password)
 
-if args.user != None:
-	#first login using the specified user and pass
-	result=rpc_client.request("core.Users.login", name=args.user, password=args.password)
+	#determine rpc parameters
+	params={}
+	if args.json and len(args.params)!=0:
+		params=json.loads(" ".join(args.params))
+	else:
+		for param in args.params:
+			(key,value)=param.split("=")
+			params[key]=value
 
-#determine rpc parameters
-params={}
-if args.json and len(args.params)!=0:
-	params=json.loads(" ".join(args.params))
-else:
-	for param in args.params:
-		(key,value)=param.split("=")
-		params[key]=value
+	#now perform the user specified command with specfied parameters
+	result=rpc_client.request(args.command[0], filename=args.upload, help=args.verbose, **params)
 
-#now perform the user specified command with specfied parameters
-result=rpc_client.request(args.command[0], help=args.verbose, **params)
+	#print the result
+	if args.short:
+		print(result)
+	else:
+		print(json.dumps(result, indent='\t'))
 
-#print the result
-if args.short:
-	print(result)
-else:
-	print(json.dumps(result, indent='\t'))
+	sys.exit(0)
 
+except Exception as e:
+	print("Error: "+str(e))
+	sys.exit(1)
 
 
 
