@@ -137,14 +137,20 @@ def rpc_post():
 #usually used to download files from models:
 # /rpc/module/class/method/par1/par2/par...
 #litterally passes parameters as strings to the rpc-method, and returns the result without additional data or postprocessing
+#In case of an error it returns reponsecode 500 with the error string
 @bottle.get('/rpc/<filename:path>')
 def rpc_get(filename):
 
     match=re.match("(.*?)/(.*?)/(.*?)/(.*)", filename)
+
     get_module=match.group(1)
     get_class=match.group(2)
     get_method=match.group(3)
-    get_params=match.group(4).split("/")
+
+    if match.group(4)=="":
+        get_params=[]
+    else:
+        get_params=match.group(4).split("/")
 
     session = bottle.request.environ.get('beaker.session')
 
