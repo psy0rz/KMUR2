@@ -125,6 +125,10 @@ def rpc_post():
             }
         else:
             result['error'] = { 'message': e.__class__.__name__ + ": " + str(e) }
+
+    finally:
+        for fileupload in bottle.request.files.itervalues():
+            fileupload.file.close()
     
     if 'context' in session:
         result.update(session['context'].get_results())

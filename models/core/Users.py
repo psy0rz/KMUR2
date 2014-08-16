@@ -186,3 +186,5 @@ class Users(models.core.Protected.Protected):
 
         self.event("changed_session",self.context.session)
 
+
+        

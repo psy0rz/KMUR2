@@ -39,11 +39,20 @@ class RpcClient:
 			    }
 			)
 
+			def monitor_callback(monitor):
+				print ("\rUploaded {} bytes...".format(monitor.bytes_read), file=sys.stderr, end='')
+				import time
+				time.sleep(.1)
+
+			monitored_encoder = requests_toolbelt.MultipartEncoderMonitor(encoder, monitor_callback)
+
 			result=self.session.post(
 				self.url, 
-				data=encoder,
+				data=monitored_encoder,
 				headers={ 'Content-Type': encoder.content_type}
 			)
+
+			print("DONE", file=sys.stderr)
 
 		else:
 			result=self.session.post(
