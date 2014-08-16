@@ -1,13 +1,11 @@
 import json
-import urllib.request
-import http.cookiejar
+import requests
 import sys
 
 class RpcClient:
 	"""tracer rpc client class. """
 	def __init__(self, url, abort_on_error=True):
-		cj = http.cookiejar.CookieJar()
-		self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+		self.session=requests.Session()
 		self.url=url
 		self.abort_on_error=abort_on_error
 
@@ -26,19 +24,17 @@ class RpcClient:
 			"params": params
 		}
 
-		#create the request
-		req = urllib.request.Request(
-			url=self.url, 
-			data=json.dumps(rpc_data).encode('utf-8'))
-		req.add_header("Content-Type","application/json")
+		result=self.session.post(
+			self.url, 
+			data=json.dumps(rpc_data).encode('utf-8'),
+			headers={ 'content-type': 'application/json' }
+		).json()
 
-		#call actual rpc
-		with self.opener.open(req) as f:
-			result=json.loads(f.read().decode('utf-8'))
+		#abort on error
+		if self.abort_on_error and 'error' in result:
+			print(json.dumps(result, indent='\t'))
+			sys.exit(1)
 
-			#abort on error
-			if self.abort_on_error and 'error' in result:
-				print(json.dumps(result, indent='\t'))
-				sys.exit(1)
+		return(result)
 
-			return(result)
+
