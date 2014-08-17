@@ -594,6 +594,22 @@ class File(Base):
 
         return True
 
+class Image(Base):
+    """An Image
+
+    This is just the URL to the image. 
+
+    """
+
+    def __init__(self,**kwargs):
+        super(Image, self).__init__(**kwargs)
+
+    def check(self, context, data):
+
+        if not isinstance(data, str):
+            raise FieldError("This should be a string")
+
+        return True
 
 
 

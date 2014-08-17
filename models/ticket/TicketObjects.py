@@ -86,6 +86,7 @@ class TicketObjects(models.core.Protected.Protected):
                     list=True),
                 'file': fields.File(desc='File'),
                 'file_content_type': fields.String(desc='File content type'),
+                'thumbnail': fields.Image(desc='Thumbnail'),
             }),
             list_key='_id'
         )
@@ -114,7 +115,7 @@ class TicketObjects(models.core.Protected.Protected):
         """stores file in data-store and returns hash"""
 
         #hash the file
-        file_hash=hashlib.sha512()
+        file_hash=hashlib.sha256()
         file_upload.file.seek(0)
         while 1:
             buf=file_upload.file.read(65000)
@@ -258,10 +259,22 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
+
+    def add_thumbs(self, ticket_objects):
+        """add thumbnail filenames to docs"""
+
+
+        for ticket_object in ticket_objects:
+            if "file" in ticket_object:
+                #hack?
+                ticket_object["thumbnail"]="/files/"+ticket_object["file"]+".jpg"
+
+
     @Acl(roles="user")
     def get_all(self, **params):
         ticket_objects=self._get_all(**params)
 
+        self.add_thumbs(ticket_objects)
 
         return(ticket_objects)
 
@@ -278,5 +291,6 @@ class TicketObjects(models.core.Protected.Protected):
             },
             **params)
 
+        self.add_thumbs(ticket_objects)
 
         return(ticket_objects)

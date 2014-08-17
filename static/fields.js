@@ -1144,7 +1144,7 @@ Field.File.get=function(key, meta, context)
 
 }
 
-Field.String.put=function(key, meta, context, data, options)
+Field.File.put=function(key, meta, context, data, options)
 {
 //    console.log("String.put", key , meta, context, data, options);
     if (context.hasClass("field-input"))
@@ -1159,6 +1159,47 @@ Field.String.put=function(key, meta, context, data, options)
         else
             Field.Base.html_append(key, meta, context, data, options, data);
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+Field.Image=Object.create(Field.Base);
+
+Field.Image.meta_put=function(key, meta, context, options)
+{
+    if (Field.Base.meta_put(key, meta, context, options))
+        return;
+
+    var new_element;
+    new_element=$("<image>")
+
+    Field.Base.input_append(key, meta, context, new_element, options);
+
+}
+
+
+Field.Image.get=function(key, meta, context)
+{
+    //return fileobject (which will be uploaded out-of-band by rpc.py)
+    //    return($(context)[0].files[0])
+
+}
+
+Field.Image.put=function(key, meta, context, data, options)
+{
+//    console.log("String.put", key , meta, context, data, options);
+    context.attr("src", data);
+    // if (context.hasClass("field-input"))
+    // {
+    //     if (!options.no_input)
+    //         context.val(data);
+    // }
+    // else
+    // {
+    //     if (data==null)
+    //         Field.Base.html_append(key, meta, context, data, options, "");
+    //     else
+    //         Field.Base.html_append(key, meta, context, data, options, data);
+    // }
 }
 
 
