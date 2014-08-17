@@ -48,9 +48,36 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
             };
     console.debug(debugTxt, "REQUEST", request);
     var start_time=new Date().getTime();
+
+    //File-objects need to be transferred out-of-band by using multipart/form-data. The server supports this.
+    //For performance reasons we only support a File-object thats stored in params.file in the client. (the server supports more)
+    //maybe later we will support files at all root-level parameters, or maybe even recursively.
+    var data;
+    var content_type;
+    if (params.file instanceof File)
+    {
+        //multipart/form-data upload-mode: 
+        data=new FormData();
+        data.append("rpc", JSON.stringify(request));
+        data.append("file", params.file);
+        content_type=false;
+    }
+    else
+    {
+        //simple json-only post:
+        data=JSON.stringify(request);
+        content_type="application/json";
+    }
+
+
     $.ajax({
-        "dataType":     "json",
+        "dataType":     "json", //datatype returned from server
         "url":          "rpc",
+        "type": "post",
+        "data": data,
+        "contentType": content_type,
+        "processData":  false,
+        "cache":        false,
         "error":
             function (request, status, e)
             {
@@ -165,12 +192,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 
                 console.debug(debugTxt+ " PROCESSED ("+((new Date().getTime())-start_time)+"ms)");
 
-            },
-        "type": "post",
-        "data": JSON.stringify(request),
-        "contentType": "application/json",
-        "processData":  false,
-        "cache":        false
+            }
     });
 }
 

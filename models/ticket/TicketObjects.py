@@ -98,7 +98,11 @@ class TicketObjects(models.core.Protected.Protected):
 
 
     @Acl(roles="user")
-    def put(self, **doc):
+    def put(self, file=None, **doc):
+
+
+        file.save("/tmp/blaat", overwrite=True)
+
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         
         if ('billing_contract' in doc)  or  ('billing_relation' in doc):
