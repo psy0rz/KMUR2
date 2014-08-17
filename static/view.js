@@ -486,7 +486,7 @@ function viewLoad(view)
 
                 var context=$("#"+view.id);
                 //eval the scripts in the current context. 
-                //the scripts may use the our view-variable as well:
+                //the scripts should use our context-variable and view-variable as well:
                 try
                 {
                     eval($("#"+view.id+" script").text());

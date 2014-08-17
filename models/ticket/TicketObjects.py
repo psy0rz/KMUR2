@@ -9,12 +9,14 @@ import models.ticket.Contracts
 import models.ticket.ContractInvoices
 import models.mongodb
 import time
+import hashlib
+import os
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
     
-    file_path="files"
-    thumb_path="static/files" #publicly accesible thumbnails
+    file_path="files/"
+    thumb_path="static/files/" #publicly accesible thumbnails
 
     meta = fields.List(
             fields.Dict({
@@ -83,6 +85,7 @@ class TicketObjects(models.core.Protected.Protected):
                     resolve=False,
                     list=True),
                 'file': fields.File(desc='File'),
+                'file_content_type': fields.String(desc='File content type'),
             }),
             list_key='_id'
         )
@@ -100,28 +103,40 @@ class TicketObjects(models.core.Protected.Protected):
 
     read=write
 
-    def store_file(file):
-        """stores file in data-store, generates thumbnails and OCRs images."""
 
+    def get_file_path(self, file_hash):
+        return(self.file_path+file_hash)
+
+    def store_file(self, file_upload):
+        """stores file in data-store and returns hash"""
+
+        #hash the file
         file_hash=hashlib.sha512()
-        file.seek(0)
-        file_hash.update(file)
+        file_upload.file.seek(0)
+        while 1:
+            buf=file_upload.file.read(65000)
+            if not buf:
+                break
+            file_hash.update(buf)
+        file_upload.file.seek(0)
+        hash=file_hash.hexdigest()
 
+        file_name=self.get_file_path(hash)
 
+        #TODO: check for hash collision
+        file_upload.save(file_name, overwrite=True)
 
-        with open("/tmp/blaat","wb") as wh:
-            while 1:
-                buf = file.read(2**16)
-                if not buf: 
-                    break
-                wh.write(buf)
-
+        return(hash)
 
     @Acl(roles="user")
     def put(self, file=None, **doc):
 
         if file:
-            store_file(file)
+            doc["text"]="Filesize: {} bytes".format(file.file.seek(0, os.SEEK_END))
+            hash=self.store_file(file)
+            doc["file"]=hash
+            doc["file_content_type"]=file.content_type
+            doc["title"]=file.raw_filename
 
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         

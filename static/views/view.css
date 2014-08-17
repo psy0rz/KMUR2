@@ -265,6 +265,12 @@ a:hover
 	padding-left:20px;
 }
 
+.ticket-add-doc-button-style
+{
+	background: url("../icons/page.png") left center no-repeat; 
+	padding-left:20px;
+}
+
 
 .ticket-show-button-style
 {
@@ -319,3 +325,8 @@ a:hover
 }
 
 
+
+.hidden-uploader
+{
+	display:none;
+}
