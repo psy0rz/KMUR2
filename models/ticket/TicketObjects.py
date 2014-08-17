@@ -13,6 +13,9 @@ import time
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
     
+    file_path="files"
+    thumb_path="static/files" #publicly accesible thumbnails
+
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
@@ -79,6 +82,7 @@ class TicketObjects(models.core.Protected.Protected):
                     check_exists=False,
                     resolve=False,
                     list=True),
+                'file': fields.File(desc='File'),
             }),
             list_key='_id'
         )
@@ -96,12 +100,28 @@ class TicketObjects(models.core.Protected.Protected):
 
     read=write
 
+    def store_file(file):
+        """stores file in data-store, generates thumbnails and OCRs images."""
+
+        file_hash=hashlib.sha512()
+        file.seek(0)
+        file_hash.update(file)
+
+
+
+        with open("/tmp/blaat","wb") as wh:
+            while 1:
+                buf = file.read(2**16)
+                if not buf: 
+                    break
+                wh.write(buf)
+
 
     @Acl(roles="user")
     def put(self, file=None, **doc):
 
-
-        file.save("/tmp/blaat", overwrite=True)
+        if file:
+            store_file(file)
 
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         

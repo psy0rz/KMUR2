@@ -47,7 +47,12 @@ def rpc_post():
             request = json.loads(bottle.request.forms["rpc"])
             if not "params" in request:
                 request['params']={}
+
+            # #store filehandles of uploaded files in request object
+            # for bottle_file in bottle.request.files:
+            #     request['params'][bottle_file]=bottle.request.files[bottle_file].file
             request['params'].update(bottle.request.files)
+
         else:
             bottle.response.status=500
             return("Dont know how to handle content-type: "+bottle.request.headers["content-type"])

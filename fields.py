@@ -569,7 +569,30 @@ class Phone(String):
 
 
 
+class File(Base):
+    """A file-object
 
+    This is kind of a special case: Files are uploaded out-of-band as multipart/form-data. 
+    The models should handle the bottle.FileUpload objects they receive via RPC calls.
+    After they can store the filename in the database as simple string. 
+
+    Downloading of files can be handeled by the webserver or by using a GET request and letting the model return a bottle.HTTPResponse.
+
+
+    """
+
+    def __init__(self,**kwargs):
+        super(File, self).__init__(**kwargs)
+
+    def check(self, context, data):
+
+        if not super(File, self).check(context, data):
+            return
+
+        if not isinstance(data, str):
+            raise FieldError("This should be a string (this is probably a program error)")
+
+        return True
 
 
 

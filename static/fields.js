@@ -1120,6 +1120,47 @@ Field.String.put=function(key, meta, context, data, options)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+Field.File=Object.create(Field.Base);
+
+Field.File.meta_put=function(key, meta, context, options)
+{
+    if (Field.Base.meta_put(key, meta, context, options))
+        return;
+
+    var new_element;
+    new_element=$("<input>")
+        .attr("type","file");
+
+    Field.Base.input_append(key, meta, context, new_element, options);
+
+}
+
+
+Field.File.get=function(key, meta, context)
+{
+    //return fileobject (which will be uploaded out-of-band by rpc.py)
+    return($(context)[0].files[0])
+
+}
+
+Field.String.put=function(key, meta, context, data, options)
+{
+//    console.log("String.put", key , meta, context, data, options);
+    if (context.hasClass("field-input"))
+    {
+        if (!options.no_input)
+            context.val(data);
+    }
+    else
+    {
+        if (data==null)
+            Field.Base.html_append(key, meta, context, data, options, "");
+        else
+            Field.Base.html_append(key, meta, context, data, options, data);
+    }
+}
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
