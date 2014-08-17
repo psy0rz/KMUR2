@@ -107,6 +107,9 @@ class TicketObjects(models.core.Protected.Protected):
     def get_file_path(self, file_hash):
         return(self.file_path+file_hash)
 
+    def get_thumb_path(self, file_hash):
+        return(self.thumb_path+file_hash+".jpg")
+
     def store_file(self, file_upload):
         """stores file in data-store and returns hash"""
 
@@ -125,18 +128,65 @@ class TicketObjects(models.core.Protected.Protected):
 
         #TODO: check for hash collision
         file_upload.save(file_name, overwrite=True)
+        file_upload.file.close()
 
         return(hash)
+
+
+    def process_file_image(self, doc):
+        """processor for image content-type"""
+        import wand.image
+        image=wand.image.Image(filename=self.get_file_path(doc["file"]))
+
+        #create jpg thumbnail
+        new_width=100
+        new_height=(image.height*new_width)//image.width
+        image.resize(new_width, new_height)
+        jpg_image=image.convert("jpg")
+        image.close()
+        jpg_image.save(filename=self.get_thumb_path(doc["file"]))
+
+        #call tesseract to do some OCR
+
+
+    def process_file(self, doc):
+        """do some processing like generating thumbnails and doing OCR to create keywords, and getting metadata
+
+        it should also be possible to do this offline at a later time
+
+        later we should make this extendable for 3rd parties
+        """
+
+        #common stuff
+        with open(self.get_file_path(doc["file"])) as file:
+            doc["text"]="Filesize: {} bytes".format(file.seek(0, os.SEEK_END))
+
+
+        #now call the appropriate handlers for this content-type
+        (maintype, subtype)=doc["file_content_type"].lower().split("/")
+        maintype=re.sub("[^a-z0-9]","_",maintype)
+        subtype=re.sub("[^a-z0-9]","_",subtype)
+
+        if hasattr(self, "process_file_"+maintype):
+            method=getattr(self, "process_file_"+maintype)
+            method(doc)
+
+        if hasattr(self, "process_file_"+maintype+"_"+subtype):
+            method=getattr(self, "process_file_"+maintype+"_"+subtype)
+            method(doc)
+
 
     @Acl(roles="user")
     def put(self, file=None, **doc):
 
         if file:
-            doc["text"]="Filesize: {} bytes".format(file.file.seek(0, os.SEEK_END))
             hash=self.store_file(file)
             doc["file"]=hash
             doc["file_content_type"]=file.content_type
             doc["title"]=file.raw_filename
+
+            #now do some magic on the file:
+            self.process_file(doc)
 
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         

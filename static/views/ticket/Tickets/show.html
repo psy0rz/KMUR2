@@ -153,18 +153,33 @@ $(".on-click-upload-doc", context).on('click', function()
 
 $(".hidden-uploader", context).change(function()
 {
-    //upload file to server
-    rpc( "ticket.TicketObjects.put", {
-        "file": this.files[0],
-        "type": "doc",
-        "allowed_users": [ session.user_id ],
-        "tickets": [ view.params._id ],
-        "create_time": new Date().getTime()/1000,
-    },
-    function(result)
+    var file_nr=0;
+    var files=this.files
+
+    function start_upload()
     {
-        $(".hidden-uploader", context).val("");
-    });
+        if (file_nr>=files.length)
+        {
+            $(".hidden-uploader", context).val("");
+            return;
+        }
+
+        //upload file to server
+        rpc( "ticket.TicketObjects.put", {
+            "file": files[file_nr],
+            "type": "doc",
+            "allowed_users": [ session.user_id ],
+            "tickets": [ view.params._id ],
+            "create_time": new Date().getTime()/1000,
+        },
+        function(result)
+        {
+            file_nr++;
+            start_upload();
+        });
+    }
+
+    start_upload();
 });
 
 new ControlList({
@@ -333,7 +348,7 @@ new ControlListRelated({
     <button class='on-click-edit' >Edit</button>
     <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
     <button class='on-click-upload-doc'><span class='ticket-add-doc-button-style' >Upload document</span></button>
-    <input class='hidden-uploader' type='file' >
+    <input class='hidden-uploader' type='file' multiple>
 
     <span class='viewErrorText'></span>
 </div>
