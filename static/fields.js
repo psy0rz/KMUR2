@@ -1179,27 +1179,12 @@ Field.Image.meta_put=function(key, meta, context, options)
 
 Field.Image.get=function(key, meta, context)
 {
-    //return fileobject (which will be uploaded out-of-band by rpc.py)
-    //    return($(context)[0].files[0])
-
+  
 }
 
 Field.Image.put=function(key, meta, context, data, options)
 {
-//    console.log("String.put", key , meta, context, data, options);
     context.attr("src", data);
-    // if (context.hasClass("field-input"))
-    // {
-    //     if (!options.no_input)
-    //         context.val(data);
-    // }
-    // else
-    // {
-    //     if (data==null)
-    //         Field.Base.html_append(key, meta, context, data, options, "");
-    //     else
-    //         Field.Base.html_append(key, meta, context, data, options, data);
-    // }
 }
 
 

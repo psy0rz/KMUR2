@@ -140,7 +140,7 @@ class TicketObjects(models.core.Protected.Protected):
         image=wand.image.Image(filename=self.get_file_path(doc["file"]))
 
         #create jpg thumbnail
-        new_width=100
+        new_width=200
         new_height=(image.height*new_width)//image.width
         image.resize(new_width, new_height)
         jpg_image=image.convert("jpg")
@@ -148,7 +148,30 @@ class TicketObjects(models.core.Protected.Protected):
         jpg_image.save(filename=self.get_thumb_path(doc["file"]))
 
         #call tesseract to do some OCR
+        import subprocess
+        import re
+        try:
+            ocr_text=subprocess.check_output(["tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ], universal_newlines=True)
+            #get rid of double empty lines
+            doc["text"]+="---\n"
+            had_empty=True
+            for line in ocr_text.split("\n"):
+                #empty line? only add one, skip rest
+                if re.match("^\s*$", line):
+                    if not had_empty:
+                        had_empty=True
+                        doc["text"]+="\n"
+                else:
+                    had_empty=False
+                    doc["text"]+=line+"\n"
 
+            # keywords=list(set(ocr_text.split()))
+            # keywords.sort()
+            # doc["text"]+="\nKeywords:"+" ".join(keywords)
+
+
+        except Exception as e:
+            print("Error while calling tesseract:", str(e))
 
     def process_file(self, doc):
         """do some processing like generating thumbnails and doing OCR to create keywords, and getting metadata
@@ -160,7 +183,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         #common stuff
         with open(self.get_file_path(doc["file"])) as file:
-            doc["text"]="Filesize: {} bytes".format(file.seek(0, os.SEEK_END))
+            doc["text"]="Filesize: {} bytes\n".format(file.seek(0, os.SEEK_END))
 
 
         #now call the appropriate handlers for this content-type
@@ -260,21 +283,39 @@ class TicketObjects(models.core.Protected.Protected):
         return(ret)
 
 
-    def add_thumbs(self, ticket_objects):
-        """add thumbnail filenames to docs"""
+    def process_get_all(self, ticket_objects, **params):
+        """add thumbnail filenames to docs and shorten/select text"""
 
+        text_regex=None
+        if "regex_or" in params:
+            if "text" in params["regex_or"]:
+                text_regex=re.compile(params["regex_or"]["text"], re.IGNORECASE)
+
+        max_lines=20
 
         for ticket_object in ticket_objects:
             if "file" in ticket_object:
-                #hack?
                 ticket_object["thumbnail"]="/files/"+ticket_object["file"]+".jpg"
 
+            #make sure that text only contains lines that have the select_text in it
+            #and is not longer than max_lines
+            text_short=""
+            lines=0
+            for line in ticket_object["text"].split("\n"):
+                if not text_regex or re.search(text_regex, line):
+                    text_short+=line+"\n"
+                    lines=lines+1
+                    if lines>=max_lines:
+                        text_short+="..."
+                        break
+
+            ticket_object["text"]=text_short
 
     @Acl(roles="user")
     def get_all(self, **params):
         ticket_objects=self._get_all(**params)
 
-        self.add_thumbs(ticket_objects)
+        self.process_get_all(ticket_objects, **params)
 
         return(ticket_objects)
 
@@ -291,6 +332,6 @@ class TicketObjects(models.core.Protected.Protected):
             },
             **params)
 
-        self.add_thumbs(ticket_objects)
+        self.process_get_all(ticket_objects, **params)
 
         return(ticket_objects)
