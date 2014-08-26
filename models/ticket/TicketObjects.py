@@ -153,7 +153,7 @@ class TicketObjects(models.core.Protected.Protected):
         try:
             ocr_text=subprocess.check_output(["tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ], universal_newlines=True)
             #get rid of double empty lines
-            doc["text"]+="---\n"
+            doc["text"]=""
             had_empty=True
             for line in ocr_text.split("\n"):
                 #empty line? only add one, skip rest
