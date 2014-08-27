@@ -11,12 +11,14 @@ import models.mongodb
 import time
 import hashlib
 import os
+import bottle
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
     
     file_path="files/"
-    thumb_path="static/files/" #publicly accesible thumbnails
+    thumb_path="static/files/" #publicly accesible thumbnails, local path
+    thumb_url="/files/"        #public url path
 
     meta = fields.List(
             fields.Dict({
@@ -111,6 +113,12 @@ class TicketObjects(models.core.Protected.Protected):
     def get_thumb_path(self, file_hash):
         return(self.thumb_path+file_hash+".jpg")
 
+    def get_thumb_url(self, file_hash):
+        return(self.thumb_url+file_hash+".jpg")
+
+    def get_file_url(self, _id):
+        return("/rpc/ticket/TicketObjects/download/"+_id)
+
     def store_file(self, file_upload):
         """stores file in data-store and returns hash"""
 
@@ -146,6 +154,7 @@ class TicketObjects(models.core.Protected.Protected):
         jpg_image=image.convert("jpg")
         image.close()
         jpg_image.save(filename=self.get_thumb_path(doc["file"]))
+        doc["thumbnail"]=self.get_thumb_url(doc["file"])
 
         #call tesseract to do some OCR
         import subprocess
@@ -261,10 +270,23 @@ class TicketObjects(models.core.Protected.Protected):
                 })
 
             if len(tickets)>0:
-                return(ticket_object)
+                ret=ticket_object
+            else:
+                raise(FieldError("You dont have access to this object, nor any related ticket"))
+        else:
+            #try a normal protected read. (object is only readable if use has explicit group or user permissions)
+            ret=self._get(_id)
 
-        #try a normal protected read. (object is only readable if use has explicit group or user permissions)
-        return(self._get(_id))
+        if "file" in ret:
+            ret["file_url"]=self.get_file_url(ret["_id"])
+
+        return(ret)
+
+    @Acl(roles="user")
+    def download(self, _id):
+        """downloads the actual file. this should be called with GET"""
+        doc=self.get(_id)
+        return bottle.static_file(doc["file"], root=self.file_path, mimetype=doc["file_content_type"])
 
     @Acl(roles="user")
     def delete(self, _id):
@@ -284,7 +306,7 @@ class TicketObjects(models.core.Protected.Protected):
 
 
     def process_get_all(self, ticket_objects, **params):
-        """add thumbnail filenames to docs and shorten/select text"""
+        """add download urls and shorten/select text"""
 
         text_regex=None
         if "regex_or" in params:
@@ -295,21 +317,22 @@ class TicketObjects(models.core.Protected.Protected):
 
         for ticket_object in ticket_objects:
             if "file" in ticket_object:
-                ticket_object["thumbnail"]="/files/"+ticket_object["file"]+".jpg"
+                ticket_object["file"]=self.get_file_url(ticket_object["_id"])
 
-            #make sure that text only contains lines that have the select_text in it
-            #and is not longer than max_lines
-            text_short=""
-            lines=0
-            for line in ticket_object["text"].split("\n"):
-                if not text_regex or re.search(text_regex, line):
-                    text_short+=line+"\n"
-                    lines=lines+1
-                    if lines>=max_lines:
-                        text_short+="..."
-                        break
+            if "text" in ticket_object:
+                #make sure that text only contains lines that have the select_text in it
+                #and is not longer than max_lines
+                text_short=""
+                lines=0
+                for line in ticket_object["text"].split("\n"):
+                    if not text_regex or re.search(text_regex, line):
+                        text_short+=line+"\n"
+                        lines=lines+1
+                        if lines>=max_lines:
+                            text_short+="..."
+                            break
 
-            ticket_object["text"]=text_short
+                ticket_object["text"]=text_short
 
     @Acl(roles="user")
     def get_all(self, **params):

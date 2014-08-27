@@ -36,6 +36,8 @@ var form=new ControlForm({
 
             var delta=data.end_time-data.start_time;
             $('.delta',context).text(delta/60);
+
+            $(".download-link", context).attr("href", data["file_url"])
         }
 
         //dont make the type changable, its only confusing and unneccesary
@@ -108,9 +110,16 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
         <td class='field-meta-put' field-key='text' field-meta-key='desc'>
         <td><textarea class='field-put field-get field-input' field-key='text' cols=80 rows=10></textarea>
     </tr>
-    <tr class="show-on show-on show-on-doc">
+    <tr class="show-on show-on-doc">
         <td class='field-meta-put' field-key='file_content_type' field-meta-key='desc'>
         <td class='field-put' field-key='file_content_type'>
+    </tr>
+    <tr class="show-on show-on-doc">
+        <td class='field-meta-put' field-key='thumbnail' field-meta-key='desc'>
+        <td>
+            <a class='download-link' href='#'>
+                <img class='field-put' field-key='thumbnail'>
+            </a>
     </tr>
 
 </table>
