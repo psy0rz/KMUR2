@@ -23,12 +23,12 @@ rpc_client=rpc.RpcClient(args.url)
 
 #check if files are readable/existing
 for filename in args.files:
+	print("Checking..."+filename, file=sys.stderr)
 	with open(filename,'rb') as fh:
-		fh.read(1)
+		pass
 
 #first login using the specified user and pass
 user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
-print(user)
 
 #create ticket
 ticket=rpc_client.request("ticket.Tickets.put", 
@@ -37,7 +37,14 @@ ticket=rpc_client.request("ticket.Tickets.put",
 	ticket_priority="3",
 	owner=user["user_id"],
 	ticket_status=args.ticket_status,
-	start_date=int(time.time())
+	start_date=int(time.time()),
+	deligated_users=[],
+	allowed_groups=[],
+	ticket_completed=False,
+	relations=[],
+	tickets=[],
+	due_date=None,
+	desc="",
 )["data"]
 
 #upload documents
@@ -46,7 +53,8 @@ for filename in args.files:
 		filename=filename,
 		allowed_users=[ user["user_id"] ],
 		create_time=int(time.time()),
-		tickets=[ ticket["_id"] ]
+		tickets=[ ticket["_id"] ],
+		type="doc"
 	)["data"]
 
 
