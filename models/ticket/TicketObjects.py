@@ -19,6 +19,7 @@ class TicketObjects(models.core.Protected.Protected):
     file_path="files/"
     thumb_path="static/files/" #publicly accesible thumbnails, local path
     thumb_url="/files/"        #public url path
+    default_thumb_url="/icons/ticketobject_{}.png"
 
     meta = fields.List(
             fields.Dict({
@@ -243,6 +244,10 @@ class TicketObjects(models.core.Protected.Protected):
         else:
             log_txt="Created new task note 'title'".format(**doc)
 
+            if not 'thumbnail' in doc:
+                #all ticketobjects always should have a thumbnail
+                doc['thumbnail']=self.default_thumb_url.format(doc["type"])
+
         if not 'billing_contract_invoice' in doc:
             doc['billing_contract_invoice']=None
 
@@ -279,6 +284,8 @@ class TicketObjects(models.core.Protected.Protected):
 
         if "file" in ret:
             ret["file_url"]=self.get_file_url(ret["_id"])
+
+
 
         return(ret)
 

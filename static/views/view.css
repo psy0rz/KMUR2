@@ -206,7 +206,7 @@ a:hover
 }
 
 
-
+/*
 .ticket-object .field-select-type-change
 {
 	background: url("../icons/pencil.png") left center no-repeat; 
@@ -245,29 +245,39 @@ a:hover
 	background: url("../icons/page.png") left center no-repeat; 
 	padding-left:20px;
 }
+*/
+
+.ticketobject-inline-thumb
+{
+	display:inline-block;
+	vertical-align: middle;
+	padding: 2px; 
+	border-style:solid; 
+	border-width: 1px
+}
 
 .ticket-add-time-button-style
 {
-	background: url("../icons/clock.png") left center no-repeat; 
+	background: url("../icons/ticketobject_time.png") left center no-repeat; 
 	padding-left:20px;
 }
 
 .ticket-add-time-link-style
 {
-	background: url("../icons/clock.png") left center no-repeat; 
+	background: url("../icons/ticketobject_time.png") left center no-repeat; 
 	padding-left:20px;
 	margin-left:20px;
 }
 
 .ticket-add-note-button-style
 {
-	background: url("../icons/note.png") left center no-repeat; 
+	background: url("../icons/ticketobject_note.png") left center no-repeat; 
 	padding-left:20px;
 }
 
 .ticket-add-doc-button-style
 {
-	background: url("../icons/page.png") left center no-repeat; 
+	background: url("../icons/ticketobject_doc.png") left center no-repeat; 
 	padding-left:20px;
 }
 
@@ -316,6 +326,7 @@ a:hover
 	padding-left:20px;
 	
 }
+
 
 
 .show-button-style
