@@ -5,6 +5,7 @@ import json
 import rpc
 import sys
 import time
+import os
 
 parser = argparse.ArgumentParser(description='Tracer - document importer 1.0')
 
@@ -52,7 +53,7 @@ for filename in args.files:
 	ticket_object=rpc_client.request("ticket.TicketObjects.put", 
 		filename=filename,
 		allowed_users=[ user["user_id"] ],
-		create_time=int(time.time()),
+		create_time=int(os.stat(filename).st_ctime),
 		tickets=[ ticket["_id"] ],
 		type="doc"
 	)["data"]

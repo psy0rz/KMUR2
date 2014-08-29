@@ -117,8 +117,8 @@ class TicketObjects(models.core.Protected.Protected):
     def get_thumb_url(self, file_hash):
         return(self.thumb_url+file_hash+".jpg")
 
-    def get_file_url(self, _id):
-        return("/rpc/ticket/TicketObjects/download/"+_id)
+    def get_file_url(self, ticket_object):
+        return("/rpc/ticket/TicketObjects/download/"+ticket_object["_id"]+"/"+os.path.basename(ticket_object["title"]))
 
     def store_file(self, file_upload):
         """stores file in data-store and returns hash"""
@@ -283,14 +283,14 @@ class TicketObjects(models.core.Protected.Protected):
             ret=self._get(_id)
 
         if "file" in ret:
-            ret["file_url"]=self.get_file_url(ret["_id"])
+            ret["file_url"]=self.get_file_url(ret)
 
 
 
         return(ret)
 
     @Acl(roles="user")
-    def download(self, _id):
+    def download(self, _id, *rest):
         """downloads the actual file. this should be called with GET"""
         doc=self.get(_id)
         return bottle.static_file(doc["file"], root=self.file_path, mimetype=doc["file_content_type"])
@@ -324,7 +324,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         for ticket_object in ticket_objects:
             if "file" in ticket_object:
-                ticket_object["file"]=self.get_file_url(ticket_object["_id"])
+                ticket_object["file"]=self.get_file_url(ticket_object)
 
             if "text" in ticket_object:
                 #make sure that text only contains lines that have the select_text in it
