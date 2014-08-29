@@ -843,6 +843,8 @@ ControlList.prototype.get_result=function(result, request_params)
 
     }
 
+    this.context.scrollTop(0);
+
 }
 
 //focus the correct input field, for a list is this diffent than for a form. 
@@ -1139,10 +1141,11 @@ ControlList.prototype.attach_event_handlers=function()
     //generic regex_or filter to do quick searches in multiple fields 
     $(".control-on-change-search", context).on('change keypress paste textInput input', function()
     {
+
         var search_txt=$(this).val();
 
         if (this_control.last_search_txt==search_txt)
-            return;
+            return ;
 
         this_control.last_search_txt=search_txt;
 

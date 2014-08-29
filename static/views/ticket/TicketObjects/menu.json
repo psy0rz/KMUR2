@@ -2,7 +2,7 @@
     "ticket":{
 		"items":[
             {
-                "title":"My items",
+                "title":"Docs and notes",
                 "view":
                     { 
                         "name":"ticket.TicketObjects.list",

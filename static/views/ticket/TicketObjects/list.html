@@ -2,38 +2,43 @@
 <script>
     new ControlList({
         'view'            	: view,
-        'class'        		: 'ticket.Tickets',
+        'class'        		: 'ticket.TicketObjects',
         'get_params'        : view.params,
-        'title'           	: 'Task overview',
+        'title'           	: 'Documents and ticket notes',
         'endless_scrolling'	: true,
-        'favorite_menu'     : 'ticket',
     });
 
 </script>
 
 
-<table >
-    <tr class='ui-widget-header'>
+<div class='floatingBar'>
+<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+<input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
+</div>
+
+<table>
+    <tr class='ui-widget-header '>
         <th>
-    	<th class='field-meta-put control-on-click-order control-order-asc' field-key='title' field-meta-key='desc'>
-    	<th>
+        <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
+        <th>
     </tr>
 
-    <tr>
+    <tr class='colorRows ticket-object field-list-source field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
+
+        <td><img style='padding-bottom: 1em' class='field-list-on-click-view  field-put' src='#' field-key='thumbnail'>
+
+        <td class='field-list-on-click-view field-put' field-key='create_time' nowrap field-timestamp-allow-time>
+
+
+
+
+
         <td>
-        <td class='field-meta-put control-on-filter-highlight control-on-change-filter' field-key='title' field-allow-null>
-        <td>
-    </tr>
+            <div class='field-list-on-click-view field-put' field-key='title' style='font-weight:bold'></div>
+            <div class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'></div>
 
-    <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.edit">
-        <td class='field-list-on-click-view' field-list-view="ticket.Tickets.show"><a href='#'>View...</a>
-    	<td class='field-put field-list-on-click-view' field-key='title' >
 
-    	<td class='control-on-click-del ui-icon ui-icon-trash'>
-    </tr>
-
-    <tr>
-        <td colspan=6><a class='control-on-click-view' control-view='ticket.Tickets.edit' field-key='title' href='#'>Create new task</a>
     </tr>
 </table>
+
 

@@ -38,7 +38,7 @@ def rpc_post():
         # print ("FORMS:", dict(bottle.request.forms))
         # print ("CONTENTTYPE", request.content-type)
 
-        if bottle.request.headers["content-type"]=="application/json":
+        if bottle.request.headers["content-type"].find("application/json")==0:
             request = bottle.request.json
         elif bottle.request.headers["content-type"].find("multipart/form-data")==0:
             #In case of multipart/form-data, the json-encoded string should be passed inside a form variable called 'rpc'
