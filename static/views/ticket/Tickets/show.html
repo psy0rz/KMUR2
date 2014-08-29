@@ -174,8 +174,11 @@ $(".hidden-uploader", context).change(function()
         },
         function(result)
         {
-            file_nr++;
-            start_upload();
+            if (!viewShowError(result, context))
+            {
+                file_nr++;
+                start_upload();
+            }
         });
     }
 

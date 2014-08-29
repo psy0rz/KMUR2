@@ -4,7 +4,8 @@
         "view":
             { 
                 "name":"core.Users.list",
-                "mode":"main"
+                "mode":"main",
+                "params": {}
                 },
 		"items":[
 			{
