@@ -156,8 +156,10 @@ td
 	left: 16em;
 	right: 0em;
 	top: 2em;
-	bottom: 2.5em;
+	bottom: 0em; /* should be 0, otherwise inputs in floating bars generate scrolling somehow */
 	position: fixed;
+	padding-bottom: 2.5em;
+
 }
 
 
@@ -181,13 +183,11 @@ td
 
 .floatingBar
 {
-	z-index: -100;
 	position: fixed;
 	left: 15em;
-	right: 0em;
+	right: 2em;
 	bottom:0em;
 	background: #dddddd;
-
 	padding-top:0.5em;
 	padding-left:1em;
 	border-width:2px;

@@ -843,7 +843,6 @@ ControlList.prototype.get_result=function(result, request_params)
 
     }
 
-    this.context.scrollTop(0);
 
 }
 
@@ -1141,6 +1140,7 @@ ControlList.prototype.attach_event_handlers=function()
     //generic regex_or filter to do quick searches in multiple fields 
     $(".control-on-change-search", context).on('change keypress paste textInput input', function()
     {
+        this_control.context.scrollTop(0);
 
         var search_txt=$(this).val();
 
