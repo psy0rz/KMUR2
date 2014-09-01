@@ -44,6 +44,7 @@ class Contracts(models.core.Protected.Protected):
                     'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
                     'minutes_rounding': fields.Number(desc='Minutes round up per', default=15),
                     'tax': fields.Number(desc='Tax', default=21),
+                    'import_id': fields.String(desc='Import ID'),
                 }),
                 list_key='_id'
             )

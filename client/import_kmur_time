@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import rpc
+import sys
+import xml.etree.ElementTree
+import datetime
+
+parser = argparse.ArgumentParser(description='KMUR invoice importer v1.0')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', default='admin@tracer', help='user to login. default: %(default)s')
+parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('projecten',  nargs=1, help='projecten')
+parser.add_argument('overzicht_uren',  nargs=1, help='overzicht_uren')
+
+args = parser.parse_args()
+
+#initialise the rpc client class
+rpc_client=rpc.RpcClient(args.url)
+
+#first login using the specified user and pass
+logged_in_user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"];
+
+#read and parse XML
+projecten=xml.etree.ElementTree.parse(args.projecten[0])
+overzicht_uren=xml.etree.ElementTree.parse(args.overzicht_uren[0])
+
+#simple getter 
+def get(child,name):
+	element=child.find(name)
+	if element!=None:
+		if element.text!=None:
+			return(element.text)
+
+	return("")
+
+
+#index projects
+contracts={}
+for child in projecten.findall("projecten"):
+	contracts[get(child, "id")]=
+		{
+			"title":get(child, "project_naam"),
+			"relation_id":get(child, "gebruiker_id")
+		}
+
+
+
+#traverse hours
+for child in overzicht_uren.findall("overzicht_uren"):
+
+	#determine uniq id so we can check if it already exists in tracer
+	time_import_id="kmur"+get(child,"id")
+
+	result=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })
+
+
+	if len(result["data"])!=0:
+		print ("Already imported ID "+time_import_id)
+	else:
+
+		#get contract
+		contract_import_id="kmur"+get(child, "project_id")]
+		contract=rpc_client.request("ticket.Contracts.get_all", match={ 
+			"import_id": contract_import_id
+		})['data']
+
+		contract=contracts[get(child, "project_id")]
+
+
+		#get relation
+		relation=rpc_client.request("ticket.Relations.get_all", match={ 
+			"import_id": "kmur"+get(child,"gebruiker_id")
+		})['data']
+		#print(relation)
+
+		if relation:
+			print ("Adding ID "+import_id)
+
+			user=rpc_client.request("core.Users.get_all", match={ 
+				"import_id": "kmur"+get(child,"gebruiker_id")
+			})['data']
+			#print(user)
+
+
+			doc={
+				"import_id": import_id,
+				"title": get(child, "kenmerken_klant")  or "Invoice",
+				"invoice_nr": get(child,"factuur_omschrijving"),
+				"currency": "€",
+				"notes": "",
+				"sent": True,
+				"sent_date": datetime.datetime.strptime(get(child,"factuur_datum"), "%Y-%m-%d").timestamp(),
+				"payed": get(child,"betaald")=="1",
+				"payed_date": None,
+				"allowed_users": [ logged_in_user["user_id"] ],
+				"to_relation": relation[0]["_id"],
+				"items": []
+			}
+
+			if user:
+				doc["allowed_users"].append(user[0]["_id"])
+
+
+			#add invoice items
+			if get(child,"id") in invoice_items:
+				tax=21
+				for item in invoice_items[get(child,"id")]:
+					item["tax"]=21
+					doc["items"].append(item)
+
+			# #tax hacks
+			#       if ($klant_data['gebruiker_id']!=99 || $factuur['id']<=840)
+			#       {
+			#       if ($factuur['id']>864)
+			#       {
+			#           $btw=$totaal*0.21;
+			#           $inclusief=$totaal*1.21;
+
+			#       }
+			#       else
+			#       {
+			#               $btw=$totaal*0.19;
+			#               $inclusief=$totaal*1.19;
+			#       }
+			#       }
+			#       #olvo vanaf factuur 840 geen btw (2012)
+			#       else
+			#       {
+			#               $btw=0;
+			#               $inclusief=$totaal;
+			#       }
+
+
+			print(doc)
+			rpc_client.request("ticket.Invoices.put", force=True, **doc)
+
+		else:
+			print("No relation found for invoice ", import_id)
+
+
+print("DONE")
+
+

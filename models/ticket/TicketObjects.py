@@ -90,6 +90,7 @@ class TicketObjects(models.core.Protected.Protected):
                 'file': fields.File(desc='File'),
                 'file_content_type': fields.String(desc='File content type'),
                 'thumbnail': fields.Image(desc='Thumbnail'),
+                'import_id': fields.String(desc='Import ID'),
             }),
             list_key='_id'
         )
