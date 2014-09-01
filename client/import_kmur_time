@@ -38,9 +38,9 @@ def get(child,name):
 
 
 #index projects
-contracts={}
+projects={}
 for child in projecten.findall("projecten"):
-	contracts[get(child, "id")]=
+	projects[get(child, "id")]=
 		{
 			"title":get(child, "project_naam"),
 			"relation_id":get(child, "gebruiker_id")
@@ -54,27 +54,36 @@ for child in overzicht_uren.findall("overzicht_uren"):
 	#determine uniq id so we can check if it already exists in tracer
 	time_import_id="kmur"+get(child,"id")
 
-	result=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })
+	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
 
 
-	if len(result["data"])!=0:
+	if len(ticket_objects)!=0:
 		print ("Already imported ID "+time_import_id)
 	else:
-
-		#get contract
-		contract_import_id="kmur"+get(child, "project_id")]
-		contract=rpc_client.request("ticket.Contracts.get_all", match={ 
-			"import_id": contract_import_id
-		})['data']
-
-		contract=contracts[get(child, "project_id")]
-
+		#determine kmur project
+		project=projects[get(child, "project_id")]
 
 		#get relation
 		relation=rpc_client.request("ticket.Relations.get_all", match={ 
-			"import_id": "kmur"+get(child,"gebruiker_id")
-		})['data']
+			"import_id": "kmur"+project["gebruiker_id"]
+		})['data'][0]
 		#print(relation)
+
+
+		#get contract
+		contract_import_id="kmur"+get(child, "project_id")]
+		contracts=rpc_client.request("ticket.Contracts.get_all", match={ 
+			"import_id": contract_import_id
+		})['data']
+
+		if contracts:
+			contract=contracts[0]
+		else:
+			#contract doest extist,create contract:
+			rpc_client.request("ticket.Contracts.get_all", match={ 
+
+
+
 
 		if relation:
 			print ("Adding ID "+import_id)
