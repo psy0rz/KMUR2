@@ -51,9 +51,8 @@ for child in projecten.findall("projecten"):
 #traverse hours
 for child in overzicht_uren.findall("overzicht_uren"):
 
-	#determine uniq id so we can check if it already exists in tracer
+	#already imported this ticketobject?	
 	time_import_id="kmur"+get(child,"id")
-
 	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
 
 
@@ -63,7 +62,7 @@ for child in overzicht_uren.findall("overzicht_uren"):
 		#determine kmur project
 		project=projects[get(child, "project_id")]
 
-		#get relation
+		#get relation (should exist via import_kmur)
 		relation=rpc_client.request("ticket.Relations.get_all", match={ 
 			"import_id": "kmur"+project["gebruiker_id"]
 		})['data'][0]
