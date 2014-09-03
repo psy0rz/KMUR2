@@ -211,7 +211,7 @@ def send_default():
 
 session_opts = {
     'session.type': 'file',
-    'session.cookie_expires': True,
+    'session.cookie_expires': False,
     'session.data_dir': '/tmp/.kmur2beakersessions'
 }
 

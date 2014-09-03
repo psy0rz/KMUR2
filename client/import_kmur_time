@@ -52,79 +52,83 @@ for child in projecten.findall("projecten"):
 #traverse hours
 for child in overzicht_uren.findall("overzicht_uren"):
 
-	#already imported this ticketobject?	
-	time_import_id="kmur"+get(child,"id")
-	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
+	if get(child,"datum")!="0000-00-00":
+
+		#already imported this ticketobject?	
+		time_import_id="kmur"+get(child,"id")
+		ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
 
 
-	if len(ticket_objects)!=0:
-		print ("Already imported ID "+time_import_id)
-	else:
-		#determine kmur project
-		project_id=get(child, "project_id")
-		if project_id in projects:
-	
-			project=projects[project_id]
+		if len(ticket_objects)!=0:
+			print ("Already imported ID "+time_import_id)
+		else:
+			#determine kmur project
+			project_id=get(child, "project_id")
+			if project_id in projects:
+		
+				project=projects[project_id]
 
-			#get relation (should exist via import_kmur)
-			relations=rpc_client.request("ticket.Relations.get_all", match={ 
-				"import_id": "kmur"+project["gebruiker_id"]
-			})['data']
-
-			if relations:
-
-				relation=relations[0]
-				print("Relation", relation)
-
-				#get contract
-				contract_import_id="kmur"+get(child, "project_id")
-				contracts=rpc_client.request("ticket.Contracts.get_all", match={ 
-					"import_id": contract_import_id
+				#get relation (should exist via import_kmur)
+				relations=rpc_client.request("ticket.Relations.get_all", match={ 
+					"import_id": "kmur"+project["gebruiker_id"]
 				})['data']
 
-				if contracts:
-					contract=contracts[0]
-				else:
-					#contract doest exist,create contract:
-					contract=rpc_client.request("ticket.Contracts.put", 
-							import_id=contract_import_id,
-							type="manual",
-							title=project["title"],
-							desc=project["desc"],
+				if relations:
+
+					relation=relations[0]
+					print("Relation", relation)
+
+					#get contract
+					contract_import_id="kmur"+get(child, "project_id")
+					contracts=rpc_client.request("ticket.Contracts.get_all", match={ 
+						"import_id": contract_import_id
+					})['data']
+
+					if contracts:
+						contract=contracts[0]
+					else:
+						#contract doest exist,create contract:
+						contract=rpc_client.request("ticket.Contracts.put", 
+								import_id=contract_import_id,
+								type="manual",
+								title=project["title"],
+								desc=project["desc"],
+								allowed_users=[ logged_in_user["user_id"] ],
+								allowed_groups=[],
+								minutes_minimum=0,
+								minutes_rounding=1
+							)["data"]
+					print("Contract", contract)
+
+					#add this contract to this relations contracts
+					# print("Relation:" , relation)
+					if not contract["_id"] in relation["contracts"]: 
+						relation["contracts"].append(contract["_id"])
+						rpc_client.request("ticket.Relations.put", **relation)
+
+					title=get(child, "omschrijving")
+					if len(title)<3:
+						title=title+"..."
+
+					#create ticketobject 
+					timestamp=datetime.datetime.strptime(get(child,"datum"), "%Y-%m-%d").timestamp()
+					ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+							type="time",
+							create_time=timestamp,
+							minutes= -int(get(child, "tijd")),
+							minutes_factor=1,
+							import_id=time_import_id,
+							title=title,
+							billing_relation=relation["_id"],
+							billing_contract=contract["_id"],
+							billing_contract_invoice=None,
 							allowed_users=[ logged_in_user["user_id"] ],
 							allowed_groups=[]
-						)["data"]
-				print("Contract", contract)
-
-				#add this contract to this relations contracts
-				# print("Relation:" , relation)
-				if not contract["_id"] in relation["contracts"]: 
-					relation["contracts"].append(contract["_id"])
-					rpc_client.request("ticket.Relations.put", **relation)
-
-				title=get(child, "omschrijving")
-				if len(title)<3:
-					title=title+"..."
-
-				#create ticketobject 
-				timestamp=datetime.datetime.strptime(get(child,"datum"), "%Y-%m-%d").timestamp()
-				ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-						type="time",
-						create_time=timestamp,
-						minutes=int(get(child, "tijd")),
-						minutes_factor=1,
-						import_id=time_import_id,
-						title=title,
-						billing_relation=relation["_id"],
-						billing_contract=contract["_id"],
-						billing_contract_invoice=None,
-						allowed_users=[ logged_in_user["user_id"] ],
-						allowed_groups=[]
-					)
+						)
 
 
-				print("Ticket object", ticket_object)
-				print("\n")
+					print("Ticket object", ticket_object)
+					print("\n")
 
 
 
