@@ -57,7 +57,9 @@ class ContractInvoices(models.core.Protected.Protected):
                 'minutes_used': fields.Number(desc='Used minutes'),
                 'minutes_bought': fields.Number(desc='Bought minutes'),
                 #balance should usually be 0 in post-payed contracts, and can be negative in pre-payed.
+                #is recalculated automatically
                 'minutes_balance': fields.Number(desc='New budget'), 
+                'import_id': fields.String(desc='Import ID'),
             }),
             list_key='_id'
         )
@@ -153,10 +155,10 @@ class ContractInvoices(models.core.Protected.Protected):
                 try:
                     contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
                 except:
-                    pass;
+                    break
 
                 if contract["type"]=='manual':
-                    pass;
+                    break
 
                 #contracts are invoiced on the first day of the month, at 00:00
                 contract_invoice_date=datetime.datetime(
@@ -276,7 +278,10 @@ class ContractInvoices(models.core.Protected.Protected):
         budgets=[]
 
         #traverse all contracts:
-        contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all')
+        #contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all') #slower but shows deactivated contracts as well.
+        contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all', match_in={ "_id": relation["contracts"] })
+
+
         for contract in contracts:
             used=False
 

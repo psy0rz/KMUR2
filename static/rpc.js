@@ -46,7 +46,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 "help":gDebuggingEnabled,
                 "params":params
             };
-    console.debug(debugTxt, "REQUEST", request);
+//    console.debug(debugTxt, "REQUEST", request);
     var start_time=new Date().getTime();
 
     //File-objects need to be transferred out-of-band by using multipart/form-data. The server supports this.
@@ -106,7 +106,8 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
             function (result, status, XMLHttpRequest)
             {
                 
-                console.debug(debugTxt + " RESULT ("+((new Date().getTime())-start_time)+"ms)", result);
+                // console.debug(debugTxt + " RESULT ("+((new Date().getTime())-start_time)+"ms)", result);
+                console.debug(debugTxt + " REQUEST/RESULT ("+((new Date().getTime())-start_time)+"ms)", request, result);
                 start_time=new Date().getTime();
 
                 if (gDebuggingEnabled && ('error' in result))

@@ -54,12 +54,22 @@ for child in overzicht_uren.findall("overzicht_uren"):
 
 	if get(child,"datum")!="0000-00-00":
 
-		#already imported this ticketobject?	
+		#already imported this ticketobject/contract invoice?	
 		time_import_id="kmur"+get(child,"id")
-		ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
+		bought=int(get(child, "tijd"))>0
+
+		imported=False
+		if bought:
+			contract_invoices=rpc_client.request("ticket.ContractInvoices.get_all", match={ "import_id": time_import_id })["data"]
+			if contract_invoices:
+				imported=True
+		else:
+			ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
+			if ticket_objects:
+				imported=True
 
 
-		if len(ticket_objects)!=0:
+		if imported:
 			print ("Already imported ID "+time_import_id)
 		else:
 			#determine kmur project
@@ -110,24 +120,42 @@ for child in overzicht_uren.findall("overzicht_uren"):
 					if len(title)<3:
 						title=title+"..."
 
-					#create ticketobject 
 					timestamp=datetime.datetime.strptime(get(child,"datum"), "%Y-%m-%d").timestamp()
-					ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-							type="time",
-							create_time=timestamp,
-							minutes= -int(get(child, "tijd")),
-							minutes_factor=1,
-							import_id=time_import_id,
-							title=title,
-							billing_relation=relation["_id"],
-							billing_contract=contract["_id"],
-							billing_contract_invoice=None,
-							allowed_users=[ logged_in_user["user_id"] ],
-							allowed_groups=[]
-						)
+					if bought:
+						#create contract invoice (bought hours)
+						contract_invoice=rpc_client.request("ticket.ContractInvoices.put", 
+								date=timestamp,
+								desc=title,
+								allowed_users=[ logged_in_user["user_id"] ],
+								relation=relation["_id"],
+								contract=contract["_id"],
+								contract_title=contract["title"],
+								invoice=None,
+								minutes_used= 0, #XXX
+								minutes_bought=int(get(child, "tijd")),	
+								import_id=time_import_id,
+							)
+
+						print("Contract invoice", contract_invoice)
+					else:
+						#create ticketobject (used hours)
+						ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+								type="time",
+								create_time=timestamp,
+								minutes= -int(get(child, "tijd")),
+								minutes_factor=1,
+								import_id=time_import_id,
+								title=title,
+								billing_relation=relation["_id"],
+								billing_contract=contract["_id"],
+								billing_contract_invoice=None,
+								allowed_users=[ logged_in_user["user_id"] ],
+								allowed_groups=[],
+								tickets=[],
+							)
 
 
-					print("Ticket object", ticket_object)
+						print("Ticket object", ticket_object)
 					print("\n")
 
 
