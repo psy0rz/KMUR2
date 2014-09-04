@@ -30,133 +30,153 @@ overzicht_uren=xml.etree.ElementTree.parse(args.overzicht_uren[0])
 
 #simple getter 
 def get(child,name):
-	element=child.find(name)
-	if element!=None:
-		if element.text!=None:
-			return(element.text)
+    element=child.find(name)
+    if element!=None:
+        if element.text!=None:
+            return(element.text)
 
-	return("")
+    return("")
 
 
 #index projects
 projects={}
 for child in projecten.findall("projecten"):
-	projects[get(child, "id")]={
-			"title":get(child, "project_naam"),
-			"gebruiker_id":get(child, "gebruiker_id"),
-			"desc":get(child, "voortgang"),
-		}
+    projects[get(child, "id")]={
+            "title":get(child, "project_naam"),
+            "gebruiker_id":get(child, "gebruiker_id"),
+            "desc":get(child, "voortgang"),
+        }
 
 
 
 #traverse hours
 for child in overzicht_uren.findall("overzicht_uren"):
 
-	if get(child,"datum")!="0000-00-00":
+    if get(child,"datum")!="0000-00-00":
 
-		#already imported this ticketobject/contract invoice?	
-		time_import_id="kmur"+get(child,"id")
-		bought=int(get(child, "tijd"))>0
+        #already imported this ticketobject/contract invoice?   
+        time_import_id="kmur"+get(child,"id")
+        bought=int(get(child, "tijd"))>0
 
-		imported=False
-		if bought:
-			contract_invoices=rpc_client.request("ticket.ContractInvoices.get_all", match={ "import_id": time_import_id })["data"]
-			if contract_invoices:
-				imported=True
-		else:
-			ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
-			if ticket_objects:
-				imported=True
-
-
-		if imported:
-			print ("Already imported ID "+time_import_id)
-		else:
-			#determine kmur project
-			project_id=get(child, "project_id")
-			if project_id in projects:
-		
-				project=projects[project_id]
-
-				#get relation (should exist via import_kmur)
-				relations=rpc_client.request("ticket.Relations.get_all", match={ 
-					"import_id": "kmur"+project["gebruiker_id"]
-				})['data']
-
-				if relations:
-
-					relation=relations[0]
-					print("Relation", relation)
-
-					#get contract
-					contract_import_id="kmur"+get(child, "project_id")
-					contracts=rpc_client.request("ticket.Contracts.get_all", match={ 
-						"import_id": contract_import_id
-					})['data']
-
-					if contracts:
-						contract=contracts[0]
-					else:
-						#contract doest exist,create contract:
-						contract=rpc_client.request("ticket.Contracts.put", 
-								import_id=contract_import_id,
-								type="manual",
-								title=project["title"],
-								desc=project["desc"],
-								allowed_users=[ logged_in_user["user_id"] ],
-								allowed_groups=[],
-								minutes_minimum=0,
-								minutes_rounding=1
-							)["data"]
-					print("Contract", contract)
-
-					#add this contract to this relations contracts
-					# print("Relation:" , relation)
-					if not contract["_id"] in relation["contracts"]: 
-						relation["contracts"].append(contract["_id"])
-						rpc_client.request("ticket.Relations.put", **relation)
-
-					title=get(child, "omschrijving")
-					if len(title)<3:
-						title=title+"..."
-
-					timestamp=datetime.datetime.strptime(get(child,"datum"), "%Y-%m-%d").timestamp()
-					if bought:
-						#create contract invoice (bought hours)
-						contract_invoice=rpc_client.request("ticket.ContractInvoices.put", 
-								date=timestamp,
-								desc=title,
-								allowed_users=[ logged_in_user["user_id"] ],
-								relation=relation["_id"],
-								contract=contract["_id"],
-								contract_title=contract["title"],
-								invoice=None,
-								minutes_used= 0, #XXX
-								minutes_bought=int(get(child, "tijd")),	
-								import_id=time_import_id,
-							)
-
-						print("Contract invoice", contract_invoice)
-					else:
-						#create ticketobject (used hours)
-						ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-								type="time",
-								create_time=timestamp,
-								minutes= -int(get(child, "tijd")),
-								minutes_factor=1,
-								import_id=time_import_id,
-								title=title,
-								billing_relation=relation["_id"],
-								billing_contract=contract["_id"],
-								billing_contract_invoice=None,
-								allowed_users=[ logged_in_user["user_id"] ],
-								allowed_groups=[],
-								tickets=[],
-							)
+        imported=False
+        if bought:
+            contract_invoices=rpc_client.request("ticket.ContractInvoices.get_all", match={ "import_id": time_import_id })["data"]
+            if contract_invoices:
+                imported=True
+        else:
+            ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", match={ "import_id": time_import_id })["data"]
+            if ticket_objects:
+                imported=True
 
 
-						print("Ticket object", ticket_object)
-					print("\n")
+        if imported:
+            print ("Already imported ID "+time_import_id)
+        else:
+            #determine kmur project
+            project_id=get(child, "project_id")
+            if project_id in projects:
+        
+                project=projects[project_id]
+
+                #get relation (should exist via import_kmur)
+                relations=rpc_client.request("ticket.Relations.get_all", match={ 
+                    "import_id": "kmur"+project["gebruiker_id"]
+                })['data']
+
+                if relations:
+
+                    relation=relations[0]
+                    print("RELATION ", relation)
+
+                    #get contract
+                    contract_import_id="kmur"+get(child, "project_id")
+                    contracts=rpc_client.request("ticket.Contracts.get_all", match={ 
+                        "import_id": contract_import_id
+                    })['data']
+
+                    if contracts:
+                        contract=contracts[0]
+                    else:
+                        #contract doest exist,create contract:
+                        contract=rpc_client.request("ticket.Contracts.put", 
+                                import_id=contract_import_id,
+                                type="manual",
+                                title=project["title"],
+                                desc=project["desc"],
+                                allowed_users=[ logged_in_user["user_id"] ],
+                                allowed_groups=[],
+                                minutes_minimum=0,
+                                minutes_rounding=1
+                            )["data"]
+                    print("CONTRACT ", contract)
+
+                    #add this contract to this relations contracts
+                    # print("Relation:" , relation)
+                    if not contract["_id"] in relation["contracts"]: 
+                        relation["contracts"].append(contract["_id"])
+                        rpc_client.request("ticket.Relations.put", **relation)
+
+                    title=get(child, "omschrijving")
+                    if len(title)<3:
+                        title=title+"..."
+
+                    timestamp=datetime.datetime.strptime(get(child,"datum"), "%Y-%m-%d").timestamp()
+                    if bought:
+                        #create contract invoice (bought hours)
+                        contract_invoice=rpc_client.request("ticket.ContractInvoices.put", 
+                                date=timestamp,
+                                desc=title,
+                                allowed_users=[ logged_in_user["user_id"] ],
+                                relation=relation["_id"],
+                                contract=contract["_id"],
+                                contract_title=contract["title"],
+                                invoice=None,
+                                minutes_used= 0, #will calculate later
+                                minutes_bought=int(get(child, "tijd")), 
+                                import_id=time_import_id,
+                            )["data"]
+    
+                        print("CONTRACT_INVOICE1 ", contract_invoice)
+
+                        #count and link all uninvoiced ticket_objects to this contract_invoice
+                        ticket_objects=rpc_client.request("ticket.TicketObjects.get_all", 
+                            match={
+                                "billing_relation": relation["_id"],
+                                "billing_contract": contract["_id"],
+                                "billing_contract_invoice": None,
+                            })["data"]
+
+                        for ticket_object in ticket_objects:
+                            print("UPDATED TICKET_OBJECT", ticket_object)
+                            ticket_object["billing_contract_invoice"]=contract_invoice["_id"]
+                            contract_invoice["minutes_used"]=contract_invoice["minutes_used"]+ticket_object["minutes"]
+                            rpc_client.request("ticket.TicketObjects.put", **ticket_object )
+
+                        #store updated minute count
+                        rpc_client.request("ticket.ContractInvoices.put", **contract_invoice )
+                        print("CONTRACT_INVOICE2 ", contract_invoice)
+
+
+                    else:
+                        #create ticketobject (used hours)
+                        ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+                                type="time",
+                                create_time=timestamp,
+                                minutes= -int(get(child, "tijd")),
+                                minutes_factor=1,
+                                import_id=time_import_id,
+                                title=title,
+                                billing_relation=relation["_id"],
+                                billing_contract=contract["_id"],
+                                billing_contract_invoice=None,
+                                allowed_users=[ logged_in_user["user_id"] ],
+                                allowed_groups=[],
+                                tickets=[],
+                            )
+
+
+                        print("NEW TICKET_OBJECT", ticket_object)
+                    print("\n")
 
 
 
