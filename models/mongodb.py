@@ -394,7 +394,7 @@ class Base(models.common.Base):
         return self.get_meta(doc).meta['meta'].to_external(self.context, doc)
 
 
-    def _get_all(self, fields=None, skip=0, limit=0, sort={}, match=None, match_in=None, match_nin=None,regex=None, regex_or=None, gte=None, lte=None, spec_and=[], spec_or=[]):
+    def _get_all(self, fields=None, skip=0, limit=0, sort=[], match=None, match_in=None, match_nin=None,regex=None, regex_or=None, gte=None, lte=None, spec_and=[], spec_or=[]):
         '''gets one or more users according to search options
 
         fields: subset fields to return (http://www.mongodb.org/display/DOCS/Advanced+Queries)
@@ -558,6 +558,16 @@ class Base(models.common.Base):
 
         if spec_ors:
             spec['$or']=spec_ors
+
+
+        #always sort in natural order as last, in the same direction as the last sort-item. 
+        #this way we get more consistent results if the items are the same. (as happens with dates a lot)
+        if sort:
+            last_direction=sort[len(sort)-1][1]
+            sort.append(  ( "$natural", last_direction ) )
+        #no sort always shows items in 'natural' order, newest first
+        else:
+            sort.append(  ( "$natural", -1 ) )
 
         cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,
