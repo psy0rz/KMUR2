@@ -34,24 +34,22 @@ new ControlForm({
         <td class='field-meta-put ' field-key='relation'>
             <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='relation' field-list-view="ticket.Relations.edit">
                 <span class='field-put field-list-on-click-view' field-key='relation.title' style='font-weight: bold'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
             </span>
             <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
             <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-            <br>
-            <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+            <span class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title'></span>
     </tr>
     <tr>
         <td class='field-meta-put' field-key='contract' field-meta-key='desc'>
         <td class='field-meta-put' field-key='contract'>
             <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='contract' field-list-view="ticket.Contracts.edit">
                 <span class='field-put field-list-on-click-view' field-key='contract.title' style='font-weight: bold'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
             </span>
             <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
             <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-            <br>
-            <a class='field-list-on-click-view' field-key='title' href='#'>Create new contract</a>
+            <span class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title'></span>
     </tr>
     <tr>
         <td class='field-meta-put' field-key='invoice' field-meta-key='desc'>
@@ -59,12 +57,11 @@ new ControlForm({
             <span class='list-span field-dict-raw field-list-source field-list-source-hide' field-key='invoice' field-list-view="ticket.Invoices.edit">
                 <span class='field-put field-list-on-click-view' field-key='invoice.title' style='font-weight: bold'></span>
                 <span class='field-put field-list-on-click-view' field-key='invoice.invoice_nr' style='font-weight: bold'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-minus'></span>
+                <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
             </span>
             <input  class='field-relation-on-change-autocomplete' search-keys='title invoice_nr' result-format='{title} {invoice_nr}' size=10/>
             <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-            <br>
-            <a class='field-list-on-click-view' field-key='title' href='#'>Create new invoice</a>
+            <span class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title'></span>
     </tr>
     <tr>
         <td class='field-meta-put' field-key='minutes_used' field-meta-key='desc'>
@@ -92,7 +89,7 @@ new ControlForm({
 
             <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
                 <td class='field-put field-list-on-click-view' field-key='allowed_users.fullname'>
-                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+                <td class='field-list-on-click-del ui-icon ui-icon-close'>
             </tr>
             <tr class='ui-widget-content'>
                 <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
@@ -114,7 +111,7 @@ new ControlForm({
 
             <tr class='colorRows field-list-source field-list-source-hide ui-widget-content' field-key='allowed_groups' field-list-view="core.Groups.edit">
                 <td class='field-put field-list-on-click-view' field-key='allowed_groups.name'>
-                <td class='field-list-on-click-del ui-icon ui-icon-minus'>
+                <td class='field-list-on-click-del ui-icon ui-icon-close'>
             </tr>
             <tr class='ui-widget-content'>
                 <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' />
