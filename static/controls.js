@@ -1333,6 +1333,7 @@ params:
     related_put: rpc function to call to get related data (default class.put)
     relate_confirm: text to show when relating an object (will be processed by format(..,result))
     unrelate_confirm: text to show when unrelating an object (will be processed by format(..,result))
+    autocomplete_params: get-params for autocomplete queries. (default {})
 
     no confirm-text means no confirmation required. (delete/add at once)
 */
@@ -1376,6 +1377,9 @@ function ControlListRelated(params)
     if (!('unrelate_confirm' in params))
         this.params.unrelate_confirm="";
 
+    if (!('autocomplete_params' in params))
+        this.params.autocomplete_params={};
+
     //put doenst work with listrelations, so we need at least get:
 //    if (this.params.on_change='put')
    //     this.params.on_change='get';
@@ -1387,7 +1391,7 @@ ControlListRelated.prototype=Object.create(ControlList.prototype);
 
 //remove a relation to "us" in the related class
 //this is a multistep process (get, confirm, put)
-ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_callback)
+ControlListRelated.prototype.unrelate=function(related_id, highlight, confirm_text, ok_callback)
 {
     var this_control=this;
     var context=this.context;
@@ -1435,7 +1439,7 @@ ControlListRelated.prototype.unrelate=function(related_id, confirm_text, ok_call
 
             if (!viewShowError(result, context, this_control.meta))
             {
-                $(context).confirm({
+                $(highlight).confirm({
                     'text': this_control.format(confirm_text, result.data),
                     'callback': function()
                     {
@@ -1585,7 +1589,7 @@ ControlListRelated.prototype.attach_event_handlers=function()
         var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
 //        var highlight_element=this;
 
-        this_control.unrelate(list_id, this_control.params.unrelate_confirm, function(result) {});
+        this_control.unrelate(list_id, this, this_control.params.unrelate_confirm, function(result) {});
 
     });
 
@@ -1614,14 +1618,16 @@ ControlListRelated.prototype.attach_event_handlers=function()
         {
 
             //contruct or-based case insensitive regex search, excluding all the already selected id's
-            var params={}
+            var params={};
+            $.extend(true, params, this_control.params.autocomplete_params); 
 
             //get currently selected ids
             var current_items=Field.List.get('', this_control.meta, this_control.list_source_element);
             console.log("currentitems", current_items);
 
             //filter those ids out
-            params['match_nin']={}
+            if (! ('match_nin' in params))
+                params['match_nin']={};
             params['match_nin'][this_control.meta.list_key]=[];
 
             $.each(current_items, function(i, item)
@@ -1631,8 +1637,12 @@ ControlListRelated.prototype.attach_event_handlers=function()
             });
 
 
+            //regex_or search for the specified search-string
             var search_keys=$(".control-relation-on-change-autocomplete", context).attr("search-keys").split(" ");
-            params['regex_or']={}
+
+            if (! ('regex_or' in params))
+                params['regex_or']={};
+
             $.each(search_keys, function(i, key_str)
             {
                 params['regex_or'][key_str]=request.term;

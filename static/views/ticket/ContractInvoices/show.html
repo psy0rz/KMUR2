@@ -9,20 +9,29 @@ var contract_invoice=new ControlForm({
     'on_change'       : 'put',
     'title'           : 'View contract order {contract_title} {desc}',
     'create_view_params': view.params,
-    'context'         : '.contract-invoice'
-});
+    'context'         : '.contract-invoice',
+    'get_result'      : function(result)
+    {
+        var tickets_objects=new ControlListRelated({
+            'view'              : view,
+            'related_key'       : 'billing_contract_invoice',
+            'related_value'     : view.params._id,
+            'context'           : '.ticket-objects',
+            'class'             : 'ticket.TicketObjects',
+            'endless_scrolling' : true,
+            'unrelate_confirm'  : "Remove this time from this contract order?",
+            'autocomplete_params': {
+                'match': {
+                    'billing_contract': result.data.contract,
+                    'billing_relation': result.data.relation,
+                    'billing_contract_invoice': null,
+                }
+            }
+        });
 
-var tickets_objects=new ControlList({
-    'view'              : view,
-    'context'           : '.ticket-objects',
-    'class'             : 'ticket.TicketObjects',
-    'endless_scrolling' : true,
-    'get_params'        : {
-        'match': {
-            'billing_contract_invoice': view.params._id,
-        }
     }
 });
+
 
 </script>
 
@@ -96,17 +105,22 @@ var tickets_objects=new ControlList({
 <br>
 
 <fieldset class='inline-block'>
-    <legend>Work done</legend>
+    <legend>Invoiced time</legend>
 
-    <div class='ticket-objects inline-block' style='overflow: auto; max-height:15em;'>
-        <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+    <div class='ticket-objects inline-block' style='overflow: auto; max-height:25em;'>
+
+        <span class="ui-icon ui-icon-search inline-block" ></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
+
+        <span class='control-relation-on-click-add ui-icon ui-icon-plus inline-block'></span>
+        <input class='control-relation-on-change-autocomplete' search-keys='title text' result-format='{title} ({minutes}m)' />
 
         <table>
             <tr class='ui-widget-header'>
                 <th class='field-meta-put control-on-click-order' field-key='type' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
                 <th colspan=2>Time
+                <th>
                 <th>
             </tr>
 
@@ -122,6 +136,8 @@ var tickets_objects=new ControlList({
                 <td>
                     <div class='field-list-on-click-view field-put' field-key='title' style='font-weight:bold'></div>
                     <div class='field-list-on-click-view field-put' field-key='text' style='white-space: pre-wrap'></div>
+
+                <td class='control-relation-on-click-del'><span class='ui-icon ui-icon-minus'></span></td>
 
 
             </tr>

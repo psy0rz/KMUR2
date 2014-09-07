@@ -558,11 +558,11 @@ function viewLoad(view)
             'modal':true,
             'title':settings.title,
             'buttons': {
-                "Ja": function() {
+                "Yes": function() {
                     settings['callback'].call(parent);
                     $( this ).dialog( "close" );
                 },
-                "Nee": function() {
+                "No": function() {
                     $( this ).dialog( "close" );
                 }
             },

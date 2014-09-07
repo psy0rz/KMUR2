@@ -154,6 +154,7 @@ class ContractInvoices(models.core.Protected.Protected):
         if minutes_used==doc["minutes_used"]:
             return
 
+        doc["minutes_balance"]=doc["minutes_balance"]+doc["minutes_used"]-minutes_used #this is recalculated anyway, but this prevents an extra update/log entry
         doc["minutes_used"]=minutes_used
         self.put(**doc)
 

@@ -4,12 +4,12 @@
 
 */
 
-.colorRows 
+.colorRows:nth-child(2n) 
 {
        background: #EFE;
 }
 
-.colorRows:nth-child(2n-1)
+.colorRows:nth-child(2n-1) 
 {
        background: #DFD;
 }
