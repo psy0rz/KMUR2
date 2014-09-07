@@ -54,11 +54,10 @@ class ContractInvoices(models.core.Protected.Protected):
                     resolve=False,
                     check_exists=True,
                     list=False),
-                'minutes_used': fields.Number(desc='Used minutes'),
                 'minutes_bought': fields.Number(desc='Bought minutes'),
+                'minutes_used': fields.Number(desc='Used minutes'), #calculated automaticly according to linked TicketObjects
                 #balance should usually be 0 in post-payed contracts, and can be negative in pre-payed.
-                #is recalculated automatically
-                'minutes_balance': fields.Number(desc='New budget'), 
+                'minutes_balance': fields.Number(desc='New budget'),  #calculated automaticly
                 'import_id': fields.String(desc='Import ID'),
             }),
             list_key='_id'
