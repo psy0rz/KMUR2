@@ -21,6 +21,7 @@ var form=new ControlForm({
         'end_time': new Date().getTime()/1000,
         'billing_relation': view.params.billing_relation,
         'billing_contract': view.params.billing_contract,
+        'billing_contract_invoice': view.params.billing_contract_invoice,
         'type': view.params.type
     },
     'field_put': function(data, options)
@@ -153,8 +154,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 </span>
                 <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
                 <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-                <br>
-                <a class='field-list-on-click-view' field-key='title' href='#'>Create new relation</a>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
@@ -165,15 +165,18 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 </span>
                 <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
                 <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-                <br>
-                <a class='field-list-on-click-view' field-key='title' href='#'>Create new contract</a>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='billing_contract_invoice' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract_invoice'>
                 <span class='list-span field-list-source field-list-source-hide' field-key='billing_contract_invoice' field-list-view="ticket.ContractInvoices.edit">
                     <span class='field-put field-list-on-click-view' field-key='billing_contract_invoice.desc' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
                 </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='desc' result-format='{desc}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
     </table>
 </fieldset>

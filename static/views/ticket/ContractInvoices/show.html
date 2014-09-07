@@ -26,6 +26,13 @@ var contract_invoice=new ControlForm({
                     'billing_relation': result.data.relation,
                     'billing_contract_invoice': null,
                 }
+            },
+            'create_view_params':
+            {
+                "type":"time",
+                "billing_relation": result.data.relation,
+                'billing_contract': result.data.contract,
+                'billing_contract_invoice': view.params._id,
             }
         });
 
@@ -104,7 +111,7 @@ var contract_invoice=new ControlForm({
 
 <br>
 
-<fieldset class='inline-block'>
+<fieldset class='inline-block' control-view="ticket.TicketObjects.edit">
     <legend>Invoiced time</legend>
 
     <div class='ticket-objects inline-block' style='overflow: auto; max-height:25em;'>
@@ -112,9 +119,10 @@ var contract_invoice=new ControlForm({
         <span class="ui-icon ui-icon-search inline-block" ></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
 
-        <span class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s inline-block'>
-        <span class='control-relation-on-click-add ui-icon ui-icon-plus inline-block'></span>
-        <input class='control-relation-on-change-autocomplete' search-keys='title text' result-format='{title} ({minutes}m)' />
+
+        <input style='margin-left: 2em;' class='control-relation-on-change-autocomplete' search-keys='title text' result-format='{title} ({minutes}m)' />
+        <span class='control-relation-on-click-add ui-icon ui-icon-triangle-1-s inline-block'></span>
+        <span class='control-on-click-view ui-icon ui-icon-plus inline-block'></span>
 
         <table>
             <tr class='ui-widget-header'>
