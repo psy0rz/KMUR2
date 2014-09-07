@@ -212,7 +212,7 @@ class TicketObjects(models.core.Protected.Protected):
 
 
     @Acl(roles="user")
-    def put(self, file=None, **doc):
+    def put(self, file=None, update_contract_invoice=True, **doc):
 
         if file:
             hash=self.store_file(file)
@@ -238,7 +238,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
-            if old_doc['billing_contract_invoice']:
+            if old_doc['billing_contract_invoice'] and not self.context.has_roles(["finance"]):
                 raise fields.FieldError("This item is already billed, you cannot change it anymore.")
 
             log_txt="Changed task note '{title}'".format(**doc)
@@ -260,6 +260,13 @@ class TicketObjects(models.core.Protected.Protected):
         if 'type' in ret and ret['type']!='change':
             self.info(log_txt)
 
+        #update old contract_invoices
+        if '_id' in doc and old_doc["billing_contract_invoice"]!=doc["billing_contract_invoice"]:
+            call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=old_doc["billing_contract_invoice"])
+
+        #update contract_invoices
+        call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=doc["billing_contract_invoice"])
+
         return(ret)
 
     @Acl(roles="user")
@@ -269,6 +276,7 @@ class TicketObjects(models.core.Protected.Protected):
         ticket_object=super(models.core.Protected.Protected, self)._get(_id)
 
         #do we have access to at least one of the ticket the object belongs to?
+        ret=None
         if len(ticket_object['tickets'])>0:
             ticket_model=models.ticket.Tickets.Tickets(self.context)
             tickets=ticket_model.get_all(match_in={
@@ -277,10 +285,9 @@ class TicketObjects(models.core.Protected.Protected):
 
             if len(tickets)>0:
                 ret=ticket_object
-            else:
-                raise(FieldError("You dont have access to this object, nor any related ticket"))
-        else:
-            #try a normal protected read. (object is only readable if use has explicit group or user permissions)
+
+        #try a normal protected read. (object is only readable if use has explicit group or user permissions)
+        if not ret:
             ret=self._get(_id)
 
         if "file" in ret:
@@ -301,14 +308,16 @@ class TicketObjects(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
-        if doc["billing_contract_invoice"]:
+        if doc["billing_contract_invoice"] and not self.context.has_roles(["finance"]):
             raise fields.FieldError("This item is already billed, you cannot delete it.")
-
 
         ret=self._delete(_id)
 
         self.event("deleted", ret)
         self.info("Deleted ticket item {title}".format(**doc))
+
+        #update contract_invoices
+        call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=doc["billing_contract_invoice"])
 
         return(ret)
 

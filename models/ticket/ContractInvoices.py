@@ -127,6 +127,39 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
+    def recalc_minutes_used(self, _id):
+        """recalculate minutes, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
+
+        rounds minutes according to round_minutes
+
+        usually called by TicketObjects on change
+        """
+
+        if not _id:
+            return
+
+        doc=self.get(_id)
+        contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=doc["contract"])
+
+        #get used minutes and calculate total
+        minutes_used=0
+        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+                match={
+                    "billing_contract_invoice": _id
+                }
+            )
+
+        for ticket_object in ticket_objects:
+            minutes_used=minutes_used+self.round_minutes(ticket_object, contract)
+
+        if minutes_used==doc["minutes_used"]:
+            return
+
+        doc["minutes_used"]=minutes_used
+        self.put(**doc)
+
+
+    @Acl(roles="finance")
     def invoice_all(self, relation_id=None):
         """invoice all contracts and open hours"""
 
@@ -266,7 +299,9 @@ class ContractInvoices(models.core.Protected.Protected):
 
                         #update ticket_object
                         ticket_object['billing_contract_invoice']=contract_invoice['_id']
-                        call_rpc(self.context, 'ticket', 'TicketObjects', 'put', **ticket_object)
+                        call_rpc(self.context, 'ticket', 'TicketObjects', 'put', update_contract_invoice=False, **ticket_object)
+
+
 
 
     @Acl(roles="finance")
@@ -332,10 +367,11 @@ class ContractInvoices(models.core.Protected.Protected):
     def put(self, **doc):
 
         if '_id' in doc:
-          log_txt="Changed contract invoice {desc}".format(**doc)
-          old_doc=self._get(doc["_id"])
+            log_txt="Changed contract invoice {desc}".format(**doc)
+            old_doc=self._get(doc["_id"])
         else:
-          log_txt="Created new contract invoice {desc}".format(**doc)
+            log_txt="Created new contract invoice {desc}".format(**doc)
+            doc["minutes_used"]=0
 
         if 'contract' in doc:
             contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=doc['contract'])
@@ -364,6 +400,17 @@ class ContractInvoices(models.core.Protected.Protected):
     def delete(self, _id):
 
         doc=self._get(_id)
+
+        #unlink all ticketobjects
+        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+                match={
+                    "billing_contract_invoice": _id
+                }
+            )
+        for ticket_object in ticket_objects:
+            ticket_object["billing_contract_invoice"]=None
+            call_rpc(self.context, 'ticket', 'TicketObjects', 'put', **ticket_object)
+
         ret=self._delete(_id)
         self.recalc_budget(doc['relation'], doc['contract'])
         self.event("deleted",ret)
