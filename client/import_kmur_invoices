@@ -106,35 +106,23 @@ for child in factuur.findall("factuur"):
 			if user:
 				doc["allowed_users"].append(user[0]["_id"])
 
-
 			#add invoice items
 			if get(child,"id") in invoice_items:
-				tax=21
+
+				#tax hacks
+				if get(child,"gebruiker_id")!="99" or int(get(child,"id"))<=840:
+					if int(get(child,"id"))>864:
+						tax=21 #oud/nieuw tarier
+					else:
+						tax=19
+				#olvo vanaf factuur 840 geen btw (2012)
+				else: 
+					tax=0;
+
 				for item in invoice_items[get(child,"id")]:
-					item["tax"]=21
+					item["tax"]=tax
 					doc["items"].append(item)
 
-			# #tax hacks
-			#       if ($klant_data['gebruiker_id']!=99 || $factuur['id']<=840)
-			#       {
-			#       if ($factuur['id']>864)
-			#       {
-			#           $btw=$totaal*0.21;
-			#           $inclusief=$totaal*1.21;
-
-			#       }
-			#       else
-			#       {
-			#               $btw=$totaal*0.19;
-			#               $inclusief=$totaal*1.19;
-			#       }
-			#       }
-			#       #olvo vanaf factuur 840 geen btw (2012)
-			#       else
-			#       {
-			#               $btw=0;
-			#               $inclusief=$totaal;
-			#       }
 
 
 			print(doc)
