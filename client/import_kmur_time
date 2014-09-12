@@ -153,6 +153,7 @@ for child in overzicht_uren.findall("overzicht_uren"):
                             rpc_client.request("ticket.TicketObjects.put", **ticket_object )
 
                         #store updated minute count
+                        #NOTE: not neccesary: counting of used minutes is done automatically now.
                         rpc_client.request("ticket.ContractInvoices.put", **contract_invoice )
                         print("CONTRACT_INVOICE2 ", contract_invoice)
 
@@ -175,7 +176,7 @@ for child in overzicht_uren.findall("overzicht_uren"):
                             )
 
 
-                        print("NEW TICKET_OBJECT", ticket_object)
+                        print("NEW TICKET_OBJECT")
                     print("\n")
 
 
