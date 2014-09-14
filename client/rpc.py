@@ -4,10 +4,11 @@ import sys
 
 class RpcClient:
 	"""tracer rpc client class. """
-	def __init__(self, url, abort_on_error=True):
+	def __init__(self, url, abort_on_error=True, insecure=False):
 		self.session=requests.Session()
 		self.url=url
 		self.abort_on_error=abort_on_error
+		self.verify=not insecure
 
 	"""request the specified rpc command, and remember the login session
 
@@ -47,6 +48,7 @@ class RpcClient:
 			result=self.session.post(
 				self.url, 
 				data=monitored_encoder,
+				verify=self.verify,
 				headers={ 'Content-Type': encoder.content_type}
 			)
 
@@ -55,6 +57,7 @@ class RpcClient:
 		else:
 			result=self.session.post(
 				self.url, 
+				verify=self.verify,
 				data=data,
 				headers={ 'Content-Type': 'application/json' }
 			)

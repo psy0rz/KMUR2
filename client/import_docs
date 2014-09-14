@@ -14,13 +14,14 @@ parser.add_argument('--user', help='user to login. default: %(default)s')
 parser.add_argument('--password', help='password. default: %(default)s')
 parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
 parser.add_argument('--ticket_status', default="reference", help='Status of the new task')
+parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
 parser.add_argument('files',   nargs='+', help='Files to upload')
 
 args = parser.parse_args()
 
 # try:
 #initialise the rpc client class
-rpc_client=rpc.RpcClient(args.url)
+rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
 #check if files are readable/existing
 for filename in args.files:

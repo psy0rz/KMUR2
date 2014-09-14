@@ -14,6 +14,7 @@ parser.add_argument('--upload', default=None, help='File to upload')
 parser.add_argument('--json', action='store_true', help='interpret parameters as raw JSON data. (usefull when you want to pass complexer data type like subarrays or dicts) dont forget to use single quotes around the json string.')
 parser.add_argument('--short', action='store_true', help='return short single-line JSON output (for scripting)')
 parser.add_argument('--verbose', action='store_true', help='request verbose mode (module help output)')
+parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
 parser.add_argument('command',  nargs=1, help='RPC function to call. example: core.Users.get_all')
 parser.add_argument('params',  default=[], nargs='*', help='RPC parameters. can be in foo=bar form or JSON string when using --json.')
 
@@ -21,7 +22,7 @@ args = parser.parse_args()
 
 try:
 	#initialise the rpc client class
-	rpc_client=rpc.RpcClient(args.url)
+	rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
 	if args.user != None:
 		#first login using the specified user and pass

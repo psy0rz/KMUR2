@@ -12,12 +12,13 @@ parser = argparse.ArgumentParser(description='Toodledo importer v1.0')
 parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
 parser.add_argument('--user', default='admin', help='user to login. default: %(default)s')
 parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
 parser.add_argument('file',  nargs=1, help='toodle XML export file')
 
 args = parser.parse_args()
 
 #initialise the rpc client class
-rpc_client=rpc.RpcClient(args.url)
+rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
 #first login using the specified user and pass
 user=rpc_client.request("core.Users.login", name=args.user, password=args.password)
