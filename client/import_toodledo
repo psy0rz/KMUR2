@@ -45,6 +45,10 @@ statusses={
 
 #traverse all todo items
 for child in element.findall("item"):
+
+	def get(key):
+		return (child.find(key))
+
 	#determine uniq id so we can check if it already exists in tracer
 	import_id="toodledo"+get("id").text
 	result=rpc_client.request("ticket.Tickets.get_all", match={ "import_id": import_id })

@@ -2,7 +2,7 @@
 
 import re
 
-DB_PREFIX="kmur2"
+DB_PREFIX="tracer"
 
 def call_rpc(context, module, cls, method, *args, **kwargs):
     """resolve and call rpc models from strings, also called from rpc.py
