@@ -564,10 +564,10 @@ class Base(models.common.Base):
         #this way we get more consistent results if the items are the same. (as happens with dates a lot)
         if sort:
             last_direction=sort[len(sort)-1][1]
-            sort.append(  ( "$natural", last_direction ) )
+            sort.append(  ( "_id", last_direction ) )
         #no sort always shows items in 'natural' order, newest first
         else:
-            sort.append(  ( "$natural", -1 ) )
+            sort.append(  ( "_id", -1 ) )
 
         cursor=self.db[self.default_collection].find(spec=spec,
                             fields=fields,
