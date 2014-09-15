@@ -12,6 +12,7 @@ import time
 import hashlib
 import os
 import bottle
+import bson.objectid
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
@@ -269,6 +270,8 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
+
+
     @Acl(roles="user")
     def get(self, _id):
 
@@ -375,3 +378,17 @@ class TicketObjects(models.core.Protected.Protected):
         self.process_get_all(ticket_objects, **params)
 
         return(ticket_objects)
+
+
+    @Acl(roles="user")
+    def get_used_contracts(self, relation_id):
+        '''get unique list of used contract_ids for specified relation'''
+
+        return(
+            self.db[self.default_collection].
+                find({ "billing_relation" : bson.objectid.ObjectId(relation_id) }).
+                distinct("billing_contract")
+        )
+
+
+

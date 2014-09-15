@@ -125,7 +125,8 @@ class ContractInvoices(models.core.Protected.Protected):
         return(minutes)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="user")
+    #TODO: all users still need finance rights now 
     def recalc_minutes_used(self, _id):
         """recalculate minutes, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
 
@@ -302,6 +303,15 @@ class ContractInvoices(models.core.Protected.Protected):
                         call_rpc(self.context, 'ticket', 'TicketObjects', 'put', update_contract_invoice=False, **ticket_object)
 
 
+    @Acl(roles="user")
+    def get_used_contracts(self, relation_id):
+        '''get unique list of used contract_ids for specified relation'''
+
+        return(
+            self.db[self.default_collection].
+                find({ "relation" : bson.objectid.ObjectId(relation_id) }).
+                distinct("contract")
+        )
 
 
     @Acl(roles="finance")
@@ -310,18 +320,21 @@ class ContractInvoices(models.core.Protected.Protected):
 
         relation=call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id)
 
+        #first determine all contracts that are used anywhere 
+        used_contract_ids=set()
+        used_contract_ids.update(relation["contracts"])
+        used_contract_ids.update(call_rpc(self.context, 'ticket', 'TicketObjects', 'get_used_contracts', relation_id=relation_id))
+        used_contract_ids.update(self.get_used_contracts(relation_id=relation_id))
+
         budgets=[]
 
         #traverse all contracts:
         #contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all') #slower but shows deactivated contracts as well.
-        contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all', match_in={ "_id": relation["contracts"] })
+        contracts=call_rpc(self.context, 'ticket', 'Contracts', 'get_all', match_in={ "_id": used_contract_ids })
 
 
         for contract in contracts:
-            used=False
 
-            if contract["_id"] in relation["contracts"]:
-                used=True
 
             #get budget from latest contract_invoice
             latest_contract_invoices=self.get_all(
@@ -335,7 +348,6 @@ class ContractInvoices(models.core.Protected.Protected):
 
             if latest_contract_invoices:
                 minutes_balance=latest_contract_invoices[0]["minutes_balance"]
-                used=True
             else:
                 minutes_balance=0
 
@@ -350,15 +362,13 @@ class ContractInvoices(models.core.Protected.Protected):
                 })
 
             for ticket_object in ticket_objects:
-                used=True
                 minutes_balance-=self.round_minutes(ticket_object, contract)
 
-            if used:
-                budgets.append({
-                    "_id": contract["_id"],
-                    "contract_title": contract["title"],
-                    "minutes_balance": minutes_balance
-                })
+            budgets.append({
+                "_id": contract["_id"],
+                "contract_title": contract["title"],
+                "minutes_balance": minutes_balance
+            })
 
         return(budgets)
 
