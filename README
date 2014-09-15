@@ -1,0 +1,9 @@
+To create the initial database and admin user:
+
+psy@psypad$ mongo tracer_test_nl
+MongoDB shell version: 2.4.9
+connecting to: tracer_test_nl
+> db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "roles" : [ "admin" ], "group_ids": []  } )
+>
+
+Now you can login with admin@test.nl and password "changeme".
