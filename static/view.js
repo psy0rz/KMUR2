@@ -275,7 +275,7 @@ function viewShowError(result, parent, meta)
             }
             
             //highlight the field that has the error
-            if ('fields' in result.error)
+            if ('fields' in result.error && meta && meta.type)
             {
                 $(Field[meta.type].find_element('', meta, parent, result.error.fields)).addClass("ui-state-error").focus();
             }
