@@ -795,6 +795,7 @@ ControlList.prototype.get_result=function(result, request_params)
             request_params
         );
 
+        // console.error("get_result list", this.context);
         //get more endless scroll-data only if enabled and when we're visible
         if (this.params.endless_scrolling && this.context.closest(".view").css("display")!="none")
         {
@@ -816,15 +817,19 @@ ControlList.prototype.get_result=function(result, request_params)
                     list_continue: true
                 });
             }
-            else
-            {
-                //we're done getting all the data we need. now its safe to delete any list items that where marked for deleting when we started
-                $('.field-list-delete', this.context).removeClass("field-list-delete field-list-item").hide(1000, function()
-                {
-                    $(this).remove();
-                });
-            }
         }
+
+        
+        if (!this.getting)
+        {
+            //we're done getting all the data we need. now its safe to delete any list items that where marked for deleting when we started
+            // console.error("deleting old list items", this.context);
+            $('.field-list-delete', this.context).removeClass("field-list-delete field-list-item").hide(1000, function()
+            {
+                $(this).remove();
+            });
+        }
+
     }
 
 
