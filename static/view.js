@@ -48,58 +48,63 @@ $(document).ready(function()
 //compares viewStatus with gViewStatus and creates/deletes/changes the actual dom objects.
 function viewSwitch(viewStatus)
 {
-        var oldViewStatus={};
-        $.extend(true, oldViewStatus, gViewStatus);
+    var oldViewStatus={};
+    $.extend(true, oldViewStatus, gViewStatus);
 
-        var newViewStatus={};
-        $.extend(true, newViewStatus, viewStatus);
+    var newViewStatus={};
+    $.extend(true, newViewStatus, viewStatus);
 
-        //always keep highest counter
-        if (oldViewStatus.count>newViewStatus.count)
-            newViewStatus.count=oldViewStatus.count;
+    //always keep highest counter
+    if (oldViewStatus.count>newViewStatus.count)
+        newViewStatus.count=oldViewStatus.count;
 
-        //store the updated view state right away. (some objects do stuff with viewUpdateUrl when we delete or create them)
-        gViewStatus=newViewStatus;
+    //store the updated view state right away. (some objects do stuff with viewUpdateUrl when we delete or create them)
+    gViewStatus=newViewStatus;
 
-        //traverse the old views, and compare to new
-        $.each(oldViewStatus.views, function(viewId, view)
+    //traverse the old views, and compare to new
+    $.each(oldViewStatus.views, function(viewId, view)
+    {
+        //deleted?
+        //(changed stuff will also be deleted and recreated below)
+        if (! (viewId in newViewStatus.views))
         {
-            //deleted?
-            //(changed stuff will also be deleted and recreated below)
-            if (! (viewId in newViewStatus.views))
-            {
-                viewDOMdel(view);
-            }
-        });
+            viewDOMdel(view);
+        }
+    });
 
-        //traverse the new views, and compare to old
-        $.each(newViewStatus.views, function(viewId, view)
+    //sort by viewId
+    viewIds=Object.keys(newViewStatus.views);
+    viewIds.sort(function(a,b){
+        return(a.substr(4)-b.substr(4))
+    })
+
+    //traverse the new views, and compare to old
+    $.each(viewIds, function(i, viewId)
+    {
+        var view=newViewStatus.views[viewId];
+
+        // if ((viewId in oldViewStatus.views)) 
+        // {
+        //     console.log("old view params",  JSON.stringify(oldViewStatus.views[viewId].params) );
+        //     console.log("new view params",  JSON.stringify(view.params) );
+        // }
+        //new or changed
+        if (
+            (! (viewId in oldViewStatus.views)) || //new
+            oldViewStatus.views[viewId].name!=view.name || //different view name or params?
+            ! _.isEqual(oldViewStatus.views[viewId].params, view.params) 
+        )
         {
-
-            // if ((viewId in oldViewStatus.views)) 
-            // {
-            //     console.log("old view params",  JSON.stringify(oldViewStatus.views[viewId].params) );
-            //     console.log("new view params",  JSON.stringify(view.params) );
-            // }
-
-            //new or changed
-            if (
-                (! (viewId in oldViewStatus.views)) || //new
-                oldViewStatus.views[viewId].name!=view.name || //different view name or params?
-                ! _.isEqual(oldViewStatus.views[viewId].params, view.params) 
-            )
+            //viewId doesnt exist yet?
+            if ($("#"+viewId).length==0)
             {
-                //viewId doesnt exist yet?
-                if ($("#"+viewId).length==0)
-                {
-                    viewDOMadd(view);
-                }
-
-                //(re)load the view
-                viewLoad(view);
+                viewDOMadd(view);
             }
-        });
 
+            //(re)load the view
+            viewLoad(view);
+        }
+    });
 }
 
 //update the browser url, but also calls viewSwitch to do the actual switch right away.
