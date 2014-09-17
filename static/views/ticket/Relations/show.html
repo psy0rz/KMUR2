@@ -90,10 +90,12 @@ var contract_budgets=new ControlList({
     'get_params'        : {
         'relation_id': view.params._id
     },
-    'create_view_params': {
-        'relation_id': view.params._id 
-    }
 });
+
+$(".contract-budgets .field-list-source", context).data("field-list-view-params", {
+    relation_id: view.params._id,
+});
+
 
 
 $(context).subscribe("ticket.TicketObjects.changed","budgets", function()
@@ -118,6 +120,9 @@ var tickets_objects=new ControlList({
             'billing_relation': view.params._id,
         }
     },
+    'create_view_params': {
+        'relation_id': view.params._id 
+    }
 });
 
 

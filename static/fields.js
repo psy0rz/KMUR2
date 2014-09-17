@@ -680,8 +680,8 @@ Field.List.meta_put=function(key, meta, context, options)
             editView.params[meta.list_key]=list_id;
 
             //extend the view params with data stored in the element and list_source            
-            $.extend(true, editView.params, element.data("field-list-view-params"));
             $.extend(true, editView.params, list_source.data("field-list-view-params"));
+            $.extend(true, editView.params, element.data("field-list-view-params"));
 
 
             editView.x=event.clientX;
