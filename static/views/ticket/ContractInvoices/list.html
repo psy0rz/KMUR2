@@ -5,7 +5,8 @@
         'class'        		: 'ticket.ContractInvoices',
         'get_params'        : {
             "match": {
-                'relation': view.params.relation_id
+                'relation': view.params.relation_id,
+                'contract': view.params._id
                 }
         },
         'title'           	: 'Contract orders',
