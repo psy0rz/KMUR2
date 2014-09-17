@@ -8,12 +8,14 @@
 .clickable,
 .control-list-on-click-edit,
 .control-relation-on-click-del,
+.control-relation-on-click-add,
 .control-on-click-del,
 .control-on-click-add,
 .field-list-on-click-view,
 .field-relation-on-click-add,
 .field-list-on-click-del,
-.control-on-click-view
+.control-on-click-view,
+.field-relation-on-click-add
 {
 	cursor:pointer;
 }
@@ -21,6 +23,7 @@
 .clickable:hover, 
 .control-list-on-click-edit:hover, 
 .control-relation-on-click-del:hover, 
+.control-relation-on-click-add:hover, 
 .control-on-click-del:hover, 
 .control-on-click-add:hover, 
 .field-list-on-click-view:hover, 
