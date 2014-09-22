@@ -1,5 +1,19 @@
 
 <script>
+
+var contract=new ControlForm({
+    'view'              : view,
+    'class'             : 'ticket.Contracts',
+    'context'           : '.contract',
+    'get_params'        : {
+        '_id'           : view.params._id
+    },
+    'title'             : 'Contract orders "{title}"',
+    'create_view_params': {
+        '_id'           : view.params._id
+    }
+});
+
 var contract_invoices=new ControlList({
     'view'            	: view,
     'class'        		: 'ticket.ContractInvoices',
@@ -8,12 +22,12 @@ var contract_invoices=new ControlList({
         "match": {
             'relation': view.params.relation_id,
             'contract': view.params._id
-            }
+        }
     },
-    'title'           	: 'Contract orders',
     'endless_scrolling'	: true,
     'create_view_params': {
-        'relation_id': view.params.relation_id 
+        'relation_id': view.params.relation_id, 
+        'contract_id': view.params._id
     }
 });
 
@@ -49,14 +63,34 @@ var tickets_objects=new ControlList({
 
 </script>
 
+<fieldset class='inline-block contract' >
+    <legend>Contract</legend>
+    <table class='inline-block' control-view="ticket.Contracts.edit">
+        <tr>
+            <td class='field-meta-put' field-key='title' field-meta-key='desc'>
+            <td class='field-put value control-on-click-view' field-key='title'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
+            <td class='field-put value control-on-click-view' field-key='desc'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='type' field-meta-key='desc'>
+            <td class='field-put value control-on-click-view' field-key='type'>
+        </tr>
+    </table>
+</fieldset>
+
+<br>
+
 <fieldset class='inline-block' >
     <legend>Contract orders</legend>
 
-    <div class='contract-invoices inline-block' style='overflow: auto; max-height:50em; width: 50em'>
+    <div class='contract-invoices inline-block' style='overflow: auto; max-height:50em; width: 50em' control-view='ticket.ContractInvoices.edit'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='contract_title desc'>
-        <span class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title'></span>
+        <span class='control-on-click-view ui-icon ui-icon-plus inline-block' field-key='desc'></span>
 
         <table >
             <tr class='ui-widget-header'>
@@ -87,7 +121,6 @@ var tickets_objects=new ControlList({
     </div>
 
     <div class='floatingBar viewErrorClass'>
-        <button class='control-on-click-view' control-view='ticket.ContractInvoices.edit' field-key='desc' >Create new order</button>
         <button class='on-click-contract-invoices-invoice-all' >Auto invoice</button>
 
         <span class='viewErrorText'></span>
