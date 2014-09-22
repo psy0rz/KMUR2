@@ -1,6 +1,8 @@
 
 <script>
 
+var timestamp=new Date().getTime()/1000;
+
 var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.TicketObjects',
@@ -16,9 +18,9 @@ var form=new ControlForm({
     'default'         : { 
         'allowed_users': [ session.user_id ],
         'tickets': [ view.params.ticket_id ],
-        'create_time': new Date().getTime()/1000,
-        'start_time': new Date().getTime()/1000,
-        'end_time': new Date().getTime()/1000,
+        'create_time': timestamp,
+        'start_time': timestamp,
+        'end_time': timestamp,
         'billing_relation': view.params.billing_relation,
         'billing_contract': view.params.billing_contract,
         'billing_contract_invoice': view.params.billing_contract_invoice,

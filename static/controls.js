@@ -372,7 +372,14 @@ ControlForm.prototype.get_result=function(result, request_params)
 
         //fill in default values
         if (this.params.default)
-            this.field_put(this.params.default, request_params);
+        {
+            //also highlight default values
+            var sub_request_params={};
+            $.extend(true, sub_request_params, request_params);
+            sub_request_params.show_changes=true;
+            sub_request_params.update=true;
+            this.field_put(this.params.default, sub_request_params);
+        }
 
 
         if (this.params.title_new)
