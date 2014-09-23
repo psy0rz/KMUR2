@@ -150,7 +150,7 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
             context.empty();
             context.append(element);
             if (options.show_changes)
-                context.stop(true,true).effect('highlight',  2000);
+                this.highlight(context);
         }
         else
         {
@@ -165,7 +165,7 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
         {
             context.text(element);
             if (options.show_changes)
-                context.stop(true,true).effect('highlight', 2000);
+                this.highlight(context);
         }
         else
         {
@@ -176,6 +176,11 @@ Field.Base.html_append=function(key, meta, context, data, options, element)
 
 }
 
+//give a visual temporary trigger to highlight a field. (used with options.show_changes)
+Field.Base.highlight=function(element)
+{
+    element.stop(true,true).effect('highlight', 2000);
+}
 
 /*** puts data into a context
 
@@ -1114,7 +1119,15 @@ Field.String.put=function(key, meta, context, data, options)
     if (context.hasClass("field-input"))
     {
         if (!options.no_input)
+        {
+            if (options.show_changes)
+            {
+                if (context.val()!=data)
+                    this.highlight(context);
+            }
+
             context.val(data);
+        }
     }
     else
     {
@@ -1190,7 +1203,15 @@ Field.Image.get=function(key, meta, context)
 
 Field.Image.put=function(key, meta, context, data, options)
 {
+    if (options.show_changes)
+    {
+        if (context.attr("src")!=data)
+            this.highlight(context);
+    }
+
     context.attr("src", data);
+
+
 }
 
 
@@ -1327,6 +1348,12 @@ Field.Select.put=function(key, meta, context, data, options)
             {
                 if (meta.choices[i][0]==data)
                 {
+                    if (options.show_changes)
+                    {
+                        if (context.val()!=data)
+                            this.highlight(context);
+                    }
+
                     context.val(i);
                     break;
                 }
@@ -1413,6 +1440,7 @@ Field.Bool.get=function(key, meta, context)
     }
 }
 
+//specify options.field_action to invert value and emit a field_done.
 Field.Bool.put=function(key, meta, context, data, options)
 {
     if (context.hasClass("field-input"))
@@ -1433,7 +1461,15 @@ Field.Bool.put=function(key, meta, context, data, options)
                    context.trigger("field_done",[key , meta, context, Field[meta.type].get(key,meta,$(this)) ]);
                 }
                 else
-                   context.attr("checked", data);
+                {
+                    if (options.show_changes)
+                    {
+                        if (context.attr("checked")!=data)
+                            this.highlight(context);
+                    }
+
+                    context.attr("checked", data);
+                }
             }
         }
     }
@@ -1548,7 +1584,13 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
             $("input", context).each(function()
             {
                 //set checked to true if the value of the checkbox is found in the value passed to this function:
-                $(this).attr("checked", (data.indexOf($(this).attr("value")) != -1));
+                var checked=(data.indexOf($(this).attr("value")) != -1)
+                if (options.show_changes)
+                {
+                    if ($(this).attr("checked")!=checked)
+                        Field.Base.highlight($(this));
+                }
+                $(this).attr("checked", checked);
             });
         }
     }
@@ -1721,7 +1763,6 @@ Field.Timestamp.get=function(key, meta, context)
 
 Field.Timestamp.put=function(key, meta, context, data, options)
 {
-    //FIXME: recalculate to local-time, store UTC on server
     var dateStr="";
 
     if (data)
@@ -1743,7 +1784,15 @@ Field.Timestamp.put=function(key, meta, context, data, options)
     if (context.hasClass("field-input"))
     {
         if (!options.no_input)
-            context.val(dateStr);
+        {
+            if (options.show_changes)
+            {
+                if (context.val()!=dateStr)
+                    this.highlight(context);
+            }
+
+            context.val(dateStr);            
+        }
     }
     else
     {
@@ -2181,6 +2230,8 @@ Field.Relation.get=function(key, meta, context)
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
+    
+
     //add a handler that gets triggered as soon as metadata is resolved
     context.off("meta_put_done").on("meta_put_done", function()
     {
