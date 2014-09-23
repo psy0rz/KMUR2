@@ -5,7 +5,6 @@ var relation=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Relations',
     'get_params'      : view.params,
-    'default_focus'   : 'title',
     'title'           : 'View relation {title}',
     'favorite_menu'   : 'relations',
     'on_change'       : 'put',
@@ -211,7 +210,9 @@ var tickets_objects=new ControlList({
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title desc'>
-        <a control-view='ticket.Tickets.edit' class='control-on-click-view' href='#'>Create new task</a>
+        <span control-view='ticket.Tickets.edit' class='control-on-click-view ui-icon ui-icon-plus inline-block'></span>
+
+
         <table >
             <tr class='ui-widget-header'>
                 <th>
@@ -246,7 +247,7 @@ var tickets_objects=new ControlList({
 
     <div class='ticket-objects inline-block' style='overflow: auto; height:20em; width: 50em'>
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='title text'>
+        <input type='text' class='control-on-change-search' control-search-keys='title text'>
 
         <span class='ticket-object-add-links'>
         </span>
@@ -286,7 +287,7 @@ var tickets_objects=new ControlList({
     <div class='invoices inline-block' style='overflow: auto; height:15em;'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-        <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr'>
+        <input type='text' class='control-on-change-search' control-search-keys='notes invoice_nr'>
         <a control-view='ticket.Invoices.edit' class='control-on-click-view' href='#'>Create new invoice</a>
      
         <table >
