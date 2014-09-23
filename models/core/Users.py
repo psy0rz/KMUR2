@@ -128,15 +128,6 @@ class Users(models.core.Protected.Protected):
         self.context.session['db_name']=db_name
         self.reconnect(force=True)
 
-        #FIXME: ugly temporary hack to bootstrap empty DB
-        if username=="tmpadmin":
-            self.context.session['roles'].append('everyone')
-            self.context.session['roles'].append('user')
-            self.context.session['roles'].append('admin')
-            self.info("logged in via DEBUG HACK - REMOVE ME")
-            return
-
-
         try:
             user = super(models.core.Protected.Protected,self)._get(match={
                                   'name': username,
