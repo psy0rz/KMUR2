@@ -76,14 +76,11 @@ class ContractInvoices(models.core.Protected.Protected):
 
     read=write
 
+    #call order: recalc_minutes_used -> put -> recalc_minutes_balance
 
-    # @Acl(roles="finance")
-
-
-    # def get_(self, **doc):
 
     @Acl(roles="finance")
-    def recalc_budget(self, relation_id, contract_id):
+    def recalc_minutes_balance(self, relation_id, contract_id):
         """recalculate budget of all contract invoices of specified relation,contract combo"""
 
         contract_invoices=self.get_all(
@@ -194,6 +191,9 @@ class ContractInvoices(models.core.Protected.Protected):
                 if contract["type"]=='manual':
                     break
 
+                if not contract["active"]:
+                    break
+
                 #contracts are invoiced on the first day of the month, at 00:00
                 contract_invoice_date=datetime.datetime(
                         year=datetime.datetime.now().year,
@@ -214,6 +214,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
                 #should we generate this the contract_invoice of this month?
                 if len(latest_contract_invoices)==0 :
+
                     title=contract['title']+" "+contract_invoice_date.strftime("%B %Y")
                     contract_invoice={
                         'date': contract_invoice_date.timestamp(),
@@ -282,9 +283,9 @@ class ContractInvoices(models.core.Protected.Protected):
                              to_relation=relation['_id'],
                              currency=contract['currency'],
                              items=[{
-                                'amount': minutes/60,
+                                'amount': round(minutes/60,2),
                                 'desc':invoice_desc,
-                                'price': price,
+                                'price': round(price,2),
                                 'tax': relation['invoice']['tax']
                              }]
                         )
@@ -390,11 +391,11 @@ class ContractInvoices(models.core.Protected.Protected):
         ret=self._put(doc)
 
         if 'relation' in doc and 'contract' in doc:
-            self.recalc_budget(doc['relation'], doc['contract'])
+            self.recalc_minutes_balance(doc['relation'], doc['contract'])
 
         #recalc previous selected contract
         if '_id' in doc and 'relation' in old_doc and 'contract' in old_doc:
-            self.recalc_budget(old_doc['relation'], old_doc['contract'])
+            self.recalc_minutes_balance(old_doc['relation'], old_doc['contract'])
 
 
         self.event("changed",ret)
@@ -419,10 +420,10 @@ class ContractInvoices(models.core.Protected.Protected):
             )
         for ticket_object in ticket_objects:
             ticket_object["billing_contract_invoice"]=None
-            call_rpc(self.context, 'ticket', 'TicketObjects', 'put', **ticket_object)
+            call_rpc(self.context, 'ticket', 'TicketObjects', 'put', update_contract_invoice=False,**ticket_object)
 
         ret=self._delete(_id)
-        self.recalc_budget(doc['relation'], doc['contract'])
+        self.recalc_minutes_balance(doc['relation'], doc['contract'])
         self.event("deleted",ret)
 
         self.info("Deleted contract invoice {desc}".format(**doc))
