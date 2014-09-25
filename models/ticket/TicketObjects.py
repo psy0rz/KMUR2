@@ -261,12 +261,13 @@ class TicketObjects(models.core.Protected.Protected):
         if 'type' in ret and ret['type']!='change':
             self.info(log_txt)
 
-        #update old contract_invoice
-        if '_id' in doc and old_doc["billing_contract_invoice"]!=doc["billing_contract_invoice"]:
-            call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=old_doc["billing_contract_invoice"])
+        if update_contract_invoice:
+            #update old contract_invoice
+            if '_id' in doc and old_doc["billing_contract_invoice"]!=doc["billing_contract_invoice"]:
+                call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=old_doc["billing_contract_invoice"])
 
-        #update contract_invoice
-        call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=doc["billing_contract_invoice"])
+            #update contract_invoice
+            call_rpc(self.context, "ticket", "ContractInvoices", "recalc_minutes_used", _id=doc["billing_contract_invoice"])
 
         return(ret)
 

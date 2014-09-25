@@ -98,6 +98,7 @@ class ContractInvoices(models.core.Protected.Protected):
             if ('minutes_balance' not in contract_invoice) or (contract_invoice["minutes_balance"]!=minutes_balance):
                 contract_invoice['minutes_balance']=minutes_balance
                 self.put(
+                    recalc_minutes_balance=False, #stop recursion
                     **contract_invoice
                     )
 
@@ -125,7 +126,7 @@ class ContractInvoices(models.core.Protected.Protected):
     @Acl(roles="user")
     #TODO: all users still need finance rights now 
     def recalc_minutes_used(self, _id):
-        """recalculate minutes, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
+        """recalculate minutes for one contract_invoice, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
 
         rounds minutes according to round_minutes
 
@@ -149,6 +150,7 @@ class ContractInvoices(models.core.Protected.Protected):
         for ticket_object in ticket_objects:
             minutes_used=minutes_used+self.round_minutes(ticket_object, contract)
 
+        #no change?
         if minutes_used==doc["minutes_used"]:
             return
 
@@ -186,13 +188,14 @@ class ContractInvoices(models.core.Protected.Protected):
                 try:
                     contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
                 except:
-                    break
-
-                if contract["type"]=='manual':
-                    break
+                    #skip contracts we cant read
+                    continue
 
                 if not contract["active"]:
-                    break
+                    continue
+
+                if contract["type"] not in [ "post", "prepay" ]:
+                    continue
 
                 #contracts are invoiced on the first day of the month, at 00:00
                 contract_invoice_date=datetime.datetime(
@@ -226,34 +229,21 @@ class ContractInvoices(models.core.Protected.Protected):
                         'minutes_bought':0,
                     }
 
-                    #determine current minutes-balance
-                    if len(latest_contract_invoices)==0:
-                        contract_invoice['minutes_balance']=0
-                    else:
-                        contract_invoice['minutes_balance']=latest_contract_invoices[0]['minutes_balance']
+                    #list of items to add to the actual invoice
+                    invoice_items=[]
 
-                    #we put the contract_invoice a lot of times to keep things in a usefull state if something fails
-                    contract_invoice=self.put(**contract_invoice)
-
+                    #prepayed contract
                     if contract['type']=='prepay':
-                        #add prepayed contract price to invoice
-                        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
-                             to_relation=relation['_id'],
-                             currency=contract['currency'],
-                             items=[{
-                                'amount': 1,
-                                'desc':title,
-                                'price': contract['price'],
-                                'tax': relation['invoice']['tax']
-                             }]
-                        )
-                        #update contract_invoice 
-                        contract_invoice['invoice']=invoice['_id']
-                        contract_invoice['minutes_balance']+=contract['minutes']
+                        #buy fixed number of minutes for fixed price:
                         contract_invoice['minutes_bought']=contract['minutes']
-                        contract_invoice=self.put(**contract_invoice)
+                        invoice_items.append({
+                            'amount': 1,
+                            'desc':title,
+                            'price': contract['price'],
+                            'tax': relation['invoice']['tax']
+                        })
 
-                    #get uninvoiced hours for this relation,contract combo
+                    #get uninvoiced ticket_objects for this relation,contract combo
                     ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
                         fields=["title", "minutes", "minutes_factor" ],
                         match={
@@ -262,46 +252,54 @@ class ContractInvoices(models.core.Protected.Protected):
                             "billing_contract_invoice": None,
                         })
 
+                    #now create contract invoice, so we have the _id
+                    contract_invoice=self.put(**contract_invoice)
+
                     #traverse all the un-invoiced ticket_objects
                     for ticket_object in ticket_objects:
                         minutes=self.round_minutes(ticket_object, contract)
 
                         #determine price:
                         if contract['type']=='post':
+                            #post: pay per hour
                             price=(contract['price']*minutes)/contract['minutes']
                         elif contract['type']=='prepay':
+                            #prepayed: fixed price per month, not per hour
                             price=0
-                        else:
-                            raise fields.FieldError("Unknown contract type: "+contract['type'])
 
-                        #add to invoice
+                        #invoice description for this time
                         invoice_desc="["+contract['title']+"] "+ticket_object['title']
                         if ticket_object['minutes_factor']!=1:
                             invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
 
-                        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
-                             to_relation=relation['_id'],
-                             currency=contract['currency'],
-                             items=[{
-                                'amount': round(minutes/60,2),
-                                'desc':invoice_desc,
-                                'price': round(price,2),
-                                'tax': relation['invoice']['tax']
-                             }]
-                        )
+                        #append to invoice
+                        invoice_items.append({
+                            'amount': round(minutes/60,2),
+                            'desc':invoice_desc,
+                            'price': round(price,2),
+                            'tax': relation['invoice']['tax']
+                        })
 
-                        #update minutes used and bought and invoice id
+                        #update minutes used and bought
                         contract_invoice['minutes_used']+=minutes
-                        contract_invoice['invoice']=invoice['_id']
                         if contract['type']=='post':
                             contract_invoice['minutes_bought']+=minutes
-                        elif contract['type']=='prepay':
-                            contract_invoice['minutes_balance']-=minutes
-                        contract_invoice=self.put(**contract_invoice)
 
-                        #update ticket_object
+                        #point the ticket_object to the current contract_invoice
                         ticket_object['billing_contract_invoice']=contract_invoice['_id']
                         call_rpc(self.context, 'ticket', 'TicketObjects', 'put', update_contract_invoice=False, **ticket_object)
+
+
+                    #create actual invoice
+                    invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
+                         to_relation=relation['_id'],
+                         currency=contract['currency'],
+                         items=invoice_items
+                    )
+
+                    #finally update contract_invoice 
+                    contract_invoice['invoice']=invoice['_id']
+                    contract_invoice=self.put(**contract_invoice)
 
 
     @Acl(roles="user")
@@ -375,7 +373,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
     @Acl(roles="finance")
-    def put(self, **doc):
+    def put(self, recalc_minutes_balance=True, **doc):
 
         if '_id' in doc:
             log_txt="Changed contract invoice {desc}".format(**doc)
@@ -390,12 +388,13 @@ class ContractInvoices(models.core.Protected.Protected):
 
         ret=self._put(doc)
 
-        if 'relation' in doc and 'contract' in doc:
-            self.recalc_minutes_balance(doc['relation'], doc['contract'])
+        if recalc_minutes_balance:
+            if 'relation' in doc and 'contract' in doc:
+                self.recalc_minutes_balance(doc['relation'], doc['contract'])
 
-        #recalc previous selected contract
-        if '_id' in doc and 'relation' in old_doc and 'contract' in old_doc:
-            self.recalc_minutes_balance(old_doc['relation'], old_doc['contract'])
+            #recalc previous selected contract
+            if '_id' in doc and 'relation' in old_doc and 'contract' in old_doc:
+                self.recalc_minutes_balance(old_doc['relation'], old_doc['contract'])
 
 
         self.event("changed",ret)
