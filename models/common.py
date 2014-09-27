@@ -136,7 +136,8 @@ class Context(object):
         usually events are named like 'model.module.classname.changed' or .deleted.
         '''
 
-        self._events.append( (name,value) )
+        if (name,value) not in self._events:
+            self._events.append( (name,value) )
 
     def get_results(self):
         '''gets the "results" of what was done during the context.
