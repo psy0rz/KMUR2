@@ -255,11 +255,14 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=self._put(doc)
 
-        self.event("changed", ret)
 
-        #dont log ticket-change stuff
+        #dont log simple simple updates (without type) and dont log ticket-changes 
         if 'type' in ret and ret['type']!='change':
+            self.event("changed", ret)
             self.info(log_txt)
+        else:
+            #this results in only one event, even if many ticket objects will be changd, usefull for efficient autoinvoicing
+            self.event("changed",{}) 
 
         if update_contract_invoice:
             #update old contract_invoice

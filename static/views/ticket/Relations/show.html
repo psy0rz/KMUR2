@@ -85,6 +85,7 @@ var contract_budgets=new ControlList({
     'context'           : '.contract-budgets',
     'class'             : 'ticket.ContractInvoices',
     'get'               : 'ticket.ContractInvoices.get_budgets',
+    'on_delete'         : 'get',
     'endless_scrolling' : false,
     'get_params'        : {
         'relation_id': view.params._id

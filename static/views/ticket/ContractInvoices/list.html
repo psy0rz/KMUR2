@@ -32,20 +32,7 @@ var contract_invoices=new ControlList({
     }
 });
 
-$(".on-click-contract-invoices-invoice-all", context).click(function()
-{
-    //this should be a cronjob as well
-    rpc("ticket.ContractInvoices.invoice_all",{
-        relation_id: view.params.relation_id
-    }, function(result)
-    {
-        viewShowError(result, context);
-    });
-    return(false);
-});
-
-
-var tickets_objects=new ControlList({
+var ticket_objects=new ControlList({
     'view'              : view,
     'context'           : '.ticket-objects',
     'class'             : 'ticket.TicketObjects',
@@ -61,6 +48,21 @@ var tickets_objects=new ControlList({
         'relation_id': view.params.relation_id 
     }
 });
+
+$(".on-click-contract-invoices-auto-invoice", context).click(function()
+{
+    rpc("ticket.ContractInvoices.auto_invoice",{
+        relation_id: view.params.relation_id,
+        contract_id: view.params._id,
+        desc: "Manual invoice",
+    }, function(result)
+    {
+        viewShowError(result, context);
+    });
+    return(false);
+});
+
+
 
 </script>
 
@@ -122,7 +124,7 @@ var tickets_objects=new ControlList({
     </div>
 
     <div class='floatingBar viewErrorClass'>
-        <button class='on-click-contract-invoices-invoice-all' >Auto invoice</button>
+        <button class='on-click-contract-invoices-auto-invoice' >Auto invoice</button>
 
         <span class='viewErrorText'></span>
     </div>
