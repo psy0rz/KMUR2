@@ -680,6 +680,11 @@ params:
                             get: re-get the list, honoring sorting and filtering settings (default).
                                  can be annoying in some cases, since items might disappear when they're no longer in scope of the list.
                             reload: re-load the whole view. slow and annoying, but might be neccesary sometimes
+    on_delete           what to do when an item in our class is deleted:
+                            delete: removes the item from our list (default)
+                            get: re-get the list, honoring sorting and filtering settings.
+                                 can be annoying in some cases, since items might disappear when they're no longer in scope of the list.
+                            reload: re-load the whole view. slow and annoying, but might be neccesary sometimes
 
 */
 function ControlList(params)
@@ -695,6 +700,9 @@ function ControlList(params)
 
     if (! this.params.on_change)
         this.params.on_change='get';
+
+    if (! this.params.on_delete)
+        this.params.on_delete='delete';
 
     if (typeof (this.params.get_params) ==='undefined')
         this.params.get_params={};
@@ -939,20 +947,47 @@ ControlList.prototype.attach_event_handlers=function()
     $(context).subscribe(this.params.class+'.deleted', "list", function(data)
     {
 
-        console.log("ControlList: data on server has been deleted", this_control);
-
-        var key=data[this_control.meta.list_key];
-        var element=Field.List.find_element(
-            this_control.list_source_element.attr("field-key"),
-            this_control.meta,
-            this_control.list_source_element,
-            [ key ]
-        );
-
-        element.hide(1000, function()
+        if (this_control.params.on_delete=='delete')
         {
-            element.remove();
-        });
+            console.log("ControlList: data on server has been deleted, removing it from this list", this_control);
+
+            var key=data[this_control.meta.list_key];
+            var element=Field.List.find_element(
+                this_control.list_source_element.attr("field-key"),
+                this_control.meta,
+                this_control.list_source_element,
+                [ key ]
+            );
+
+            element.hide(1000, function()
+            {
+                element.remove();
+            });
+        }
+        //re-get the data
+        else if (this_control.params.on_delete=='get')
+        {
+
+            console.log("ControlList: data on server has been deleted, regetting data", data, this_control.params);
+
+            //make sure we at least get to where we left off.
+            this_control.params.endless_scrolling_minimum_skip=this_control.params.get_params.skip;
+
+            //mark all items as 'deleted'. only after regetting all the data we know which ones really can be deleted.
+            //normale field.list does this, but since we're using endless scrolling that wont work. so we only let field.list remove
+            //the field-list-delete class.
+            $('.field-list-item[field-key=""]', this_control.context).addClass("field-list-delete");
+
+            this_control.get_delayed({
+                    list_no_remove: true,
+                    list_update: true,
+                    show_changes: true
+            });
+        }
+        else
+        {
+            console.log("ControlList: data on server has been deleted, ignoring", data, this_control.params);
+        }
 
         return(false);
     });
