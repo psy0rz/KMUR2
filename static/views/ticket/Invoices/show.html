@@ -6,8 +6,9 @@ var form=new ControlForm({
     'class'           : 'ticket.Invoices',
     'get_params'      : view.params,
     'default_focus'   : 'title',
-    'title'           : 'View invoice {invoice_nr}',
+    'title'           : 'View {title} {invoice_nr}',
     'favorite_menu'   : 'invoices',
+    'favorite_title'  : '{title} {invoice_nr}',
     'create_view_params': view.params,
     'on_change'       : 'get', //we need complete data, not only the changes
     'field_put'      : function(data)
@@ -160,7 +161,7 @@ $(".on-click-unpayed", context).click(function()
 </script>
 <div control-view="ticket.Invoices.edit">
 
-<h1 class='field-put control-on-click-view' field-key='title'></h1>
+<h1><span class='field-put control-on-click-view' field-key='title'></span> <span class='field-put control-on-click-view' field-key='invoice_nr'></span></h1>
 
 <fieldset class='inline-block control-on-click-view' field-key='to_relation' >
     <legend>To:</legend>        

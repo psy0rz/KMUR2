@@ -382,7 +382,7 @@ ControlForm.prototype.get_result=function(result, request_params)
 //            $(document).trigger('menu.put_favorite', {
             $.publish('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
-                'title':     this.format(this.params.title, result.data),
+                'title':     this.format(this.params.favorite_title, result.data),
                 'view':      this.params.view,
                 'favorite_id': result.data[this.params.favorite_key]
             });
@@ -629,7 +629,7 @@ ControlForm.prototype.put_result=function(result, request_params)
 //          $(document).trigger('menu.put_favorite', {
             $.publish('menu_put_favorite', {
                 'menu':      this.params.favorite_menu,
-                'title':     this.format(this.params.title, result.data),
+                'title':     this.format(this.params.favorite_title, result.data),
                 'view':      menu_view,
                 'favorite_id': result.data[this.params.favorite_key]
             });

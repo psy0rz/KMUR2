@@ -37,6 +37,7 @@ to_format="""{company}
 """
 
 date_format="""Date: %d-%m-%Y"""
+invoice_format="""Invoice number: {invoice_nr}"""
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -404,9 +405,10 @@ class Invoices(models.core.Protected.Protected):
 
         pdf_elements.append(Spacer(0, 5*cm))
 
-        #invoice date
+        #invoice number and date
+        pdf_elements.append(Preformatted(invoice_format.format(**invoice), style=styles['Normal']))
         pdf_elements.append(Preformatted(time.strftime(date_format, time.localtime(invoice['sent_date'])), style=styles['Normal']))
-
+                
         pdf_elements.append(Spacer(0, 3*cm))
 
         #convert invoice items to table
@@ -493,8 +495,9 @@ class Invoices(models.core.Protected.Protected):
         #create bottle-http response
         #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
         response=bottle.HTTPResponse(body=buffer)
+        file_name=invoice["to_copy"]["company"]+" "+invoice["title"]+" "+invoice["invoice_nr"]+".pdf"
         response.set_header('Content-Type', 'application/octet-stream')
-        response.set_header('Content-Disposition', "attachment;filename=test.pdf"  );
+        response.set_header('Content-Disposition', "attachment;filename="+file_name  );
 
         return(response)
 

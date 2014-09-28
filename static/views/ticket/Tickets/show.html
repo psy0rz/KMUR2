@@ -6,8 +6,9 @@ var form=new ControlForm({
     'class'           : 'ticket.Tickets',
     'get_params'      : view.params,
     'on_change'       : 'get',
-    'title'           : '{title}',
+    'title'           : 'View task {title}',
     'favorite_menu'   : 'ticket',
+    'favorite_title'  : '{title}',
     'context'         : '.ticket',
     'create_view_params': view.params,
     'get_result': function(result)
@@ -209,7 +210,7 @@ new ControlListRelated({
 
 <span class='ticket' control-view="ticket.Tickets.edit">
 
-    <h1>
+    <h1 class='notranslate'>
         <span class='field-put clickable on-click-completed ticket-check-style' field-no-text field-key='ticket_completed'></span>
         <span class='field-put control-on-click-view' field-key='title'></span>
     </h1>
