@@ -164,13 +164,14 @@ $(".on-click-unpayed", context).click(function()
 
 <fieldset class='inline-block control-on-click-view' field-key='to_relation' >
     <legend>To:</legend>        
-    <div class='field-put' field-key='to_copy.company'></div>
-    <div class='field-put' field-key='to_copy.department'></div>
-    <div class='field-put' field-key='to_copy.address'></div>
-    <div><span class='field-put' field-key='to_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='to_copy.city'></span></div>
-    <div class='field-put' field-key='to_copy.province'></div>
-    <div class='field-put' field-key='to_copy.country'></div>
-
+    <div class='notranslate'>
+        <div class='field-put' field-key='to_copy.company'></div>
+        <div class='field-put' field-key='to_copy.department'></div>
+        <div class='field-put' field-key='to_copy.address'></div>
+        <div><span class='field-put' field-key='to_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='to_copy.city'></span></div>
+        <div class='field-put' field-key='to_copy.province'></div>
+        <div class='field-put' field-key='to_copy.country'></div>
+    </div>
 </fieldset>
 
 <fieldset class='inline-block'>
@@ -178,41 +179,43 @@ $(".on-click-unpayed", context).click(function()
     <table class='inline-block'>
         <tr>
             <td class='field-meta-put' field-key='sent' field-meta-key='desc'>
-            <td class='field-put value' field-key='sent'>
+            <td class='field-put value notranslate' field-key='sent'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='invoice_nr' field-meta-key='desc'>
-            <td class='field-put value' field-key='invoice_nr'>
+            <td class='field-put value notranslate' field-key='invoice_nr'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='sent_date' field-meta-key='desc'>
-            <td class='field-put value' field-key='sent_date'>
+            <td class='field-put value notranslate' field-key='sent_date'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='payed' field-meta-key='desc'>
-            <td class='field-put value' field-key='payed'>
+            <td class='field-put value notranslate' field-key='payed'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='payed_date' field-meta-key='desc'>
-            <td class='field-put value' field-key='payed_date'>
+            <td class='field-put value notranslate' field-key='payed_date'>
         </tr>
     </table>
 </fieldset>
 
 <fieldset class='inline-block' >
     <legend>From:</legend>        
-    <div class='field-put' field-key='from_copy.company'></div>
-    <div class='field-put' field-key='from_copy.department'></div>
-    <div class='field-put' field-key='from_copy.address'></div>
-    <div><span class='field-put' field-key='from_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='from_copy.city'></span></div>
-    <div class='field-put' field-key='from_copy.province'></div>
-    <div class='field-put' field-key='from_copy.country'></div>
-    <p>
-    <div>BTW: <span class='field-put' field-key='from_copy.vat_nr'></span></div>
-    <div>KVK: <span class='field-put' field-key='from_copy.coc_nr'></span></div>
-    <p>
-    <div>IBAN: <span class='field-put' field-key='from_copy.iban_nr'></span></div>
-    <div>BIC: <span class='field-put' field-key='from_copy.bic_code'></span></div>
+    <div class='notranslate'>
+        <div class='field-put' field-key='from_copy.company'></div>
+        <div class='field-put' field-key='from_copy.department'></div>
+        <div class='field-put' field-key='from_copy.address'></div>
+        <div><span class='field-put' field-key='from_copy.zip_code'></span>&nbsp;&nbsp;<span style='text-transform:uppercase;' class='field-put' field-key='from_copy.city'></span></div>
+        <div class='field-put' field-key='from_copy.province'></div>
+        <div class='field-put' field-key='from_copy.country'></div>
+        <p>
+        <div>BTW: <span class='field-put' field-key='from_copy.vat_nr'></span></div>
+        <div>KVK: <span class='field-put' field-key='from_copy.coc_nr'></span></div>
+        <p>
+        <div>IBAN: <span class='field-put' field-key='from_copy.iban_nr'></span></div>
+        <div>BIC: <span class='field-put' field-key='from_copy.bic_code'></span></div>
+    </div>
 </fieldset>
 
 
@@ -232,7 +235,7 @@ $(".on-click-unpayed", context).click(function()
         </tr>
     </thead>
     <tbody>
-        <tr class='field-meta-put field-list-source-hide field-list-source' field-key='items' field-list-view="ticket.Invoices.edit">
+        <tr class='field-meta-put field-list-source-hide field-list-source notranslate' field-key='items' field-list-view="ticket.Invoices.edit">
             <td class='field-put control-on-click-view' style='width: 5em; text-align: right;' field-key='items.amount'>
             <td class='field-put control-on-click-view' field-key='items.desc'>
             <td style='width: 5em; text-align: right;'>
