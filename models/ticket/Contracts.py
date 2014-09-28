@@ -17,7 +17,11 @@ class Contracts(models.core.Protected.Protected):
         meta = fields.List(
                 fields.Dict({
                     '_id': models.mongodb.FieldId(),
-                    'active': fields.Bool(desc='Active', default=1),
+                    'auto': fields.Select(desc="Auto invoice",
+                                                          choices=[
+                                                          ("never", "Never"),
+                                                          ("monthly", "Every month"),
+                                                        ]),
                     'title': fields.String(min=3, desc='Title', size=100),
                     'desc': fields.String(desc='Description'),
                     'allowed_groups': models.mongodb.Relation(
@@ -34,9 +38,9 @@ class Contracts(models.core.Protected.Protected):
                         list=True),
                     'type': fields.Select(desc="Billing",
                                                           choices=[
-                                                          ("post", "Post"),
-                                                          ("prepay", "Prepayed montly"),
-                                                          ("manual", "Manual invoicing"),
+                                                          ("post", "Pay per hour"),
+                                                          ("prepay", "Prepay"),
+                                                          ("manual", "Manual"),
                                                         ]),
                     'price': fields.Number(desc='Price'),
                     'currency': fields.String(desc='Currency', default=models.ticket.InvoiceSettings.InvoiceSettings(self.context)['currency']),
@@ -70,6 +74,11 @@ class Contracts(models.core.Protected.Protected):
           log_txt="Changed contract {title}".format(**doc)
         else:
           log_txt="Created new contract {title}".format(**doc)
+
+
+        if doc["type"]=="manual" and doc["auto"]!="never":
+            raise fields.FieldError("Cant auto invoice with manual billing.","type")
+
 
         ret=self._put(doc)
         self.event("changed",ret)

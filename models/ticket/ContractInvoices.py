@@ -159,72 +159,74 @@ class ContractInvoices(models.core.Protected.Protected):
         self.put(**doc)
 
 
-    # @Acl(roles="finance")
-    # def auto_invoice_check(self):
-    #     """check to see which contracts need to be auto invoiced. this is usually called by a cronjob"""
+    @Acl(roles="finance")
+    def auto_invoice_all(self):
+        """check all relations and contracts, and auto_invoice those that are missing.
 
+        this should be called by a cronjob.
 
-    #     if relation_id:
-    #         relations=[ call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id) ]
-    #     else:
-    #         #all relations with contracts
-    #         relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
-    #             fields=[ "contracts", "invoice" ], 
-    #             spec_and=[ { 
-    #                 "contracts": { 
-    #                     "$not": { 
-    #                         "$size": 0
-    #                         }
-    #                     }
-    #                 } ]   
-    #              )
+        it does a simple stringcompare on the description field of the contractinvoice, to determine if its time to autoinvoice it.
+        """
 
+        #all relations with contracts
+        relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
+            fields=[ "contracts", "invoice" ], 
+            spec_and=[ { 
+                "contracts": { 
+                    "$not": { 
+                        "$size": 0
+                        }
+                    }
+                } ]   
+             )
 
-    #     for relation in relations:
+        for relation in relations:
 
-    #         #traverse all contracts for this relation
-    #         for contract_id in relation["contracts"]:
-    #            #get contract
-    #             try:
-    #                 contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
-    #             except:
-    #                 #skip contracts we cant read
-    #                 continue
+            #traverse all contracts for this relation
+            for contract_id in relation["contracts"]:
+               #get contract
+                try:
+                    contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
+                except:
+                    #skip contracts we cant read
+                    continue
 
-    #             if not contract["active"]:
-    #                 continue
+                if not "auto" in contract or contract["auto"]!="monthly":
+                    continue
 
-    #             if contract["type"] not in [ "post", "prepay" ]:
-    #                 continue
+                if contract["type"] not in [ "post", "prepay" ]:
+                    continue
 
-    #             #contracts are invoiced on the first day of the month, at 00:00
-    #             contract_invoice_date=datetime.datetime(
-    #                     year=datetime.datetime.now().year,
-    #                     month=datetime.datetime.now().month,
-    #                     day=1
-    #                 )
+                desc=datetime.datetime.now().strftime("%B %Y")
 
-    #             #check if its already generated for this month and relation,contract combo
-    #             latest_contract_invoices=self.get_all(
-    #                     match={
-    #                         "relation": relation["_id"],
-    #                         "contract": contract_id,
-    #                         "date": contract_invoice_date.timestamp()
-    #                     },
-    #                     limit=1,
-    #                     sort=[ ( 'date', -1 )]
-    #                 )
+                #check if its already generated for this desc,relation,contract combo
+                latest_contract_invoices=self.get_all(
+                        match={
+                            "relation": relation["_id"],
+                            "contract": contract_id,
+                            "desc": desc
+                        },
+                        limit=1,
+                        sort=[ ( 'date', -1 )]
+                    )
 
         
-    #             title=contract['title']+" "+contract_invoice_date.strftime("%B %Y")
+                if len(latest_contract_invoices):
+                    self.auto_invoice(relation["_id"], contract_id, desc)
 
 
     @Acl(roles="finance")
-    def auto_invoice(self, relation_id, contract_id, desc):
+    def auto_invoice(self, relation_id, contract_id, desc=None):
         """automaticly collects un-invoiced ticket_objects, creates contract_invoice and an actual invoice"""
 
         contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_id)
         relation=call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id)
+
+        if contract["type"] not in [ "post", "prepay" ]:
+            raise fields.FieldError("This contract cant be auto invoiced")            
+
+        if not desc:
+            desc=datetime.datetime.now().strftime("%B %Y")
 
         contract_invoice={
             'date': datetime.datetime.now().timestamp(),

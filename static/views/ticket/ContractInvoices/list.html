@@ -54,7 +54,6 @@ $(".on-click-contract-invoices-auto-invoice", context).click(function()
     rpc("ticket.ContractInvoices.auto_invoice",{
         relation_id: view.params.relation_id,
         contract_id: view.params._id,
-        desc: "Manual invoice",
     }, function(result)
     {
         viewShowError(result, context);
@@ -76,6 +75,10 @@ $(".on-click-contract-invoices-auto-invoice", context).click(function()
         <tr>
             <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
             <td class='field-put value control-on-click-view' field-key='desc'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='auto' field-meta-key='desc'>
+            <td class='field-put value control-on-click-view' field-key='auto'>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='type' field-meta-key='desc'>
