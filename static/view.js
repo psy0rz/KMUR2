@@ -416,6 +416,8 @@ function viewDOMdel(view)
 }
 
 /** Called by the view to indicate its ready and set some final options like title. And do things like resizing.
+
+Title should be a jquery element.
  */
 function viewReady(params)
 {
@@ -446,7 +448,8 @@ function viewReady(params)
     else if (params.view.mode=='main')
     {
         var viewTitleDiv=$("#"+params.view.id+"Title");
-        viewTitleDiv.text(params.title+" » ");
+        viewTitleDiv.html(params.title);
+        viewTitleDiv.append(" » ");
     }
 
     if ('title' in params)

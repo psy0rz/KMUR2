@@ -1131,6 +1131,7 @@ Field.String.put=function(key, meta, context, data, options)
     }
     else
     {
+        // context.addClass("notranslate");
         if (data==null)
             Field.Base.html_append(key, meta, context, data, options, "");
         else
@@ -1173,6 +1174,8 @@ Field.File.put=function(key, meta, context, data, options)
     }
     else
     {
+        // context.addClass("notranslate");
+
         if (data==null)
             Field.Base.html_append(key, meta, context, data, options, "");
         else
@@ -1796,6 +1799,7 @@ Field.Timestamp.put=function(key, meta, context, data, options)
     }
     else
     {
+        // context.addClass("notranslate");
         Field.Base.html_append(key, meta, context, data, options, dateStr);
     }
 }

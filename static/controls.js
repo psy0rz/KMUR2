@@ -111,6 +111,41 @@ ControlBase.prototype.format=function(txt, data)
     return(ret)
 }
 
+/**
+ Substitute macros found in text with data, and disable translating.
+
+ txt is assumed to be SAFE, so this should NOT be userinput! (because of html injection attacks)
+
+ data is assume to be unsafe userinput.
+
+ Example: format("your name is {name}", { 'name': 'foobs' })
+ Returns: "<span>your name is <span class='notranslate'>foobs</span></span>"
+*/
+ControlBase.prototype.format_notranslate=function(txt, data)
+{
+    var key;
+    var ret=txt;
+
+    //first replace all {} by spans (no substituting to prevent html injects)
+    while(matches=ret.match(/\{\w*\}/))
+    {
+        key=matches[0].substr(1,matches[0].length-2);
+        ret=ret.replace(matches[0], "<span class='notranslate'>"+key+"</span>");
+    }
+
+    //translate into actual jquery html element
+    ret=$("<span>"+ret+"</span>");
+
+    //now substitude data in a safe manner:
+    $("span",ret).each(function(){
+        var key=$(this).text();
+        if (key in data)
+            $(this).text(data[key]);
+    });
+
+    return(ret)
+}
+
 
 //gets metadata for this control and fills in metadata in the specified this.context
 //calls this.get_meta_result with the results
@@ -357,7 +392,7 @@ ControlForm.prototype.get_result=function(result, request_params)
         {
             viewReady({
                 'view': this.params.view,
-                'title': this.format(this.params.title, result.data)
+                'title': this.format_notranslate(this.params.title, result.data)
             });
         }
 
@@ -854,7 +889,7 @@ ControlList.prototype.get_result=function(result, request_params)
         {
             viewReady({
                 'view': this.params.view,
-                'title': this.format(this.params.title, result.data)
+                'title': this.format_notranslate(this.params.title, result.data)
             });
         }
         this.view_ready=true;

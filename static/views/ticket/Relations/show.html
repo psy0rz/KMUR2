@@ -45,7 +45,7 @@ $('.field-list-source[field-key="contracts"]', context).on("field_list_post_put"
     span=$('.ticket-object-add-links [contract-id="'+data._id+'"]', context);
     if (span.length==0)
     {
-        span=$("<a class='ticket-add-time-link-style on-click-new-ticket-time' href='#'></a> ");
+        span=$("<a class='notranslate ticket-add-time-link-style on-click-new-ticket-time' href='#'></a> ");
         $(".ticket-object-add-links",context).append(span);
         span.attr("contract-id",data._id);
     }

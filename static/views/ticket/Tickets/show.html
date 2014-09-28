@@ -43,8 +43,8 @@ var form=new ControlForm({
                     //now add a button for every relation
                     $.each(relations.data, function(i, relation)
                     {
-                        var span=$("<span class='ticket-add-time-button-style'></span>");
-                        span.text(relation.title);
+                        // var span=$("<span class='notranslate ticket-add-time-button-style'></span>");
+                        // span.text(relation.title);
 
                         // var button=$("<button class='on-click-new-ticket-time'></button>");
                         // button.append(span);
@@ -61,7 +61,7 @@ var form=new ControlForm({
                                 var span=$("<span class='ticket-add-time-button-style'></span>");
                                 span.text(relation.title+": "+contracts_by_id[contract_id].title);
 
-                                var button=$("<button class='on-click-new-ticket-time'></button>");
+                                var button=$("<button class='notranslate on-click-new-ticket-time'></button>");
                                 button.append(span);
                                 button.attr("relation-id",relation._id);
                                 button.attr("contract-id",contract_id);
