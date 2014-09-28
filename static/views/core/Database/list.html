@@ -54,7 +54,7 @@
                                 var clone=clone_data_source.clone(true);
                                 clone_data_source.after(clone);
                                 
-                                //put a new list in it, and set the field-key of the field-list-source instead
+                                //put a new list in it, and set the field-key of the field-list-source notranslate instead
                                 clone.append(clone_list_source.clone(true).attr("field-key", this_key)); 
                                 $(".field-list-source", clone).attr("field-key", this_key);
 
@@ -127,7 +127,7 @@
         </tr>
 
 
-        <tr class='colorRows field-meta-put field-list-source ui-widget-content' field-key=''>
+        <tr class='colorRows field-meta-put field-list-source notranslate ui-widget-content' field-key=''>
             <td class='field-put clone-data-source field-list-on-click-view' field-key='' >
         </tr>
     </table>
