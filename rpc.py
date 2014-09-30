@@ -119,7 +119,11 @@ def rpc_post():
             result['help']['method'] = rpc_method.__doc__
 
         #call method with specified parameters
-        result['data']=rpc_method(**request['params'])
+        if 'params' in request:
+            result['data']=rpc_method(**request['params'])
+        else:
+            result['data']=rpc_method()
+
 
     except (fields.FieldError, Exception) as e:
         traceback.print_exc()

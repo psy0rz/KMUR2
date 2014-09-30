@@ -54,7 +54,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
     //maybe later we will support files at all root-level parameters, or maybe even recursively.
     var data;
     var content_type;
-    if (params.file instanceof File)
+    if (params!=undefined && params.file instanceof File)
     {
         //multipart/form-data upload-mode: 
         data=new FormData();
