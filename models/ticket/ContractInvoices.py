@@ -211,7 +211,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     )
 
         
-                if len(latest_contract_invoices):
+                if len(latest_contract_invoices)==0:
                     self.auto_invoice(relation["_id"], contract_id, desc)
 
 
