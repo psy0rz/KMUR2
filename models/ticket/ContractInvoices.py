@@ -264,30 +264,36 @@ class ContractInvoices(models.core.Protected.Protected):
         #now create contract invoice, so we have the _id
         contract_invoice=self.put(**contract_invoice)
 
+
+        #determine price per hour:
+        if contract['type']=='post':
+            #post: pay per hour
+            price_per_hour=round(contract['price']*60/contract['minutes'], 2)
+        elif contract['type']=='prepay':
+            #prepayed: fixed price per month, not per hour
+            price_per_hour=0
+        total_hours=0
+
         #traverse all the un-invoiced ticket_objects
         for ticket_object in ticket_objects:
             minutes=self.round_minutes(ticket_object, contract)
+            hours=round(minutes/60,2)
+            total_hours+=hours
 
-            #determine price:
-            if contract['type']=='post':
-                #post: pay per hour
-                price=(contract['price']*minutes)/contract['minutes']
-            elif contract['type']=='prepay':
-                #prepayed: fixed price per month, not per hour
-                price=0
+            #append details to invoice
+            if contract['invoice_details']=="time":
+                #invoice description for this time
+                invoice_desc="["+contract['title']+"] "+ticket_object['title']
+                if ticket_object['minutes_factor']!=1:
+                    invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
 
-            #invoice description for this time
-            invoice_desc="["+contract['title']+"] "+ticket_object['title']
-            if ticket_object['minutes_factor']!=1:
-                invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+                invoice_items.append({
+                    'amount': hours,
+                    'desc':invoice_desc,
+                    'price': price_per_hour,
+                    'tax': relation['invoice']['tax']
+                })
 
-            #append to invoice
-            invoice_items.append({
-                'amount': round(minutes/60,2),
-                'desc':invoice_desc,
-                'price': round(price,2),
-                'tax': relation['invoice']['tax']
-            })
 
             #update minutes used and bought
             contract_invoice['minutes_used']+=minutes
@@ -299,16 +305,40 @@ class ContractInvoices(models.core.Protected.Protected):
             call_rpc(self.context, 'ticket', 'TicketObjects', 'put', update_contract_invoice=False, **ticket_object)
 
 
+        #if its a post-payed contract without details, just add a total of all the used hours
+        if contract['invoice_details']=="none" and contract['type']=="post":
+            invoice_items.append({
+                'amount': total_hours,
+                'desc':contract['title']+": "+desc,
+                'price': price_per_hour,
+                'tax': relation['invoice']['tax']
+            })
+
         #create actual invoice
         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
              to_relation=relation['_id'],
              currency=contract['currency'],
-             items=invoice_items
+             items=invoice_items,
         )
 
         #finally update contract_invoice 
         contract_invoice['invoice']=invoice['_id']
         contract_invoice=self.put(**contract_invoice)
+
+
+        #now add some usefull notes to the invoice
+        contract_invoice=self.get(contract_invoice["_id"]) #reget it to get updated values for minutes_used and balance
+        try:
+            notes=contract['invoice_notes_format'].format(**contract_invoice)
+        except:
+            notes=contract['invoice_notes_format']
+
+        invoice={
+            "_id": invoice["_id"],
+            "notes": invoice["notes"]+notes
+        }
+        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'put', **invoice)
+
 
         return(contract_invoice)
 

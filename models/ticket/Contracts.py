@@ -49,6 +49,14 @@ class Contracts(models.core.Protected.Protected):
                     'minutes_rounding': fields.Number(desc='Minutes round up per', default=1, min=1),
                     'tax': fields.Number(desc='Tax', default=21),
                     'import_id': fields.String(desc='Import ID'),
+
+                    'invoice_notes_format': fields.String(desc='Invoice notes to add'),
+                    'invoice_details': fields.Select(desc="Invoice details",
+                                                          choices=[
+                                                          ("none", "None"),
+                                                          ("time", "Add time specification"),
+                                                        ]),
+
                 }),
                 list_key='_id'
             )
