@@ -1,6 +1,7 @@
 {
 	"contracts":{
 		"title":"Contracts",
+        "pos" : 30,
         "view":
             { 
                 "name":"ticket.Contracts.list",

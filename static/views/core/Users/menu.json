@@ -1,6 +1,7 @@
 {
 	"users":{
 		"title":"Users",
+        "pos" : 50,
         "view":
             { 
                 "name":"core.Users.list",

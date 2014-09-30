@@ -1,6 +1,7 @@
 {
 	"example":{
 		"title":"Examples",
+        "pos" : 2000,
         "view":
             { 
                 "name":"example.FieldDemo.list",

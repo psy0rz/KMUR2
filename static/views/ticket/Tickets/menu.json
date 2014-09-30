@@ -1,6 +1,7 @@
 {
 	"ticket":{
 		"title":"Tasks",
+        "pos" : 10,
         "view":
             { 
                 "name":"ticket.Tickets.list",

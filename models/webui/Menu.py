@@ -17,12 +17,13 @@ def loadmenus():
             for (name, menudata) in list(menudef.items()):
                 if not name in menus:
                     menus[name] = menudata
-                    #just add this for developer convienience. (otherwise its hard to figure out which menu to specify in add_favorites)
                     menus[name]['menu']=name
                 else:
                     #update existing menu
                     if 'title' in menudata:
                       menus[name]['title'] = menudata['title']
+                    if 'pos' in menudata:
+                      menus[name]['pos'] = menudata['pos']
                     if 'items' in menudata:
                       menus[name]['items'].extend(menudata['items'])
                     if 'view' in menudata:
@@ -151,5 +152,10 @@ class Menu(models.mongodb.Base):
                                                              'view': favorite['view']
                                                              })
 
-        return list(menus.values())
+        menu_list=list(menus.values())
+        def get_key(a):
+          return(a["pos"])
+        menu_list.sort(key=get_key)
+
+        return(menu_list)
                 

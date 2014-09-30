@@ -1,6 +1,7 @@
 {
 	"relations":{
 		"title":"Relations",
+        "pos" : 20,
         "view":
             { 
                 "name":"ticket.Relations.list",

@@ -1,6 +1,7 @@
 {
 	"invoices":{
 		"title":"Invoices",
+        "pos" : 40,
         "view":
             { 
                 "name":"ticket.Invoices.list",
