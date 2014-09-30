@@ -9,15 +9,6 @@
                 "params": { }
             },
 		"items":[
-            {
-                "title":"Overview",
-                "view":
-                    { 
-                        "name":"ticket.Relations.list",
-                        "mode":"main",
-                        "params": { }
-                    }
-            }
 		]
 	}
 }
