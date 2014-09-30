@@ -1082,9 +1082,9 @@ Field.String.meta_put=function(key, meta, context, options)
         return;
 
     var new_element;
-    if (context.attr("field-string-textarea"))
+    if (context.attr("rows"))
     {
-        new_element=$("<textarea>").attr("size", meta.size);
+        new_element=$("<textarea>").attr("rows", context.attr("rows")).attr("cols", context.attr("cols"));
     }
     else
     {

@@ -50,11 +50,16 @@ class Contracts(models.core.Protected.Protected):
                     'tax': fields.Number(desc='Tax', default=21),
                     'import_id': fields.String(desc='Import ID'),
 
-                    'invoice_notes_format': fields.String(desc='Invoice notes to add'),
+                    'invoice_notes_format': fields.String(desc='Invoice notes to add',default="""{contract_title} {desc} details:
+ Used: {minutes_used}m
+ Bought: {minutes_bought}m
+ New budget: {minutes_balance}m
+
+"""),
                     'invoice_details': fields.Select(desc="Invoice details",
                                                           choices=[
-                                                          ("none", "None"),
                                                           ("time", "Add time specification"),
+                                                          ("none", "None"),
                                                         ]),
 
                 }),
