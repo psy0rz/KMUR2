@@ -6,4 +6,12 @@ connecting to: tracer_test_nl
 > db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "roles" : [ "admin" ], "group_ids": []  } )
 >
 
+mkdir files/tracer_test_nl/
+touch files/tracer_test_nl/index.html
+
+mkdir static/files/tracer_test_nl/
+touch static/files/tracer_test_nl/index.html
+
+
+
 Now you can login with admin@test.nl and password "changeme".

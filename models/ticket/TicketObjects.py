@@ -111,13 +111,13 @@ class TicketObjects(models.core.Protected.Protected):
 
 
     def get_file_path(self, file_hash):
-        return(self.file_path+file_hash)
+        return(self.file_path+self.context.session['db_name']+"/"+file_hash)
 
     def get_thumb_path(self, file_hash):
-        return(self.thumb_path+file_hash+".jpg")
+        return(self.thumb_path+self.context.session['db_name']+"/"+file_hash+".jpg")
 
     def get_thumb_url(self, file_hash):
-        return(self.thumb_url+file_hash+".jpg")
+        return(self.thumb_url+self.context.session['db_name']+"/"+file_hash+".jpg")
 
     def get_file_url(self, ticket_object):
         return("/rpc/ticket/TicketObjects/download/"+ticket_object["_id"]+"/"+os.path.basename(ticket_object["title"]))
