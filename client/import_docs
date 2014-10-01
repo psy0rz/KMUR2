@@ -6,7 +6,6 @@ import rpc
 import sys
 import time
 import os
-import platform
 
 
 
@@ -15,55 +14,71 @@ parser = argparse.ArgumentParser(description='Tracer - document importer 1.0')
 parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
 parser.add_argument('--user', help='user to login. default: %(default)s')
 parser.add_argument('--password', help='password. default: %(default)s')
-parser.add_argument('--import_id', help='import_id of this batch, to be able to resume uploading. default: %(default)s')
 parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
+parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
 parser.add_argument('--ticket_status', default="reference", help='Status of the new task')
 parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
 parser.add_argument('files',   nargs='+', help='Files to upload')
 
 args = parser.parse_args()
 
-# try:
+if args.import_id:
+	import_id="import_docs@"+import_id
+else:
+	import_id="import_docs@"+args.title
+
 #initialise the rpc client class
 rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
-
-#check if files are readable/existing
-for filename in args.files:
-	print("Checking..."+filename, file=sys.stderr)
-	with open(filename,'rb') as fh:
-		pass
 
 #first login using the specified user and pass
 user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
 
-#create ticket
-ticket=rpc_client.request("ticket.Tickets.put", 
-	title=args.title,
-	import_id="import_docs@"+platform.node(),
-	ticket_priority="3",
-	owner=user["user_id"],
-	ticket_status=args.ticket_status,
-	start_date=int(time.time()),
-	deligated_users=[],
-	allowed_groups=[],
-	ticket_completed=False,
-	relations=[],
-	tickets=[],
-	due_date=None,
-	desc="",
-)["data"]
+#ticket already created?
+tickets=rpc_client.request("ticket.Tickets.get_all",match={
+		"import_id": import_id
+	}) 
+
+if tickets["data"]:
+	ticket=tickets["data"][0]
+	print("Using existing ticket: {title}".format(**ticket))		
+else:
+	#create ticket
+	ticket=rpc_client.request("ticket.Tickets.put", 
+		title=args.title,
+		import_id=import_id,
+		ticket_priority="3",
+		owner=user["user_id"],
+		ticket_status=args.ticket_status,
+		start_date=int(time.time()),
+		deligated_users=[],
+		allowed_groups=[],
+		ticket_completed=False,
+		relations=[],
+		tickets=[],
+		due_date=None,
+		desc="",
+	)["data"]
+	print("Created new ticket: {title}".format(**ticket))		
 
 #upload documents
 for filename in args.files:
+	#already uploaded to this ticket?
+	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",match={
+			"tickets": [ ticket["_id"] ],
+			"import_id": "import_docs@"+filename
+		}) 
 
-	ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-		filename=filename,
-		allowed_users=[ user["user_id"] ],
-		create_time=int(os.stat(filename).st_ctime),
-		tickets=[ ticket["_id"] ],
-		type="doc"
-	)["data"]
-
+	if ticket_objects["data"]:
+		print("Already uploaded {} to this ticket.".format(filename))
+	else:
+		ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+			import_id="import_docs@"+filename,
+			filename=filename,
+			allowed_users=[ user["user_id"] ],
+			create_time=int(os.stat(filename).st_ctime),
+			tickets=[ ticket["_id"] ],
+			type="doc"
+		)["data"]
 
 
 sys.exit(0)
