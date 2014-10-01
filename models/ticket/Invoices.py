@@ -383,6 +383,8 @@ class Invoices(models.core.Protected.Protected):
         if not 'sent' in invoice or invoice['sent']==False:
             raise FieldError("Invoice is not sent yet")
 
+        import locale
+        locale.setlocale(locale.LC_ALL, 'nl_NL.utf8')
 
         from reportlab.lib import colors
         from reportlab.lib.pagesizes import A4
@@ -432,10 +434,10 @@ class Invoices(models.core.Protected.Protected):
             table_data.append([
                     item['amount'],
                     Paragraph(item['desc'], styles["Normal"]),
-                    "{} {}".format(invoice['currency'], item['price']),
+                    "{} {}".format(invoice['currency'], locale.currency(item['price'], symbol=False, grouping=True)),
                     "{}%".format(item['tax']),
-                    "{} {}".format(invoice['currency'], item['calc_total']),
-                    "{} {}".format(invoice['currency'], item['calc_total_tax'])
+                    "{} {}".format(invoice['currency'], locale.currency(item['calc_total'], symbol=False, grouping=True)),
+                    "{} {}".format(invoice['currency'], locale.currency(item['calc_total_tax'], symbol=False, grouping=True))
                 ])
 
         #totals
@@ -444,8 +446,8 @@ class Invoices(models.core.Protected.Protected):
             "",
             "",
             "Grand totals:",
-            "{} {}".format(invoice['currency'], invoice['calc_total']),
-            "{} {}".format(invoice['currency'], invoice['calc_total_tax']),
+            "{} {}".format(invoice['currency'], locale.currency(invoice['calc_total'], symbol=False, grouping=True)),
+            "{} {}".format(invoice['currency'], locale.currency(invoice['calc_total_tax'], symbol=False, grouping=True)),
             ])
 
         #generate table and set cell styles
