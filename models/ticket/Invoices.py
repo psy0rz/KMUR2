@@ -285,6 +285,7 @@ class Invoices(models.core.Protected.Protected):
             update_doc={
                 '_id': invoices[0]['_id'],
                 'items': invoices[0]['items'],
+                'notes': invoices[0]['notes']
             }
             update_doc['items'].extend(items)
             ret=self.put(**update_doc)
