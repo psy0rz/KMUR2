@@ -464,7 +464,8 @@ class Invoices(models.core.Protected.Protected):
 
 
         #notes
-        pdf_elements.append(Preformatted(invoice['notes'],style=styles['Italic']))
+        notes=Preformatted(invoice['notes'],style=styles['Italic'], splitChars=" ", maxLineLength=100)
+        pdf_elements.append(notes)
 
         #print adress info and extra stuff on first page
         def first_page(canvas, pdf):

@@ -13,7 +13,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
 
         meta = fields.List(
                 fields.Dict({
-                    'invoice_nr': fields.Number(desc='Next invoice number', default=0),
+                    'invoice_nr': fields.Number(desc='Last invoice number', default=0),
                     'invoice_nr_format': fields.String(desc='Invoice number format', default="2014-{:04}"),
                     'currency': fields.String(desc='Default currency', default='€'),
                     'from_relation': models.mongodb.Relation(
