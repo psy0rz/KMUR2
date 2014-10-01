@@ -42,7 +42,7 @@ class Contracts(models.core.Protected.Protected):
                                                           ("prepay", "Prepay"),
                                                           ("manual", "Manual"),
                                                         ]),
-                    'price': fields.Number(desc='Price'),
+                    'price': fields.Number(desc='Price', decimals=2),
                     'currency': fields.String(desc='Currency', default=models.ticket.InvoiceSettings.InvoiceSettings(self.context)['currency']),
                     'minutes': fields.Number(desc='Time', default=60),
                     'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
