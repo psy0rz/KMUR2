@@ -249,7 +249,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 'amount': 1,
                 'desc':contract['title']+": "+desc,
                 'price': contract['price'],
-                'tax': relation['invoice']['tax']
+                'tax': contract['tax']
             })
 
         #get uninvoiced ticket_objects for this relation,contract combo
@@ -291,7 +291,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     'amount': hours,
                     'desc':invoice_desc,
                     'price': price_per_hour,
-                    'tax': relation['invoice']['tax']
+                    'tax': contract['tax']
                 })
 
 
@@ -311,7 +311,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 'amount': total_hours,
                 'desc':contract['title']+": "+desc,
                 'price': price_per_hour,
-                'tax': relation['invoice']['tax']
+                'tax': contract['tax']
             })
 
         #create actual invoice
