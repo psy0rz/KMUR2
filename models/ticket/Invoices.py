@@ -472,7 +472,7 @@ class Invoices(models.core.Protected.Protected):
             canvas.saveState()
 
             #senders adress and company info
-            from_frame=Frame(14*cm, 21*cm, 12*cm, 8*cm, showBoundary=0)
+            from_frame=Frame(14*cm, 19.5*cm, 12*cm, 8*cm, showBoundary=0)
             from_frame.addFromList([
                 Preformatted(from_format.format(**invoice['from_copy']),style=styles['Small'])
             ], canvas)
