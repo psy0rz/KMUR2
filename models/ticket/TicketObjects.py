@@ -308,7 +308,7 @@ class TicketObjects(models.core.Protected.Protected):
     def download(self, _id, *rest):
         """downloads the actual file. this should be called with GET"""
         doc=self.get(_id)
-        return bottle.static_file(doc["file"], root=self.file_path, mimetype=doc["file_content_type"])
+        return bottle.static_file(self.get_file_path(doc["file"]), root=".", mimetype=doc["file_content_type"])
 
     @Acl(roles="user")
     def delete(self, _id):
