@@ -7,6 +7,7 @@ import sys
 import time
 import os
 import email
+import email.policy
 import re
 import tempfile
 
@@ -38,6 +39,8 @@ def debug(*a, **kw):
 
 #decodes email-header to one unicode string
 def header_to_unicode(s):
+    return(s)
+
     ret=""
     for decoded in email.header.decode_header(s):
         if ret:
@@ -54,13 +57,16 @@ def header_to_unicode(s):
     return(ret)
 
 #parse mail from stdin:
-msg = email.message_from_binary_file(sys.stdin)
+# msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
+msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
 
 #determine reciepient and sender
 if args.mailaddress:
     #usually used when importing existing mail from disk
     sender=header_to_unicode(msg["from"])
     receip=header_to_unicode(msg["to"])
+    if not receip:
+        receip="" #make sure its str
 else:
     #used when called by as an MDA
     sender=os.environ['SENDER']
@@ -175,6 +181,11 @@ for msg_part in msg.walk():
 
     filename = msg_part.get_filename()
     if filename:
+        #skip small inline stuff, mostly logos
+        if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline' and len(payload)<10000:
+            debug("Ignoring small inline image")
+            continue
+
         with tempfile.TemporaryFile() as tmp_file:
             debug("Creating document for", filename)
             tmp_file.write(payload)
@@ -197,7 +208,10 @@ for msg_part in msg.walk():
 
             #do we need to decode the charset to unicode?
             if isinstance(payload, bytes):
-                text=payload.decode(msg_part.get_content_charset())
+                if msg_part.get_content_charset():
+                    text=payload.decode(msg_part.get_content_charset())
+                else:
+                    text=payload.decode()
             else:
                 text=payload
 

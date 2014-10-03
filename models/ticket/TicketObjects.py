@@ -125,27 +125,27 @@ class TicketObjects(models.core.Protected.Protected):
     def get_file_url(self, ticket_object):
         return("/rpc/ticket/TicketObjects/download/"+ticket_object["_id"]+"/"+os.path.basename(ticket_object["title"]))
 
-    def store_file(self, file_upload):
-        """stores file in data-store and returns hash"""
+    # def store_file(self, file_upload):
+    #     """stores file in data-store and returns hash"""
 
-        #hash the file
-        file_hash=hashlib.sha256()
-        file_upload.file.seek(0)
-        while 1:
-            buf=file_upload.file.read(65000)
-            if not buf:
-                break
-            file_hash.update(buf)
-        file_upload.file.seek(0)
-        hash=file_hash.hexdigest()
+    #     #hash the file
+    #     file_hash=hashlib.sha256()
+    #     file_upload.file.seek(0)
+    #     while 1:
+    #         buf=file_upload.file.read(65000)
+    #         if not buf:
+    #             break
+    #         file_hash.update(buf)
+    #     file_upload.file.seek(0)
+    #     hash=file_hash.hexdigest()
 
-        file_name=self.get_file_path(hash)
+    #     file_name=self.get_file_path(hash)
 
-        #TODO: check for hash collision
-        file_upload.save(file_name, overwrite=True)
-        file_upload.file.close()
+    #     #TODO: check for hash collision
+    #     file_upload.save(file_name, overwrite=True)
+    #     file_upload.file.close()
 
-        return(hash)
+    #     return(hash)
 
 
     def process_file_image(self, doc):
@@ -215,11 +215,34 @@ class TicketObjects(models.core.Protected.Protected):
             method(doc)
 
 
+    def hash_file(self,fh):
+        #hash the filehandle
+        hash=hashlib.sha256()
+        fh.seek(0)
+        while 1:
+            buf=fh.read(65000)
+            if not buf:
+                break
+            hash.update(buf)
+        fh.seek(0)
+        return(hash.hexdigest())
+
+
     @Acl(roles="user")
     def put(self, file=None, update_contract_invoice=True, **doc):
 
+        #store file?
         if file:
-            hash=self.store_file(file)
+
+            #determine filename
+            hash=self.hash_file(file.file)
+            file_name=self.get_file_path(hash)
+
+            #TODO: check for hash collision
+            if not os.path.exists(file_name):
+                file.save(file_name, overwrite=True)
+                file.file.close()
+
             doc["file"]=hash
             doc["file_content_type"]=file.content_type
             doc["title"]=file.raw_filename

@@ -507,8 +507,6 @@ class Base(models.common.Base):
                     for value in values:
                         converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
-                print("unconverted", values)
-                print("converted", converted_values)
                 spec_ands.append({
                     key: {
                         '$in': converted_values
