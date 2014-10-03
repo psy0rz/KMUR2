@@ -14,9 +14,10 @@ class RpcClient:
 
 		command: dotted notation, for example: "core.Users.login"
 		filename: name of a file to upload. this changes request to a multipart/form.
+		file: file-object to upload. if not specified it will try open filename
 		params: Dict with parameters. (should be convertable to JSON)
 	"""
-	def request(self, command, filename=None, help=False, **params):
+	def request(self, command, filename=None, file=None, help=False, **params):
 		(module,cls,method)=command.split(".")
 		rpc_data={
 			"help": help,
@@ -29,13 +30,16 @@ class RpcClient:
 		data=json.dumps(rpc_data).encode('utf-8')
 
 		if filename:
+			if not file:
+				file=open(filename, 'rb')
+
 			#send as multipart form
 			import requests_toolbelt
 
 			encoder = requests_toolbelt.MultipartEncoder(
 			    fields=
 			    { 'rpc': data,
-			    		 'file': ( filename, open(filename, 'rb'))
+			    		 'file': ( filename, file)
 			    		 #'file': open(filename, 'rb')
 			    }
 			)

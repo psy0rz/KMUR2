@@ -499,9 +499,16 @@ class Base(models.common.Base):
                 converted_values=[];
 
                 #FIXME: to_internal conversion only works for toplevel keys, since we use dot-notation
-                for value in values:
-                    converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
+                if meta.meta['meta'].meta['meta'][key].meta['type']=='List':
+                    #if the type is list, let the list do the conversion.
+                    #in this case the user probably wants to find documents that match ANY item from values and not ALL the items.
+                    converted_values=meta.meta['meta'].meta['meta'][key].to_internal(self.context, values)
+                else:
+                    for value in values:
+                        converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
+                print("unconverted", values)
+                print("converted", converted_values)
                 spec_ands.append({
                     key: {
                         '$in': converted_values
@@ -513,8 +520,13 @@ class Base(models.common.Base):
                 converted_values=[];
 
                 #FIXME: to_internal conversion only works for toplevel keys, since we use dot-notation
-                for value in values:
-                    converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
+                if meta.meta['meta'].meta['meta'][key].meta['type']=='List':
+                    #if the type is list, let the list do the conversion.
+                    #in this case the user probably wants to find documents that match NANY item from values and not NALL the items. 
+                    converted_values=meta.meta['meta'].meta['meta'][key].to_internal(self.context, values)
+                else:
+                    for value in values:
+                        converted_values.append(meta.meta['meta'].meta['meta'][key].to_internal(self.context, value))
 
                 spec_ands.append({
                     key : {
