@@ -29,6 +29,10 @@ parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplica
 parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
 parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
 
+parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on sender')
+parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on receipient')
+parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
+
 # parser.add_argument('--prefix', help='Ticket id prefix')
 # parser.add_argument('files',   nargs='+', help='Files to upload')
 
@@ -97,6 +101,13 @@ trackables=list(trackables) # json encodable
 debug("Trackables:", trackables)
 
 
+#which timestamp to give to new objects?
+if args.maildate:
+    timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
+else:
+    timestamp=int(time.time())
+
+
 #initialise the rpc client class
 rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
@@ -115,12 +126,40 @@ if args.skip_duplicates:
         sys.exit(0)
 
 
+### try to find relations
+related_addresses=set()
+if args.relate_from:
+    related_addresses.add(email.utils.parseaddr(sender)[1])
+
+if args.relate_to:
+    related_addresses.add(email.utils.parseaddr(receip)[1])
+
+relation_ids=[]
+if related_addresses:
+    relations=rpc_client.request("ticket.Relations.get_all",
+        fields=[ "_id"],
+        spec_and=[ { 
+            "emails.email": {
+                "$in": list(related_addresses)  
+            } 
+        } ]
+    )["data"]
+
+    relation_ids=set()
+    for relation in relations:
+        relation_ids.add(relation["_id"])
+    relation_ids=list(relation_ids)
+
+    debug("Relations with matching email adresses:", relation_ids)
+
+
 ### try to find any mails with these trackables
 ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
-        fields=[ "tickets"],
+        fields=[ "tickets" ],
         match_in={ "trackables": trackables  } 
 )["data"]
-debug("Related ticket objects:", ticket_objects)
+debug("Ticket objects with matching trackables:", ticket_objects)
+
 
 ### determine the existing accesible ticket_ids:
 all_ticket_ids=set()
@@ -130,7 +169,7 @@ all_ticket_ids=list(all_ticket_ids) #json encodable
 
 #only link to existing tickets that we have access to
 tickets=rpc_client.request("ticket.Tickets.get_all",
-        fields=[ "_id" ],
+        fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
         match_in={ "_id": all_ticket_ids } 
 )["data"]
 
@@ -139,14 +178,9 @@ for ticket in tickets:
     ticket_ids.add(ticket["_id"])
 ticket_ids=list(ticket_ids) #json encodable
 
-#which timestamp to give to new objects?
-if args.maildate:
-    timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
-else:
-    timestamp=int(time.time())
 
 ### create new ticket
-if not ticket_ids:
+if not tickets:
     ticket=rpc_client.request("ticket.Tickets.put", 
         change_reason="Automaticly created by email importer",
         title=header_to_unicode(msg["subject"]),
@@ -158,7 +192,7 @@ if not ticket_ids:
         deligated_users=[],
         allowed_groups=[],
         ticket_completed=False,
-        relations=[],
+        relations=relation_ids,
         tickets=[],
         due_date=None,
         desc="Created by mail from {} to {}".format(sender, receip),
@@ -168,23 +202,36 @@ if not ticket_ids:
     debug("Created new ticket:", ticket["_id"])
 else:
     debug("Linking to existing tickets:", ticket_ids)
-    if args.reset_completed or args.reset_status:
+
+    #update the tickets
+    for ticket in tickets:
         doc={}
+        doc["_id"]=ticket["_id"]
         doc["change_reason"]="Automaticly changed by email importer"
-        if args.reset_completed:
+
+        if args.reset_completed and ticket["ticket_completed"]:
             debug("Resetting ticket completed")
             doc['ticket_completed']=False
 
-        if args.reset_status:
+        if args.reset_status and ticket["ticket_status"]!=args.ticket_status:
             debug("Resetting ticket status to: ", args.ticket_status)
             doc['ticket_status']=args.ticket_status
 
-        for ticket_id in ticket_ids:
-            doc["_id"]=ticket_id
+        if args.update_relations:
+            #add new relations, if any
+            doc["relations"]=set(ticket["relations"])
+            doc["relations"].update(relation_ids)
+            doc["relations"]=list(doc["relations"])
+            if len(doc["relations"])==len(ticket["relations"]):
+                del doc["relations"]
+            else:
+                debug("Update ticket relations")
+
+
+        #did anything change at all?
+        if len(ticket)>2:
             rpc_client.request("ticket.Tickets.put", **doc)
-            
-
-
+    
 
 ### create ticket objects from mail contents
 for msg_part in msg.walk():
