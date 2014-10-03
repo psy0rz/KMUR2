@@ -25,6 +25,10 @@ parser.add_argument('--debug', action='store_true', help='debug mode')
 parser.add_argument('--maildate', action='store_true', help='Use send-date instead of current date')
 parser.add_argument('--mailaddress', action='store_true', help='Use mail from and to adresses, instead of environment')
 parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
+
+parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
+parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
+
 # parser.add_argument('--prefix', help='Ticket id prefix')
 # parser.add_argument('files',   nargs='+', help='Files to upload')
 
@@ -113,12 +117,10 @@ if args.skip_duplicates:
 
 ### try to find any mails with these trackables
 ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
-        fields=[ "tickets", "title"],
+        fields=[ "tickets"],
         match_in={ "trackables": trackables  } 
 )["data"]
-
-debug("Related mails:", ticket_objects)
-
+debug("Related ticket objects:", ticket_objects)
 
 ### determine the existing accesible ticket_ids:
 all_ticket_ids=set()
@@ -146,6 +148,7 @@ else:
 ### create new ticket
 if not ticket_ids:
     ticket=rpc_client.request("ticket.Tickets.put", 
+        change_reason="Automaticly created by email importer",
         title=header_to_unicode(msg["subject"]),
         import_id=import_id,
         ticket_priority="3",
@@ -165,6 +168,22 @@ if not ticket_ids:
     debug("Created new ticket:", ticket["_id"])
 else:
     debug("Linking to existing tickets:", ticket_ids)
+    if args.reset_completed or args.reset_status:
+        doc={}
+        doc["change_reason"]="Automaticly changed by email importer"
+        if args.reset_completed:
+            debug("Resetting ticket completed")
+            doc['ticket_completed']=False
+
+        if args.reset_status:
+            debug("Resetting ticket status to: ", args.ticket_status)
+            doc['ticket_status']=args.ticket_status
+
+        for ticket_id in ticket_ids:
+            doc["_id"]=ticket_id
+            rpc_client.request("ticket.Tickets.put", **doc)
+            
+
 
 
 ### create ticket objects from mail contents
@@ -231,100 +250,3 @@ for msg_part in msg.walk():
         else: 
             debug("Ignoring part with content-type:", msg_part.get_content_type())
     
-#     #filter dangerous stuff
-#     #filename=filename.replace("/","_")
-#     #filename=filename.replace("..","_")
-# filename="{:02}-{:02}-{:04}_{:02}:{:02}:{:02}_{:02}.jpg".format(dt.day, dt.month, dt.year, dt.hour, dt.minute, dt.second, count)
-# count=count+1
-
-#     #decode and store attachment:
-#     target_path=prefix+filename
-#     info("Writing {} ...".format(target_path))
-#     fp = open(target_path, 'wb')
-#     fp.write(part.get_payload(decode=True))
-#     fp.close()
-
-
-
-
-# #try to 
-# ticket_ids=[]
-# ticket_regex=re.compile("\["+args.prefix+"[0-9a-f]{24}\]")
-
-
-# tos = msg.get_all('to', [])
-# ccs = msg.get_all('cc', [])
-# resent_tos = msg.get_all('resent-to', [])
-# resent_ccs = msg.get_all('resent-cc', [])
-# all_recipients = email.utils.getaddresses(tos + ccs + resent_tos + resent_ccs)
-# debug("Send to: ",all_recipients)
-
-
-# # #start OCR
-# # exit=subprocess.call([ "tesseract", target_path, target_path, "-l", "nld" ])
-# # #not for now, since this would create many files when it retries
-# # #if exit!=0:
-# # #    raise(Exception("Subprocess failed"));
-
-# # return(ret)
-
-
-
-
-
-# # #ticket already created?
-# # tickets=rpc_client.request("ticket.Tickets.get_all",match={
-# # 		"import_id": import_id
-# # 	}) 
-
-# # if tickets["data"]:
-# # 	ticket=tickets["data"][0]
-# # 	print("Using existing ticket: {title}".format(**ticket))		
-# # else:
-# # 	#create ticket
-# # 	ticket=rpc_client.request("ticket.Tickets.put", 
-# # 		title=args.title,
-# # 		import_id=import_id,
-# # 		ticket_priority="3",
-# # 		owner=user["user_id"],
-# # 		ticket_status=args.ticket_status,
-# # 		start_date=int(time.time()),
-# # 		deligated_users=[],
-# # 		allowed_groups=[],
-# # 		ticket_completed=False,
-# # 		relations=[],
-# # 		tickets=[],
-# # 		due_date=None,
-# # 		desc="",
-# # 	)["data"]
-# # 	print("Created new ticket: {title}".format(**ticket))		
-
-# # #upload documents
-# # for filename in args.files:
-# # 	#already uploaded to this ticket?
-# # 	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",match={
-# # 			"tickets": [ ticket["_id"] ],
-# # 			"import_id": "import_docs@"+filename
-# # 		}) 
-
-# # 	if ticket_objects["data"]:
-# # 		print("Already uploaded {} to this ticket.".format(filename))
-# # 	else:
-# # 		ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-# # 			import_id="import_docs@"+filename,
-# # 			filename=filename,
-# # 			allowed_users=[ user["user_id"] ],
-# # 			create_time=int(os.stat(filename).st_ctime),
-# # 			tickets=[ ticket["_id"] ],
-# # 			type="doc"
-# # 		)["data"]
-
-
-# # sys.exit(0)
-
-# # # except Exception as e:
-# # # 	print("Error: "+str(e), file=sys.stderr)
-# # # 	sys.exit(1)
-
-
-

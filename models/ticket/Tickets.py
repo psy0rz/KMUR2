@@ -82,7 +82,7 @@ class Tickets(models.core.Protected.Protected):
 
 
     @Acl(roles="user")
-    def put(self, **doc):
+    def put(self, change_reason="", **doc):
 
         old_doc={}
         if '_id' in doc:
@@ -215,7 +215,7 @@ class Tickets(models.core.Protected.Protected):
         # old_data=meta[key].to_external(self.context, old_doc[key], resolve=True)
         # new_data=meta[key].to_external(self.context, ret[key], resolve=True)
                     
-        changed=True
+        # changed=True
         # for key in ret.keys():
         #     if key in old_doc and old_doc[key]!=ret[key]:
         #         if 'desc' in meta[key].meta:
@@ -224,7 +224,10 @@ class Tickets(models.core.Protected.Protected):
         #             change_text+="Changed '{}' from '{}' to '{}'\n\n".format(meta[key].meta['desc'], old_data, new_data)
         #             changed=True
 
-        if changed:
+        if change_text:
+            if change_reason:
+                change_text+=change_reason+"\n"
+
             #import here to prevent circular trouble
             import models.ticket.TicketObjects
             ticket_objects=models.ticket.TicketObjects.TicketObjects(self.context)
