@@ -21,24 +21,55 @@ parser.add_argument('--ticket_status', default="next_action", help='Status of th
 parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
 parser.add_argument('--outgoing', action='store_true', help='Mail is outgoing instead of incoming')
 parser.add_argument('--debug', action='store_true', help='debug mode')
+parser.add_argument('--maildate', action='store_true', help='Use send-date instead of current date')
+parser.add_argument('--mailaddress', action='store_true', help='Use mail from and to adresses, instead of environment')
+parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
 # parser.add_argument('--prefix', help='Ticket id prefix')
 # parser.add_argument('files',   nargs='+', help='Files to upload')
 
 args = parser.parse_args()
 
+
+#debugging output
 def debug(*a, **kw):
 	if args.debug:
 		print(*a, **kw)
 
-#decode mail from stdin:
-msg = email.message_from_file(sys.stdin)
 
-#determine reciepient and sender (name, email)-tupples
-sender=os.environ['SENDER']
-receip=os.environ['RECIPIENT']
+#decodes email-header to one unicode string
+def header_to_unicode(s):
+    ret=""
+    for decoded in email.header.decode_header(s):
+        if ret:
+            ret=ret+" "
+
+        if isinstance(decoded[0], bytes):
+            if decoded[1]:
+                ret=ret+decoded[0].decode(decoded[1])
+            else:
+                ret=ret+decoded[0].decode() #utf8
+        else:
+            ret=ret+decoded[0]
+
+    return(ret)
+
+#parse mail from stdin:
+msg = email.message_from_binary_file(sys.stdin)
+
+#determine reciepient and sender
+if args.mailaddress:
+    #usually used when importing existing mail from disk
+    sender=header_to_unicode(msg["from"])
+    receip=header_to_unicode(msg["to"])
+else:
+    #used when called by as an MDA
+    sender=os.environ['SENDER']
+    receip=os.environ['RECIPIENT']
 
 debug("From: ",sender)
 debug("To: ",receip)
+
+import_id="import_mail@"+msg["message-id"]
 
 
 #collect all trackables
@@ -61,6 +92,17 @@ rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
 #first login using the specified user and pass
 user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
+
+### check if its already imported?
+if args.skip_duplicates:
+    ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
+            fields=[ "_id" ],
+            match={ "import_id": import_id  } 
+    )["data"]
+
+    if ticket_objects:
+        debug("Skipping, already imported", import_id)
+        sys.exit(0)
 
 
 ### try to find any mails with these trackables
@@ -89,16 +131,21 @@ for ticket in tickets:
     ticket_ids.add(ticket["_id"])
 ticket_ids=list(ticket_ids) #json encodable
 
+#which timestamp to give to new objects?
+if args.maildate:
+    timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
+else:
+    timestamp=int(time.time())
 
 ### create new ticket
 if not ticket_ids:
     ticket=rpc_client.request("ticket.Tickets.put", 
-        title=msg["subject"],
-        import_id="import_mail@"+msg["message-id"],
+        title=header_to_unicode(msg["subject"]),
+        import_id=import_id,
         ticket_priority="3",
         owner=user["user_id"],
         ticket_status=args.ticket_status,
-        start_date=int(time.time()),
+        start_date=timestamp,
         deligated_users=[],
         allowed_groups=[],
         ticket_completed=False,
@@ -120,19 +167,25 @@ for msg_part in msg.walk():
     if msg_part.get_content_maintype() == 'multipart':
         continue
 
+    #get and decode payload if neccesary
+    if msg_part["Content-Transfer-Encoding"]=="8bit":
+        payload=msg_part.get_payload() 
+    else:
+        payload=msg_part.get_payload(decode=True)
+
     filename = msg_part.get_filename()
     if filename:
         with tempfile.TemporaryFile() as tmp_file:
             debug("Creating document for", filename)
-            tmp_file.write(msg_part.get_payload(decode=True))
+            tmp_file.write(payload)
             tmp_file.seek(0)
 
             ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-                import_id="import_mail@"+msg["message-id"],
+                import_id=import_id,
                 filename=filename,
                 file=tmp_file,
                 allowed_users=[ user["user_id"] ],
-                create_time=int(time.time()), 
+                create_time=timestamp, 
                 tickets=ticket_ids,
                 trackables=trackables,
                 type="doc"
@@ -142,17 +195,23 @@ for msg_part in msg.walk():
         if msg_part.get_content_type()=="text/plain":
             debug("Creating email")
 
+            #do we need to decode the charset to unicode?
+            if isinstance(payload, bytes):
+                text=payload.decode(msg_part.get_content_charset())
+            else:
+                text=payload
+
             ticket_object=rpc_client.request("ticket.TicketObjects.put", **{
-                "import_id":"import_mail@"+msg["message-id"],
+                "import_id":import_id,
                 "allowed_users":[ user["user_id"] ],
-                "create_time":int(time.time()), 
+                "create_time":timestamp, 
                 "tickets":ticket_ids,
                 "trackables":trackables,
                 "type":"email",
                 "from":sender,
                 "to":receip,
-                "title":msg["subject"],
-                "text":msg_part.get_payload()
+                "title":header_to_unicode(msg["subject"]),
+                "text":text
             })["data"]
 
         else: 
