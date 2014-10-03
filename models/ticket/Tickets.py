@@ -207,7 +207,7 @@ class Tickets(models.core.Protected.Protected):
         else:
             log_txt="Created new task {title}\n".format(**doc)
             change_title="{} created task.".format(self.context.session['name'])
-            change_text=""
+            change_text="\n"
 
         self.info(log_txt)
 

@@ -31,6 +31,7 @@ parser.add_argument('--reset_status', action='store_true', help='Reset ticket st
 
 parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on sender')
 parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on receipient')
+parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
 parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
 
 # parser.add_argument('--prefix', help='Ticket id prefix')
@@ -181,6 +182,10 @@ ticket_ids=list(ticket_ids) #json encodable
 
 ### create new ticket
 if not tickets:
+    if args.related_only and not relation_ids:
+        debug("Ignoring message, mail-addresses cant be found in any relation, and existing tickets found.")
+        sys.exit(0)
+
     ticket=rpc_client.request("ticket.Tickets.put", 
         change_reason="Automaticly created by email importer",
         title=header_to_unicode(msg["subject"]),
