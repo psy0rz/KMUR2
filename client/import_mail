@@ -20,10 +20,9 @@ parser.add_argument('--password', required=True,  help='password. default: %(def
 # parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
 parser.add_argument('--ticket_status', default="next_action", help='Status of the new task')
 parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
-parser.add_argument('--outgoing', action='store_true', help='Mail is outgoing instead of incoming')
 parser.add_argument('--debug', action='store_true', help='debug mode')
-parser.add_argument('--maildate', action='store_true', help='Use send-date instead of current date')
-parser.add_argument('--mailaddress', action='store_true', help='Use mail from and to adresses, instead of environment')
+parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
+parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of environment')
 parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
 
 parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
@@ -70,7 +69,7 @@ def header_to_unicode(s):
 msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
 
 #determine reciepient and sender
-if args.mailaddress:
+if args.mail_address:
     #usually used when importing existing mail from disk
     sender=header_to_unicode(msg["from"])
     receip=header_to_unicode(msg["to"])
@@ -103,7 +102,7 @@ debug("Trackables:", trackables)
 
 
 #which timestamp to give to new objects?
-if args.maildate:
+if args.mail_date:
     timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
 else:
     timestamp=int(time.time())
