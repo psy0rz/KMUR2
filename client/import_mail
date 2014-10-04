@@ -10,6 +10,7 @@ import email
 import email.policy
 import re
 import tempfile
+import uuid
 
 parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket with docs and email objects when neccesary")
 
@@ -34,11 +35,14 @@ parser.add_argument('--relate_to', action='store_true', help='Try to find relati
 parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
 parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
 
+
+parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
+parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
+
 # parser.add_argument('--prefix', help='Ticket id prefix')
 # parser.add_argument('files',   nargs='+', help='Files to upload')
 
 args = parser.parse_args()
-
 
 #debugging output
 def debug(*a, **kw):
@@ -65,11 +69,15 @@ def header_to_unicode(s):
 
     return(ret)
 
+
+
 #parse mail from stdin:
 # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
 msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
 debug("Parsed message:", msg["message-id"])
 debug("Subject:", msg["subject"])
+
+
 
 #determine reciepient and sender
 if args.mail_address:
@@ -103,7 +111,7 @@ debug("All receiver adresses: ",all_receip)
 import_id="import_mail@"+msg["message-id"]
 
 
-#collect all trackables
+### collect all trackables
 trackables=[]
 if msg["message-id"]:
 	trackables.append(msg["message-id"])
@@ -113,7 +121,13 @@ if msg["in-reply-to"]:
 
 if msg["references"]:
 	trackables.extend(msg["references"].split(" "))
+
+#find any embedded trackables (later this is use to determine if we need to embed a new trackable, in case of --forward )
+embedded_trackables=re.findall("\[{}(........-....-....-....-............)\]".format(args.trackable), msg.as_string())
+trackables.extend(embedded_trackables)
+
 trackables=list(trackables) # json encodable
+
 
 debug("Trackables:", trackables)
 
@@ -130,6 +144,7 @@ rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
 #first login using the specified user and pass
 user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
+
 
 ### check if its already imported?
 if args.skip_duplicates:
@@ -319,7 +334,13 @@ for msg_part in msg.walk():
                 "text":text
             })["data"]
 
+            #still need to embed new trackable?
+            if not embedded_trackables:
+                embedded_trackables=[ "[{}{}]".format(args.trackable, uuid.uuid4()) ]
+                msg_part.set_payload(msg_part.get_payload()+"\n"+embedded_trackables[0]+"\n")
+
         else: 
             debug("Ignoring part with content-type:", msg_part.get_content_type())
     
 debug("DONE: Import completed")
+
