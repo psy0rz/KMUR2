@@ -11,7 +11,7 @@ import email.policy
 import re
 import tempfile
 
-parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket when neccesary")
+parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket with docs and email objects when neccesary")
 
 parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
 parser.add_argument('--user', required=True, help='user to login. default: %(default)s')
@@ -24,6 +24,7 @@ parser.add_argument('--debug', action='store_true', help='debug mode')
 parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
 parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of environment')
 parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
+parser.add_argument('--due_days', help='Set due date to this many days in the future')
 
 parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
 parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
@@ -201,6 +202,10 @@ if not tickets:
         debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets found.")
         sys.exit(0)
 
+    due_date=None
+    if args.due_days:
+        due_date=timestamp+int(args.due_days)*(24*3600)
+
     ticket=rpc_client.request("ticket.Tickets.put", 
         change_reason="Automaticly created by email importer",
         title=header_to_unicode(msg["subject"]),
@@ -214,7 +219,7 @@ if not tickets:
         ticket_completed=False,
         relations=relation_ids,
         tickets=[],
-        due_date=None,
+        due_date=due_date,
         desc="Created by mail from {} to {}".format(sender, receip),
     )["data"]
 
