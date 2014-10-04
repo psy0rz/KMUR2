@@ -28,8 +28,8 @@ parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplica
 parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
 parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
 
-parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on sender')
-parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on receipient')
+parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on From header')
+parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on To, cc, and other headers.')
 parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
 parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
 
@@ -47,7 +47,7 @@ def debug(*a, **kw):
 
 #decodes email-header to one unicode string
 def header_to_unicode(s):
-    return(s)
+    return(s) #not needed with new policy
 
     ret=""
     for decoded in email.header.decode_header(s):
@@ -67,6 +67,8 @@ def header_to_unicode(s):
 #parse mail from stdin:
 # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
 msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
+debug("Parsed message:", msg["message-id"])
+debug("Subject:", msg["subject"])
 
 #determine reciepient and sender
 if args.mail_address:
@@ -82,6 +84,20 @@ else:
 
 debug("From: ",sender)
 debug("To: ",receip)
+
+#get all receiver email adresses (without name)
+all_receip=set()
+for addr in email.utils.getaddresses(
+    msg.get_all('to', [])+
+    msg.get_all('cc', [])+
+    msg.get_all('resent-to', [])+
+    msg.get_all('resent-cc', [])+ 
+    [ receip ]
+):
+    all_receip.add(addr[1])
+all_receip=list(all_receip)
+debug("All receiver adresses: ",all_receip)
+
 
 import_id="import_mail@"+msg["message-id"]
 
@@ -122,7 +138,7 @@ if args.skip_duplicates:
     )["data"]
 
     if ticket_objects:
-        debug("Skipping, already imported", import_id)
+        debug("DONE: Skipping, already imported", import_id)
         sys.exit(0)
 
 
@@ -132,7 +148,7 @@ if args.relate_from:
     related_addresses.add(email.utils.parseaddr(sender)[1])
 
 if args.relate_to:
-    related_addresses.add(email.utils.parseaddr(receip)[1])
+    related_addresses.update(all_receip)
 
 relation_ids=[]
 if related_addresses:
@@ -182,7 +198,7 @@ ticket_ids=list(ticket_ids) #json encodable
 ### create new ticket
 if not tickets:
     if args.related_only and not relation_ids:
-        debug("Ignoring message, mail-addresses cant be found in any relation, and existing tickets found.")
+        debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets found.")
         sys.exit(0)
 
     ticket=rpc_client.request("ticket.Tickets.put", 
@@ -301,3 +317,4 @@ for msg_part in msg.walk():
         else: 
             debug("Ignoring part with content-type:", msg_part.get_content_type())
     
+debug("DONE: Import completed")
