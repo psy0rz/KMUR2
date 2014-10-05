@@ -94,8 +94,8 @@ try:
         sender=os.environ['SENDER']
         receip=os.environ['RECIPIENT']
 
-    debug("From: ",sender)
-    debug("To: ",receip)
+    debug("Enveloppe from: ",sender)
+    debug("Enveloppe to: ",receip)
 
     #get all receiver email adresses (without name)
     all_receip=set()
@@ -204,6 +204,9 @@ try:
                 msg["Reply-To"]=msg["from"]+", "+args.reply_to
             else:
                 msg["Reply-To"]=args.reply_to
+
+            #also put the adress in the cc field, because some broken mailers dont support multiple reply-to adresses (zarafa webapp/webaccess for example)
+            msg.add_header('Cc', args.reply_to)
 
 
         import smtplib
