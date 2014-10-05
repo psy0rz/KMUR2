@@ -1,378 +1,140 @@
 #!/usr/bin/env python3
-
-import argparse
-import json
-import rpc
-import sys
-import time
-import os
-import email
-import email.policy
-import re
-import tempfile
-import uuid
-
-parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket with docs and email objects when neccesary")
-
-parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
-parser.add_argument('--user', required=True, help='user to login. default: %(default)s')
-parser.add_argument('--password', required=True,  help='password. default: %(default)s')
-# parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
-# parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
-parser.add_argument('--ticket_status', default="next_action", help='Status of the new task')
-parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
-parser.add_argument('--debug', action='store_true', help='debug mode')
-parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
-parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of environment')
-parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
-parser.add_argument('--due_days', help='Set due date to this many days in the future')
-
-parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
-parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
-
-parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on From header')
-parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on To, cc, and other headers.')
-parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
-parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
-
-
-parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
-parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
-parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
-
-# parser.add_argument('--prefix', help='Ticket id prefix')
-# parser.add_argument('files',   nargs='+', help='Files to upload')
-
-args = parser.parse_args()
-
-#debugging output
-def debug(*a, **kw):
-	if args.debug:
-		print(*a, **kw)
-
-
-#decodes email-header to one unicode string
-def header_to_unicode(s):
-    return(s) #not needed with new policy
-
-    ret=""
-    for decoded in email.header.decode_header(s):
-        if ret:
-            ret=ret+" "
-
-        if isinstance(decoded[0], bytes):
-            if decoded[1]:
-                ret=ret+decoded[0].decode(decoded[1])
-            else:
-                ret=ret+decoded[0].decode() #utf8
-        else:
-            ret=ret+decoded[0]
-
-    return(ret)
-
-
-
-#parse mail from stdin:
-# msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
-msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
-debug("Parsed message:", msg["message-id"])
-debug("Subject:", msg["subject"])
-
-
-
-#determine reciepient and sender
-if args.mail_address:
-    #usually used when importing existing mail from disk
-    sender=header_to_unicode(msg["from"])
-    receip=header_to_unicode(msg["to"])
-    if not receip:
-        receip="" #make sure its str
-else:
-    #used when called by as an MDA
-    sender=os.environ['SENDER']
-    receip=os.environ['RECIPIENT']
-
-debug("From: ",sender)
-debug("To: ",receip)
-
-#get all receiver email adresses (without name)
-all_receip=set()
-for addr in email.utils.getaddresses(
-    msg.get_all('to', [])+
-    msg.get_all('cc', [])+
-    msg.get_all('resent-to', [])+
-    msg.get_all('resent-cc', [])+ 
-    [ receip ]
-):
-    all_receip.add(addr[1])
-
-all_receip=list(all_receip)
-debug("All receiver adresses: ",all_receip)
-
-
-import_id="import_mail@"+msg["message-id"]
-
-
-### collect all trackables
-trackables=set()
-if msg["message-id"]:
-	trackables.add(msg["message-id"])
-
-if msg["in-reply-to"]:
-	trackables.add(msg["in-reply-to"])
-
-if msg["references"]:
-	trackables.update(msg["references"].split(" "))
-
-
-# find embedded trackable and embed new ones if neccesary
-embedded_trackables=set()
-embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(args.trackable))
-
-#first try to find all the embedded trackables
-for msg_part in msg.walk():
-    if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
-        payload=msg_part.get_payload(decode=True)
-
-        if isinstance(payload, bytes):
-            if msg_part.get_content_charset():
-                text=payload.decode(msg_part.get_content_charset())
-            else:
-                text=payload.decode()
-        else:
-            text=payload
-
-        #collect all embedded trackabales of this part
-        embedded_trackables.update(re.findall(embedded_re, text))
-
-
-#none found at all, create new one?
-if not embedded_trackables:
-    embedded_trackables=[ str(uuid.uuid4()) ]
-    debug("Created new embedded trackable:", embedded_trackables[0])
-else:
-    debug("Found existing embedded trackables:", embedded_trackables)
-embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
-
-
-#now add the embedded trackable to all text and html parts that are missing it
-for msg_part in msg.walk():
-    if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
-        payload=msg_part.get_payload(decode=True)
-
-        if isinstance(payload, bytes):
-            if msg_part.get_content_charset():
-                text=payload.decode(msg_part.get_content_charset())
-            else:
-                text=payload.decode()
-        else:
-            text=payload
-
-        #need to embed it in this part?
-        if not re.search(embedded_re,text):
-            if msg_part.get_content_type()=="text/plain":
-                text=text+"\n{}\n".format(embedded_text)
-            else: #html
-                #add embedded text just before end-body tag
-                text=re.sub("(</body>)", "<p>{}</p>\\1".format(embedded_text), text, flags=re.IGNORECASE)
-
-            del msg_part["Content-Transfer-Encoding"]
-            msg_part.set_payload(text, msg_part.get_content_charset())
-
-
-trackables.update(embedded_trackables)
-trackables=list(trackables) # json encodable
-debug("Trackables:", trackables)
-
-
-### forward the message?
-if args.forward:
-    import smtplib
-    debug("Forwarding to {} via smtp server {}".format(args.forward, args.smtp_server))
-    smtp_server = smtplib.SMTP(args.smtp_server)
-    # smtp_server.set_debuglevel(1)
-    smtp_server.send_message(msg, from_addr=sender, to_addrs=args.forward)
-    smtp_server.quit()
-    # sys.exit(111) #temporary error
-
-
-#which timestamp to give to new objects?
-if args.mail_date:
-    timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
-else:
-    timestamp=int(time.time())
-
-
-#initialise the rpc client class
-rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
-
-#first login using the specified user and pass
-user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
-
-
-### check if its already imported?
-if args.skip_duplicates:
-    ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
-            fields=[ "_id" ],
-            match={ "import_id": import_id  } 
-    )["data"]
-
-    if ticket_objects:
-        debug("DONE: Skipping, already imported", import_id)
-        sys.exit(0)
-
-
-### try to find relations
-related_addresses=set()
-if args.relate_from:
-    related_addresses.add(email.utils.parseaddr(sender)[1])
-
-if args.relate_to:
-    related_addresses.update(all_receip)
-
-relation_ids=[]
-if related_addresses:
-    relations=rpc_client.request("ticket.Relations.get_all",
-        fields=[ "_id"],
-        spec_and=[ { 
-            "emails.email": {
-                "$in": list(related_addresses)  
-            } 
-        } ]
-    )["data"]
-
-    relation_ids=set()
-    for relation in relations:
-        relation_ids.add(relation["_id"])
-    relation_ids=list(relation_ids)
-
-    debug("Relations with matching email adresses:", relation_ids)
-
-
-### try to find any mails with these trackables
-ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
-        fields=[ "tickets" ],
-        match_in={ "trackables": trackables  } 
-)["data"]
-debug("Ticket objects with matching trackables:", ticket_objects)
-
-
-### determine the existing accesible ticket_ids:
-all_ticket_ids=set()
-for ticket_object in ticket_objects:
-    all_ticket_ids.update(ticket_object["tickets"])
-all_ticket_ids=list(all_ticket_ids) #json encodable
-
-#only link to existing tickets that we have access to
-tickets=rpc_client.request("ticket.Tickets.get_all",
-        fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
-        match_in={ "_id": all_ticket_ids } 
-)["data"]
-
-ticket_ids=set()
-for ticket in tickets:
-    ticket_ids.add(ticket["_id"])
-ticket_ids=list(ticket_ids) #json encodable
-
-
-### create new ticket
-if not tickets:
-    if args.related_only and not relation_ids:
-        debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets found.")
-        sys.exit(0)
-
-    due_date=None
-    if args.due_days:
-        due_date=timestamp+int(args.due_days)*(24*3600)
-
-    ticket=rpc_client.request("ticket.Tickets.put", 
-        change_reason="Automaticly created by email importer",
-        title=header_to_unicode(msg["subject"]),
-        import_id=import_id,
-        ticket_priority="3",
-        owner=user["user_id"],
-        ticket_status=args.ticket_status,
-        start_date=timestamp,
-        deligated_users=[],
-        allowed_groups=[],
-        ticket_completed=False,
-        relations=relation_ids,
-        tickets=[],
-        due_date=due_date,
-        desc="Created by mail from {} to {}".format(sender, receip),
-    )["data"]
-
-    ticket_ids=[ ticket["_id"] ]
-    debug("Created new ticket:", ticket["_id"])
-else:
-    debug("Linking to existing tickets:", ticket_ids)
-
-    #update the tickets
-    for ticket in tickets:
-        doc={}
-        doc["_id"]=ticket["_id"]
-        doc["change_reason"]="Automaticly changed by email importer"
-
-        if args.reset_completed and ticket["ticket_completed"]:
-            debug("Resetting ticket completed")
-            doc['ticket_completed']=False
-
-        if args.reset_status and ticket["ticket_status"]!=args.ticket_status:
-            debug("Resetting ticket status to: ", args.ticket_status)
-            doc['ticket_status']=args.ticket_status
-
-        if args.update_relations:
-            #add new relations, if any
-            doc["relations"]=set(ticket["relations"])
-            doc["relations"].update(relation_ids)
-            doc["relations"]=list(doc["relations"])
-            if len(doc["relations"])==len(ticket["relations"]):
-                del doc["relations"]
-            else:
-                debug("Update ticket relations")
-
-
-        #did anything change at all?
-        if len(ticket)>2:
-            rpc_client.request("ticket.Tickets.put", **doc)
+try:
+    import sys
+    import argparse
+    import json
+    import rpc
+    import time
+    import os
+    import email
+    import email.policy
+    import re
+    import tempfile
+    import uuid
+    import traceback
+
+    parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket with docs and email objects when neccesary")
+
+    parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+    parser.add_argument('--user', required=True, help='user to login. default: %(default)s')
+    parser.add_argument('--password', required=True,  help='password. default: %(default)s')
+    # parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
+    # parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
+    parser.add_argument('--ticket_status', default="next_action", help='Status of the new task')
+    parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
+    parser.add_argument('--debug', action='store_true', help='debug mode')
+    parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
+    parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of environment')
+    parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
+    parser.add_argument('--due_days', help='Set due date to this many days in the future')
+
+    parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
+    parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
+
+    parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on From header')
+    parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on To, cc, and other headers.')
+    parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
+    parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
+
+
+    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
+    parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
+    parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
+
+    # parser.add_argument('--prefix', help='Ticket id prefix')
+    # parser.add_argument('files',   nargs='+', help='Files to upload')
+
+    args = parser.parse_args()
     
+    #debugging output
+    def debug(*a, **kw):
+    	if args.debug:
+    		print(*a, **kw)
 
-### create ticket objects from mail contents
-for msg_part in msg.walk():
 
-    if msg_part.get_content_maintype() == 'multipart':
-        continue
+    #decodes email-header to one unicode string
+    def header_to_unicode(s):
+        return(s) #not needed with new policy
 
-    payload=msg_part.get_payload(decode=True)
+        ret=""
+        for decoded in email.header.decode_header(s):
+            if ret:
+                ret=ret+" "
 
-    filename = msg_part.get_filename()
-    if filename:
-        #skip small inline stuff, mostly logos
-        if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline' and len(payload)<10000:
-            debug("Ignoring small inline image")
-            continue
+            if isinstance(decoded[0], bytes):
+                if decoded[1]:
+                    ret=ret+decoded[0].decode(decoded[1])
+                else:
+                    ret=ret+decoded[0].decode() #utf8
+            else:
+                ret=ret+decoded[0]
 
-        with tempfile.TemporaryFile() as tmp_file:
-            debug("Creating document ticket object for", filename)
-            tmp_file.write(payload)
-            tmp_file.seek(0)
+        return(ret)
 
-            ticket_object=rpc_client.request("ticket.TicketObjects.put", 
-                import_id=import_id,
-                filename=filename,
-                file=tmp_file,
-                allowed_users=[ user["user_id"] ],
-                create_time=timestamp, 
-                tickets=ticket_ids,
-                trackables=trackables,
-                type="doc"
-            )["data"]
 
+
+    #parse mail from stdin:
+    # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
+    msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
+    debug("Parsed message:", msg["message-id"])
+    debug("Subject:", msg["subject"])
+
+
+
+    #determine reciepient and sender
+    if args.mail_address:
+        #usually used when importing existing mail from disk
+        sender=header_to_unicode(msg["from"])
+        receip=header_to_unicode(msg["to"])
+        if not receip:
+            receip="" #make sure its str
     else:
-        if msg_part.get_content_type()=="text/plain":
-            debug("Creating email ticket object")
+        #used when called by as an MDA
+        sender=os.environ['SENDER']
+        receip=os.environ['RECIPIENT']
 
-            #do we need to decode the charset to unicode?
+    debug("From: ",sender)
+    debug("To: ",receip)
+
+    #get all receiver email adresses (without name)
+    all_receip=set()
+    for addr in email.utils.getaddresses(
+        msg.get_all('to', [])+
+        msg.get_all('cc', [])+
+        msg.get_all('resent-to', [])+
+        msg.get_all('resent-cc', [])+ 
+        [ receip ]
+    ):
+        all_receip.add(addr[1])
+
+    all_receip=list(all_receip)
+    debug("All receiver adresses: ",all_receip)
+
+
+    import_id="import_mail@"+msg["message-id"]
+
+
+    ### collect all trackables
+    trackables=set()
+    if msg["message-id"]:
+    	trackables.add(msg["message-id"])
+
+    if msg["in-reply-to"]:
+    	trackables.add(msg["in-reply-to"])
+
+    if msg["references"]:
+    	trackables.update(msg["references"].split(" "))
+
+
+    # find embedded trackable and embed new ones if neccesary
+    embedded_trackables=set()
+    embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(args.trackable))
+
+    #first try to find all the embedded trackables
+    for msg_part in msg.walk():
+        if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
+            payload=msg_part.get_payload(decode=True)
+
             if isinstance(payload, bytes):
                 if msg_part.get_content_charset():
                     text=payload.decode(msg_part.get_content_charset())
@@ -381,22 +143,276 @@ for msg_part in msg.walk():
             else:
                 text=payload
 
-            ticket_object=rpc_client.request("ticket.TicketObjects.put", **{
-                "import_id":import_id,
-                "allowed_users":[ user["user_id"] ],
-                "create_time":timestamp, 
-                "tickets":ticket_ids,
-                "trackables":trackables,
-                "type":"email",
-                "from":sender,
-                "to":receip,
-                "title":header_to_unicode(msg["subject"]),
-                "text":text
-            })["data"]
+            #collect all embedded trackabales of this part
+            embedded_trackables.update(re.findall(embedded_re, text))
 
 
-        else: 
-            debug("Ignoring part with content-type:", msg_part.get_content_type())
-    
-debug("DONE: Import completed")
+    #none found at all, create new one?
+    if not embedded_trackables:
+        embedded_trackables=[ str(uuid.uuid4()) ]
+        debug("Created new embedded trackable:", embedded_trackables[0])
+    else:
+        debug("Found existing embedded trackables:", embedded_trackables)
+    embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
 
+
+    #now add the embedded trackable to all text and html parts that are missing it
+    for msg_part in msg.walk():
+        if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
+            payload=msg_part.get_payload(decode=True)
+
+            if isinstance(payload, bytes):
+                if msg_part.get_content_charset():
+                    text=payload.decode(msg_part.get_content_charset())
+                else:
+                    text=payload.decode()
+            else:
+                text=payload
+
+            #need to embed it in this part?
+            if not re.search(embedded_re,text):
+                if msg_part.get_content_type()=="text/plain":
+                    text=text+"\n{}\n".format(embedded_text)
+                else: #html
+                    #add embedded text just before end-body tag
+                    text=re.sub("(</body>)", "<p>{}</p>\\1".format(embedded_text), text, flags=re.IGNORECASE)
+
+                del msg_part["Content-Transfer-Encoding"]
+                msg_part.set_payload(text, msg_part.get_content_charset())
+
+
+    trackables.update(embedded_trackables)
+    trackables=list(trackables) # json encodable
+    debug("Trackables:", trackables)
+
+    ### forward the message?
+    if args.forward:
+        import smtplib
+        debug("Forwarding to {} via smtp server {}".format(args.forward, args.smtp_server))
+        smtp_server = smtplib.SMTP(args.smtp_server)
+        # smtp_server.set_debuglevel(1)
+        smtp_server.send_message(msg, from_addr=sender, to_addrs=args.forward)
+        smtp_server.quit()
+        
+
+
+except Exception as e:
+    print("Temporary error: "+str(e))
+    if 'args' in locals() and args.debug:
+        traceback.print_exc()
+    #we never want to lose mail, so everthing up to the forwarding-code generates a temporary error:
+    sys.exit(111) 
+
+
+try:
+    #which timestamp to give to new objects?
+    if args.mail_date:
+        timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
+    else:
+        timestamp=int(time.time())
+
+
+    #initialise the rpc client class
+    rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
+
+    #first login using the specified user and pass
+    user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
+
+
+    ### check if its already imported?
+    if args.skip_duplicates:
+        ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
+                fields=[ "_id" ],
+                match={ "import_id": import_id  } 
+        )["data"]
+
+        if ticket_objects:
+            debug("DONE: Skipping, already imported", import_id)
+            sys.exit(0)
+
+
+    ### try to find relations
+    related_addresses=set()
+    if args.relate_from:
+        related_addresses.add(email.utils.parseaddr(sender)[1])
+
+    if args.relate_to:
+        related_addresses.update(all_receip)
+
+    relation_ids=[]
+    if related_addresses:
+        relations=rpc_client.request("ticket.Relations.get_all",
+            fields=[ "_id"],
+            spec_and=[ { 
+                "emails.email": {
+                    "$in": list(related_addresses)  
+                } 
+            } ]
+        )["data"]
+
+        relation_ids=set()
+        for relation in relations:
+            relation_ids.add(relation["_id"])
+        relation_ids=list(relation_ids)
+
+        debug("Relations with matching email adresses:", relation_ids)
+
+
+    ### try to find any mails with these trackables
+    ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
+            fields=[ "tickets" ],
+            match_in={ "trackables": trackables  } 
+    )["data"]
+    debug("Ticket objects with matching trackables:", ticket_objects)
+
+
+    ### determine the existing accesible ticket_ids:
+    all_ticket_ids=set()
+    for ticket_object in ticket_objects:
+        all_ticket_ids.update(ticket_object["tickets"])
+    all_ticket_ids=list(all_ticket_ids) #json encodable
+
+    #only link to existing tickets that we have access to
+    tickets=rpc_client.request("ticket.Tickets.get_all",
+            fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
+            match_in={ "_id": all_ticket_ids } 
+    )["data"]
+
+    ticket_ids=set()
+    for ticket in tickets:
+        ticket_ids.add(ticket["_id"])
+    ticket_ids=list(ticket_ids) #json encodable
+
+
+    ### create new ticket
+    if not tickets:
+        if args.related_only and not relation_ids:
+            debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets found.")
+            sys.exit(0)
+
+        due_date=None
+        if args.due_days:
+            due_date=timestamp+int(args.due_days)*(24*3600)
+
+        ticket=rpc_client.request("ticket.Tickets.put", 
+            change_reason="Automaticly created by email importer",
+            title=header_to_unicode(msg["subject"]),
+            import_id=import_id,
+            ticket_priority="3",
+            owner=user["user_id"],
+            ticket_status=args.ticket_status,
+            start_date=timestamp,
+            deligated_users=[],
+            allowed_groups=[],
+            ticket_completed=False,
+            relations=relation_ids,
+            tickets=[],
+            due_date=due_date,
+            desc="Created by mail from {} to {}".format(sender, receip),
+        )["data"]
+
+        ticket_ids=[ ticket["_id"] ]
+        debug("Created new ticket:", ticket["_id"])
+    else:
+        debug("Linking to existing tickets:", ticket_ids)
+
+        #update the tickets
+        for ticket in tickets:
+            doc={}
+            doc["_id"]=ticket["_id"]
+            doc["change_reason"]="Automaticly changed by email importer"
+
+            if args.reset_completed and ticket["ticket_completed"]:
+                debug("Resetting ticket completed")
+                doc['ticket_completed']=False
+
+            if args.reset_status and ticket["ticket_status"]!=args.ticket_status:
+                debug("Resetting ticket status to: ", args.ticket_status)
+                doc['ticket_status']=args.ticket_status
+
+            if args.update_relations:
+                #add new relations, if any
+                doc["relations"]=set(ticket["relations"])
+                doc["relations"].update(relation_ids)
+                doc["relations"]=list(doc["relations"])
+                if len(doc["relations"])==len(ticket["relations"]):
+                    del doc["relations"]
+                else:
+                    debug("Update ticket relations")
+
+
+            #did anything change at all?
+            if len(ticket)>2:
+                rpc_client.request("ticket.Tickets.put", **doc)
+        
+
+    ### create ticket objects from mail contents
+    for msg_part in msg.walk():
+
+        if msg_part.get_content_maintype() == 'multipart':
+            continue
+
+        payload=msg_part.get_payload(decode=True)
+
+        filename = msg_part.get_filename()
+        if filename:
+            #skip small inline stuff, mostly logos
+            if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline' and len(payload)<10000:
+                debug("Ignoring small inline image")
+                continue
+
+            with tempfile.TemporaryFile() as tmp_file:
+                debug("Creating document ticket object for", filename)
+                tmp_file.write(payload)
+                tmp_file.seek(0)
+
+                ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+                    import_id=import_id,
+                    filename=filename,
+                    file=tmp_file,
+                    allowed_users=[ user["user_id"] ],
+                    create_time=timestamp, 
+                    tickets=ticket_ids,
+                    trackables=trackables,
+                    type="doc"
+                )["data"]
+
+        else:
+            if msg_part.get_content_type()=="text/plain":
+                debug("Creating email ticket object")
+
+                #do we need to decode the charset to unicode?
+                if isinstance(payload, bytes):
+                    if msg_part.get_content_charset():
+                        text=payload.decode(msg_part.get_content_charset())
+                    else:
+                        text=payload.decode()
+                else:
+                    text=payload
+
+                ticket_object=rpc_client.request("ticket.TicketObjects.put", **{
+                    "import_id":import_id,
+                    "allowed_users":[ user["user_id"] ],
+                    "create_time":timestamp, 
+                    "tickets":ticket_ids,
+                    "trackables":trackables,
+                    "type":"email",
+                    "from":sender,
+                    "to":receip,
+                    "title":header_to_unicode(msg["subject"]),
+                    "text":text
+                })["data"]
+
+
+            else: 
+                debug("Ignoring part with content-type:", msg_part.get_content_type())
+        
+    debug("DONE: Import completed")
+
+except Exception as e:
+    debug("Exception: "+str(e))
+    debug("Exitting with code 0 since mail was succesfully forwarded")
+    if args.debug:
+        traceback.print_exc()
+
+    sys.exit(0)
