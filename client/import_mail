@@ -24,7 +24,7 @@ try:
     parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
     parser.add_argument('--debug', action='store_true', help='debug mode')
     parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
-    parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of environment')
+    parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of envelope adresses from environment (usually not recommended)')
     parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
     parser.add_argument('--due_days', help='Set due date to this many days in the future')
 
@@ -37,9 +37,10 @@ try:
     parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
 
 
-    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
     parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
     parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
+    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
+    parser.add_argument('--reply_to', default=None, help='Add extra reply-to adresses. Usefull for making sure replies to incomming mails also get tracked.')
 
     # parser.add_argument('--prefix', help='Ticket id prefix')
     # parser.add_argument('files',   nargs='+', help='Files to upload')
@@ -174,8 +175,13 @@ try:
                 if msg_part.get_content_type()=="text/plain":
                     text=text+"\n{}\n".format(embedded_text)
                 else: #html
-                    #add embedded text just before end-body tag
-                    text=re.sub("(</body>)", "<p>{}</p>\\1".format(embedded_text), text, flags=re.IGNORECASE)
+                    #does it has a </body> tag?
+                    if re.search("</body>", text):
+                        #add embedded text nicely before end-body tag
+                        text=re.sub("(</body>)", '<p>{}</p>\\1'.format(embedded_text), text, flags=re.IGNORECASE)
+                    else:
+                        #no body tags, just slap it on at the end (gmail does this)
+                        text=text+'<p>{}</p>'.format(embedded_text)
 
                 del msg_part["Content-Transfer-Encoding"]
                 msg_part.set_payload(text, msg_part.get_content_charset())
@@ -185,8 +191,21 @@ try:
     trackables=list(trackables) # json encodable
     debug("Trackables:", trackables)
 
+
     ### forward the message?
     if args.forward:
+
+        #reply-to specified?
+        if args.reply_to:
+            #make sure the original from-adress is included
+            if not msg["reply-to"]:
+                debug("Adding reply-to: {}".format(msg["from"]))
+                # msg.set_param(msg["from"], None, header='Reply-To')
+                msg["Reply-To"]=msg["from"]+", "+args.reply_to
+            else:
+                msg["Reply-To"]=args.reply_to
+
+
         import smtplib
         debug("Forwarding to {} via smtp server {}".format(args.forward, args.smtp_server))
         smtp_server = smtplib.SMTP(args.smtp_server)
@@ -340,9 +359,8 @@ try:
                 else:
                     debug("Update ticket relations")
 
-
             #did anything change at all?
-            if len(ticket)>2:
+            if len(doc)>2:
                 rpc_client.request("ticket.Tickets.put", **doc)
         
 
