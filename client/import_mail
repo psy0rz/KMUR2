@@ -38,6 +38,7 @@ parser.add_argument('--update_relations', action='store_true', help='Update rela
 
 parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
 parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
+parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
 
 # parser.add_argument('--prefix', help='Ticket id prefix')
 # parser.add_argument('files',   nargs='+', help='Files to upload')
@@ -104,6 +105,7 @@ for addr in email.utils.getaddresses(
     [ receip ]
 ):
     all_receip.add(addr[1])
+
 all_receip=list(all_receip)
 debug("All receiver adresses: ",all_receip)
 
@@ -112,24 +114,86 @@ import_id="import_mail@"+msg["message-id"]
 
 
 ### collect all trackables
-trackables=[]
+trackables=set()
 if msg["message-id"]:
-	trackables.append(msg["message-id"])
+	trackables.add(msg["message-id"])
 
 if msg["in-reply-to"]:
-	trackables.append(msg["in-reply-to"])
+	trackables.add(msg["in-reply-to"])
 
 if msg["references"]:
-	trackables.extend(msg["references"].split(" "))
+	trackables.update(msg["references"].split(" "))
 
-#find any embedded trackables (later this is use to determine if we need to embed a new trackable, in case of --forward )
-embedded_trackables=re.findall("\[{}(........-....-....-....-............)\]".format(args.trackable), msg.as_string())
-trackables.extend(embedded_trackables)
 
+# find embedded trackable and embed new ones if neccesary
+embedded_trackables=set()
+embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(args.trackable))
+
+#first try to find all the embedded trackables
+for msg_part in msg.walk():
+    if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
+        payload=msg_part.get_payload(decode=True)
+
+        if isinstance(payload, bytes):
+            if msg_part.get_content_charset():
+                text=payload.decode(msg_part.get_content_charset())
+            else:
+                text=payload.decode()
+        else:
+            text=payload
+
+        #collect all embedded trackabales of this part
+        embedded_trackables.update(re.findall(embedded_re, text))
+
+
+#none found at all, create new one?
+if not embedded_trackables:
+    embedded_trackables=[ str(uuid.uuid4()) ]
+    debug("Created new embedded trackable:", embedded_trackables[0])
+else:
+    debug("Found existing embedded trackables:", embedded_trackables)
+embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
+
+
+#now add the embedded trackable to all text and html parts that are missing it
+for msg_part in msg.walk():
+    if msg_part.get_content_type()=="text/plain" or msg_part.get_content_type()=="text/html":
+        payload=msg_part.get_payload(decode=True)
+
+        if isinstance(payload, bytes):
+            if msg_part.get_content_charset():
+                text=payload.decode(msg_part.get_content_charset())
+            else:
+                text=payload.decode()
+        else:
+            text=payload
+
+        #need to embed it in this part?
+        if not re.search(embedded_re,text):
+            if msg_part.get_content_type()=="text/plain":
+                text=text+"\n{}\n".format(embedded_text)
+            else: #html
+                #add embedded text just before end-body tag
+                text=re.sub("(</body>)", "<p>{}</p>\\1".format(embedded_text), text, flags=re.IGNORECASE)
+
+            del msg_part["Content-Transfer-Encoding"]
+            msg_part.set_payload(text, msg_part.get_content_charset())
+
+
+trackables.update(embedded_trackables)
 trackables=list(trackables) # json encodable
-
-
 debug("Trackables:", trackables)
+
+
+### forward the message?
+if args.forward:
+    import smtplib
+    debug("Forwarding to {} via smtp server {}".format(args.forward, args.smtp_server))
+    smtp_server = smtplib.SMTP(args.smtp_server)
+    # smtp_server.set_debuglevel(1)
+    smtp_server.send_message(msg, from_addr=sender, to_addrs=args.forward)
+    smtp_server.quit()
+    # sys.exit(111) #temporary error
 
 
 #which timestamp to give to new objects?
@@ -279,11 +343,7 @@ for msg_part in msg.walk():
     if msg_part.get_content_maintype() == 'multipart':
         continue
 
-    #get and decode payload if neccesary
-    if msg_part["Content-Transfer-Encoding"]=="8bit":
-        payload=msg_part.get_payload() 
-    else:
-        payload=msg_part.get_payload(decode=True)
+    payload=msg_part.get_payload(decode=True)
 
     filename = msg_part.get_filename()
     if filename:
@@ -293,7 +353,7 @@ for msg_part in msg.walk():
             continue
 
         with tempfile.TemporaryFile() as tmp_file:
-            debug("Creating document for", filename)
+            debug("Creating document ticket object for", filename)
             tmp_file.write(payload)
             tmp_file.seek(0)
 
@@ -310,7 +370,7 @@ for msg_part in msg.walk():
 
     else:
         if msg_part.get_content_type()=="text/plain":
-            debug("Creating email")
+            debug("Creating email ticket object")
 
             #do we need to decode the charset to unicode?
             if isinstance(payload, bytes):
@@ -334,10 +394,6 @@ for msg_part in msg.walk():
                 "text":text
             })["data"]
 
-            #still need to embed new trackable?
-            if not embedded_trackables:
-                embedded_trackables=[ "[{}{}]".format(args.trackable, uuid.uuid4()) ]
-                msg_part.set_payload(msg_part.get_payload()+"\n"+embedded_trackables[0]+"\n")
 
         else: 
             debug("Ignoring part with content-type:", msg_part.get_content_type())
