@@ -342,6 +342,53 @@ class ContractInvoices(models.core.Protected.Protected):
 
         return(contract_invoice)
 
+
+    @Acl(roles="finance")
+    def manual_invoice(self, contract_invoice_id):
+        """Add details of specified contract_invoice to invoice (for a price per hour)
+
+        this is usefull for manual invoicing
+        """
+
+        contract_invoice=call_rpc(self.context, 'ticket', 'ContractInvoices', 'get', _id=contract_invoice_id)
+
+        if not contract_invoice["invoice"]:
+            raise fields.FieldError("This contract order doesnt have a invoice yet.")
+
+        contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=contract_invoice["contract"])
+        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'get', _id=contract_invoice["invoice"])
+
+        price_per_hour=round(contract['price']*60/contract['minutes'], 2)
+
+        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+            match={
+                "billing_contract_invoice": contract_invoice_id,
+            }
+        )
+
+        
+        for ticket_object in ticket_objects:
+            minutes=self.round_minutes(ticket_object, contract)
+            hours=round(minutes/60,2)
+
+            #invoice description for this time
+            invoice_desc=ticket_object['title']
+            if ticket_object['minutes_factor']!=1:
+                invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+
+            invoice["items"].append({
+                'amount': hours,
+                'desc':invoice_desc,
+                'price': price_per_hour,
+                'tax': contract['tax']
+            })
+
+        call_rpc(self.context, 'ticket', 'Invoices', 'put', 
+            _id=invoice["_id"],
+            items=invoice["items"]
+        )
+
+
     @Acl(roles="user")
     def get_used_contracts(self, relation_id):
         '''get unique list of used contract_ids for specified relation'''

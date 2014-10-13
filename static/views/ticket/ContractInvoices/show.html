@@ -1,4 +1,3 @@
-
 <script>
 
 var contract_invoice=new ControlForm({
@@ -39,6 +38,16 @@ var contract_invoice=new ControlForm({
     }
 });
 
+$(".on-click-details-to-invoice", context).click(function()
+{
+    rpc("ticket.ContractInvoices.manual_invoice",{
+        contract_invoice_id: view.params._id,
+    }, function(result)
+    {
+        viewShowError(result, context);
+    });
+    return(false);
+});
 
 </script>
 
@@ -103,6 +112,7 @@ var contract_invoice=new ControlForm({
     <div class='floatingBar viewErrorClass'>
         <button class='control-on-click-view' >Edit</button>
         <button class='control-on-click-cancel' >Back</button>
+        <button class='on-click-details-to-invoice' >Add to invoice</button>
         <span class='viewErrorText'></span>
     </div>
 
