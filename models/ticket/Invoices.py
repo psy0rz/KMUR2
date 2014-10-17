@@ -152,6 +152,9 @@ class Invoices(models.core.Protected.Protected):
 
     read=write
 
+    #to allow exporting to CSV
+    read_roles=[ "finance" ]
+
     @Acl(roles="finance")
     def put(self, force=False,**doc):
 
@@ -349,6 +352,7 @@ class Invoices(models.core.Protected.Protected):
         #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
         return(self._get(_id))
 
+
     @Acl(roles="finance")
     def delete(self, _id):
 
@@ -368,10 +372,45 @@ class Invoices(models.core.Protected.Protected):
 
         return(ret)
 
+
     @Acl(roles="finance")
     def get_all(self, **params):
         return(self._get_all(**params))
 
+
+    """get csv export of all sent invoices"""
+    @Acl(roles="user")
+    def get_all_csv(self, days):
+
+        import locale
+        locale.setlocale(locale.LC_ALL, 'nl_NL.utf8')
+
+
+        csv_data=""
+        invoices=self.get_all(
+            match={ "sent": True },
+            gte={ "sent_date": time.time()- ( int(days)*24*3600)},
+            sort=[ [ "sent_date" ,1 ] ]
+            )
+        for invoice in invoices:
+            cols=[]
+            cols.append(invoice["to_relation"])
+            cols.append(invoice["to_copy"]["company"])
+            cols.append(invoice["invoice_nr"])
+            cols.append(time.strftime("%Y-%m-%d", time.localtime(invoice['sent_date'])))
+            cols.append(locale.currency(invoice["calc_total_tax"], symbol=False, grouping=False))
+            cols.append(locale.currency(invoice["calc_total_tax"]-invoice["calc_total"], symbol=False, grouping=False))
+
+            stripped_cols=[]
+            for col in cols:
+                stripped_cols.append(str(col).replace(";","_"))
+            csv_data+=";".join(stripped_cols)+"\n"
+
+
+        response=bottle.HTTPResponse(body=csv_data)
+        response.set_header('Content-Type', 'text/plain')
+
+        return(response)
 
 
     """downloads pdf version of the invoice """

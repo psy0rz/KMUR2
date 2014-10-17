@@ -167,7 +167,6 @@ def rpc_post():
 #In case of an error it returns reponsecode 500 with the error string
 @bottle.get('/rpc/<filename:path>')
 def rpc_get(filename):
-
     match=re.match("(.*?)/(.*?)/(.*?)/(.*)", filename)
 
     get_module=match.group(1)
@@ -186,6 +185,10 @@ def rpc_get(filename):
             session['context'] = models.common.Context()
 
         session['context'].reinit()
+
+        #login via get-parameters?
+        if bottle.request.query.username:
+            models.common.call_rpc(session['context'], "core", "Users", "login", name=bottle.request.query.username, password=bottle.request.query.password)
 
         result=models.common.call_rpc(session['context'], get_module, get_class, get_method, *get_params)
         session.save()

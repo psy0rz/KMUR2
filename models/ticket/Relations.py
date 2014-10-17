@@ -5,6 +5,7 @@ import models.core.Users
 import models.core.Groups
 import models.mongodb
 import models.ticket.Contracts
+import bottle
 
 class Relations(models.core.Protected.Protected):
     '''Real-life relations (these can be customers/companies or other contacts)
@@ -93,6 +94,8 @@ class Relations(models.core.Protected.Protected):
 
     read=write
 
+    read_roles= [ "finance" ]
+
     @Acl(roles="user")
     def put(self, **doc):
 
@@ -128,3 +131,23 @@ class Relations(models.core.Protected.Protected):
     def get_all(self, **params):
         return(self._get_all(**params))
 
+
+    @Acl(roles="user")
+    def get_all_csv(self):
+
+        csv_data=""
+        relations=self.get_all()
+
+        for relation in relations:
+            csv_data+=";".join([
+                    relation["_id"],
+                    relation["invoice"]["company"].replace(";","_"),
+                    relation["title"].replace(";","_"),
+                ])
+            csv_data+="\n"
+
+        response=bottle.HTTPResponse(body=csv_data)
+        response.set_header('Content-Type', 'text/plain')
+
+        return(response)
+        
