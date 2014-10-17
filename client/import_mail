@@ -1,4 +1,21 @@
 #!/usr/bin/env python3
+
+
+#automaticly create tickets for new conversations:
+# -incoming mails: reroute incoming mails through import_mail. use  --related_from --related_only --forward
+# -outgoing mails: cc mail to import_mail. how to prevent spam?
+
+#follow existing conversations:
+# -incoming mails: reroute incoming mails through import_mail. use  --related_only --forward
+# -outgoing mails: send cc to import_mail. use --related_only
+
+#manually create ticket for conversation:
+# -forward or cc mail to import_mail. how to prevent spam?
+
+#prevent spam by using relate_from?
+
+#also create tickets automaticly if a embedded trackable is detected? (regardless of --related_only)
+
 try:
     import sys
     import argparse
