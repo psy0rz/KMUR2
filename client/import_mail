@@ -240,7 +240,7 @@ except Exception as e:
     if 'args' in locals() and args.debug:
         traceback.print_exc()
     #we never want to lose mail, so everthing up to the forwarding-code generates a temporary error:
-    sys.exit(111) 
+    sys.exit(75) 
 
 
 try:
