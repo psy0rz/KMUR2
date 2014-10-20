@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 
 
-#automaticly create tickets for new conversations:
-# -incoming mails: reroute incoming mails through import_mail. use  --related_from --related_only --forward
-# -outgoing mails: cc mail to import_mail. how to prevent spam?
+# -incoming mails: reroute incoming mails through for support@yourdomain.com through import_mail. use  --skip_duplicates --related_from --related_only --forward support_processed@yourdomain.com
+#  trackable id will be added to body so that future conversation can be followed.
+# -outgoing mails: cc mail to import_mail by using a ticket@yourdomain.com address. use --skip_duplicates --related_from --related_to --related_only.  
+#  NOTE:how to prevent spam? how to follow replys to new outgoing messages? (when destination mailclient doesnt reply with reference-headers)
 
-#follow existing conversations:
-# -incoming mails: reroute incoming mails through import_mail. use  --related_only --forward
-# -outgoing mails: send cc to import_mail. use --related_only
-
-#manually create ticket for conversation:
-# -forward or cc mail to import_mail. how to prevent spam?
-
-#prevent spam by using relate_from?
-
-#also create tickets automaticly if a embedded trackable is detected? (regardless of --related_only)
 
 try:
     import sys
@@ -223,15 +214,17 @@ try:
                 # msg.set_param(msg["from"], None, header='Reply-To')
                 msg["Reply-To"]=msg["from"]+", "+args.reply_to
             else:
-                existing_reply_to=msg["Reply-To"]
-                del msg["Reply-To"]
-                msg["Reply-To"]=existing_reply_to+", "+args.reply_to
+                if args.reply_to.lower() not in msg["Reply-To"].lower():
+                    existing_reply_to=msg["Reply-To"]
+                    del msg["Reply-To"]
+                    msg["Reply-To"]=existing_reply_to+", "+args.reply_to
 
             #also put the adress in the cc field, because some broken mailers dont support multiple reply-to adresses (zarafa webapp/webaccess for example)
             if msg["cc"]:
-                existing_cc=msg["cc"]
-                del msg["cc"]
-                msg["cc"]=existing_cc+", "+args.reply_to
+                if args.reply_to.lower() not in msg["cc"].lower():
+                    existing_cc=msg["cc"]
+                    del msg["cc"]
+                    msg["cc"]=existing_cc+", "+args.reply_to
             else:
                 msg["cc"]=args.reply_to
 
