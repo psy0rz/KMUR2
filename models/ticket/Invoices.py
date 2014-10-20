@@ -49,6 +49,8 @@ class Invoices(models.core.Protected.Protected):
 
         readonly=False
 
+        print("id",args, _id, kwarg)
+
         if _id:
             #if the stored invoice is already sent, then make some stuff readonly
             doc=self.get(_id)
@@ -159,7 +161,7 @@ class Invoices(models.core.Protected.Protected):
     def put(self, force=False,**doc):
 
         #precheck, to prevent confusing errors for the enduser later on
-        self.get_meta(doc).meta['meta'].check(self.context, doc)
+        self.get_meta(**doc).meta['meta'].check(self.context, doc)
 
         settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
 
