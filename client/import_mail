@@ -145,7 +145,7 @@ try:
 
 
     # find embedded trackable and embed new ones if neccesary
-    embedded_trackables=set()
+    embedded_trackables=[]
     embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(args.trackable))
 
     #first try to find all the embedded trackables
@@ -162,15 +162,18 @@ try:
                 text=payload
 
             #collect all embedded trackabales of this part
-            embedded_trackables.update(re.findall(embedded_re, text))
+            embedded_trackables.extend(re.findall(embedded_re, text))
 
 
     #none found at all, create new one?
     if not embedded_trackables:
+        existing_embedded=False
         embedded_trackables=[ str(uuid.uuid4()) ]
         debug("Created new embedded trackable:", embedded_trackables[0])
     else:
+        existing_embedded=True
         debug("Found existing embedded trackables:", embedded_trackables)
+
     embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
 
 
@@ -220,10 +223,17 @@ try:
                 # msg.set_param(msg["from"], None, header='Reply-To')
                 msg["Reply-To"]=msg["from"]+", "+args.reply_to
             else:
-                msg["Reply-To"]=args.reply_to
+                existing_reply_to=msg["Reply-To"]
+                del msg["Reply-To"]
+                msg["Reply-To"]=existing_reply_to+", "+args.reply_to
 
             #also put the adress in the cc field, because some broken mailers dont support multiple reply-to adresses (zarafa webapp/webaccess for example)
-            msg.add_header('Cc', args.reply_to)
+            if msg["cc"]:
+                existing_cc=msg["cc"]
+                del msg["cc"]
+                msg["cc"]=existing_cc+", "+args.reply_to
+            else:
+                msg["cc"]=args.reply_to
 
 
         import smtplib
@@ -232,7 +242,7 @@ try:
         # smtp_server.set_debuglevel(1)
         smtp_server.send_message(msg, from_addr=sender, to_addrs=args.forward)
         smtp_server.quit()
-        
+
 
 
 except Exception as e:
@@ -325,8 +335,10 @@ try:
 
     ### create new ticket
     if not tickets:
-        if args.related_only and not relation_ids:
-            debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets found.")
+        if existing_embedded:
+            debug("Creating new ticket because existing embedded trackable was found")
+        elif ( args.related_only and not relation_ids ):
+            debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
             sys.exit(0)
 
         due_date=None
