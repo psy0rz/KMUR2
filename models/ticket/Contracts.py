@@ -80,7 +80,7 @@ class Contracts(models.core.Protected.Protected):
 
     read=write
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -100,11 +100,11 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -116,7 +116,7 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get_all(self, **params):
         return(self._get_all(**params))
 

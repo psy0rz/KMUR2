@@ -228,7 +228,7 @@ class TicketObjects(models.core.Protected.Protected):
         return(hash.hexdigest())
 
 
-    @Acl(roles="user")
+    @Acl(roles="ticket_write")
     def put(self, file=None, update_contract_invoice=True, **doc):
 
         #store file?
@@ -265,7 +265,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
-            if old_doc['billing_contract_invoice'] and not self.context.has_roles(["finance"]):
+            if old_doc['billing_contract_invoice'] and not self.context.has_roles(["finance_admin"]):
                 raise fields.FieldError("This item is already billed, you cannot change it anymore.")
 
             log_txt="Changed task note '{title}'".format(**doc)
@@ -341,7 +341,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         doc=self._get(_id)
 
-        if doc["billing_contract_invoice"] and not self.context.has_roles(["finance"]):
+        if doc["billing_contract_invoice"] and not self.context.has_roles(["finance_admin"]):
             raise fields.FieldError("This item is already billed, you cannot delete it.")
 
         ret=self._delete(_id)

@@ -3,8 +3,9 @@ import fields
 import models.mongodb
 from models import mongodb
 
+
 def contains(a,b):
-    """returns true if 'a contains b', where a and b might b lists or strings"""
+    """returns true if 'a contains b', where a and b might be lists or strings"""
 
     if isinstance(a,list):
         if isinstance(b,list):
@@ -39,13 +40,13 @@ class Protected(models.mongodb.Base):
             (same as read)
 
 
-        write_roles: []                         roles that have full write access
-        read_roles:  []                         roles that have full read access
+        admin_write_roles: []                         roles that have write access to all items
+        admin_read_roles:  []                         roles that have read access to all items
 
     """
 
-    read_roles=[]
-    write_roles=[]
+    admin_read_roles=[]
+    admin_write_roles=[]
     read={}
     write={}
 
@@ -63,7 +64,7 @@ class Protected(models.mongodb.Base):
 
         """
 
-        if not self.context.has_roles(self.write_roles):
+        if not self.context.has_roles(self.admin_write_roles):
             check_doc={}
             #converted_doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
             converted_doc=doc
@@ -103,7 +104,6 @@ class Protected(models.mongodb.Base):
                                     fields={ foreign_model.meta.meta['list_key']: True },
                                     match_in={ foreign_model.meta.meta['list_key']: removed_ids }
                                 )
-                                print(removed_ids, result)
                                 if (len(removed_ids)!=len(result)):
                                     raise fields.FieldError("You dont have permission to deny unknown users read-access to this document", meta_key)
 
@@ -169,7 +169,7 @@ class Protected(models.mongodb.Base):
 
         doc=super(Protected, self)._get(*args, **kwargs)
 
-        if self.context.has_roles(self.read_roles):
+        if self.context.has_roles(self.admin_read_roles):
             return(doc)
 
         access=False
@@ -193,7 +193,7 @@ class Protected(models.mongodb.Base):
         it does this be adding a appropriate spec_and parameters to _get_all
         """
 
-        if not self.context.has_roles(self.read_roles):
+        if not self.context.has_roles(self.admin_read_roles):
 
             spec_and=list(spec_and)
 
@@ -201,17 +201,24 @@ class Protected(models.mongodb.Base):
             for meta_key, check in self.read.items():
                 if check['check']:
                     if isinstance(self.context.session[check['context_field']], list):
+
+                        #convert the context item list to internal format so that we can use it in a mongodb query
+                        in_list=[]
+                        converter=self.get_meta().meta['meta'].meta['meta'][meta_key]
+
+                        for context_item in self.context.session[check['context_field']]:
+                            in_list.append(converter.to_internal(self.context, context_item))
+
                         ors.append({ 
                             meta_key: { 
-                                '$in': self.get_meta().meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
-                                    self.context.session[check['context_field']]) 
-                                }
-                            })
+                                    '$in': in_list
+                            }
+                        })
                     else:
                         ors.append({ 
                             meta_key: self.get_meta().meta['meta'].meta['meta'][meta_key].to_internal(self.context, 
                                 self.context.session[check['context_field']]) 
-                            })
+                        })
 
             if len(ors)>0:
                 spec_and.append({ '$or' : ors})
@@ -223,7 +230,7 @@ class Protected(models.mongodb.Base):
     def _delete(self, _id):
         """deletes _id from collection, if writeaccess to the document is allowed"""
 
-        if not self.context.has_roles(self.write_roles):
+        if not self.context.has_roles(self.admin_write_roles):
             check_doc=super(Protected, self)._get(_id)
 
             access=False

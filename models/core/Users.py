@@ -23,9 +23,9 @@ class Users(models.core.Protected.Protected):
                                                       #All users, including anonymous, have role 'everyone'.
                                                       #All users, except anonymous, have role 'user'
                                                       "admin": "Administrator",
-                                                      "employee": "Employee",
-                                                      "customer": "Customer",
-                                                      "finance": "Finance"
+                                                      "ticket_write": "Create and change tickets/relations",
+                                                      "finance_read": "Finance read",
+                                                      "finance_admin": "Finance administrator",
                                                     }),
 
 
@@ -46,18 +46,21 @@ class Users(models.core.Protected.Protected):
     write={
         'group_ids': {
             'context_field': 'group_ids',
-            'set_on_create': False,
             'check': True
         },
     }
 
     read=write
 
-    read_roles=["admin"]
-    write_roles=read_roles
+    #admin can access all users, not just his own
+    admin_read_roles=["admin"]
+    admin_write_roles=admin_read_roles
 
     @Acl(roles="admin")
     def put(self, **doc):
+
+        if 'password' in doc and doc['password']=="":
+            del doc['password']
 
         if '_id' in doc:
           log_txt="Changed user {name}".format(**doc)

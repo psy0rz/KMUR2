@@ -10,14 +10,14 @@ class ModuleSettings(models.mongodb.Base):
     """
 
 
-    read_roles=["admin"]
-    write_roles=["admin"]
+    admin_read_roles=["admin"]
+    admin_write_roles=["admin"]
 
 
     def __init__(self, context=None):
         super(ModuleSettings, self).__init__(context=context)
 
-    @Acl(roles=write_roles)
+    @Acl(roles=admin_write_roles)
     def put(self, **doc):
 
         self.get_meta(doc).meta['meta'].check(self.context, doc)
@@ -32,7 +32,7 @@ class ModuleSettings(models.mongodb.Base):
         self.info("Changed module settings for {}".format(self.__class__.__module__))
         return(doc)
 
-    @Acl(roles=read_roles)
+    @Acl(roles=admin_read_roles)
     def get(self):
 
         collection = self.default_collection

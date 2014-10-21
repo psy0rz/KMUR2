@@ -20,14 +20,13 @@ class Groups(models.core.Protected.Protected):
     write={
         '_id': {
             'context_field': 'group_ids',
-            'set_on_create': False,
             'check': True
         },
     }
     read=write
 
-    read_roles=[ "admin" ]
-    write_roles=read_roles
+    admin_read_roles=[ "admin" ]
+    admin_write_roles=admin_read_roles
 
 
     @Acl(roles="admin")

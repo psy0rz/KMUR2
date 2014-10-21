@@ -4,8 +4,8 @@ from models.common import *
 
 class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
 
-    read_roles=["admin"]
-    write_roles=["admin"]
+    admin_read_roles=["finance_read"]
+    admin_write_roles=["finance_admin"]
 
     @Acl(roles=["everyone"])
     def get_meta(self, *args, _id=None, **kwarg):
@@ -35,7 +35,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
         return(meta)
 
 
-    @Acl(write_roles)
+    @Acl(admin_write_roles)
     def put(self, **doc):
         # if not '{}' in doc['invoice_nr_format']:
         #     raise fields.FieldError('Formatstring should contain {}', 'invoice_nr_format')
