@@ -56,26 +56,29 @@
 				$(this).empty();
 			});
 
+
+			var login_context=$("#login");
+
 			//this event is send by core when session is changed or send_session is called
 			$("#login").subscribe("core.Users.changed_session", "login", function(result)
 			{
 				if (result.user_id)
 				{
-					$(".login-user").text(result.name);
-					$(".on-click-login").hide();
-					$(".on-click-logout").show();
+					$(".login-user", login_context).text(result.name);
+					$(".on-click-login", login_context).hide();
+					$(".on-click-logout", login_context).show();
 				}
 				else
 				{
-					$(".login-user").text("(not logged in)");
-					$(".on-click-login").show();
-					$(".on-click-logout").hide();
+					$(".login-user", login_context).text("(not logged in)");
+					$(".on-click-login", login_context).show();
+					$(".on-click-logout", login_context).hide();
 				}
 				session=result;
 				$.publish("menu.reload", {});
 			});
 
-			$(".on-click-logout").click(function(event)
+			$(".on-click-logout", login_context).click(function(event)
 			{
 			    viewCreate({
 			    },{
@@ -86,7 +89,7 @@
 			    return(false);
 			});
 
-			$(".on-click-login").click(function(event)
+			$(".on-click-login", login_context).click(function(event)
 			{
 			    viewCreate({
 			    },{
