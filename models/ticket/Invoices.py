@@ -20,14 +20,14 @@ from_format="""{company}
 
 {mail_to}
 
-KVK nr: {coc_nr}
-BTW: {vat_nr}
+KVK-nr.: {coc_nr}
+BTW-nr.: {vat_nr}
 
 IBAN: {iban_nr}
 BIC: {bic_code}
 """
 
-retour_format=">> Retour adres: {address} {zip_code}  {city} ({country})"
+retour_format=">> Retouradres: {address}, {zip_code}, {city}, ({country})"
 
 to_format="""{company}
 {department}
@@ -36,7 +36,7 @@ to_format="""{company}
 {country}
 """
 
-date_format="""Date: %d-%m-%Y"""
+date_format="""Invoice date: %d-%m-%Y"""
 invoice_format="""Invoice number: {invoice_nr}"""
 
 class Invoices(models.core.Protected.Protected):
