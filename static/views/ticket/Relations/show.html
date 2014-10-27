@@ -1,6 +1,7 @@
 
 <script>
 
+
 var relation=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Relations',
@@ -70,6 +71,7 @@ var tickets=new ControlListRelated({
 
 var invoices=new ControlListRelated({
     'view'              : view,
+    'role'              : 'finance_read',
     'get_meta_params'   : {},
     'context'           : '.invoices',
     'class'             : 'ticket.Invoices',
@@ -283,10 +285,10 @@ var tickets_objects=new ControlList({
 
 <br>
 
-<fieldset class='inline-block'>
+<fieldset class='invoices inline-block' style='overflow: auto; height:15em;'>
     <legend>Invoices</legend>
 
-    <div class='invoices inline-block' style='overflow: auto; height:15em;'>
+    <div class='inline-block'>
 
         <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
         <input type='text' class='control-on-change-search' control-search-keys='notes invoice_nr'>

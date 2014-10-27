@@ -10,8 +10,7 @@ var gViewStatus={
 
 
 
-//initialize view history tracker
-$(document).ready(function()
+function viewInit()
 {
     $.history.init(function(hash){
         if (hash == "") 
@@ -28,21 +27,7 @@ $(document).ready(function()
     { 'unescape': true } //dont urlencode   
     );
 
-    // //endless scrolling stuff.
-    // //send an event to the last mainview (e.g. the one that is visble and on the foreground)
-    // var prevHeight=0;
-    // $(window).scroll(function()
-    // {
-    //     // console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
-    //     var height=$(document).height();
-    //     if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
-    //     {
-    //         prevHeight=$(document).height();
-    //         $("#views .viewMain:last").trigger("view.scrolledBottom");
-    //     }
-    // });
-
-});
+};
 
 
 //compares viewStatus with gViewStatus and creates/deletes/changes the actual dom objects.

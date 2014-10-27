@@ -10,6 +10,7 @@ params:
     view:                view to operate on. view.id is used in combination with context, to determine the jquery this.context object.
     context:             selector for a sub-context to operate on. this way you can use multiple controls in 1 view.             
     class:               rpc-class-name to call (used to fill in default values)
+    role:                if specified, checks if user has this required role. if user doesnt have the role the control will be hidden and ignored. default: everyone
 
     get_meta:            rpc-method called to get metadata (default: class+".get_meta")
     get_meta_params      parameters to pass to get_meta (default: view.params)
@@ -47,6 +48,17 @@ function ControlBase(params)
         return(false);
     }
 
+    if (params.role)
+    {
+        if (session.roles.indexOf(params.role)==-1)
+        {
+            console.debug("Hiding control because user doesnt have required role", this);
+            this.context.hide();
+            return(false);
+        }
+    }
+
+
     this.debug_txt=params.view.id+" "+params.view.name+" ";
 
     if (!('get_meta' in this.params))
@@ -81,6 +93,7 @@ function ControlBase(params)
     if (!('create_view_params' in this.params))
         this.params.create_view_params={}
 
+    return(true);
 }
 
 /**
@@ -280,7 +293,8 @@ params:
 */
 function ControlForm(params)
 {
-    ControlBase.call(this,params);
+    if (!ControlBase.call(this,params))
+        return(false);
 
 
     if (!('close_after_save' in this.params))
@@ -725,7 +739,8 @@ params:
 function ControlList(params)
 {
 
-    ControlBase.call(this, params);
+    if (!ControlBase.call(this, params))
+        return(false);
 
     if (!('get' in params))
         this.params.get=this.params.class+".get_all";
@@ -1426,7 +1441,8 @@ function ControlListRelated(params)
     if (params.related_value==undefined)
     {
         //call base to get the context
-        ControlBase.call(this, params);
+        if (!ControlBase.call(this, params))
+            return(false);
 
         //hide stuff if neccesary
         $(".control-hide-on-new", this.context).hide();
@@ -1436,7 +1452,8 @@ function ControlListRelated(params)
         return(false);
     }
 
-    ControlList.call(this, params);
+    if (!ControlList.call(this, params))
+        return(false);
 
     $(".control-hide-on-edit", this.context).hide();
     if (this.context.hasClass("control-hide-on-edit"))

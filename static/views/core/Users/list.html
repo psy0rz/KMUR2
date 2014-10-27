@@ -4,6 +4,9 @@
     {
         rpc("core.Users.switch_user",{
             _id: $(this).closest(".field-list-item").attr("field-list-id")
+        },function(result)
+        {
+            viewShowError(result,context);
         });
     });
 

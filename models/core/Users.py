@@ -119,6 +119,7 @@ class Users(models.core.Protected.Protected):
 
         self.context.session=self.context.session['previous_session']
         self.info("Switched back to user {name}".format(**self.context.session))
+        self.send_session()
 
 
     @Acl(roles=["admin"])
@@ -142,7 +143,6 @@ class Users(models.core.Protected.Protected):
         self.context.session=new_session
 
         self.info("Switched to user {name}".format(**self.context.session))
-
         self.send_session()
 
     @Acl(roles=["everyone"])
@@ -195,7 +195,6 @@ class Users(models.core.Protected.Protected):
         self.context.session['roles'].append('user')
 
         self.info("Logged in.")
-
         self.send_session()
 
         return(self.context.session)
