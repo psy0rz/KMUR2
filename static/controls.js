@@ -10,7 +10,6 @@ params:
     view:                view to operate on. view.id is used in combination with context, to determine the jquery this.context object.
     context:             selector for a sub-context to operate on. this way you can use multiple controls in 1 view.             
     class:               rpc-class-name to call (used to fill in default values)
-    role:                if specified, checks if user has this required role. if user doesnt have the role the control will be hidden and ignored. default: everyone
 
     get_meta:            rpc-method called to get metadata (default: class+".get_meta")
     get_meta_params      parameters to pass to get_meta (default: view.params)
@@ -48,14 +47,10 @@ function ControlBase(params)
         return(false);
     }
 
-    if (params.role)
+    if (this.context.closest(".view-disabled").length!=0)
     {
-        if (session.roles.indexOf(params.role)==-1)
-        {
-            console.debug("Hiding control because user doesnt have required role", this);
-            this.context.hide();
-            return(false);
-        }
+        console.debug("View is disabled, not doing anything.", this);
+        return(false);
     }
 
 

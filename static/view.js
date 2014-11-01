@@ -478,6 +478,17 @@ function viewLoad(view)
                 document.getElementById(view.id).innerHTML+=result;
 
                 var context=$("#"+view.id);
+
+                //hide any elements based on role. this in turn also disables the controls
+                $("[view-role]", context).each(function()
+                {
+                    var element=$(this);
+                    if (session.roles.indexOf(element.attr("view-role"))==-1)
+                    {
+                        element.addClass("view-disabled").hide();
+                    }
+                });
+
                 //eval the scripts in the current context. 
                 //the scripts should use our context-variable and view-variable as well:
                 try

@@ -71,7 +71,6 @@ var tickets=new ControlListRelated({
 
 var invoices=new ControlListRelated({
     'view'              : view,
-    'role'              : 'finance_read',
     'get_meta_params'   : {},
     'context'           : '.invoices',
     'class'             : 'ticket.Invoices',
@@ -285,7 +284,7 @@ var tickets_objects=new ControlList({
 
 <br>
 
-<fieldset class='invoices inline-block' style='overflow: auto; height:15em;'>
+<fieldset class='invoices inline-block' style='overflow: auto; height:15em;' view-role="finance_read">
     <legend>Invoices</legend>
 
     <div class='inline-block'>
@@ -321,7 +320,7 @@ var tickets_objects=new ControlList({
 
 
 
-<fieldset class='inline-block'>
+<fieldset class='inline-block' view-role='finance_read'>
     <legend>Contract budgets</legend>
 
     <div class='contract-budgets inline-block' style='overflow: auto; height:15em;'>
