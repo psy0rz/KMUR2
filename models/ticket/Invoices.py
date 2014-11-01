@@ -20,14 +20,14 @@ from_format="""{company}
 
 {mail_to}
 
-KVK nr: {coc_nr}
-BTW: {vat_nr}
+KVK-nr.: {coc_nr}
+BTW-nr.: {vat_nr}
 
 IBAN: {iban_nr}
 BIC: {bic_code}
 """
 
-retour_format=">> Retour adres: {address} {zip_code}  {city} ({country})"
+retour_format=">> Retouradres: {address}, {zip_code}, {city}, ({country})"
 
 to_format="""{company}
 {department}
@@ -36,7 +36,7 @@ to_format="""{company}
 {country}
 """
 
-date_format="""Date: %d-%m-%Y"""
+date_format="""Invoice date: %d-%m-%Y"""
 invoice_format="""Invoice number: {invoice_nr}"""
 
 class Invoices(models.core.Protected.Protected):
@@ -44,7 +44,7 @@ class Invoices(models.core.Protected.Protected):
     '''
 
     
-    @Acl(roles=["finance"])
+    @Acl(roles=["finance_read"])
     def get_meta(self, *args, _id=None, **kwarg):
 
         readonly=False
@@ -154,10 +154,10 @@ class Invoices(models.core.Protected.Protected):
 
     read=write
 
-    #to allow exporting to CSV
-    read_roles=[ "finance" ]
+    #finance admin has full access
+    admin_read_roles=[ "finance_admin" ]
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def put(self, force=False,**doc):
 
         #precheck, to prevent confusing errors for the enduser later on
@@ -209,7 +209,7 @@ class Invoices(models.core.Protected.Protected):
         return(ret)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def send(self, _id):
         """send the invoice to the customer.
 
@@ -244,7 +244,7 @@ class Invoices(models.core.Protected.Protected):
         self.event("changed",doc)
         self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def revoke(self, _id):
         """revoke an invoice thats already been send (e.g. unsend it)
 
@@ -268,7 +268,7 @@ class Invoices(models.core.Protected.Protected):
         self.warning("Revoked invoice {invoice_nr} sent to {company}. Dont forget to destroy all copies.".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def add_items(self, to_relation, items, currency):
         """adds specified items to the an unsent invoice of to_relation. if there is no unsent invoice it will create a new one.
         """
@@ -308,7 +308,7 @@ class Invoices(models.core.Protected.Protected):
             
         return(ret)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def calc(self, **doc):
         """returns a calculated version of doc
 
@@ -347,7 +347,7 @@ class Invoices(models.core.Protected.Protected):
 
         return(doc)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get(self, _id):
         # return(self.calc(**self._get(_id)))
         #We dont do any processing: we always want to return the invoice in its original unaltered form, as this is required by tax-rules.
@@ -355,7 +355,7 @@ class Invoices(models.core.Protected.Protected):
         return(self._get(_id))
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -375,13 +375,13 @@ class Invoices(models.core.Protected.Protected):
         return(ret)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get_all(self, **params):
         return(self._get_all(**params))
 
 
     """get csv export of all sent invoices"""
-    @Acl(roles="user")
+    @Acl(roles="finance_admin")
     def get_all_csv(self, days):
 
         import locale
@@ -416,7 +416,7 @@ class Invoices(models.core.Protected.Protected):
 
 
     """downloads pdf version of the invoice """
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get_pdf(self,_id):
 
         invoice=self.get(_id)

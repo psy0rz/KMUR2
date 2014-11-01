@@ -10,8 +10,7 @@ var gViewStatus={
 
 
 
-//initialize view history tracker
-$(document).ready(function()
+function viewInit()
 {
     $.history.init(function(hash){
         if (hash == "") 
@@ -28,21 +27,7 @@ $(document).ready(function()
     { 'unescape': true } //dont urlencode   
     );
 
-    // //endless scrolling stuff.
-    // //send an event to the last mainview (e.g. the one that is visble and on the foreground)
-    // var prevHeight=0;
-    // $(window).scroll(function()
-    // {
-    //     // console.log("scroll", $(document).height(), $(window).height(), $(window).scrollTop());
-    //     var height=$(document).height();
-    //     if (height!=prevHeight && $(window).scrollTop()>=height-$(window).height()*2)
-    //     {
-    //         prevHeight=$(document).height();
-    //         $("#views .viewMain:last").trigger("view.scrolledBottom");
-    //     }
-    // });
-
-});
+};
 
 
 //compares viewStatus with gViewStatus and creates/deletes/changes the actual dom objects.
@@ -493,6 +478,17 @@ function viewLoad(view)
                 document.getElementById(view.id).innerHTML+=result;
 
                 var context=$("#"+view.id);
+
+                //hide any elements based on role. this in turn also disables the controls
+                $("[view-role]", context).each(function()
+                {
+                    var element=$(this);
+                    if (session.roles.indexOf(element.attr("view-role"))==-1)
+                    {
+                        element.addClass("view-disabled").hide();
+                    }
+                });
+
                 //eval the scripts in the current context. 
                 //the scripts should use our context-variable and view-variable as well:
                 try

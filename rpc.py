@@ -111,6 +111,8 @@ def rpc_post():
         #resolve method
         rpc_method = getattr(rpc_class_instance, request['method'])
 
+        print("RPC: {module}.{class}.{method}".format(**request))
+
         #make sure that it has an acl
         if not hasattr(rpc_method, 'has_acl_decorator'):
             raise Exception("rpc: This method is protected from outside access because it has no @Acl decorator")

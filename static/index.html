@@ -56,26 +56,55 @@
 				$(this).empty();
 			});
 
+
+			var login_context=$("#login");
+			var initialised=false;
+
 			//this event is send by core when session is changed or send_session is called
 			$("#login").subscribe("core.Users.changed_session", "login", function(result)
 			{
+				console.log("Current session:", result);
+
 				if (result.user_id)
 				{
-					$(".login-user").text(result.name);
-					$(".on-click-login").hide();
-					$(".on-click-logout").show();
+					$(".login-user", login_context).text(result.name);
+					$(".on-click-login", login_context).hide();
+					$(".on-click-logout", login_context).show();
 				}
 				else
 				{
-					$(".login-user").text("(not logged in)");
-					$(".on-click-login").show();
-					$(".on-click-logout").hide();
+					$(".login-user", login_context).text("(not logged in)");
+					$(".on-click-login", login_context).show();
+					$(".on-click-logout", login_context).hide();
 				}
+
+				if (result.previous_session && result.previous_session.user_id)
+				{
+					$(".on-click-pop", login_context).show();
+					$(".on-click-pop", login_context).text("Switch back to "+result.previous_session.name)
+				}
+				else
+				{
+					$(".on-click-pop", login_context).hide();
+				}
+
 				session=result;
 				$.publish("menu.reload", {});
+
+				if (!initialised)
+				{
+					initialised=true;
+					//its important to initialize views AFTER getting session info
+					viewInit();
+				}
+
 			});
 
-			$(".on-click-logout").click(function(event)
+			//determine initial session status
+			rpc("core.Users.send_session",{}, function(){;});
+
+
+			$(".on-click-logout", login_context).click(function(event)
 			{
 			    viewCreate({
 			    },{
@@ -86,7 +115,7 @@
 			    return(false);
 			});
 
-			$(".on-click-login").click(function(event)
+			$(".on-click-login", login_context).click(function(event)
 			{
 			    viewCreate({
 			    },{
@@ -97,8 +126,13 @@
 			    return(false);
 			});
 
-			//determine initial session status
-			rpc("core.Users.send_session",{}, function(){;});
+
+			$(".on-click-pop", login_context).click(function(event)
+			{
+		        rpc("core.Users.switch_user_pop",{});
+		        return(false);
+			});
+
 
 
 		});
@@ -138,6 +172,7 @@
 	<span class='login-user'></span>
 	<a href='#' class='on-click-login hide'>Login</a>
 	<a href='#' class='on-click-logout hide'>Logout</a>
+	<a href='#' class='on-click-pop hide'></a>
 </div>
 
 

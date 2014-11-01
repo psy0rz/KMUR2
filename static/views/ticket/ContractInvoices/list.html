@@ -12,25 +12,31 @@ var contract=new ControlForm({
     'title'             : 'Contract orders "{title}"',
     'create_view_params': {
         '_id'           : view.params._id
+    },
+    'get_result': function(result)
+    {
+        var contract_invoices=new ControlList({
+            'view'              : view,
+            'class'             : 'ticket.ContractInvoices',
+            'context'           : '.contract-invoices',
+            'get_params'        : {
+                "match": {
+                    'relation': view.params.relation_id,
+                    'contract': view.params._id
+                }
+            },
+            'endless_scrolling' : true,
+            'create_view_params': {
+                'relation_id': view.params.relation_id, 
+                'contract_id': view.params._id,
+                'allowed_users': result.data.allowed_users,
+                'allowed_groups': result.data.allowed_groups
+            }
+        });
+
     }
 });
 
-var contract_invoices=new ControlList({
-    'view'            	: view,
-    'class'        		: 'ticket.ContractInvoices',
-    'context'           : '.contract-invoices',
-    'get_params'        : {
-        "match": {
-            'relation': view.params.relation_id,
-            'contract': view.params._id
-        }
-    },
-    'endless_scrolling'	: true,
-    'create_view_params': {
-        'relation_id': view.params.relation_id, 
-        'contract_id': view.params._id
-    }
-});
 
 var ticket_objects=new ControlList({
     'view'              : view,

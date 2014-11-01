@@ -12,8 +12,8 @@ var form=new ControlForm({
     // 'favorite_menu'   : 'invoices',
     // 'favorite_title'  : '{title} {invoice_nr}',
     'default'         : { 
-        'allowed_users': [ session.user_id ],
-        'allowed_groups': [ ],
+        'allowed_users': view.params.allowed_users,
+        'allowed_groups':view.params.allowed_groups,
         'to_relation': view.params.to_relation
     }
 });
@@ -91,7 +91,7 @@ $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, m
         <tr>
             <td class='field-meta-put' field-key='to_relation' field-meta-key='desc'>
             <td class='field-meta-put' field-key='to_relation'>
-                <span class='list-span field-dict-raw field-list-source notranslate field-list-source-hide' field-key='to_relation' field-list-view="ticket.Relations.edit">
+                <span class='list-span field-dict-raw field-list-source notranslate field-list-source-hide' field-key='to_relation' field-list-view="ticket.Relations.show">
                     <span class='field-put field-list-on-click-view' field-key='to_relation.title' style='font-weight: bold'></span>
                     <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
                 </span>

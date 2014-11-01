@@ -81,7 +81,7 @@ class Tickets(models.core.Protected.Protected):
     read=write
 
 
-    @Acl(roles="user")
+    @Acl(roles="ticket_write")
     def put(self, change_reason="", **doc):
 
         old_doc={}
@@ -246,7 +246,7 @@ class Tickets(models.core.Protected.Protected):
     def get(self, _id=None, **kwargs):
         return(self._get(_id, **kwargs))
 
-    @Acl(roles="user")
+    @Acl(roles="ticket_write")
     def delete(self, _id):
 
         doc=self._get(_id)

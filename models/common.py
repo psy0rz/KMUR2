@@ -64,7 +64,7 @@ class Context(object):
     The content of the context is preserved between requests. (magically by the rpc-code via sessions and cookies)
 
     Sessions that are not logged in have user 'anonymous' and role 'everyone'.
-
+z
     Sessions that are logged in are always member of the roles 'everyone' and 'user'
 
     Manupulation of user and role is currently done by models.core.Users.
@@ -106,8 +106,11 @@ class Context(object):
         self.session['user_id'] = None
         self.session['group_ids'] = None
 
+
         self.session['db_name'] = DB_PREFIX #changed when a user logged in, see Users.py
         self.session['db_host'] = "localhost"
+
+        self.session['previous_session']=None
 
     def has_roles(self, roles):
         '''Check if the user has any of the rights (one is enough)

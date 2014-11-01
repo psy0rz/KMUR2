@@ -23,9 +23,9 @@ class Users(models.core.Protected.Protected):
                                                       #All users, including anonymous, have role 'everyone'.
                                                       #All users, except anonymous, have role 'user'
                                                       "admin": "Administrator",
-                                                      "employee": "Employee",
-                                                      "customer": "Customer",
-                                                      "finance": "Finance"
+                                                      "ticket_write": "Create and change tickets/relations",
+                                                      "finance_read": "Finance read",
+                                                      "finance_admin": "Finance administrator",
                                                     }),
 
 
@@ -46,18 +46,21 @@ class Users(models.core.Protected.Protected):
     write={
         'group_ids': {
             'context_field': 'group_ids',
-            'set_on_create': False,
             'check': True
         },
     }
 
     read=write
 
-    read_roles=["admin"]
-    write_roles=read_roles
+    #admin can access all users, not just his own
+    admin_read_roles=["admin"]
+    admin_write_roles=admin_read_roles
 
     @Acl(roles="admin")
     def put(self, **doc):
+
+        if 'password' in doc and doc['password']=="":
+            del doc['password']
 
         if '_id' in doc:
           log_txt="Changed user {name}".format(**doc)
@@ -106,11 +109,50 @@ class Users(models.core.Protected.Protected):
 
         return(self._get_all(**params))
 
+
+
+    @Acl(roles=["everyone"])
+    def switch_user_pop(self):
+
+        if not self.context.session['previous_session']:
+            raise fields.FieldError("No previous session found")
+
+        self.context.session=self.context.session['previous_session']
+        self.info("Switched back to user {name}".format(**self.context.session))
+        self.send_session()
+
+
+    @Acl(roles=["admin"])
+    def switch_user(self, _id):
+        '''switch to a different user (only admins can do this offcourse). its possible to switch back by using switch_user_pop()'''
+
+        user = self.get(_id)
+
+        new_session=dict(self.context.session) #keep db and other info
+        new_session['previous_session']=dict(self.context.session)
+        new_session['name'] = user['name']
+        new_session['roles'] = user['roles']
+        new_session['user_id'] = user['_id']
+        new_session['group_ids']= user['group_ids']
+
+        #every user MUST to be member of everyone and user
+        new_session['roles'].append('everyone')
+        new_session['roles'].append('user')
+
+        #atomic switch
+        self.context.session=new_session
+
+        self.info("Switched to user {name}".format(**self.context.session))
+        self.send_session()
+
     @Acl(roles=["everyone"])
     def login(self, name, password):
         '''authenticate the with the specified name and password.
 
         if its ok, it doesnt throw an exception and returns nothing'''
+
+        #very imporant, we're going to switch DB so we need to be sure the user is logged out
+        self.context.reset_user()
 
         if name.find("@")==-1:
             raise fields.FieldError("Please specify a valid name", "name")
@@ -142,20 +184,21 @@ class Users(models.core.Protected.Protected):
             self.warning("User {} cannot log in because its deactivated".format(username))
             raise fields.FieldError("This user is deactivated", "name")
 
+        self.context.session['previous_session'] = None
         self.context.session['name'] = user['name']
         self.context.session['roles'] = user['roles']
         self.context.session['user_id'] = user['_id']
         self.context.session['group_ids']= user['group_ids']
 
-        #every user MUST to be member over everyone and user
+        #every user MUST to be member of everyone and user
         self.context.session['roles'].append('everyone')
         self.context.session['roles'].append('user')
 
         self.info("Logged in.")
-
-        self.event("changed_session",self.context.session)
+        self.send_session()
 
         return(self.context.session)
+
 
     @Acl(roles=["everyone"])
     def send_session(self):

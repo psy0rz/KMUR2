@@ -79,11 +79,11 @@ class ContractInvoices(models.core.Protected.Protected):
     #call order: recalc_minutes_used -> put -> recalc_minutes_balance
 
 
-    @Acl(roles="finance")
+    @Acl(roles="user")
     def recalc_minutes_balance(self, relation_id, contract_id):
         """recalculate budget of all contract invoices of specified relation,contract combo"""
 
-        contract_invoices=self.get_all(
+        contract_invoices=self._unprotected_get_all(
                 match={
                 "relation": relation_id,
                 "contract": contract_id,
@@ -97,10 +97,18 @@ class ContractInvoices(models.core.Protected.Protected):
             minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
             if ('minutes_balance' not in contract_invoice) or (contract_invoice["minutes_balance"]!=minutes_balance):
                 contract_invoice['minutes_balance']=minutes_balance
-                self.put(
-                    recalc_minutes_balance=False, #stop recursion
-                    **contract_invoice
+                self._unprotected_put(
+                    contract_invoice
                     )
+
+                #since anyone can call this function, be carefull not to reveal too much information
+                self.event("changed",{
+                    "_id": contract_invoice["_id"],
+                    "minutes_balance": contract_invoice["minutes_balance"],
+                    "minutes_used": contract_invoice["minutes_used"],
+                    "minutes_bought": contract_invoice["minutes_bought"]
+                    })
+
 
 
 
@@ -124,7 +132,6 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
     @Acl(roles="user")
-    #TODO: all users still need finance rights now 
     def recalc_minutes_used(self, _id):
         """recalculate minutes for one contract_invoice, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
 
@@ -136,12 +143,15 @@ class ContractInvoices(models.core.Protected.Protected):
         if not _id:
             return
 
-        doc=self.get(_id)
-        contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=doc["contract"])
+        doc=self._unprotected_get(_id)
+
+        contracts_model=models.ticket.Contracts.Contracts(self.context)
+        contract=contracts_model._unprotected_get(_id=doc["contract"])
 
         #get used minutes and calculate total
         minutes_used=0
-        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+        ticket_objects_model=models.ticket.TicketObjects.TicketObjects(self.context)
+        ticket_objects=ticket_objects_model._unprotected_get_all(
                 match={
                     "billing_contract_invoice": _id
                 }
@@ -156,10 +166,20 @@ class ContractInvoices(models.core.Protected.Protected):
 
         doc["minutes_balance"]=doc["minutes_balance"]+doc["minutes_used"]-minutes_used #this is recalculated anyway, but this prevents an extra update/log entry
         doc["minutes_used"]=minutes_used
-        self.put(**doc)
+        self._unprotected_put(doc)
+
+        #since anyone can call this function, be carefull not to reveal too much information
+        self.event("changed",{
+            "_id": doc["_id"],
+            "minutes_balance": doc["minutes_balance"],
+            "minutes_used": doc["minutes_used"],
+            "minutes_bought": doc["minutes_bought"]
+            })
+
+        self.recalc_minutes_balance(doc['relation'], doc['contract'])
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def auto_invoice_all(self):
         """check all relations and contracts, and auto_invoice those that are missing.
 
@@ -215,7 +235,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     self.auto_invoice(relation["_id"], contract_id, desc)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def auto_invoice(self, relation_id, contract_id, desc=None):
         """automaticly collects un-invoiced ticket_objects, creates contract_invoice and an actual invoice"""
 
@@ -231,7 +251,8 @@ class ContractInvoices(models.core.Protected.Protected):
         contract_invoice={
             'date': datetime.datetime.now().timestamp(),
             'desc': desc,
-            'allowed_users': [ self.context.session['user_id'] ],
+            'allowed_users': relation['allowed_users'],
+            'allowed_groups': relation['allowed_groups'],
             'relation': relation['_id'],
             'contract': contract['_id'],
             'minutes_used': 0,
@@ -335,7 +356,9 @@ class ContractInvoices(models.core.Protected.Protected):
 
         invoice={
             "_id": invoice["_id"],
-            "notes": invoice["notes"]+notes
+            "notes": invoice["notes"]+notes,
+            'allowed_users': relation['allowed_users'],
+            'allowed_groups': relation['allowed_groups'],
         }
         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'put', **invoice)
 
@@ -343,7 +366,7 @@ class ContractInvoices(models.core.Protected.Protected):
         return(contract_invoice)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def manual_invoice(self, contract_invoice_id):
         """Add details of specified contract_invoice to invoice (for a price per hour)
 
@@ -400,7 +423,7 @@ class ContractInvoices(models.core.Protected.Protected):
         )
 
 
-    @Acl(roles="finance")
+    @Acl(roles="user")
     def get_budgets(self, relation_id, limit=None, skip=None, sort=None):
         """calculate all the budgets of a relation, this includes uninvoiced_ticketobjects"""
 
@@ -423,7 +446,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
             #get budget from latest contract_invoice
-            latest_contract_invoices=self.get_all(
+            latest_contract_invoices=self._unprotected_get_all(
                     match={
                         "relation": relation["_id"],
                         "contract": contract["_id"],
@@ -432,6 +455,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     sort=[ ( 'date', -1 )]
                 )
 
+
             if latest_contract_invoices:
                 minutes_balance=latest_contract_invoices[0]["minutes_balance"]
             else:
@@ -439,7 +463,8 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
             #get uninvoiced hours for this relation,contract combo
-            ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+            ticket_objects_model=models.ticket.TicketObjects.TicketObjects(self.context)
+            ticket_objects=ticket_objects_model._unprotected_get_all(
                 fields=["title", "minutes", "minutes_factor" ],
                 match={
                     "billing_relation": relation["_id"],
@@ -459,7 +484,7 @@ class ContractInvoices(models.core.Protected.Protected):
         return(budgets)
 
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def put(self, recalc_minutes_balance=True, **doc):
 
         if '_id' in doc:
@@ -489,11 +514,11 @@ class ContractInvoices(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -517,7 +542,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance")
+    @Acl(roles="finance_read")
     def get_all(self, **params):
         return(self._get_all(**params))
 

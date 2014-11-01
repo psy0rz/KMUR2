@@ -238,3 +238,15 @@ td
 {
 	display:none;
 }
+
+
+/* "Disables" the element and prevents and controls from initalizing and doing anything. 
+
+Use view-role to automaticly disable views based on role
+*/
+.view-disabled 
+{
+
+};
+
+

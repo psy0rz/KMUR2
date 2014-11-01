@@ -16,7 +16,8 @@ var form=new ControlForm({
         'type': view.params.type
     },
     'default'         : { 
-        'allowed_users': [ session.user_id ],
+        'allowed_users': view.params.allowed_users,
+        'allowed_groups': view.params.allowed_groups,
         'tickets': [ view.params.ticket_id ],
         'create_time': timestamp,
         'start_time': timestamp,

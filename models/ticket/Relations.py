@@ -94,9 +94,9 @@ class Relations(models.core.Protected.Protected):
 
     read=write
 
-    read_roles= [ "finance" ]
+    admin_read_roles= [ "finance_admin" ]
 
-    @Acl(roles="user")
+    @Acl(roles="ticket_write")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -115,7 +115,7 @@ class Relations(models.core.Protected.Protected):
     def get(self, *args, **kwargs):
         return(self._get(*args, **kwargs))
 
-    @Acl(roles="user")
+    @Acl(roles="ticket_write")
     def delete(self, _id):
 
         doc=self._get(_id)
