@@ -208,7 +208,7 @@ ControlBase.prototype.attach_event_handlers=function()
     var context=this.context;
 
     //create a handler to open a view
-    $(".control-on-click-view",context).click(function(event)
+    $(".control-on-click-view",context).off("click").click(function(event)
     {
         var editView={};
 
@@ -1122,7 +1122,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
 
 
-    $(".control-on-filter-highlight",context).on('click', function(e)
+    $(".control-on-filter-highlight",context).off().on('click', function(e)
     {
         if ($(e.srcElement).hasClass("control-on-filter-highlight"))
         {
@@ -1148,7 +1148,7 @@ ControlList.prototype.attach_event_handlers=function()
     //When filter-lte is set, filter on items that are less than or equal to the value
     //When filter-in is set, filter on items that match any of the values (used with multiselect filtering)
  //   $(".Xcontrol-on-change-filter", context).on('change keypress paste focus textInput input', ':input', function()
-    $(context).on('field_changed', '.control-on-change-filter', function(event, key, meta, context, data)
+    $(context).off().on('field_changed', '.control-on-change-filter', function(event, key, meta, context, data)
     {
 
         // console.error("controlList field_changed", key, meta, context, data);
@@ -1234,7 +1234,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
     
     //generic regex_or filter to do quick searches in multiple fields 
-    $(".control-on-change-search", context).on('change keypress paste textInput input', function()
+    $(".control-on-change-search", context).off().on('change keypress paste textInput input', function()
     {
         this_control.context.scrollTop(0);
 
@@ -1351,7 +1351,7 @@ ControlList.prototype.attach_event_handlers=function()
         rpc(this_control.params.class+".get",{ '_id': list_id }, function(result)
         {
             //put data when changes are done:
-            $(element.children().first()).on("field_done",function()
+            $(element.children().first()).off("field_one").on("field_done",function()
             {
                 var doc={};
                 $.extend(true, doc, result.data);

@@ -1,6 +1,7 @@
 
 <script>
 
+
 var form=new ControlForm({
     'view'            : view,
     'class'           : 'ticket.Tickets',
@@ -10,8 +11,9 @@ var form=new ControlForm({
     'title_new'       : 'New task',
     // 'favorite_menu'   : 'ticket',
     'default'         : { 
+        'deligated_users': view.params.deligated_users,
+        'allowed_groups': view.params.allowed_groups,
         'owner': session.user_id,
-        'allowed_groups': [ ],
         'start_date': new Date().getTime()/1000,
         'relations': view.params.relations
     }

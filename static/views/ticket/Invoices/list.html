@@ -7,6 +7,10 @@
         'title'           	: 'Invoices',
         'endless_scrolling'	: true,
         'favorite_menu'     : 'invoices',
+        'create_view_params': {
+                'allowed_users': [ session.user_id ],
+            }
+
     });
 
     $(".tabs", context).tabs({

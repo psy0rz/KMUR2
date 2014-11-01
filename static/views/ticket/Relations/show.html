@@ -9,11 +9,47 @@ var relation=new ControlForm({
     'title'           : 'View relation {title}',
     'favorite_menu'   : 'relations',
     'favorite_title'  : '{title}',
-    'on_change'       : 'put',
+    'on_change'       : 'get',
     'create_view_params': view.params,
     'context'         : '.relation',
     'get_result': function(result){
-        $(".ticket-object-add-links", context).on('click',".on-click-new-ticket-time", function()
+
+        var deligated_users=[];
+        $.extend(deligated_users, result.data.allowed_users);
+        var i=deligated_users.indexOf(session.user_id);
+        if (i!=-1)
+            deligated_users.splice(i,1);
+
+        var tickets=new ControlListRelated({
+            'view'              : view,
+            'context'           : '.tickets',
+            'class'             : 'ticket.Tickets',
+            'endless_scrolling' : true,
+            'related_key'       : 'relations',
+            'related_value'     : view.params._id,
+            'create_view_params': {
+                'relations': [ view.params._id ],
+                'deligated_users': deligated_users,
+                'allowed_groups': result.data.allowed_groups
+            }
+        });
+
+        var invoices=new ControlListRelated({
+            'view'              : view,
+            'get_meta_params'   : {},
+            'context'           : '.invoices',
+            'class'             : 'ticket.Invoices',
+            'endless_scrolling' : true,
+            'related_key'       : 'to_relation',
+            'related_value'     : view.params._id,
+            'create_view_params': {
+                'to_relation': view.params._id,
+                'allowed_users': result.data.allowed_users,
+                'allowed_groups': result.data.allowed_groups
+            }
+        });
+
+        $(".ticket-object-add-links", context).off('click').on('click',".on-click-new-ticket-time", function()
         {
             viewCreate({ creator: context },
             {
@@ -24,8 +60,8 @@ var relation=new ControlForm({
                     type: 'time',
                     billing_relation: view.params._id,
                     billing_contract: $(this).attr("contract-id"),
-                    allowed_users: result.allowed_users,
-                    allowed_groups: result.allowed_groups
+                    allowed_users: result.data.allowed_users,
+                    allowed_groups: result.data.allowed_groups
                 }
             });
             return(false);
@@ -55,33 +91,6 @@ $('.field-list-source[field-key="contracts"]', context).on("field_list_post_put"
     }
 
     span.text(data.title);
-});
-
-var tickets=new ControlListRelated({
-    'view'              : view,
-    'context'           : '.tickets',
-    'class'             : 'ticket.Tickets',
-    'endless_scrolling' : true,
-    'related_key'       : 'relations',
-    'related_value'     : view.params._id,
-    'create_view_params': {
-        'relations': [ view.params._id ]
-    }
-});
-
-
-
-var invoices=new ControlListRelated({
-    'view'              : view,
-    'get_meta_params'   : {},
-    'context'           : '.invoices',
-    'class'             : 'ticket.Invoices',
-    'endless_scrolling' : true,
-    'related_key'       : 'to_relation',
-    'related_value'     : view.params._id,
-    'create_view_params': {
-        'to_relation': view.params._id 
-    }
 });
 
 var contract_budgets=new ControlList({
