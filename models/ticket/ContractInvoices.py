@@ -79,11 +79,11 @@ class ContractInvoices(models.core.Protected.Protected):
     #call order: recalc_minutes_used -> put -> recalc_minutes_balance
 
 
-    @Acl(roles="finance_admin")
+    @Acl(roles="user")
     def recalc_minutes_balance(self, relation_id, contract_id):
         """recalculate budget of all contract invoices of specified relation,contract combo"""
 
-        contract_invoices=self.get_all(
+        contract_invoices=self._unprotected_get_all(
                 match={
                 "relation": relation_id,
                 "contract": contract_id,
@@ -97,10 +97,18 @@ class ContractInvoices(models.core.Protected.Protected):
             minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
             if ('minutes_balance' not in contract_invoice) or (contract_invoice["minutes_balance"]!=minutes_balance):
                 contract_invoice['minutes_balance']=minutes_balance
-                self.put(
-                    recalc_minutes_balance=False, #stop recursion
-                    **contract_invoice
+                self._unprotected_put(
+                    contract_invoice
                     )
+
+                #since anyone can call this function, be carefull not to reveal too much information
+                self.event("changed",{
+                    "_id": contract_invoice["_id"],
+                    "minutes_balance": contract_invoice["minutes_balance"],
+                    "minutes_used": contract_invoice["minutes_used"],
+                    "minutes_bought": contract_invoice["minutes_bought"]
+                    })
+
 
 
 
@@ -123,7 +131,7 @@ class ContractInvoices(models.core.Protected.Protected):
         return(minutes)
 
 
-    @Acl(roles="finance_admin")
+    @Acl(roles="user")
     def recalc_minutes_used(self, _id):
         """recalculate minutes for one contract_invoice, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
 
@@ -135,12 +143,15 @@ class ContractInvoices(models.core.Protected.Protected):
         if not _id:
             return
 
-        doc=self.get(_id)
-        contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', _id=doc["contract"])
+        doc=self._unprotected_get(_id)
+
+        contracts_model=models.ticket.Contracts.Contracts(self.context)
+        contract=contracts_model._unprotected_get(_id=doc["contract"])
 
         #get used minutes and calculate total
         minutes_used=0
-        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+        ticket_objects_model=models.ticket.TicketObjects.TicketObjects(self.context)
+        ticket_objects=ticket_objects_model._unprotected_get_all(
                 match={
                     "billing_contract_invoice": _id
                 }
@@ -155,7 +166,17 @@ class ContractInvoices(models.core.Protected.Protected):
 
         doc["minutes_balance"]=doc["minutes_balance"]+doc["minutes_used"]-minutes_used #this is recalculated anyway, but this prevents an extra update/log entry
         doc["minutes_used"]=minutes_used
-        self.put(**doc)
+        self._unprotected_put(doc)
+
+        #since anyone can call this function, be carefull not to reveal too much information
+        self.event("changed",{
+            "_id": doc["_id"],
+            "minutes_balance": doc["minutes_balance"],
+            "minutes_used": doc["minutes_used"],
+            "minutes_bought": doc["minutes_bought"]
+            })
+
+        self.recalc_minutes_balance(doc['relation'], doc['contract'])
 
 
     @Acl(roles="finance_admin")

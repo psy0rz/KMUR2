@@ -100,9 +100,14 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance_read")
+    @Acl(roles="user")
     def get(self, _id):
-        return(self._get(_id))
+        if self.context.has_roles("finance_read"):
+            fields=None
+        else:
+            fields=["_id", "title", "allowed_users", "allowed_groups", "minutes_minimum", "minutes_rounding" ]
+
+        return(self._get(_id, fields=fields))
 
     @Acl(roles="finance_admin")
     def delete(self, _id):
@@ -116,7 +121,11 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="finance_read")
+    @Acl(roles="user")
     def get_all(self, **params):
+
+        if not self.context.has_roles("finance_read"):
+            params["fields"]=["_id", "title", "allowed_users", "allowed_groups", "minutes_minimum", "minutes_rounding"]
+
         return(self._get_all(**params))
 
