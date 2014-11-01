@@ -422,7 +422,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
             #get budget from latest contract_invoice
-            latest_contract_invoices=self.get_all(
+            latest_contract_invoices=self._unprotected_get_all(
                     match={
                         "relation": relation["_id"],
                         "contract": contract["_id"],
@@ -431,6 +431,7 @@ class ContractInvoices(models.core.Protected.Protected):
                     sort=[ ( 'date', -1 )]
                 )
 
+
             if latest_contract_invoices:
                 minutes_balance=latest_contract_invoices[0]["minutes_balance"]
             else:
@@ -438,7 +439,8 @@ class ContractInvoices(models.core.Protected.Protected):
 
 
             #get uninvoiced hours for this relation,contract combo
-            ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+            ticket_objects_model=models.ticket.TicketObjects.TicketObjects(self.context)
+            ticket_objects=ticket_objects_model._unprotected_get_all(
                 fields=["title", "minutes", "minutes_factor" ],
                 match={
                     "billing_relation": relation["_id"],

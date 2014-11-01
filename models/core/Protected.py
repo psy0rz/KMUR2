@@ -185,6 +185,7 @@ class Protected(models.mongodb.Base):
         return(doc)
 
 
+
     def _get_all(self, *args, spec_and=[], **kwargs):
         """do protected _get_all
 
@@ -245,5 +246,18 @@ class Protected(models.mongodb.Base):
 
         return(super(Protected, self)._delete(_id))
 
+
+    #clean and easy way to do unprotected stuff. also makes code easier to audit
+    def _unprotected_get(self, *args, **kwargs):
+        return(super()._get(*args,**kwargs))
+
+    def _unprotected_put(self, *args, **kwargs):
+        return(super()._put(*args,**kwargs))
+
+    def _unprotected_delete(self, *args, **kwargs):
+        return(super()._delete(*args,**kwargs))
+
+    def _unprotected_get_all(self, *args, **kwargs):
+        return(super()._get_all(*args,**kwargs))
 
 
