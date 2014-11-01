@@ -251,7 +251,8 @@ class ContractInvoices(models.core.Protected.Protected):
         contract_invoice={
             'date': datetime.datetime.now().timestamp(),
             'desc': desc,
-            'allowed_users': [ self.context.session['user_id'] ],
+            'allowed_users': relation['allowed_users'],
+            'allowed_groups': relation['allowed_groups'],
             'relation': relation['_id'],
             'contract': contract['_id'],
             'minutes_used': 0,
@@ -355,7 +356,9 @@ class ContractInvoices(models.core.Protected.Protected):
 
         invoice={
             "_id": invoice["_id"],
-            "notes": invoice["notes"]+notes
+            "notes": invoice["notes"]+notes,
+            'allowed_users': relation['allowed_users'],
+            'allowed_groups': relation['allowed_groups'],
         }
         invoice=call_rpc(self.context, 'ticket', 'Invoices', 'put', **invoice)
 

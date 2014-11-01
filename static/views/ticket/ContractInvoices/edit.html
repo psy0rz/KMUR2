@@ -9,8 +9,8 @@ new ControlForm({
     'title'           : 'Edit contract order {desc}',
     'title_new'       : 'New contract order',
     'default'         : { 
-        'allowed_users': [ session.user_id ],
-        'allowed_groups': [ ],
+        'allowed_users': view.params.allowed_users,
+        'allowed_groups': view.params.allowed_groups,
         'relation': view.params.relation_id,
         'contract': view.params.contract_id,
         'date': new Date().getTime()/1000
