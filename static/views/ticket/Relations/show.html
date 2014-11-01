@@ -23,7 +23,9 @@ var relation=new ControlForm({
                     ticket_id: view.params._id,
                     type: 'time',
                     billing_relation: view.params._id,
-                    billing_contract: $(this).attr("contract-id")
+                    billing_contract: $(this).attr("contract-id"),
+                    allowed_users: result.allowed_users,
+                    allowed_groups: result.allowed_groups
                 }
             });
             return(false);
