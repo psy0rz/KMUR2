@@ -37,6 +37,14 @@
         } 
     });
 
+    $(".on-click-auto-invoice-all", context).click(function()
+    {
+        rpc("ticket.ContractInvoices.auto_invoice_all",{},function()
+        {
+            viewShowError(result,context);
+        });
+        return(false);
+    });
 
 </script>
 
@@ -89,5 +97,6 @@
 
 <div class='floatingBar viewErrorClass'>
     <button class='control-on-click-view' control-view='ticket.Invoices.edit' field-key='title' >Create new invoice</button>
+    <button class='on-click-auto-invoice-all' >Auto invoice contracts</button>
     <span class='viewErrorText'></span>
 </div>
