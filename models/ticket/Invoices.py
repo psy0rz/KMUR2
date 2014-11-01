@@ -215,6 +215,8 @@ class Invoices(models.core.Protected.Protected):
 
             Gives the invoice a invoice number and data if it hasnt got one already and marks it as sent.
 
+            Also update the to_relation and from_relation address data.
+
             If the mail_to field is set in to_copy, the invoice is mailed to that address.
             If the print is true in to_copy, the invoice is printed.
 
@@ -231,6 +233,7 @@ class Invoices(models.core.Protected.Protected):
 
         update_doc['_id']=_id
         update_doc['sent']=True
+        update_doc['to_relation']=doc['to_relation']
 
         if doc['invoice_nr']=="":
             settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
