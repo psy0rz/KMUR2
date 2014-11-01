@@ -325,6 +325,8 @@ function ControlForm(params)
 //        this.params.title_new="New item";
 
     this.get_meta({});
+
+    return(true);
 }
 ControlForm.prototype=Object.create(ControlBase.prototype);
 
@@ -777,6 +779,8 @@ function ControlList(params)
     this.view_ready=false;
 
     this.get_meta(false);
+
+    return(true);
 }
 ControlList.prototype=Object.create(ControlBase.prototype);
 
@@ -1483,7 +1487,7 @@ function ControlListRelated(params)
 //    if (this.params.on_change='put')
    //     this.params.on_change='get';
 
-
+   return(true);
 }
 ControlListRelated.prototype=Object.create(ControlList.prototype);
 
