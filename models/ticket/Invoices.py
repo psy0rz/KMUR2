@@ -241,7 +241,7 @@ class Invoices(models.core.Protected.Protected):
             update_doc['invoice_nr']=settings['invoice_nr_format'].format(settings['invoice_nr'])
             update_doc['sent_date']=time.time()
 
-        self._put(update_doc)
+        self.put(force=True, **update_doc)
 
         doc=self._get(_id)
         self.event("changed",doc)
