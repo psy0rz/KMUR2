@@ -1824,7 +1824,7 @@ Field.Relation.meta_put=function(key, meta, context, options)
         context.addClass("field-get");
     }
 
-   //sub-meta-data is already resolved?
+    //sub-meta-data is already resolved?
     if ('meta' in meta)
         Field.Relation.meta_put_resolved(key, meta, context, options)
     else
@@ -1861,7 +1861,6 @@ Field.Relation.list_context=function(key, context)
 Field.Relation.meta_put_resolved=function(key, meta, context, options)
 {
  
-
     //a relation with a list is a more complex type, so among other things it should have a field-list-source inside the context. 
     var list_context=Field.Relation.list_context(key, context);
 
@@ -2165,6 +2164,8 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
 
 
 /*
+just notes and scribling...not actual documentation of the function..
+
  1. do all the rpc stuff here
     -also the autocomplete jquery widget? we could reattach eventhandlers in meta_put
     -straigh forward, but seems hackish
@@ -2200,37 +2201,6 @@ choosen solution: we have 2 modes to chose from:
 }
 
 
-Field.Relation.get=function(key, meta, context)
-{
-
-    var list_context=Field.Relation.list_context(key, context);
-
-    //recurse into sub-meta list
-    data=Field.List.get(key, meta.meta, list_context);
- 
-    //always "de-resolve" data, by converting it to an array of id's
-    //(the put-call on the server is able to automagically handle resolved and deresolved data anyway, so spare the overhead)
-    var ids=[];
-    $.each(data, function(key, value)
-    {
-        ids.push(value[meta.meta.list_key]);
-    });
-
-    if ($(context).data('field-relation-hidden'))
-    {
-        ids=ids.concat($(context).data('field-relation-hidden'));
-    }
-
-    if (meta.list)
-        return(ids)
-    else
-    {
-        if (ids.length>0)
-            return(ids[0]);
-        else
-            return(null);
-    }
-}
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
@@ -2248,43 +2218,82 @@ Field.Relation.put=function(key, meta, context, data, options)
         var list_context=Field.Relation.list_context(key, context);
         if (meta.list)
         {
+            //no data
             if (data==null)
+            {
                 Field.List.put(key, meta.meta, list_context, [], options);
+            }
+
             //if its empty or already resolved, directly recurse into sub-meta list
             //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
             else if ((data.length==0) || (typeof(data[0])=='object'))
+            {
                 Field.List.put(key, meta.meta, list_context, data, options);
+            }
+
+            //need to resolve the data asyncronisously
             else 
             {
-                var get_params={
-                    'match_in': {}
+                function resolve_data()
+                {
+                    var get_params={
+                        'match_in': {}
+                    };
+
+                    get_params['match_in'][meta.meta.list_key]=data;
+
+                    //get related data
+                    rpc(
+                        meta.model+".get_all",
+                        get_params,
+                        function(result)
+                        {
+                            //also store items that cant be resolved (usually relations to protected items)
+                            var hidden_data=data.slice(0);
+                            for (i in result.data)
+                            {
+                                var id=result.data[i][meta.meta.list_key];
+                                var i=hidden_data.indexOf(id);
+                                if (i!=-1)
+                                    hidden_data.splice(i,1);
+                            }
+                            $(context).data('field-relation-hidden', hidden_data);
+
+                            Field.List.put(key, meta.meta, list_context, result.data, options);
+         
+                        },
+                        "getting data from related model"
+                    );
                 };
 
-                get_params['match_in'][meta.meta.list_key]=data;
-
-                //get related data
-                rpc(
-                    meta.model+".get_all",
-                    get_params,
-                    function(result)
+                //do we want to resolve it now or later when the user hovers the mouse
+                console.error(context);
+                if ($(context).hasClass("field-relation-on-hover"))
+                {
+                    //fill the list with stub data
+                    var stub_data=[];
+                    for (i in data)
                     {
-                        //also store items that cant be resolved (usually relations to protected items)
-                        var hidden_data=data.slice(0);
-                        for (i in result.data)
-                        {
-                            var id=result.data[i][meta.meta.list_key];
-                            var i=hidden_data.indexOf(id);
-                            if (i!=-1)
-                                hidden_data.splice(i,1);
-                        }
-                        $(context).data('field-relation-hidden', hidden_data);
+                        stub_data.push({ '_id': data[i] });
+                    };
 
-                        Field.List.put(key, meta.meta, list_context, result.data, options);
+                    Field.List.put(key, meta.meta, list_context, stub_data, options);
      
-                    },
-                    "getting data from related model"
-                );
-            }
+                    var resolved=false;
+                    $(context).off("mouseenter").on( "mouseenter", function(event)
+                    {
+                        if (resolved)
+                            return;
+                        resolved=true;
+                        resolve_data();
+                        return(false);
+                    });
+                }
+                else
+                {
+                    resolve_data();                    
+                }
+            };
         }
         else
         {
@@ -2347,6 +2356,40 @@ Field.Relation.put=function(key, meta, context, data, options)
 }
 
 
+Field.Relation.get=function(key, meta, context)
+{
+
+    var list_context=Field.Relation.list_context(key, context);
+
+    //recurse into sub-meta list
+    data=Field.List.get(key, meta.meta, list_context);
+ 
+    //always "de-resolve" data, by converting it to an array of id's
+    //(the put-call on the server is able to automagically handle resolved and deresolved data anyway, so spare the overhead)
+    var ids=[];
+    $.each(data, function(key, value)
+    {
+        ids.push(value[meta.meta.list_key]);
+    });
+
+    if ($(context).data('field-relation-hidden'))
+    {
+        ids=ids.concat($(context).data('field-relation-hidden'));
+    }
+
+    if (meta.list)
+        return(ids)
+    else
+    {
+        if (ids.length>0)
+            return(ids[0]);
+        else
+            return(null);
+    }
+}
+
+//this is a bit confusing...this is another kind of resolving (used by all field types)
+//dont confuse it with asyncronisous resolving of meta-data and data for relations.
 Field.Relation.resolve_meta=function(meta, keys)
 {
     if (keys.length==0)
