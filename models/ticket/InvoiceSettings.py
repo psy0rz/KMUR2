@@ -7,7 +7,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
     admin_read_roles=["finance_read"]
     admin_write_roles=["finance_admin"]
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def get_meta(self, *args, _id=None, **kwarg):
         import models.ticket.Relations
 
@@ -35,7 +35,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
         return(meta)
 
 
-    @Acl(admin_write_roles)
+    @RPC(admin_write_roles)
     def put(self, **doc):
         # if not '{}' in doc['invoice_nr_format']:
         #     raise fields.FieldError('Formatstring should contain {}', 'invoice_nr_format')

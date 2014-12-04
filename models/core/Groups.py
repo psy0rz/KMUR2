@@ -29,7 +29,7 @@ class Groups(models.core.Protected.Protected):
     admin_write_roles=admin_read_roles
 
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -44,11 +44,11 @@ class Groups(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -60,7 +60,7 @@ class Groups(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
         return(self._get_all(**params))
 

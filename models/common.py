@@ -30,17 +30,16 @@ def call_rpc(context, module, cls, method, *args, **kwargs):
         raise Exception("rpc: Class is not a model")
     rpc_method = getattr(rpc_class_instance, method)
     if not hasattr(rpc_method, 'has_acl_decorator'):
-        raise Exception("rpc: This method is protected from outside access because it has no @Acl decorator")
+        raise Exception("rpc: This method is protected from outside access because it has no @RPC decorator")
     return(rpc_method(*args,**kwargs))
 
 
-class Acl(object):
-    """access control decorator.
+class RPC(object):
+    """RPC decorator. This makes a function callable via the rpc server
 
-    Use this on functions to provide access control to certain roles.
-    This is mandatory for functions you want to be able to call via rpc.
+    You can provide accesscontrol and caching parameters:
 
-    roles can be a iterable or a string`
+        roles: the user needs one of these roles to be able to call the function. can be a iterable or a string.
     """
     def __init__(self, roles="admin"):
         self.roles = roles
@@ -60,7 +59,7 @@ class Context(object):
     """Stores the context a model operates in.
 
     This contains things like a name or a list of roles a user belongs to.
-    Its also used to keep track of a logged in user used by @Acl to do access checks.
+    Its also used to keep track of a logged in user used by @RPC to do access checks.
     The content of the context is preserved between requests. (magically by the rpc-code via sessions and cookies)
 
     Sessions that are not logged in have user 'anonymous' and role 'everyone'.
@@ -207,7 +206,7 @@ class Base(object):
 
         self.context.event(self.__module__.replace("models.","")+"."+name, value)
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def get_meta(self, *args, **kwargs):
         """Return the metadata for this model
 

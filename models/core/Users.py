@@ -56,7 +56,7 @@ class Users(models.core.Protected.Protected):
     admin_read_roles=["admin"]
     admin_write_roles=admin_read_roles
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def put(self, **doc):
 
         if 'password' in doc and doc['password']=="":
@@ -74,13 +74,13 @@ class Users(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get(self, _id=None, match=None):
         return(self._get(_id=_id, match=match, fields={
                 'password': False
             }))
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -92,7 +92,7 @@ class Users(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
         if not 'fields' in params:
             params['fields']={}
@@ -111,7 +111,7 @@ class Users(models.core.Protected.Protected):
 
 
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def switch_user_pop(self):
 
         if not self.context.session['previous_session']:
@@ -122,7 +122,7 @@ class Users(models.core.Protected.Protected):
         self.send_session()
 
 
-    @Acl(roles=["admin"])
+    @RPC(roles=["admin"])
     def switch_user(self, _id):
         '''switch to a different user (only admins can do this offcourse). its possible to switch back by using switch_user_pop()'''
 
@@ -145,7 +145,7 @@ class Users(models.core.Protected.Protected):
         self.info("Switched to user {name}".format(**self.context.session))
         self.send_session()
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def login(self, name, password):
         '''authenticate the with the specified name and password.
 
@@ -200,7 +200,7 @@ class Users(models.core.Protected.Protected):
         return(self.context.session)
 
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def send_session(self):
         '''get current loggedin session (broadcasts an event)'''
 
@@ -208,7 +208,7 @@ class Users(models.core.Protected.Protected):
 
 
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def logout(self):
         '''logout the user. name becomes anonymous, roles becomes everyone.
         '''

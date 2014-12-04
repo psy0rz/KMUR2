@@ -96,7 +96,7 @@ class Relations(models.core.Protected.Protected):
 
     admin_read_roles= [ "finance_admin" ]
 
-    @Acl(roles="ticket_write")
+    @RPC(roles="ticket_write")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -111,11 +111,11 @@ class Relations(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get(self, *args, **kwargs):
         return(self._get(*args, **kwargs))
 
-    @Acl(roles="ticket_write")
+    @RPC(roles="ticket_write")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -127,12 +127,12 @@ class Relations(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
         return(self._get_all(**params))
 
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all_csv(self):
 
         csv_data=""

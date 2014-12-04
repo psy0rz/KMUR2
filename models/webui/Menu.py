@@ -50,7 +50,7 @@ class Menu(models.mongodb.Base):
                               ),
       }))
                           
-    @Acl(roles="user")
+    @RPC(roles="user")
     def put_favorite(self, menu, title, view, favorite_id=None):
         '''add/update a menu item to in the favorites of this user. '''
 
@@ -94,7 +94,7 @@ class Menu(models.mongodb.Base):
             count = count - 1
 
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def delete_favorite(self, menu, favorite_id=None):
         '''delete a menu item from the favorites of this user. '''
 
@@ -108,7 +108,7 @@ class Menu(models.mongodb.Base):
                                                 safe=True
                                                 )
 
-    @Acl(roles="everyone")
+    @RPC(roles="everyone")
     def get_favorites(self):
         '''gets the favorites of this user
 
@@ -124,7 +124,7 @@ class Menu(models.mongodb.Base):
 
 
 
-    @Acl(roles="everyone")
+    @RPC(roles="everyone")
     def get_static(self):
         '''gets the static menu items
 
@@ -132,7 +132,7 @@ class Menu(models.mongodb.Base):
         '''
         return static_menus
 
-    @Acl(roles="everyone")
+    @RPC(roles="everyone")
     def get(self):
         '''gets the static and favorite items of this user in a format that fits nicely in our menu view
 

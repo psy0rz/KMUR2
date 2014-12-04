@@ -115,7 +115,7 @@ def rpc_post():
 
         #make sure that it has an acl
         if not hasattr(rpc_method, 'has_acl_decorator'):
-            raise Exception("rpc: This method is protected from outside access because it has no @Acl decorator")
+            raise Exception("rpc: This method is protected from outside access because it has no @RPC decorator")
 
         if dohelp:
             result['help']['method'] = rpc_method.__doc__

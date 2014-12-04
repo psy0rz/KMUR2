@@ -27,7 +27,7 @@ class Recurse(models.mongodb.Base):
         self.db[self.default_collection].ensure_index( 'name', unique=True )
 
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -42,11 +42,11 @@ class Recurse(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def get(self, _id):
         return(self._get(_id))
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -57,7 +57,7 @@ class Recurse(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def get_all(self, **params):
         '''get all the members'''
         return(self._get_all(**params))

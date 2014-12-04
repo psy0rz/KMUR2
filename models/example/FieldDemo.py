@@ -52,7 +52,7 @@ class FieldDemo(models.mongodb.Base):
         desc='the root list of this class, this metadata is usually not shown in the userinterface'
     )
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def put(self, **doc):
         '''put document in the field_demo database
 
@@ -71,12 +71,12 @@ class FieldDemo(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def get(self, _id):
         '''get _id from test database'''
         return(self._get(_id))
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def delete(self, _id):
         '''delete _id from test database'''
 
@@ -90,7 +90,7 @@ class FieldDemo(models.mongodb.Base):
 
         return(ret)
 
-    @Acl(roles="admin")
+    @RPC(roles="admin")
     def get_all(self, sleep=0, **params):
         '''get all test documents from database'''
 

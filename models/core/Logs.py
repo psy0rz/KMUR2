@@ -1,5 +1,5 @@
 
-from models.common import Acl
+from models.common import RPC
 import fields
 import models.mongodb
 import time
@@ -44,7 +44,7 @@ class Logs(models.mongodb.Base):
 
         self.last_logs.append(log_entry)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
 
         #non admins get forced filtering on own user_id

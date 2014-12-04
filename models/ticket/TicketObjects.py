@@ -228,7 +228,7 @@ class TicketObjects(models.core.Protected.Protected):
         return(hash.hexdigest())
 
 
-    @Acl(roles="ticket_write")
+    @RPC(roles="ticket_write")
     def put(self, file=None, update_contract_invoice=True, **doc):
 
         #store file?
@@ -302,7 +302,7 @@ class TicketObjects(models.core.Protected.Protected):
 
 
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get(self, _id):
 
         #read the object unprotected
@@ -330,13 +330,13 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def download(self, _id, *rest):
         """downloads the actual file. this should be called with GET"""
         doc=self.get(_id)
         return bottle.static_file(self.get_file_path(doc["file"]), root=".", mimetype=doc["file_content_type"])
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -384,7 +384,7 @@ class TicketObjects(models.core.Protected.Protected):
 
                 ticket_object["text"]=text_short
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
         ticket_objects=self._get_all(**params)
 
@@ -392,7 +392,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ticket_objects)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all_by_ticket(self, ticket_id, **params):
         '''get all ticket_objects for a certain ticket. this allows access to ticketobjects you normally dont have access to'''
         #make sure we have access to the ticket
@@ -410,7 +410,7 @@ class TicketObjects(models.core.Protected.Protected):
         return(ticket_objects)
 
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_used_contracts(self, relation_id):
         '''get unique list of used contract_ids for specified relation'''
 

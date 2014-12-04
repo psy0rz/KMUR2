@@ -12,7 +12,7 @@ class Contracts(models.core.Protected.Protected):
     used to book time for customers and add it to invoices
     '''
 
-    @Acl(roles=["everyone"])
+    @RPC(roles=["everyone"])
     def get_meta(self, *args, _id=None, **kwarg):    
         meta = fields.List(
                 fields.Dict({
@@ -80,7 +80,7 @@ class Contracts(models.core.Protected.Protected):
 
     read=write
 
-    @Acl(roles="finance_admin")
+    @RPC(roles="finance_admin")
     def put(self, **doc):
 
         if '_id' in doc:
@@ -100,7 +100,7 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get(self, _id):
         if self.context.has_roles("finance_read"):
             fields=None
@@ -109,7 +109,7 @@ class Contracts(models.core.Protected.Protected):
 
         return(self._get(_id, fields=fields))
 
-    @Acl(roles="finance_admin")
+    @RPC(roles="finance_admin")
     def delete(self, _id):
 
         doc=self._get(_id)
@@ -121,7 +121,7 @@ class Contracts(models.core.Protected.Protected):
 
         return(ret)
 
-    @Acl(roles="user")
+    @RPC(roles="user")
     def get_all(self, **params):
 
         if not self.context.has_roles("finance_read"):

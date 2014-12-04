@@ -17,7 +17,7 @@ class ModuleSettings(models.mongodb.Base):
     def __init__(self, context=None):
         super(ModuleSettings, self).__init__(context=context)
 
-    @Acl(roles=admin_write_roles)
+    @RPC(roles=admin_write_roles)
     def put(self, **doc):
 
         self.get_meta(doc).meta['meta'].check(self.context, doc)
@@ -32,7 +32,7 @@ class ModuleSettings(models.mongodb.Base):
         self.info("Changed module settings for {}".format(self.__class__.__module__))
         return(doc)
 
-    @Acl(roles=admin_read_roles)
+    @RPC(roles=admin_read_roles)
     def get(self):
 
         collection = self.default_collection
