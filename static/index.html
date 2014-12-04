@@ -63,7 +63,7 @@
 			//this event is send by core when session is changed or send_session is called
 			$("#login").subscribe("core.Users.changed_session", "login", function(result)
 			{
-				console.log("Current session:", result);
+				// console.log("Current session:", result);
 
 				if (result.user_id)
 				{

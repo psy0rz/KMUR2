@@ -732,8 +732,11 @@ params:
                                  can be annoying in some cases, since items might disappear when they're no longer in scope of the list.
                             reload: re-load the whole view. slow and annoying, but might be neccesary sometimes
 
+no_start:         
+    dont "start" the control by calling get_meta(). Usefull for derived controls like ControlListRelated
+
 */
-function ControlList(params)
+function ControlList(params, no_start)
 {
 
     if (!ControlBase.call(this, params))
@@ -773,7 +776,8 @@ function ControlList(params)
 
     this.view_ready=false;
 
-    this.get_meta(false);
+    if (! no_start)
+        this.get_meta({});
 
     return(true);
 }
@@ -1451,7 +1455,7 @@ function ControlListRelated(params)
         return(false);
     }
 
-    if (!ControlList.call(this, params))
+    if (!ControlList.call(this, params, true))
         return(false);
 
     $(".control-hide-on-edit", this.context).hide();
@@ -1481,6 +1485,8 @@ function ControlListRelated(params)
     //put doenst work with listrelations, so we need at least get:
 //    if (this.params.on_change='put')
    //     this.params.on_change='get';
+
+    this.get_meta({});
 
    return(true);
 }
