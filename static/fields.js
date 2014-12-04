@@ -2267,7 +2267,6 @@ Field.Relation.put=function(key, meta, context, data, options)
                 };
 
                 //do we want to resolve it now or later when the user hovers the mouse
-                console.error(context);
                 if ($(context).hasClass("field-relation-on-hover"))
                 {
                     //fill the list with stub data

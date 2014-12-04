@@ -13,7 +13,14 @@ var gActiveRpcs=0;
 
     (this needs more documentaion about all the extra fields that are returned by the server and interpreted by this function)
 
+    Also does caching.
+
 */
+
+
+
+var gRpcCache={};
+
 function rpc(moduleClassMethod, params, callback, debugTxt)
 {
     if (!debugTxt)
@@ -22,9 +29,47 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
         debugTxt="[ "+debugTxt+" ] rpc "+moduleClassMethod;
 
 
-    var moduleClassMethodArray=moduleClassMethod.split(".");
-    
-    //(add extra info to the url for easier debugging in webserver logs)
+    var cacheKey=moduleClassMethod+JSON.stringify(params);
+    var cacheEntry={};
+
+    //first check if we can use the cache:
+    if ((cacheKey in gRpcCache))
+    {
+        cacheEntry=gRpcCache[cacheKey];
+        if (cacheEntry.inProgress)
+        {
+            //still in progress, add our callback to the queue
+            if (callback==undefined)
+            {
+                console.debug(debugTxt+" IGNORED", params);
+            }
+            else
+            {
+                console.debug(debugTxt+" QUEUED", params);
+                cacheEntry.callbacks.push(callback);                
+            }
+        }
+        else
+        {
+            //FIXME: expire entrys
+
+            //existing entry still valid
+            console.debug(debugTxt+" RE-USING "+cacheKey, params);
+            callback(cacheEntry.result);
+        }
+        return;
+    }
+
+    //create new cache entry, and do the actual rpc.
+    gRpcCache[cacheKey]={
+        inProgress: true,
+        callbacks: []
+    }
+    cacheEntry=gRpcCache[cacheKey];
+    if (callback!=undefined)
+        cacheEntry.callbacks.push(callback);                
+
+
     gActiveRpcs++;
     $(".viewLoading").show();
     $("body").css('cursor','progress');
@@ -38,6 +83,7 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
         $("body").css('cursor','auto');
     }
 
+    var moduleClassMethodArray=moduleClassMethod.split(".");
     var request={
                 "module":moduleClassMethodArray[0],
                 "class":moduleClassMethodArray[1],
@@ -99,7 +145,16 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                     }
                 };
                 rpcEnd();
-                callback(error);
+
+                cacheEntry.inProgress=false;
+                cacheEntry.result=result;
+                for (i in cacheEntry.callbacks)
+                {
+                    cacheEntry.callbacks[i](error);
+                };
+
+                //dont cache network errors
+                delete gRpcCache[cacheKey];
 
             },
         "success":  
@@ -182,8 +237,13 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 rpcEnd();
 
                 //first call back, then do events. this is neccesary for inplace editting 
-                if (callback != undefined)
-                    callback(result);
+                cacheEntry.inProgress=false;
+                cacheEntry.result=result;
+                for (i in cacheEntry.callbacks)
+                {
+                    cacheEntry.callbacks[i](result);
+                };
+                cacheEntry.callbacks=[];
 
                 //broadcast events
                 for (i in result.events)
@@ -211,6 +271,10 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
 */
 function rpc_cached(cache, ttl, moduleClassMethod, params, callback, debugTxt)
 {
+
+    rpc(moduleClassMethod, params, callback, debugTxt);
+
+    return;
 
     var debugTxtcached;
     if (!debugTxt)
