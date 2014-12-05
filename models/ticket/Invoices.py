@@ -49,7 +49,7 @@ class Invoices(models.core.Protected.Protected):
 
         readonly=False
 
-        print("id",args, _id, kwarg)
+        # print("id",args, _id, kwarg)
 
         if _id:
             #if the stored invoice is already sent, then make some stuff readonly

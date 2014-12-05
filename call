@@ -1,6 +1,10 @@
 #!/bin/bash
+# For a proper rpc-client try ./client/cli
+
+
 # Add initial admin mongo CLI:
 # db.models.core.Users.insert({ "name":"admin", password:"yourpassss", "groups":["admin"], "active": true})
+
 
 
 if [ "$1" == "" ]; then

@@ -111,11 +111,13 @@ def rpc_post():
         #resolve method
         rpc_method = getattr(rpc_class_instance, request['method'])
 
-        print("RPC: {module}.{class}.{method}".format(**request))
+        print("RPC: {module}.{class}.{method} {params}".format(**request))
 
         #make sure that it has an acl
-        if not hasattr(rpc_method, 'has_acl_decorator'):
+        if not hasattr(rpc_method, 'rpc'):
             raise Exception("rpc: This method is protected from outside access because it has no @RPC decorator")
+
+        result['caching']=rpc_method.rpc.caching
 
         if dohelp:
             result['help']['method'] = rpc_method.__doc__

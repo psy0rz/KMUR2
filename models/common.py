@@ -29,7 +29,7 @@ def call_rpc(context, module, cls, method, *args, **kwargs):
     if not isinstance(rpc_class_instance, Base):
         raise Exception("rpc: Class is not a model")
     rpc_method = getattr(rpc_class_instance, method)
-    if not hasattr(rpc_method, 'has_acl_decorator'):
+    if not hasattr(rpc_method, 'rpc'):
         raise Exception("rpc: This method is protected from outside access because it has no @RPC decorator")
     return(rpc_method(*args,**kwargs))
 
@@ -40,17 +40,22 @@ class RPC(object):
     You can provide accesscontrol and caching parameters:
 
         roles: the user needs one of these roles to be able to call the function. can be a iterable or a string.
+        caching: 
+            "no": not cachable
+            "yes": yes, can be cached for ever. usefull for things that never change.
+            NOT IMLEMENTED YET: "until_change": can be cached until something "changes". a change happens when something non-cachable is called.
     """
-    def __init__(self, roles="admin"):
+    def __init__(self, roles="admin", caching="no"):
         self.roles = roles
+        self.caching = caching
 
     def __call__(self, f):
         def wrapped_f(wrapped_instance, *args, **kwargs):
             wrapped_instance.context.need_roles(self.roles)
             return(f(wrapped_instance, *args, **kwargs))
 
-        #we want to be able to verify if the outer wrapper is an acl_wrapper
-        wrapped_f.has_acl_decorator = 1
+        #make the RPC object accesible via the returned function object
+        wrapped_f.rpc=self
         wrapped_f.__doc__ = f.__doc__
         return wrapped_f
 
@@ -63,7 +68,7 @@ class Context(object):
     The content of the context is preserved between requests. (magically by the rpc-code via sessions and cookies)
 
     Sessions that are not logged in have user 'anonymous' and role 'everyone'.
-z
+
     Sessions that are logged in are always member of the roles 'everyone' and 'user'
 
     Manupulation of user and role is currently done by models.core.Users.
@@ -206,7 +211,7 @@ class Base(object):
 
         self.context.event(self.__module__.replace("models.","")+"."+name, value)
 
-    @RPC(roles=["everyone"])
+    @RPC(roles=["everyone"], caching="yes")
     def get_meta(self, *args, **kwargs):
         """Return the metadata for this model
 

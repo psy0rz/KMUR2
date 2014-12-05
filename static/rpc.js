@@ -245,6 +245,9 @@ function rpc(moduleClassMethod, params, callback, debugTxt)
                 };
                 cacheEntry.callbacks=[];
 
+                if (result.caching=="no")
+                    delete gRpcCache[cacheKey];
+
                 //broadcast events
                 for (i in result.events)
                 {
