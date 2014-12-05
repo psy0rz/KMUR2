@@ -1840,7 +1840,9 @@ Field.Relation.meta_put=function(key, meta, context, options)
             {},
             function(result)
             {
-                //complete the submeta data and call actual function
+                //complete the submeta data and call actual function.
+                //NOTE: the meta-variable is a reference to an entry in a cached meta-instance.(look in rpc.js for caching stuff)
+                //Because of this the related meta-data we just resolved is also cached now.
                 meta.meta=result.data;
                 Field.Relation.meta_put_resolved(key, meta, context, options);
                 context.trigger("meta_put_done");
@@ -2320,7 +2322,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                 // if (options.relation_update && context.attr("field-relation-id")!=data)
                 //     return;
 
-
+z
                 var get_params={};
                 get_params[meta.meta.list_key]=data;
                 //get related data
