@@ -325,7 +325,7 @@ a:hover
 	padding-left:20px;
 }
 
-.ticket-sharing-private
+.ticket-sharing-owner
 {
 	background: url("../icons/lock.png") left center no-repeat; 
 	padding-left:20px;
@@ -360,3 +360,7 @@ a:hover
 {
 	display:none;
 }
+
+
+
+

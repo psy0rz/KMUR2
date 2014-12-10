@@ -2269,7 +2269,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                 };
 
                 //do we want to resolve it now or later when the user hovers the mouse
-                if ($(context).hasClass("field-relation-on-hover"))
+                if ($(context).attr("field-relation-delayed")=="")
                 {
                     //fill the list with stub data
                     var stub_data=[];
@@ -2322,7 +2322,6 @@ Field.Relation.put=function(key, meta, context, data, options)
                 // if (options.relation_update && context.attr("field-relation-id")!=data)
                 //     return;
 
-z
                 var get_params={};
                 get_params[meta.meta.list_key]=data;
                 //get related data
