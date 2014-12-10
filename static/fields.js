@@ -2206,7 +2206,9 @@ choosen solution: we have 2 modes to chose from:
 
 Field.Relation.put=function(key, meta, context, data, options)
 {
-    
+    var options_copy={};
+    $.extend(options_copy, options);
+
 
     //add a handler that gets triggered as soon as metadata is resolved
     context.off("meta_put_done").on("meta_put_done", function()
@@ -2223,14 +2225,14 @@ Field.Relation.put=function(key, meta, context, data, options)
             //no data
             if (data==null)
             {
-                Field.List.put(key, meta.meta, list_context, [], options);
+                Field.List.put(key, meta.meta, list_context, [], options_copy);
             }
 
             //if its empty or already resolved, directly recurse into sub-meta list
             //NOTE: we dont check this via meta.resolve, because sometime we need to put unresolved data into it as well. (in case of a changed-event for example)
             else if ((data.length==0) || (typeof(data[0])=='object'))
             {
-                Field.List.put(key, meta.meta, list_context, data, options);
+                Field.List.put(key, meta.meta, list_context, data, options_copy);
             }
 
             //need to resolve the data asyncronisously
@@ -2261,7 +2263,7 @@ Field.Relation.put=function(key, meta, context, data, options)
                             }
                             $(context).data('field-relation-hidden', hidden_data);
 
-                            Field.List.put(key, meta.meta, list_context, result.data, options);
+                            Field.List.put(key, meta.meta, list_context, result.data, options_copy);
          
                         },
                         "getting data from related model"
@@ -2271,6 +2273,9 @@ Field.Relation.put=function(key, meta, context, data, options)
                 //do we want to resolve it now or later when the user hovers the mouse
                 if ($(context).attr("field-relation-delayed")=="")
                 {
+                    //this offcourse doesnt work with delayed data resolving. (it always thinks there's a change that way)
+                    options_copy.show_changes=false;
+
                     //fill the list with stub data
                     var stub_data=[];
                     for (i in data)
