@@ -15,9 +15,7 @@ class Members(models.mongodb.Base):
                     desc='N:N, resolved server side',
                     model=models.example.Groups.Groups,
                     resolve=True,
-                    list=True,
-                    min=1,
-                    max=3),
+                    list=True),
                 'group_ids2': models.mongodb.Relation(
                     desc='N:N, resolved client side',
                     model=models.example.Groups.Groups,

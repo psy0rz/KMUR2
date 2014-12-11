@@ -1634,7 +1634,13 @@ ControlListRelated.prototype.relate=function(related_id, confirm_text, ok_callba
                     {
                         //now add the item to the document and put it 
                         if (related_meta.list)
+                        {
+                            //make sure its a array
+                            if(!result.data[this_control.params.related_key])
+                                result.data[this_control.params.related_key]=[];
+
                             result.data[this_control.params.related_key].push(this_control.params.related_value)
+                        }
                         else
                             result.data[this_control.params.related_key]=this_control.params.related_value;
 
