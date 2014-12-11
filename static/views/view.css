@@ -362,5 +362,26 @@ a:hover
 }
 
 
+.tooltip
+{
+	display: none;
+	margin-left:0.5em;
+	margin-top:0.5em;
+	position: absolute;
+	background: yellow;
+	padding: 2px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
 
+.tooltip-activate:hover
+{
+	background-color: yellow;
+}
+
+.tooltip-activate:hover .tooltip
+{
+	display: inherit;
+}
 

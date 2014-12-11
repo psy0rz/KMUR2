@@ -20,7 +20,7 @@ class Tickets(models.core.Protected.Protected):
             'import_id': fields.String(desc='Import ID'),
             'ticket_completed': fields.Bool(desc='Completed'),
             'ticket_status': fields.Select(desc='Status', choices=[
-                ('none', 'None'),
+                ('none', 'Unassigned'),
                 ('next_action', 'Next Action'),
                 ('project', 'Project'),
                 ('waiting', 'Waiting'),

@@ -89,7 +89,7 @@
         <li status="waiting">       <a href="#dummytab">Waiting for</a></li>
         <li status="someday">       <a href="#dummytab">Someday/Maybe</a></li>
         <li status="reference">     <a href="#dummytab">Reference</a></li>
-        <li status="none">          <a href="#dummytab">No status</a></li>
+        <li status="none">          <a href="#dummytab">Unassigned</a></li>
         <li status="">              <a href="#dummytab">All</a></li>
     </ul>
     <div id="dummytab">
@@ -117,17 +117,17 @@
 
                 <td class='field-put control-list-on-click-edit ticket-check-style' field-key='ticket_completed' field-no-text>
 
-                <td nowrap class='field-meta-put field-list-on-click-view' field-relation-delayed field-key='allowed_groups'>
+                <td nowrap class='field-meta-put field-list-on-click-view ' field-relation-delayed field-key='allowed_groups'>
 
                     <span class='field-meta-put field-list-on-click-view' field-relation-delayed field-key='allowed_groups'>
-                            <span class='field-list-source field-list-source-hide notranslate ' field-key='allowed_groups'>
-                                <span  class='ticket-sharing-group field-put ' field-key='allowed_groups.name'></span>
+                            <span class='field-list-source field-list-source-hide tooltip-activate notranslate ticket-sharing-group  ' field-key='allowed_groups'>
+                                <span  class='field-put tooltip' field-key='allowed_groups.name'>...</span>
                             </span>
                     </span>
 
                     <span class='field-meta-put field-list-on-click-view' field-relation-delayed field-key='deligated_users'>
-                        <span class='field-list-source field-list-source-hide notranslate ' field-key='deligated_users'>
-                            <span  class='ticket-sharing-deligated field-put ' field-key='deligated_users.name'></span>
+                        <span class='field-list-source field-list-source-hide tooltip-activate notranslate ticket-sharing-deligated' field-key='deligated_users'>
+                            <span  class='field-put tooltip' field-key='deligated_users.name'>...</span>
                         </span>
                     </span>
 
