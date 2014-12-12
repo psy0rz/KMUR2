@@ -264,7 +264,7 @@ class Tickets(models.core.Protected.Protected):
 
 #since this is recursive, we cant define it inside the Tickets class
 Tickets.meta.meta['meta'].meta['meta']['tickets']=models.mongodb.Relation(
-    desc='Tasks we depend on',
+    desc='Sub tasks',
     model=Tickets,
     resolve=False,
     list=True,

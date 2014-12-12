@@ -71,97 +71,74 @@ var form=new ControlForm({
     </tr>
 
 
+    <tr>
+        <td class='field-meta-put' field-key='tickets' field-meta-key='desc'>
+        <td>
+        <table class='field-meta-put field-key-root' style='border-width: 1px; border-style:solid' field-key='tickets'>
+
+            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.edit">
+                <td class='field-list-on-click-view field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
+                <td class='field-put field-list-on-click-view' field-key='tickets.title'>
+                <td class='field-list-on-click-view field-put' field-key='ticket_status' >
+                <td class='field-list-on-click-del ui-icon ui-icon-close'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td>
+                <td><input class='field-relation-on-click-add field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
+                <td>
+                <td class='field-list-on-click-view ui-icon ui-icon-plus' field-key='tickets.title' sort-key='tickets.title'>
+            </tr>
+        </table>
+    </tr>
+
+
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='owner' field-meta-key='desc'>
+        <td class='field-meta-put field-key-root' field-key='owner' >
+            <span >
+                <span field-list-view="core.Groups.edit" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='owner' >
+                        <span class='ticket-sharing-deligated field-put field-list-on-click-view' field-key='owner.name'></span>
+                        <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                </span>
+                <span class='list-span-form'>
+                    <input class='field-relation-on-change-autocomplete field-relation-on-click-add ' search-keys='name' result-format='{name}' sort-key='name' />
+                    <span class='field-list-on-click-view ui-icon ui-icon-plus ' field-key='owner.name'></span>
+                </span>
+            </span>
+    </tr>
+
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='deligated_users' field-meta-key='desc'>
+        <td class='field-meta-put field-key-root' field-key='deligated_users' >
+            <span >
+                <span field-list-view="core.Groups.edit" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='deligated_users' >
+                        <span class='ticket-sharing-deligated field-put field-list-on-click-view' field-key='deligated_users.name'></span>
+                        <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                </span>
+                <span class='list-span-form'>
+                    <input class='field-relation-on-change-autocomplete field-relation-on-click-add ' search-keys='name' result-format='{name}' sort-key='name' />
+                    <span class='field-list-on-click-view ui-icon ui-icon-plus ' field-key='deligated_users.name'></span>
+                </span>
+            </span>
+    </tr>
+
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='allowed_groups' field-meta-key='desc'>
+        <td class='field-meta-put field-key-root' field-key='allowed_groups' >
+            <span >
+                <span field-list-view="core.Groups.edit" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='allowed_groups' >
+                        <span class='ticket-sharing-group field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
+                        <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                </span>
+                <span class='list-span-form'>
+                    <input class='field-relation-on-change-autocomplete field-relation-on-click-add ' search-keys='name' result-format='{name}' sort-key='name' />
+                    <span class='field-list-on-click-view ui-icon ui-icon-plus ' field-key='allowed_groups.name'></span>
+                </span>
+            </span>
+    </tr>
+
 </table>
 
-<p>
-
-
-
-
-<fieldset class='inline-block'>
-    <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
-    <table class='field-meta-put field-key-root' field-key='tickets'>
-        <tr class='ui-widget-header'>
-            <th class='field-meta-put' field-key='tickets.title' field-meta-key='desc'>
-            <th>
-        </tr>
-
-        <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.edit">
-            <td class='field-put field-list-on-click-view' field-key='tickets.title'>
-            <td class='field-list-on-click-del ui-icon ui-icon-close'>
-        </tr>
-        <tr class='ui-widget-content'>
-            <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
-            <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-        </tr>
-        <tr>
-            <td colspan=2 class='field-list-on-click-view' field-key='tickets.title'> <a href='#'>Create new subtask</a>
-        </tr>
-    </table>
-</fieldset>
-
-<p>
-
-<fieldset class='inline-block'>
-<legend>Sharing</legend>
-
-    <div>
-        <span class='field-meta-put' field-key='owner' field-meta-key='desc'></span>: 
-        <span class='field-meta-put' field-key='owner'>
-            <span class='list-span field-list-source notranslate field-list-source-hide' field-key='owner' field-list-view="core.Users.edit">
-                <span class='field-put field-list-on-click-view' field-key='owner.fullname' style='font-weight: bold'></span>
-                <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
-            </span>
-            <input  class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' size=10/>
-            <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
-        </span>
-    </div>
-
-    <fieldset style='display:inline-block;'>
-        <legend class='field-meta-put' field-key='deligated_users' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='deligated_users'>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='deligated_users.name' field-meta-key='desc'>
-                <th>
-            </tr>
-
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='deligated_users' field-list-view="core.Users.edit">
-                <td class='field-put field-list-on-click-view ticket-sharing-deligated' field-key='deligated_users.fullname'>
-                <td class='field-list-on-click-del ui-icon ui-icon-close'>
-            </tr>
-            <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{name} ({fullname})' />
-                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-            </tr>
-            <tr>
-                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
-            </tr>
-        </table>
-    </fieldset>
-
-    <fieldset style='display:inline-block;'>
-        <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='allowed_groups'>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='allowed_groups.name' field-meta-key='desc'>
-                <th>
-            </tr>
-
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='allowed_groups' field-list-view="core.Groups.edit">
-                <td class='field-put field-list-on-click-view ticket-sharing-group' field-key='allowed_groups.name'>
-                <td class='field-list-on-click-del ui-icon ui-icon-close'>
-            </tr>
-            <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' />
-                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-            </tr>
-            <tr>
-                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new group</a>
-            </tr>
-        </table>
-    </fieldset>
-
-</fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
