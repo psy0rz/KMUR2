@@ -835,8 +835,12 @@ Field.List.put=function(key, meta, context, data, options)
                     else
                     {
                         //we update a list and the first item in data seems to be new, so assume it should be the first in the list
+
                         // console.error("inserting before", existing_items[0]);
-                        update_element.insertBefore(existing_items[0]);
+                        
+                        //WHY?
+                        //update_element.insertBefore(existing_items[0]);
+                        update_element.insertBefore(context);
                     }
                 }
             }
@@ -1975,6 +1979,12 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
                     });
 
                     var result_format=$(".field-relation-on-change-autocomplete", this_context).attr("result-format");
+
+                    var sort=$(".field-relation-on-change-autocomplete", this_context).attr("sort-key");
+                    if (sort)
+                    {
+                        params['sort']=[ [ sort, 1 ] ];
+                    };
 
                     //allow customisation of the get_all parameters
                     if (context.data("field_relation_pre_get_all") && !context.data("field_relation_pre_get_all")(params))

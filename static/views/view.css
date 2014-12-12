@@ -127,17 +127,18 @@ a:hover
 
 .field-list-source-hide
 {
-	display: none;
+	display: none !important;
 }
 
 
 .list-span
 {
-	border-width: 1px;
+	border-bottom-width: 1px;
 	border-bottom-style: dashed;
     margin-right:0.5em;
 
 }
+
 
 
 .value
@@ -383,5 +384,27 @@ a:hover
 .tooltip-activate:hover .tooltip
 {
 	display: inherit;
+}
+
+
+.ui-icon
+{
+	display:inline-block;
+}
+
+.list-span-form
+{
+	border-width: 1px;
+	border-style: solid;
+    margin-right:1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    display: inline-block;
+    padding: 2px;
+}
+
+.list-span-form .ui-icon
+{
+	vertical-align: middle;
 }
 
