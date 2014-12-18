@@ -182,18 +182,27 @@ a:hover
 }
 
 
+.ticket-gray-style,
+.ticket-gray-style .ticket-due-date-style[field-timestamp-days],
+.ticket-gray-style .ticket-priority-style .field-select-5,
+.ticket-gray-style .ticket-priority-style .field-select-4,
+.ticket-gray-style .ticket-status-style .field-select-next_action
+{
+	color: gray !important;
+	background: inherit ;
+}
+
+
+
 .ticket-status-style .field-select-next_action {
 	font-weight: bold;
 	color:#b57a15;
 }
 
-.ticket-completed-style .field-select-next_action {
-	color: gray;
-}
-
 .ticket-status-style .field-select-none {
 	color:gray;
 }
+
 
 
 
@@ -254,11 +263,6 @@ a:hover
 	padding: 2px;
 }
 
-.ticket-completed
-{
-	text-decoration: strike-thourgh;
-	color: gray;
-}
 
 
 /*
