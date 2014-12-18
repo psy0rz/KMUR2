@@ -139,10 +139,10 @@ Field.Base.input_append=function(key, meta, context, element, options)
     set the element. otherwise the content will be emptied and the element will be added.
 
     */ 
-Field.Base.html_append=function(key, meta, context, data, options, element)
+Field.Base.html_put=function(key, meta, context, data, options, element)
 {
     //probably a jquery object
-    // console.log("html_append", key , meta, context, data , options, element);
+    // console.log("html_put", key , meta, context, data , options, element);
     if (element instanceof jQuery)
     {
         if (element.text()!=context.text())
@@ -838,9 +838,10 @@ Field.List.put=function(key, meta, context, data, options)
 
                         // console.error("inserting before", existing_items[0]);
                         
-                        //WHY?
-                        //update_element.insertBefore(existing_items[0]);
-                        update_element.insertBefore(context);
+                        //NOTE: we add first new items to the beginning of the list, since this is more intuitive for users. 
+                        //especially with infinite scroll
+                        update_element.insertBefore(existing_items[0]);
+                        //update_element.insertBefore(context);
                     }
                 }
             }
@@ -1137,9 +1138,9 @@ Field.String.put=function(key, meta, context, data, options)
     {
         // context.addClass("notranslate");
         if (data==null)
-            Field.Base.html_append(key, meta, context, data, options, "");
+            Field.Base.html_put(key, meta, context, data, options, "");
         else
-            Field.Base.html_append(key, meta, context, data, options, data);
+            Field.Base.html_put(key, meta, context, data, options, data);
     }
 }
 
@@ -1181,9 +1182,9 @@ Field.File.put=function(key, meta, context, data, options)
         // context.addClass("notranslate");
 
         if (data==null)
-            Field.Base.html_append(key, meta, context, data, options, "");
+            Field.Base.html_put(key, meta, context, data, options, "");
         else
-            Field.Base.html_append(key, meta, context, data, options, data);
+            Field.Base.html_put(key, meta, context, data, options, data);
     }
 }
 
@@ -1370,8 +1371,8 @@ Field.Select.put=function(key, meta, context, data, options)
     else
     {
         var new_element=$("<span>");
-        // new_element.addClass("field-select-"+data);
-        new_element.addClass("field-select-"+key+"-"+data);
+        new_element.addClass("field-select-"+data);
+        // new_element.addClass("field-select-"+key+"-"+data);
 
         //translate raw data to descriptive text
         for (i in meta.choices)
@@ -1383,7 +1384,7 @@ Field.Select.put=function(key, meta, context, data, options)
             }
         }
 
-        Field.Base.html_append(key, meta, context, data, options, new_element);
+        Field.Base.html_put(key, meta, context, data, options, new_element);
     }
 }
 
@@ -1504,7 +1505,7 @@ Field.Bool.put=function(key, meta, context, data, options)
                 new_element.text(meta.false_desc);
         }
 
-        Field.Base.html_append(key, meta, context, data, options, new_element);
+        Field.Base.html_put(key, meta, context, data, options, new_element);
     }
 }
 
@@ -1610,13 +1611,13 @@ Field.MultiSelect.put=function(key, meta, context, data, options)
             new_element.append(
                 $("<div>") 
                     .addClass("field-multiselect")
-                    // .addClass("field-multiselect-"+data[data_nr])
-                    .addClass("field-multiselect-"+key+"-"+data[data_nr])
+                    .addClass("field-multiselect-"+data[data_nr])
+                    // .addClass("field-multiselect-"+key+"-"+data[data_nr])
                     .text(meta.choices[data[data_nr]])
             );
         }
 
-        Field.Base.html_append(key, meta, context, data, options, new_element);
+        Field.Base.html_put(key, meta, context, data, options, new_element);
     }
 }
 
@@ -1804,7 +1805,14 @@ Field.Timestamp.put=function(key, meta, context, data, options)
     else
     {
         // context.addClass("notranslate");
-        Field.Base.html_append(key, meta, context, data, options, dateStr);
+        Field.Base.html_put(key, meta, context, data, options, dateStr);
+        var now=new Date().getTime()/1000;
+        var delta=Math.round((data-now)/(24*3600));
+        if (delta>14)
+            delta=14;
+        else if (delta<-14)
+            delta=-14;
+        context.attr("field-timestamp-days", delta);
     }
 }
 

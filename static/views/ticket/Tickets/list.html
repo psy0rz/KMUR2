@@ -22,26 +22,26 @@
         {
             if (!data['ticket_completed'])
             {
-                list_element.removeClass("ticket-completed");
+                // list_element.removeClass("ticket-completed");
 
-                if ('due_date' in data)
-                {
-                    $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
-                    var delta=(data['due_date']-now)/(24*3600);
-                    if (delta<0)
-                        $('[field-key="due_date"]', list_element).addClass("ticket-date-late");
-                    else if (delta<2)
-                        $('[field-key="due_date"]', list_element).addClass("ticket-date-now");
-                    else if (delta<13)
-                        $('[field-key="due_date"]', list_element).addClass("ticket-date-soon");
-                    else
-                        $('[field-key="due_date"]', list_element).addClass("ticket-date-future");
-                }
+                // if ('due_date' in data)
+                // {
+                //     $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
+                //     var delta=(data['due_date']-now)/(24*3600);
+                //     if (delta<0)
+                //         $('[field-key="due_date"]', list_element).addClass("ticket-date-late");
+                //     else if (delta<2)
+                //         $('[field-key="due_date"]', list_element).addClass("ticket-date-now");
+                //     else if (delta<13)
+                //         $('[field-key="due_date"]', list_element).addClass("ticket-date-soon");
+                //     else
+                //         $('[field-key="due_date"]', list_element).addClass("ticket-date-future");
+                // }
             }
             else
             {
-                $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
-                list_element.addClass("ticket-completed");
+                // $('[field-key="due_date"]', list_element).removeClass("ticket-date-late ticket-date-now ticket-date-soon ticket-date-future");
+                // list_element.addClass("ticket-completed");
             }
 
 
@@ -134,9 +134,9 @@
 
             	<td class='field-put control-list-on-click-edit' field-key='title' >
                 <td class='field-put control-list-on-click-edit' field-key='start_date' nowrap>
-                <td class='field-put control-list-on-click-edit' field-key='due_date' nowrap>
-                <td class='field-put control-list-on-click-edit' field-key='ticket_priority' nowrap>
-                <td class='field-put control-list-on-click-edit' field-key='ticket_status' nowrap>
+                <td class='field-put control-list-on-click-edit ticket-due-date-style' field-key='due_date' nowrap>
+                <td class='field-put control-list-on-click-edit ticket-priority-style' field-key='ticket_priority' nowrap>
+                <td class='field-put control-list-on-click-edit ticket-status-style' field-key='ticket_status' nowrap>
 
             	<td class='control-on-click-del ui-icon ui-icon-trash'>
             </tr>

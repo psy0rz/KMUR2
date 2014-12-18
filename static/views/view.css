@@ -105,7 +105,7 @@ a:hover
 }
 
 /* administrators */
-.field-multiselect-rights-admin
+.field-multiselect-admin
 {
 	color: red;
 }
@@ -182,42 +182,77 @@ a:hover
 }
 
 
-.field-select-ticket_status-next_action {
+.ticket-status-style .field-select-next_action {
 	font-weight: bold;
 	color:#b57a15;
 }
 
-.ticket-completed .field-select-ticket_status-next_action {
+.ticket-completed-style .field-select-next_action {
 	color: gray;
 }
 
-.field-select-ticket_status-none {
+.ticket-status-style .field-select-none {
 	color:gray;
 }
 
 
-.ticket-date-future
+
+.ticket-due-date-style
 {
 	color:#000;
 }
 
-.ticket-date-soon
+.ticket-due-date-style[field-timestamp-days="7"],
+.ticket-due-date-style[field-timestamp-days="6"],
+.ticket-due-date-style[field-timestamp-days="5"],
+.ticket-due-date-style[field-timestamp-days="4"],
+.ticket-due-date-style[field-timestamp-days="3"],
+.ticket-due-date-style[field-timestamp-days="2"],
+.ticket-due-date-style[field-timestamp-days="1"]
 {
-	color:#600;
+	color:#700;
 }
 
-.ticket-date-now
+.ticket-due-date-style[field-timestamp-days="0"],
+.ticket-due-date-style[field-timestamp-days="-1"]
 {
-	color:#600;
+	color:#700;
 	font-weight:bold;
 }
 
-.ticket-date-late
+.ticket-due-date-style[field-timestamp-days="-2"],
+.ticket-due-date-style[field-timestamp-days="-3"],
+.ticket-due-date-style[field-timestamp-days="-4"],
+.ticket-due-date-style[field-timestamp-days="-5"],
+.ticket-due-date-style[field-timestamp-days="-6"],
+.ticket-due-date-style[field-timestamp-days="-7"],
+.ticket-due-date-style[field-timestamp-days="-8"],
+.ticket-due-date-style[field-timestamp-days="-9"],
+.ticket-due-date-style[field-timestamp-days="-10"],
+.ticket-due-date-style[field-timestamp-days="-11"],
+.ticket-due-date-style[field-timestamp-days="-12"],
+.ticket-due-date-style[field-timestamp-days="-13"],
+.ticket-due-date-style[field-timestamp-days="-14"]
 {
-	color:#900;
+	color:#f00;
 	font-weight:bold;
 }
 
+.ticket-priority-style .field-select-5
+{
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	padding: 2px;
+}
+
+.ticket-priority-style .field-select-4
+{
+	background-color: #f80;
+	color: white;
+	font-weight: bold;
+	padding: 2px;
+}
 
 .ticket-completed
 {
