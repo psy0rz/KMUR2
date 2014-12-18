@@ -111,7 +111,7 @@ def rpc_post():
         #resolve method
         rpc_method = getattr(rpc_class_instance, request['method'])
 
-        print("RPC: {module}.{class}.{method} {params}".format(**request))
+        # print("RPC: {module}.{class}.{method} {params}".format(**request))
 
         #make sure that it has an acl
         if not hasattr(rpc_method, 'rpc'):

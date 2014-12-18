@@ -16,7 +16,9 @@ var form=new ControlForm({
         'owner': session.user_id,
         'start_date': new Date().getTime()/1000,
         'due_date': new Date().getTime()/1000,
-        'relations': view.params.relations
+        'relations': view.params.relations,
+        'tickets'  : view.params.tickets
+
     }
 });
 
@@ -76,17 +78,17 @@ var form=new ControlForm({
         <td>
         <table class='field-meta-put field-key-root' style='border-width: 1px; border-style:solid' field-key='tickets'>
 
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.edit">
+            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
                 <td class='field-list-on-click-view field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
                 <td class='field-put field-list-on-click-view' field-key='tickets.title'>
-                <td class='field-list-on-click-view field-put ticket-status' field-key='tickets.ticket_status' >
+                <td class='field-list-on-click-view field-put ticket-status-style' field-key='tickets.ticket_status' >
                 <td class='field-list-on-click-del ui-icon ui-icon-close'>
             </tr>
             <tr class='ui-widget-content'>
                 <td>
                 <td><input class='field-relation-on-click-add field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
                 <td>
-                <td class='field-list-on-click-view ui-icon ui-icon-plus' field-key='tickets.title' sort-key='tickets.title'>
+                <td field-list-view="ticket.Tickets.edit" class='field-list-on-click-view ui-icon ui-icon-plus' field-key='tickets.title' sort-key='tickets.title'>
             </tr>
         </table>
     </tr>

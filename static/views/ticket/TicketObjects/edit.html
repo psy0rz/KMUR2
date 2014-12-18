@@ -124,6 +124,56 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 
     </tr>
 
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='tickets' field-meta-key='desc'>
+        <td>
+        <table class='field-meta-put field-key-root' style='border-width: 1px; border-style:solid' field-key='tickets'>
+
+            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
+                <td class='field-list-on-click-view field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
+                <td class='field-put field-list-on-click-view' field-key='tickets.title'>
+                <td class='field-list-on-click-view field-put ticket-status-style' field-key='tickets.ticket_status' >
+                <td class='field-list-on-click-del ui-icon ui-icon-close'>
+            </tr>
+            <tr class='ui-widget-content'>
+                <td>
+                <td><input class='field-relation-on-click-add field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
+                <td>
+                <td field-list-view="ticket.Tickets.edit" class='field-list-on-click-view ui-icon ui-icon-plus' field-key='tickets.title' sort-key='tickets.title'>
+            </tr>
+        </table>
+    </tr>
+
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='allowed_users' field-meta-key='desc'>
+        <td class='field-meta-put field-key-root' field-key='allowed_users' >
+            <span >
+                <span field-list-view="core.Users.edit" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='allowed_users' >
+                        <span class='ticket-sharing-user field-put field-list-on-click-view' field-key='allowed_users.name'></span>
+                        <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                </span>
+                <span class='list-span-form'>
+                    <input class='field-relation-on-change-autocomplete field-relation-on-click-add ' search-keys='name' result-format='{name}' sort-key='name' />
+                    <span class='field-list-on-click-view ui-icon ui-icon-plus ' field-key='allowed_users.name'></span>
+                </span>
+            </span>
+    </tr>
+
+    <tr>
+        <td class='field-meta-put ticket-sharing-permissions' field-key='allowed_groups' field-meta-key='desc'>
+        <td class='field-meta-put field-key-root' field-key='allowed_groups' >
+            <span >
+                <span field-list-view="core.Groups.edit" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='allowed_groups' >
+                        <span class='ticket-sharing-group field-put field-list-on-click-view' field-key='allowed_groups.name'></span>
+                        <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                </span>
+                <span class='list-span-form'>
+                    <input class='field-relation-on-change-autocomplete field-relation-on-click-add ' search-keys='name' result-format='{name}' sort-key='name' />
+                    <span class='field-list-on-click-view ui-icon ui-icon-plus ' field-key='allowed_groups.name'></span>
+                </span>
+            </span>
+    </tr>
+
 </table>
 
 
@@ -144,10 +194,12 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 <span class='field-meta-put' field-key='minutes' ></span> 
                 ( <span class='delta'></span> )
         </tr>
+
         <tr>
             <td class='field-meta-put' field-key='minutes_factor' field-meta-key='desc'>
             <td class='field-meta-put' field-key='minutes_factor'>
         </tr>
+
         <tr>
             <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
             <td class='field-meta-put ' field-key='billing_relation'>
@@ -159,6 +211,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
                 <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
+
         <tr>
             <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract'>
@@ -170,6 +223,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
                 <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
+
         <tr>
             <td class='field-meta-put' field-key='billing_contract_invoice' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract_invoice'>
@@ -181,83 +235,12 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
                 <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
                 <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
         </tr>
+
+
     </table>
 </fieldset>
 
 
-
-<p>
-
-<fieldset class='inline-block'>
-<legend>Sharing</legend>
-
-    <fieldset class='inline-block'>
-        <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='tickets'>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='tickets.title' field-meta-key='desc'>
-                <th>
-            </tr>
-
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
-                <td class='field-put field-list-on-click-view' field-key='tickets.title'>
-                <td class='field-list-on-click-del ui-icon ui-icon-close'>
-            </tr>
-            <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='title desc' result-format='{title}' />
-                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-            </tr>
-            <tr>
-                <td colspan=2 class='field-list-on-click-view' field-list-view="ticket.Tickets.edit" field-key='title'> <a href='#'>Create new task</a>
-            </tr>
-        </table>
-    </fieldset>
-
-    <fieldset class='inline-block'>
-        <legend class='field-meta-put' field-key='allowed_users' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='allowed_users'>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='allowed_users.name' field-meta-key='desc'>
-                <th>
-            </tr>
-
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='allowed_users' field-list-view="core.Users.edit">
-                <td class='field-put field-list-on-click-view' field-key='allowed_users.fullname'>
-                <td class='field-list-on-click-del ui-icon ui-icon-close'>
-            </tr>
-            <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name fullname' result-format='{fullname}' />
-                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-            </tr>
-            <tr>
-                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new user</a>
-            </tr>
-        </table>
-    </fieldset>
-
-    <fieldset class='inline-block'>
-        <legend class='field-meta-put' field-key='allowed_groups' field-meta-key='desc'></legend>
-        <table class='field-meta-put' field-key='allowed_groups'>
-            <tr class='ui-widget-header'>
-                <th class='field-meta-put' field-key='allowed_groups.name' field-meta-key='desc'>
-                <th>
-            </tr>
-
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-key='allowed_groups' field-list-view="core.Groups.edit">
-                <td class='field-put field-list-on-click-view' field-key='allowed_groups.name'>
-                <td class='field-list-on-click-del ui-icon ui-icon-close'>
-            </tr>
-            <tr class='ui-widget-content'>
-                <td><input class='field-relation-on-change-autocomplete' search-keys='name' result-format='{name}' />
-                <td class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'>
-            </tr>
-            <tr>
-                <td colspan=2 class='field-list-on-click-view' field-key='name'> <a href='#'>Create new group</a>
-            </tr>
-        </table>
-    </fieldset>
-    
-</fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
