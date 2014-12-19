@@ -19,6 +19,7 @@
 <table>
     <tr class='ui-widget-header '>
         <th>
+        <th class='ticket-sharing-permissions'>
         <th class='field-meta-put control-on-click-order control-order-desc' field-key='create_time' field-meta-key='desc' >
         <th>
     </tr>
@@ -26,6 +27,20 @@
     <tr class='colorRows ticket-object field-list-source notranslate field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
 
         <td><img style='padding-bottom: 1em' class='field-list-on-click-view  field-put' src='#' field-key='thumbnail'>
+
+        <td nowrap class='field-meta-put field-list-on-click-view ' field-relation-delayed field-key='allowed_groups'>
+
+            <span class='field-meta-put field-list-on-click-view' field-relation-delayed field-key='allowed_groups'>
+                    <span class='field-list-source field-list-source-hide tooltip-activate notranslate ticket-sharing-group  ' field-key='allowed_groups'>
+                        <span  class='field-put tooltip' field-key='allowed_groups.name'>...</span>
+                    </span>
+            </span>
+
+            <span class='field-meta-put field-list-on-click-view' field-relation-delayed field-key='allowed_users'>
+                <span class='field-list-source field-list-source-hide tooltip-activate notranslate ticket-sharing-user' field-key='allowed_users'>
+                    <span  class='field-put tooltip' field-key='allowed_users.name'>...</span>
+                </span>
+            </span>
 
         <td class='field-list-on-click-view field-put' field-key='create_time' nowrap field-timestamp-allow-time>
 
