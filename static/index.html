@@ -70,6 +70,11 @@
 					$(".login-user", login_context).text(result.name);
 					$(".on-click-login", login_context).hide();
 					$(".on-click-logout", login_context).show();
+
+					//magic to make permission icons of user disappear
+					$("#hide_user_icons_style").remove();
+					$( "<style id='hide_user_icons_style'> .ticket-sharing-user[field-list-id='"+result.user_id+"'] { display: none; } </style>" ).appendTo( "head" );
+
 				}
 				else
 				{
