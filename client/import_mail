@@ -126,13 +126,16 @@ try:
     ### collect all trackables
     trackables=set()
     if msg["message-id"]:
-    	trackables.add(msg["message-id"])
+        debug("Trackable in Message-id: ", msg["message-id"])
+        trackables.add(msg["message-id"])
 
     if msg["in-reply-to"]:
-    	trackables.add(msg["in-reply-to"])
+        debug("Trackable in In-Reply-To: ", msg["in-reply-to"])
+        trackables.add(msg["in-reply-to"])
 
     if msg["references"]:
-    	trackables.update(msg["references"].split(" "))
+        debug("Trackable in references: ", msg["references"].split(" "))
+        trackables.update(msg["references"].split(" "))
 
 
     # find embedded trackable and embed new ones if neccesary
@@ -163,7 +166,7 @@ try:
         debug("Created new embedded trackable:", embedded_trackables[0])
     else:
         existing_embedded=True
-        debug("Found existing embedded trackables:", embedded_trackables)
+        debug("Trackables embedded in body:", embedded_trackables)
 
     embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
 
