@@ -48,7 +48,7 @@ class ModuleSettings(models.mongodb.Base):
         collection = self.default_collection
         doc = self.db[collection].find_one(0, fields={ key: True } )
 
-        if key in doc:
+        if doc and key in doc:
             return(doc[key])
 
         #return default value, if any 
