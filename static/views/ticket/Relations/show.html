@@ -1,6 +1,7 @@
 
 <script>
 
+var got=false;
 
 var relation=new ControlForm({
     'view'            : view,
@@ -13,6 +14,12 @@ var relation=new ControlForm({
     'create_view_params': view.params,
     'context'         : '.relation',
     'get_result': function(result){
+
+        //create the stuff below only one time
+        if (got)
+            return(false);
+
+        got=true; 
 
         var deligated_users=[];
         $.extend(deligated_users, result.data.allowed_users);
