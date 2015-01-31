@@ -1,6 +1,7 @@
 
 <script>
 
+
 var timestamp=new Date().getTime()/1000;
 
 var form=new ControlForm({
@@ -34,7 +35,7 @@ var form=new ControlForm({
 
         if (data)
         {
-            form.params.put_params['type']=data['type'];        
+            this.put_params['type']=data['type'];        
             $(".show-on-"+data['type'], context).show();
             $(".show-on-"+data['type']+" .field-get-disabled", context).removeClass("field-get-disabled").addClass("field-get");
 
@@ -54,7 +55,7 @@ var form=new ControlForm({
         //calculate worked minutes
         $(context).on('field_changed', '[field-key="start_time"], [field-key="end_time"]',function(e, key, meta, element, data)
         {
-            var form_data=form.field_get();
+            var form_data=this.field_get();
             if (form_data.end_time && form_data.start_time)
             {
                 var delta=form_data.end_time-form_data.start_time;
