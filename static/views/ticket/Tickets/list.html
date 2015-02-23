@@ -49,11 +49,20 @@
         'activate': function(event, ui)
         {
             if (ui.newTab.attr("status")=="")
+            {
                 form.params.get_params.match={};
+            }
             else
+            {
                 form.params.get_params.match={
                     'ticket_status': ui.newTab.attr("status")
-                }
+                };
+            }
+
+            form.params.create_view_params.ticket_status=ui.newTab.attr("status");
+            if (form.params.create_view_params.ticket_status=="next_action")
+                form.params.create_view_params.ticket_status="";
+
             form.get_delayed({});
            // ("input", context).focus();
             form.focus();
