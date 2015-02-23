@@ -69,6 +69,20 @@
         } 
     });
 
+    //also use the search field as quick input field
+    $(".control-on-change-search", context).on('input',function()
+    {
+        form.params.create_view_params.title=$(this).val();
+    });
+
+    $(".control-on-change-search", context).on('keypress',function(e)
+    {
+        if (e.keyCode==$.ui.keyCode.ENTER)
+        {
+            $(".control-on-click-view", context).click();
+        };
+    });
+
     $(".on-click-refresh",context).click(function()
     {
         form.get_delayed({});

@@ -1238,7 +1238,7 @@ ControlList.prototype.attach_event_handlers=function()
     });
     
     //generic regex_or filter to do quick searches in multiple fields 
-    $(".control-on-change-search", context).off().on('change keypress paste textInput input', function()
+    $(".control-on-change-search", context).off(".control-on-change-search").on('change.control-on-change-search keypress.control-on-change-search paste.control-on-change-search textInput.control-on-change-search input.control-on-change-search', function()
     {
         this_control.context.scrollTop(0);
 

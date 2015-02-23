@@ -297,6 +297,22 @@ function viewPathUpdate()
     });
 }
 
+
+$(document).ready(function()
+{
+    //store focus of each view
+    $("#views").on('focusin', function(e)
+    {
+        if ($(e.target).is("input"))
+        {
+            var foregroundView=$("#views .viewMain:last");
+            foregroundView.data('view_focus',e.target);
+            console.error("foreground:",foregroundView);
+            console.error("refocus",foregroundView.data('view_focus'));
+        }
+    });
+});
+
 //adds a new view to the DOM tree
 function viewDOMadd(view)
 {
@@ -440,8 +456,6 @@ function viewReady(params)
     if ('title' in params)
         document.title=params.title;
 
-    viewDiv.data('view_focus', $(':focus'));
-    // console.log("focus stored", viewDiv.data('view_focus'));
 }
 
 
