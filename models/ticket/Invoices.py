@@ -388,7 +388,7 @@ class Invoices(models.core.Protected.Protected):
     def get_all_csv(self, days):
 
         import locale
-        locale.setlocale(locale.LC_ALL, 'nl_NL.utf8')
+        locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
 
 
         csv_data=""
@@ -428,7 +428,7 @@ class Invoices(models.core.Protected.Protected):
             raise FieldError("Invoice is not sent yet")
 
         import locale
-        locale.setlocale(locale.LC_ALL, 'nl_NL.utf8')
+        locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
 
         from reportlab.lib import colors
         from reportlab.lib.pagesizes import A4
