@@ -612,7 +612,7 @@ class Base(models.common.Base):
     def get_next_nr(self):
         '''gets next unique sequential number for this collection'''
         ret = self.db['counters'].find_and_modify(
-                filter={ '_id': self.default_collection },
+                query={ '_id': self.default_collection },
                 update={ '$inc': { 'seq': 1 } },
                 upsert=True,
                 new=True

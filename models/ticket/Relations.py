@@ -105,11 +105,13 @@ class Relations(models.core.Protected.Protected):
             raise FieldError("cant change this field", 'nr')
     
         if '_id' in doc:
-          log_txt="Changed relation {title}".format(**doc)
+            old_doc=self.get(_id=doc['_id'])
+            if not 'nr' in old_doc:
+                doc['nr']=self.get_next_nr()
+            log_txt="Changed relation {title}".format(**doc)
         else:
-          log_txt="Created new relation {title}".format(**doc)
-
-          doc['nr']=self.get_next_nr()
+            log_txt="Created new relation {title}".format(**doc)
+            doc['nr']=self.get_next_nr()
 
         ret=self._put(doc)
         self.event("changed",ret)
