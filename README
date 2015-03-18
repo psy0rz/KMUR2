@@ -15,3 +15,12 @@ touch static/files/tracer_test_nl/index.html
 
 
 Now you can login with admin@test.nl and password "changeme".
+
+
+= Dependencies =
+
+- python wand
+- tesseract
+- python beaker
+- python bottle
+- python pymongo

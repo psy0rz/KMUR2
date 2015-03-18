@@ -308,6 +308,7 @@ class Base(models.common.Base):
 
         self.default_collection = self.__class__.__module__
 
+
     def _put(self, doc, replace=False):
         """Checks document with field and replaces, updates or inserts it into collection
 
@@ -607,4 +608,15 @@ class Base(models.common.Base):
         return({ '_id': _id })
 
 
+
+    def get_next_nr(self):
+        '''gets next unique sequential number for this collection'''
+        ret = self.db['counters'].find_and_modify(
+                filter={ '_id': self.default_collection },
+                update={ '$inc': { 'seq': 1 } },
+                upsert=True,
+                new=True
+        )
+
+        return(ret['seq']) 
 

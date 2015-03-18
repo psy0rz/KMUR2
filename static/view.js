@@ -290,7 +290,7 @@ function viewPathUpdate()
         //remove everything on the right of us
         $(this).nextAll().each(function()
         {
-            console.log("deleting",this);
+            // console.log("deleting",this);
             delete viewStatus.views[$(this).attr("viewId")];
         });
         viewSetUrl(viewStatus);
@@ -307,8 +307,8 @@ $(document).ready(function()
         {
             var foregroundView=$("#views .viewMain:last");
             foregroundView.data('view_focus',e.target);
-            console.error("foreground:",foregroundView);
-            console.error("refocus",foregroundView.data('view_focus'));
+            // console.error("foreground:",foregroundView);
+            // console.error("refocus",foregroundView.data('view_focus'));
         }
     });
 });

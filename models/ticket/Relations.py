@@ -19,6 +19,7 @@ class Relations(models.core.Protected.Protected):
                 'title': fields.String(min=3, desc='Title', size=100),
                 'import_id': fields.String(desc='Import ID'),
                 'desc': fields.String(desc='Description'),
+                'nr': fields.Number(desc='Relation nr'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -96,13 +97,19 @@ class Relations(models.core.Protected.Protected):
 
     admin_read_roles= [ "finance_admin" ]
 
+
     @RPC(roles="ticket_write")
     def put(self, **doc):
 
+        if 'nr' in doc:
+            raise FieldError("cant change this field", 'nr')
+    
         if '_id' in doc:
           log_txt="Changed relation {title}".format(**doc)
         else:
           log_txt="Created new relation {title}".format(**doc)
+
+          doc['nr']=self.get_next_nr()
 
         ret=self._put(doc)
         self.event("changed",ret)
