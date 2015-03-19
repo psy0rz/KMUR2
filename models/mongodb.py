@@ -618,5 +618,5 @@ class Base(models.common.Base):
                 new=True
         )
 
-        return(ret['seq']) 
+        return(int(ret['seq'])) 
 

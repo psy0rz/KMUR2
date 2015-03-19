@@ -19,7 +19,6 @@ class Relations(models.core.Protected.Protected):
                 'title': fields.String(min=3, desc='Title', size=100),
                 'import_id': fields.String(desc='Import ID'),
                 'desc': fields.String(desc='Description'),
-                'nr': fields.Number(desc='Relation nr'),
                 'allowed_groups': models.mongodb.Relation(
                     desc='Groups with access',
                     model=models.core.Groups.Groups,
@@ -60,6 +59,7 @@ class Relations(models.core.Protected.Protected):
                 'country': fields.String(desc='Country'),
                 #a copy of this info is stored with every invoice
                 'invoice': fields.Dict({
+                    'customer_nr': fields.String(desc='Customer nr'),
                     'company': fields.String(desc='Company name'),
                     'department': fields.String(desc='Department'),
                     'address': fields.String(desc='Address'),
@@ -101,17 +101,19 @@ class Relations(models.core.Protected.Protected):
     @RPC(roles="ticket_write")
     def put(self, **doc):
 
-        if 'nr' in doc:
-            raise FieldError("cant change this field", 'nr')
+        if 'customer_nr' in doc['invoice']:
+            raise FieldError("cant change this field")
     
         if '_id' in doc:
             old_doc=self.get(_id=doc['_id'])
-            if not 'nr' in old_doc:
-                doc['nr']=self.get_next_nr()
+            if not 'customer_nr' in old_doc['invoice']:
+                doc['invoice']['customer_nr']=str(self.get_next_nr())
+            else:
+                doc['invoice']['customer_nr']=old_doc['invoice']['customer_nr']
             log_txt="Changed relation {title}".format(**doc)
         else:
             log_txt="Created new relation {title}".format(**doc)
-            doc['nr']=self.get_next_nr()
+            doc['invoice']['customer_nr']=str(self.get_next_nr())
 
         ret=self._put(doc)
         self.event("changed",ret)
@@ -149,7 +151,7 @@ class Relations(models.core.Protected.Protected):
 
         for relation in relations:
             csv_data+=";".join([
-                    relation["_id"],
+                    relation["invoice"]["customer_nr"],
                     relation["invoice"]["company"].replace(";","_"),
                     relation["title"].replace(";","_"),
                 ])

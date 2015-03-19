@@ -23,10 +23,6 @@ var form=new ControlForm({
         <td class='field-meta-put' field-key='title'>
     </tr>
     <tr>
-        <td class='field-meta-put' field-key='nr' field-meta-key='desc'>
-        <td class='field-put label' field-key='nr'>
-    </tr>
-    <tr>
         <td class='field-meta-put' field-key='desc' field-meta-key='desc'>
         <td><textarea class='field-put field-get field-input' field-key='desc' cols=60 rows=20></textarea>
     </tr>
@@ -88,6 +84,10 @@ var form=new ControlForm({
     <legend class='field-meta-put' field-key='invoice' field-meta-key='desc'></legend>
 
     <table >
+        <tr>
+            <td class='field-meta-put' field-key='invoice.customer_nr' field-meta-key='desc'>
+            <td class='field-put value' field-key='invoice.customer_nr'>
+        </tr>
         <tr>
             <td class='field-meta-put' field-key='invoice.company' field-meta-key='desc'>
             <td class='field-meta-put' field-key='invoice.company'>

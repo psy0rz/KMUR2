@@ -397,9 +397,24 @@ class Invoices(models.core.Protected.Protected):
             gte={ "sent_date": time.time()- ( int(days)*24*3600)},
             sort=[ [ "sent_date" ,1 ] ]
             )
+
+        #temporary hack to update new customer_nr field
+        for invoice in invoices:
+            relation=call_rpc(self.context, 'ticket', 'Relations', 'get', invoice['to_relation'])['invoice']
+            invoice['to_copy']['customer_nr']=relation['customer_nr']
+            self._put(invoice)
+
+
+
+        invoices=self.get_all(
+            match={ "sent": True },
+            gte={ "sent_date": time.time()- ( int(days)*24*3600)},
+            sort=[ [ "sent_date" ,1 ] ]
+            )
+
         for invoice in invoices:
             cols=[]
-            cols.append(invoice["to_relation"])
+            cols.append(invoice["to_copy"]["customer_nr"])
             cols.append(invoice["to_copy"]["company"])
             cols.append(invoice["invoice_nr"])
             cols.append(time.strftime("%Y-%m-%d", time.localtime(invoice['sent_date'])))
