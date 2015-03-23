@@ -302,7 +302,8 @@ class Base(models.common.Base):
         """
 
         if force or not hasattr(self.context, 'mongodb_connection'):
-            self.context.mongodb_connection = pymongo.Connection(host=self.context.session['db_host'], safe=True)
+            # self.context.mongodb_connection = pymongo.Connection(host=self.context.session['db_host'], safe=True)
+            self.context.mongodb_connection = pymongo.mongo_client.MongoClient(host=self.context.session['db_host'], safe=True)
 
         self.db = self.context.mongodb_connection[self.context.session['db_name']]
 

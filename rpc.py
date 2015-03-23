@@ -142,11 +142,13 @@ def rpc_post():
     finally:
         for fileupload in bottle.request.files.itervalues():
             fileupload.file.close()
+            
     
     if 'context' in session:
         result.update(session['context'].get_results())
 
     session.save()
+    del session
 
     indent=None
     if ('debug' in request and request['debug']):

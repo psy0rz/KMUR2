@@ -24,3 +24,4 @@ Now you can login with admin@test.nl and password "changeme".
 - python beaker
 - python bottle
 - python pymongo
+- python reportlab
