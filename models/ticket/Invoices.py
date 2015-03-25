@@ -392,19 +392,6 @@ class Invoices(models.core.Protected.Protected):
 
 
         csv_data=""
-        invoices=self.get_all(
-            match={ "sent": True },
-            gte={ "sent_date": time.time()- ( int(days)*24*3600)},
-            sort=[ [ "sent_date" ,1 ] ]
-            )
-
-        #temporary hack to update new customer_nr field
-        for invoice in invoices:
-            relation=call_rpc(self.context, 'ticket', 'Relations', 'get', invoice['to_relation'])['invoice']
-            invoice['to_copy']['customer_nr']=relation['customer_nr']
-            self._put(invoice)
-
-
 
         invoices=self.get_all(
             match={ "sent": True },

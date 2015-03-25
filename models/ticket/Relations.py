@@ -150,12 +150,14 @@ class Relations(models.core.Protected.Protected):
         relations=self.get_all()
 
         for relation in relations:
-            csv_data+=";".join([
-                    relation["invoice"]["customer_nr"],
-                    relation["invoice"]["company"].replace(";","_"),
-                    relation["title"].replace(";","_"),
-                ])
-            csv_data+="\n"
+
+            if relation["invoice"]["company"]:
+               csv_data+=";".join([
+                       relation["invoice"]["customer_nr"],
+                       relation["title"].replace(";","_"),
+                       relation["invoice"]["company"].replace(";","_"),
+                   ])
+               csv_data+="\n"
 
         response=bottle.HTTPResponse(body=csv_data)
         response.set_header('Content-Type', 'text/plain')

@@ -166,7 +166,7 @@ class TicketObjects(models.core.Protected.Protected):
         import subprocess
         import re
         try:
-            ocr_text=subprocess.check_output(["tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ]).decode('utf-8')
+            ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ]).decode('utf-8')
             #get rid of double empty lines
             doc["text"]=""
             had_empty=True
