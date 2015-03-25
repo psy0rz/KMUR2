@@ -223,9 +223,9 @@ def send_default():
 
 
 session_opts = {
-    'session.type': 'file',
+    'session.type': 'ext:memcached',
+    'session.url': '127.0.0.1:11211',
     'session.cookie_expires': False,
-    'session.data_dir': '/tmp/.kmur2beakersessions'
 }
 
 
