@@ -189,6 +189,7 @@ class Users(models.core.Protected.Protected):
         self.context.session['roles'] = user['roles']
         self.context.session['user_id'] = user['_id']
         self.context.session['group_ids']= user['group_ids']
+        self.context.session['email']= user['email']
 
         #every user MUST to be member of everyone and user
         self.context.session['roles'].append('everyone')
