@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.4
 
 
 import beaker.middleware
@@ -16,6 +16,9 @@ os.chdir(os.path.dirname(__file__))
 #load basics:
 import fields
 import models.common
+
+#joyent 
+os.environ["MAGICK_HOME"]="/opt/local"
 
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 
@@ -148,7 +151,6 @@ def rpc_post():
         result.update(session['context'].get_results())
 
     session.save()
-    del session
 
     indent=None
     if ('debug' in request and request['debug']):
@@ -164,6 +166,8 @@ def rpc_post():
         del(result['data'])
         #try again, hopefully without throwing more exceptions
         return(json.dumps(result, cls=fields.JSONEncoder, indent=indent, separators=(',', ':'), ensure_ascii=False))
+    finally:
+        session['context'].mongodb_connection.close()
 
 
 #simple rpc GET interface
@@ -236,5 +240,5 @@ application = beaker.middleware.SessionMiddleware(
 #standalone/debug mode:
 if __name__ == '__main__':
     bottle.debug(True)
-    bottle.run(reloader=True, app=application, host='localhost', port=8080)
+    bottle.run(reloader=True, app=application, host='0.0.0.0', port=8080)
 

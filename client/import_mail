@@ -28,27 +28,31 @@ try:
     parser.add_argument('--password', required=True,  help='password. default: %(default)s')
     # parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
     # parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
-    parser.add_argument('--ticket_status', default="next_action", help='Status of the new task')
+    parser.add_argument('--ticket_status', default="next_action", help='Status of the new task. default: %(default)s')
     parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
     parser.add_argument('--debug', action='store_true', help='debug mode')
     parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
-    parser.add_argument('--mail_address', action='store_true', help='Use mail from and to adresses, instead of envelope adresses from environment (usually not recommended)')
-    parser.add_argument('--skip_duplicates', action='store_true', help='Skip duplicate mails by checking if message-id is already imported')
-    parser.add_argument('--due_days', help='Set due date to this many days in the future')
+    # parser.add_argument('--mail_address', action='store_true', help='Use mail from- and to-headers, instead of envelope adresses (usually not recommended)')
+    parser.add_argument('--sender',  required=True, help='Envelope sender')
+    parser.add_argument('--receip',  required=True, help='Envelope receipient')
+    parser.add_argument('--dont_skip_duplicates', action='store_true', help='Dont skip duplicate mails by checking if message-id is already imported')
+    parser.add_argument('--due_days', default=1, help='Set due date to this many days in the future. default: %(default)s')
 
-    parser.add_argument('--reset_completed', action='store_true', help='Reset completed status of existing ticket (to uncomplete)')
-    parser.add_argument('--reset_status', action='store_true', help='Reset ticket status of existing ticket (to whatever is specified with --ticket_status')
+    parser.add_argument('--dont_reset_completed',  action='store_true', help='Dont reset completed status of existing ticket (to uncomplete)')
+    parser.add_argument('--dont_reset_status',  action='store_true', help='Dont reset ticket status of existing ticket (to whatever is specified with --ticket_status')
 
-    parser.add_argument('--relate_from', action='store_true', help='Try to find relations based on From header')
-    parser.add_argument('--relate_to', action='store_true', help='Try to find relations based on To, cc, and other headers.')
-    parser.add_argument('--related_only', action='store_true', help='Only create new tickets for mailadresses that can be found in a relation (recommended to prevent spam)')
+    parser.add_argument('--dont_relate_sender', action='store_true', help='Dont try to find relations based on enveloppe sender')
+    # parser.add_argument('--relate_to', action='store_true', help='Dont try to find relations based on To, cc, and other headers.')
+    parser.add_argument('--always_create', action='store_true', help='Always create new tickets, even if there is known relation. (not recommended because of spam)')
     parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
 
 
-    parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
+    # parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
     parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
-    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. default: %(default)s The same prefix can be used for multiple tracer instances without conflicting.')
-    parser.add_argument('--reply_to', default=None, help='Add extra reply-to adresses. Usefull for making sure replies to incomming mails also get tracked.')
+    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. The same prefix can be used for multiple tracer instances without conflicting. default: %(default)s')
+    # parser.add_argument('--reply_to', default=None, help='Add extra reply-to adresses. This way you can use reply-all')
+
+
 
     # parser.add_argument('--prefix', help='Ticket id prefix')
     # parser.add_argument('files',   nargs='+', help='Files to upload')
@@ -80,7 +84,11 @@ try:
 
         return(ret)
 
+    #initialise the rpc client class
+    rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
+    #first login using the specified user and pass
+    user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
 
     #parse mail from stdin:
     # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
@@ -90,20 +98,22 @@ try:
 
 
 
-    #determine reciepient and sender
-    if args.mail_address:
-        #usually used when importing existing mail from disk
-        sender=header_to_unicode(msg["from"])
-        receip=header_to_unicode(msg["to"])
-        if not receip:
-            receip="" #make sure its str
-    else:
-        #used when called by as an MDA
-        sender=os.environ['SENDER']
-        receip=os.environ['RECIPIENT']
+    # #determine reciepient and sender
+    # if args.mail_address:
+    #     #usually used when importing existing mail from disk
+    #     sender=header_to_unicode(msg["from"])
+    #     receip=header_to_unicode(msg["to"])
+    #     if not receip:
+    #         receip="" #make sure its str
+    # else:
+    #     #used when called by as an MDA
+    #     sender=os.environ['SENDER']
+    #     receip=os.environ['RECIPIENT']
 
-    debug("Enveloppe from: ",sender)
-    debug("Enveloppe to: ",receip)
+    debug("Enveloppe from: ",args.sender)
+    debug("Enveloppe to: ",args.receip)
+    debug("Primary mail address of user is {}", user["email"])
+
 
     #get all receiver email adresses (without name)
     all_receip=set()
@@ -112,7 +122,7 @@ try:
         msg.get_all('cc', [])+
         msg.get_all('resent-to', [])+
         msg.get_all('resent-cc', [])+ 
-        [ receip ]
+        [ args.receip ]
     ):
         all_receip.add(addr[1])
 
@@ -206,8 +216,10 @@ try:
     debug("Trackables:", trackables)
 
 
-    ### forward the message?
-    if args.forward:
+    if args.sender==user["email"]:
+        debug("Assuming OUTGOING mail (sender matches primary mail address {})", user["email"])
+    else:
+        debug("Assuming INCOMING mail, forwarding mail to {}", user["email"])
 
         #reply-to specified?
         if args.reply_to:
@@ -233,22 +245,23 @@ try:
 
 
         import smtplib
-        debug("Forwarding to {} via smtp server {}".format(args.forward, args.smtp_server))
+        debug("Forwarding to {} via smtp server {}".format(user["email"], args.smtp_server))
         smtp_server = smtplib.SMTP(args.smtp_server)
         # smtp_server.set_debuglevel(1)
-        smtp_server.send_message(msg, from_addr=sender, to_addrs=args.forward)
+        smtp_server.send_message(msg, from_addr=sender, to_addrs=user["email"])
         smtp_server.quit()
 
 
 
+#we never want to lose mail, so everthing up to the forwarding-code generates a temporary error:
 except Exception as e:
     print("Temporary error: "+str(e))
     if 'args' in locals() and args.debug:
         traceback.print_exc()
-    #we never want to lose mail, so everthing up to the forwarding-code generates a temporary error:
     sys.exit(75) 
 
 
+#now that we forwarded the mail, we have no choice to ignore further errors
 try:
     #which timestamp to give to new objects?
     if args.mail_date:
@@ -257,15 +270,8 @@ try:
         timestamp=int(time.time())
 
 
-    #initialise the rpc client class
-    rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
-
-    #first login using the specified user and pass
-    user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
-
-
     ### check if its already imported?
-    if args.skip_duplicates:
+    if not args.dont_skip_duplicates:
         ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
                 fields=[ "_id" ],
                 match={ "import_id": import_id  } 
@@ -278,10 +284,10 @@ try:
 
     ### try to find relations
     related_addresses=set()
-    if args.relate_from:
-        related_addresses.add(email.utils.parseaddr(sender)[1])
+    if not args.dont_relate_sender:
+        related_addresses.add(sender)
 
-    if args.relate_to:
+    if not args.dont_relate_to:
         related_addresses.update(all_receip)
 
     relation_ids=[]
@@ -333,7 +339,7 @@ try:
     if not tickets:
         if existing_embedded:
             debug("Creating new ticket because existing embedded trackable was found")
-        elif ( args.related_only and not relation_ids ):
+        elif ( not args.always_create and not relation_ids ):
             debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
             sys.exit(0)
 
@@ -369,11 +375,11 @@ try:
             doc["_id"]=ticket["_id"]
             doc["change_reason"]="Automaticly changed by email importer"
 
-            if args.reset_completed and ticket["ticket_completed"]:
+            if not args.dont_reset_completed and ticket["ticket_completed"]:
                 debug("Resetting ticket completed")
                 doc['ticket_completed']=False
 
-            if args.reset_status and ticket["ticket_status"]!=args.ticket_status:
+            if not args.dont_reset_status and ticket["ticket_status"]!=args.ticket_status:
                 debug("Resetting ticket status to: ", args.ticket_status)
                 doc['ticket_status']=args.ticket_status
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export LC_ALL=C
 DB=tracer_$1
  
 echo 'db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "roles" : [ "admin" ], "group_ids": []  } )' | mongo $DB
@@ -13,4 +14,5 @@ touch static/files/$DB/index.html
 
 chmod -R 770 static/files/$DB files/$DB
 chgrp -R www-data static/files/$DB files/$DB 
+chgrp -R www static/files/$DB files/$DB 
 
