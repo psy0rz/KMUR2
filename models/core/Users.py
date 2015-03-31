@@ -6,6 +6,7 @@ import models.core.Protected
 import models.core.Groups
 import re
 
+import settings
 
 class Users(models.core.Protected.Protected):
     '''user management'''
@@ -145,11 +146,15 @@ class Users(models.core.Protected.Protected):
         self.info("Switched to user {name}".format(**self.context.session))
         self.send_session()
 
+
+
+
     @RPC(roles=["everyone"])
-    def login(self, name, password):
+    def login(self, name, password, api_key=None):
         '''authenticate the with the specified name and password.
 
         if its ok, it doesnt throw an exception and returns nothing'''
+
 
         #very imporant, we're going to switch DB so we need to be sure the user is logged out
         self.context.reset_user()
@@ -171,14 +176,23 @@ class Users(models.core.Protected.Protected):
         self.reconnect(force=True)
 
         try:
-            user = super(models.core.Protected.Protected,self)._get(match={
-                                  'name': username,
-                                  'password': password
-                                  })
+            if api_key:
+                if api_key!=settings.api_key:
+                    raise fields.FieldError("Incorrect key", "api_key")
+
+                user = super(models.core.Protected.Protected,self)._get(match={
+                                      'name': username
+                                      })
+            else:
+                user = super(models.core.Protected.Protected,self)._get(match={
+                                      'name': username,
+                                      'password': password
+                                      })
 
         except models.mongodb.NotFoundError:
             self.warning("User {} does not exist or used wrong password".format(username))
             raise fields.FieldError("Username or password incorrect", "password")
+
 
         if not user['active']:
             self.warning("User {} cannot log in because its deactivated".format(username))
