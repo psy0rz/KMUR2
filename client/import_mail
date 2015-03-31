@@ -31,7 +31,7 @@ try:
     parser.add_argument('--ticket_status', default="next_action", help='Status of the new task. default: %(default)s')
     parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
     parser.add_argument('--debug', action='store_true', help='debug mode')
-    parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date')
+    parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date (not recommended)')
     # parser.add_argument('--mail_address', action='store_true', help='Use mail from- and to-headers, instead of envelope adresses (usually not recommended)')
     parser.add_argument('--sender',  required=True, help='Envelope sender')
     parser.add_argument('--receip',  required=True, help='Envelope receipient')
@@ -41,10 +41,10 @@ try:
     parser.add_argument('--dont_reset_completed',  action='store_true', help='Dont reset completed status of existing ticket (to uncomplete)')
     parser.add_argument('--dont_reset_status',  action='store_true', help='Dont reset ticket status of existing ticket (to whatever is specified with --ticket_status')
 
-    parser.add_argument('--dont_relate_sender', action='store_true', help='Dont try to find relations based on enveloppe sender')
+    # parser.add_argument('--dont_relate_sender', action='store_true', help='Dont try to find relations based on enveloppe sender')
     # parser.add_argument('--relate_to', action='store_true', help='Dont try to find relations based on To, cc, and other headers.')
-    parser.add_argument('--always_create', action='store_true', help='Always create new tickets, even if there is known relation. (not recommended because of spam)')
-    parser.add_argument('--update_relations', action='store_true', help='Update relations for existing tickets')
+    parser.add_argument('--always_create', action='store_true', help='Always create new tickets, even if there is no known relation. (not recommended because of spam)')
+    parser.add_argument('--dont_update_relations', action='store_true', help='Dont update relations for existing tickets')
 
 
     # parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
@@ -62,7 +62,7 @@ try:
     #debugging output
     def debug(*a, **kw):
     	if args.debug:
-    		print(*a, **kw)
+    		print(*a, **kw )
 
 
     #decodes email-header to one unicode string
@@ -112,7 +112,7 @@ try:
 
     debug("Enveloppe from: ",args.sender)
     debug("Enveloppe to: ",args.receip)
-    debug("Primary mail address of user is {}", user["email"])
+    debug("Primary mail address of user is ", user["email"])
 
 
     #get all receiver email adresses (without name)
@@ -217,38 +217,41 @@ try:
 
 
     if args.sender==user["email"]:
-        debug("Assuming OUTGOING mail (sender matches primary mail address {})", user["email"])
+        debug("Assuming OUTGOING mail, sender matches primary mail address:", user["email"])
+        incoming=False
     else:
-        debug("Assuming INCOMING mail, forwarding mail to {}", user["email"])
+        debug("Assuming INCOMING mail, with forward adress:", user["email"])
+        incoming=True
+        reply_to=args.receip
 
         #reply-to specified?
-        if args.reply_to:
+        if reply_to:
             #make sure the original from-adress is included
             if not msg["reply-to"]:
                 debug("Adding reply-to: {}".format(msg["from"]))
                 # msg.set_param(msg["from"], None, header='Reply-To')
-                msg["Reply-To"]=msg["from"]+", "+args.reply_to
+                msg["Reply-To"]=msg["from"]+", "+reply_to
             else:
-                if args.reply_to.lower() not in msg["Reply-To"].lower():
+                if reply_to.lower() not in msg["Reply-To"].lower():
                     existing_reply_to=msg["Reply-To"]
                     del msg["Reply-To"]
-                    msg["Reply-To"]=existing_reply_to+", "+args.reply_to
+                    msg["Reply-To"]=existing_reply_to+", "+reply_to
 
             #also put the adress in the cc field, because some broken mailers dont support multiple reply-to adresses (zarafa webapp/webaccess for example)
             if msg["cc"]:
-                if args.reply_to.lower() not in msg["cc"].lower():
+                if reply_to.lower() not in msg["cc"].lower():
                     existing_cc=msg["cc"]
                     del msg["cc"]
-                    msg["cc"]=existing_cc+", "+args.reply_to
+                    msg["cc"]=existing_cc+", "+reply_to
             else:
-                msg["cc"]=args.reply_to
+                msg["cc"]=reply_to
 
 
         import smtplib
         debug("Forwarding to {} via smtp server {}".format(user["email"], args.smtp_server))
         smtp_server = smtplib.SMTP(args.smtp_server)
         # smtp_server.set_debuglevel(1)
-        smtp_server.send_message(msg, from_addr=sender, to_addrs=user["email"])
+        smtp_server.send_message(msg, from_addr=args.sender, to_addrs=user["email"])
         smtp_server.quit()
 
 
@@ -257,7 +260,7 @@ try:
 except Exception as e:
     print("Temporary error: "+str(e))
     if 'args' in locals() and args.debug:
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
     sys.exit(75) 
 
 
@@ -284,10 +287,9 @@ try:
 
     ### try to find relations
     related_addresses=set()
-    if not args.dont_relate_sender:
-        related_addresses.add(sender)
-
-    if not args.dont_relate_to:
+    if incoming:
+        related_addresses.add(args.sender)
+    else:
         related_addresses.update(all_receip)
 
     relation_ids=[]
@@ -335,12 +337,12 @@ try:
     ticket_ids=list(ticket_ids) #json encodable
 
 
-    ### create new ticket
+    ### create new ticket?
     if not tickets:
         if existing_embedded:
             debug("Creating new ticket because existing embedded trackable was found")
-        elif ( not args.always_create and not relation_ids ):
-            debug("DONE: Ignoring message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
+        elif ( incoming and not args.always_create and not relation_ids ):
+            debug("DONE: Ignoring incoming message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
             sys.exit(0)
 
         due_date=None
@@ -361,7 +363,7 @@ try:
             relations=relation_ids,
             tickets=[],
             due_date=due_date,
-            desc="Created by mail from {} to {}".format(sender, receip),
+            desc="Created by mail from {} to {}".format(args.sender, args.receip),
         )["data"]
 
         ticket_ids=[ ticket["_id"] ]
@@ -383,7 +385,7 @@ try:
                 debug("Resetting ticket status to: ", args.ticket_status)
                 doc['ticket_status']=args.ticket_status
 
-            if args.update_relations:
+            if not args.dont_update_relations:
                 #add new relations, if any
                 doc["relations"]=set(ticket["relations"])
                 doc["relations"].update(relation_ids)
@@ -449,8 +451,8 @@ try:
                     "tickets":ticket_ids,
                     "trackables":trackables,
                     "type":"email",
-                    "from":sender,
-                    "to":receip,
+                    "from":args.sender,
+                    "to":args.receip,
                     "title":header_to_unicode(msg["subject"]),
                     "text":text
                 })["data"]
@@ -465,6 +467,6 @@ except Exception as e:
     debug("Exception: "+str(e))
     debug("Exitting with code 0 since mail was succesfully forwarded")
     if args.debug:
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
 
     sys.exit(0)
