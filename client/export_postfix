@@ -15,24 +15,34 @@ parser.add_argument('--api_key', required=True, default=None, help='api key')
 args = parser.parse_args()
 
 try:
-	#initialise the rpc client class
-	rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
+    #initialise the rpc client class
+    rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
-	result=rpc_client.request("core.Users.get_all_global", api_key=args.api_key)
+    result=rpc_client.request("core.Users.get_all_global", api_key=args.api_key)
 
-	domains=set()
-	for address in result["data"]:
-		(bla,domain)=address.split("@")
-		domains.add(domain)
-		print(address+" "+args.destination)
+    domains=set()
+    addresses=set()
 
-	#is possible with postfix to define domains in the same virtual-file.
-	for domain in domains:
-		print(domain+" "+'""')
+    for address in result["data"]:
+        (bla,domain)=address.split("@")
+        domains.add(domain)
+        addresses.add(address)
+
+    #print uniq sorted list of adresses
+    addresses=list(addresses)
+    addresses.sort()
+    for address in addresses:
+        print(address+" "+args.destination)
+
+    #is possible with postfix to define domains in the same virtual-file.
+    domains=list(domains)
+    domains.sort()
+    for domain in domains:
+        print(domain+" "+'""')
 
 except Exception as e:
-	print("Error: "+str(e), file=sys.stderr)
-	sys.exit(1)
+    print("Error: "+str(e), file=sys.stderr)
+    sys.exit(1)
 
 
 
