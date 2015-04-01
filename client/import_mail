@@ -1,11 +1,5 @@
 #!/usr/bin/env python3.4
-
-
-# -incoming mails: reroute incoming mails through for support@yourdomain.com through import_mail. use  --skip_duplicates --related_from --related_only --forward support_processed@yourdomain.com
-#  trackable id will be added to body so that future conversation can be followed.
-# -outgoing mails: cc mail to import_mail by using a ticket@yourdomain.com address. use --skip_duplicates --related_from --related_to --related_only.  
-#  NOTE:how to prevent spam? how to follow replys to new outgoing messages? (when destination mailclient doesnt reply with reference-headers)
-
+ 
 
 try:
     import sys
@@ -25,7 +19,8 @@ try:
 
     parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
     parser.add_argument('--user', required=True, help='user to login. default: %(default)s')
-    parser.add_argument('--password', required=True,  help='password. default: %(default)s')
+    parser.add_argument('--password', help='password. default: %(default)s')
+    parser.add_argument('--api_key', default=None, help='api_key, use instead of password to overrule all logins globally')
     # parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
     # parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
     parser.add_argument('--ticket_status', default="next_action", help='Status of the new task. default: %(default)s')
@@ -88,7 +83,7 @@ try:
     rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
     #first login using the specified user and pass
-    user=rpc_client.request("core.Users.login", name=args.user, password=args.password)["data"]
+    user=rpc_client.request("core.Users.login", name=args.user, password=args.password, api_key=args.api_key)["data"]
 
     #parse mail from stdin:
     # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
@@ -216,7 +211,10 @@ try:
     debug("Trackables:", trackables)
 
 
-    if args.sender==user["email"]:
+    if args.sender==args.receip:
+        debug("Assuming LOOPED mail, sender matches receiver, ignoring")
+        sys.exit(0)
+    elif args.sender==user["email"]:
         debug("Assuming OUTGOING mail, sender matches primary mail address:", user["email"])
         incoming=False
     else:
@@ -468,5 +466,5 @@ except Exception as e:
     debug("Exitting with code 0 since mail was succesfully forwarded")
     if args.debug:
         traceback.print_exc(file=sys.stdout)
-
+ 
     sys.exit(0)

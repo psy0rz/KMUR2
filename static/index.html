@@ -67,7 +67,7 @@
 
 				if (result.user_id)
 				{
-					$(".login-user", login_context).text(result.name);
+					$(".login-user", login_context).text(result.name+"@"+result.domain);
 					$(".on-click-login", login_context).hide();
 					$(".on-click-logout", login_context).show();
 

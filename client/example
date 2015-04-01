@@ -1,0 +1,37 @@
+#!/usr/bin/env python3.4
+
+import argparse
+import json
+import rpc
+import sys
+
+parser = argparse.ArgumentParser(description='Tracer example module')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', required=True, default=None, help='user to login.')
+parser.add_argument('--password', default=None, help='password.')
+parser.add_argument('--api_key', default=None, help='api_key, use instead of password to overrule all logins globally')
+parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
+
+args = parser.parse_args()
+
+try:
+	#initialise the rpc client class
+	rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
+
+	if args.user != None:
+		#first login using the specified user and pass
+		logged_in_user=rpc_client.request("core.Users.login", name=args.user, password=args.password, api_key=args.api_key)
+
+	#....do stuff...for example print a list of users:
+	print("List of users:")
+	users=rpc_client.request("core.Users.get_all")["data"]
+	for user in users:
+		print (user["name"])
+
+except Exception as e:
+	print("Error: "+str(e), file=sys.stderr)
+	sys.exit(1)
+
+
+

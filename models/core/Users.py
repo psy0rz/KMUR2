@@ -60,6 +60,10 @@ class Users(models.core.Protected.Protected):
     @RPC(roles="admin")
     def put(self, **doc):
 
+        if not re.match("^[a-zA-Z0-9._-]*$", doc['name']):
+            raise fields.FieldError("Invalid characters in user", "name")
+
+
         if 'password' in doc and doc['password']=="":
             del doc['password']
 
@@ -166,13 +170,14 @@ class Users(models.core.Protected.Protected):
         #select correct DB
         (username, domain)=name.split("@")
         db_postfix=re.sub("[^a-z0-9]","_",domain.lower())
-        db_name=DB_PREFIX+"_"+db_postfix
+        db_name=DB_PREFIX+db_postfix
 
         if db_name not in self.context.mongodb_connection.database_names():
             raise fields.FieldError("Domain not found", "name")
 
 
         self.context.session['db_name']=db_name
+        self.context.session['domain']=domain
         self.reconnect(force=True)
 
         try:
@@ -213,6 +218,27 @@ class Users(models.core.Protected.Protected):
         self.send_session()
 
         return(self.context.session)
+
+
+    @RPC(roles="everyone")
+    def get_all_global(self, api_key):
+        '''get all users in all databases. only with api_key.'''
+        if api_key!=settings.api_key:
+            raise fields.FieldError("Incorrect key", "api_key")
+
+        result=[]
+        db_names=self.context.mongodb_connection.database_names()
+        for db_name in db_names:
+            if db_name.find(DB_PREFIX)==0:
+                #determine domain 
+                domain=db_name.lstrip(DB_PREFIX).replace("_", ".")
+                #get all users in this db
+                db=self.context.mongodb_connection[db_name]
+                users=db[self.default_collection].find(fields={ "name": True })
+                for user in users:
+                    result.append(user["name"]+"@"+domain)
+
+        return(result)
 
 
     @RPC(roles=["everyone"])

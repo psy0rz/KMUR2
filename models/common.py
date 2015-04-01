@@ -2,7 +2,7 @@
 
 import re
 
-DB_PREFIX="tracer"
+DB_PREFIX="tracer_"
 
 def call_rpc(context, module, cls, method, *args, **kwargs):
     """resolve and call rpc models from strings, also called from rpc.py
