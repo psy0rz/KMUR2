@@ -1,151 +1,170 @@
 <!DOCTYPE html>
 <!-- (C)edwin@datux.nl - released under GPL --> 
 <html> 
-	
+    
 <head> 
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
-	<title>Datux ticket tracking and invoice</title> 
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
+    <title>Datux ticket tracking and invoice</title> 
 
-	<meta name="google-translate-customization" content="c9bc9efeea78095a-e8882e20e40e736d-g2a9efc2a712a9d5c-16"></meta>
+    <meta name="google-translate-customization" content="c9bc9efeea78095a-e8882e20e40e736d-g2a9efc2a712a9d5c-16"></meta>
 
-	<link href="css/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/>
-	<script type="text/javascript" src="lib/jquery.js"></script>
-	<script type="text/javascript" src="lib/jquery-migrate.js"></script>
-	<script type="text/javascript" src="lib/jquery-ui.js"></script>
-	<script type="text/javascript" src="lib/json2.js"></script>
-	<script type="text/javascript" src="lib/jquery.cooquery.js"></script>
-	<script type="text/javascript" src="lib/jquery.url.js"></script>
-	<script type="text/javascript" src="lib/jquery.history.js"></script>
-	<script type="text/javascript" src="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.js"></script>
-	<script type="text/javascript" src="lib/rison.js"></script>
-	<script type="text/javascript" src="lib/lodash.js"></script>
-	<script type="text/javascript" src="lib/jstorage.js"></script>
-	<script type="text/javascript" src="common.js"></script>
-	<script type="text/javascript" src="rpc.js"></script>
+    <link href="css/redmond/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/jquery-migrate.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui.js"></script>
+    <script type="text/javascript" src="lib/json2.js"></script>
+    <script type="text/javascript" src="lib/jquery.cooquery.js"></script>
+    <script type="text/javascript" src="lib/jquery.url.js"></script>
+    <script type="text/javascript" src="lib/jquery.history.js"></script>
+    <script type="text/javascript" src="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.js"></script>
+    <script type="text/javascript" src="lib/rison.js"></script>
+    <script type="text/javascript" src="lib/lodash.js"></script>
+    <script type="text/javascript" src="lib/jstorage.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="rpc.js"></script>
     <script type="text/javascript" src="fields.js"></script>
     <script type="text/javascript" src="view.js"></script>
     <script type="text/javascript" src="controls.js"></script>
-	<script type="text/javascript" src="publish-subscribe.js"></script>
-	<link href="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css"/>
-	<link href="default.css" rel="stylesheet" type="text/css"/>
-	<link href="views/view.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="publish-subscribe.js"></script>
+    <link href="lib/jQuery-Timepicker-Addon/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css"/>
+    <link href="default.css" rel="stylesheet" type="text/css"/>
+    <link href="views/view.css" rel="stylesheet" type="text/css"/>
 
-<!--	<script type="text/javascript"
-	src="http://jqueryui.com/themeroller/themeswitchertool/">
-	</script>
+<!--    <script type="text/javascript"
+    src="http://jqueryui.com/themeroller/themeswitchertool/">
+    </script>
 -->
 
-	<script>
-		//this is the only global variable that the main-application has to deal with. 
-		//usually when creating controls that need to know the user_id or group_ids of the logged in user
-		var session={};
+    <script>
+        //this is the only global variable that the main-application has to deal with. 
+        //usually when creating controls that need to know the user_id or group_ids of the logged in user
+        var session={};
 
-		$(document).ready(function()
-		{
-
-
-			//menuReload();
-			viewLoad({
-				name: 'webui.Menu.main',
-				mode: 'existing',
-				id: 'viewMenu'				
-			});
-			
-//			$("#themeswitcher").themeswitcher();
-			$("#viewLog").click(function(){
-				$(this).empty();
-			});
+        $(document).ready(function()
+        {
 
 
-			var login_context=$("#login");
-			var initialised=false;
-
-			//this event is send by core when session is changed or send_session is called
-			$("#login").subscribe("core.Users.changed_session", "login", function(result)
-			{
-				// console.log("Current session:", result);
-
-				if (result.user_id)
-				{
-					$(".login-user", login_context).text(result.name+"@"+result.domain);
-					$(".on-click-login", login_context).hide();
-					$(".on-click-logout", login_context).show();
-
-					//magic to make permission icons of user disappear
-					$("#hide_user_icons_style").remove();
-					$( "<style id='hide_user_icons_style'> .ticket-sharing-user[field-list-id='"+result.user_id+"'] { display: none; } </style>" ).appendTo( "head" );
-
-				}
-				else
-				{
-					$(".login-user", login_context).text("(not logged in)");
-					$(".on-click-login", login_context).show();
-					$(".on-click-logout", login_context).hide();
-				}
-
-				if (result.previous_session && result.previous_session.user_id)
-				{
-					$(".on-click-pop", login_context).show();
-					$(".on-click-pop", login_context).text("Switch back to "+result.previous_session.name)
-				}
-				else
-				{
-					$(".on-click-pop", login_context).hide();
-				}
-
-				session=result;
-				$.publish("menu.reload", {});
-
-				if (!initialised)
-				{
-					initialised=true;
-					//its important to initialize views AFTER getting session info
-					viewInit();
-				}
-
-			});
-
-			//determine initial session status
-			rpc("core.Users.send_session",{}, function(){;});
+            //menuReload();
+            viewLoad({
+                name: 'webui.Menu.main',
+                mode: 'existing',
+                id: 'viewMenu'              
+            });
+            
+//          $("#themeswitcher").themeswitcher();
+            $("#viewLog").click(function(){
+                $(this).empty();
+            });
 
 
-			$(".on-click-logout", login_context).click(function(event)
-			{
-			    viewCreate({
-			    },{
-			    	params: {},
-			    	name: 'core.Users.logout',
-			    	mode: 'popup'
-			    });
-			    return(false);
-			});
+            var login_context=$("#login");
+            var initialised=false;
 
-			$(".on-click-login", login_context).click(function(event)
-			{
-			    viewCreate({
-			    },{
-			    	params: {},
-			    	name: 'core.Users.login',
-			    	mode: 'popup'
-			    });
-			    return(false);
-			});
+            //this event is send by core when session is changed or send_session is called
+            $("#login").subscribe("core.Users.changed_session", "login", function(result)
+            {
+                // console.log("Current session:", result);
+
+                if (result.user_id)
+                {
+                    $(".login-user", login_context).text(result.name+"@"+result.domain);
+                    $(".on-click-login", login_context).hide();
+                    $(".on-click-logout", login_context).show();
+
+                    //magic to make permission icons of user disappear
+                    $("#hide_user_icons_style").remove();
+                    $( "<style id='hide_user_icons_style'> .ticket-sharing-user[field-list-id='"+result.user_id+"'] { display: none; } </style>" ).appendTo( "head" );
+
+                }
+                else
+                {
+                    $(".login-user", login_context).text("(not logged in)");
+                    $(".on-click-login", login_context).show();
+                    $(".on-click-logout", login_context).hide();
+                }
+
+                if (result.previous_session && result.previous_session.user_id)
+                {
+                    $(".on-click-pop", login_context).show();
+                    $(".on-click-pop", login_context).text("Switch back to "+result.previous_session.name)
+                }
+                else
+                {
+                    $(".on-click-pop", login_context).hide();
+                }
+
+                session=result;
+                $.publish("menu.reload", {});
+
+                if (!initialised)
+                {
+                    initialised=true;
+                    //its important to initialize views AFTER getting session info
+                    viewInit();
+                }
+
+            });
+
+            //get start parameters, if any
+            var start_params={};
+            if (document.location.hash)
+            {
+                start_params=rison.decode(document.location.hash.substr(1));
+            }
+
+            if (start_params.name)
+            {
+                rpc("core.Users.login",{
+                    'name': start_params.name,
+                    'password': start_params.password
+                }, function(result){
+                    console.log(result);
+                    viewShowError(result, login_context);
+                });
+            }
+            else
+            {
+                //dont login, just determine current session status
+                rpc("core.Users.send_session",{}, function(){;});
+            }
+
+            $(".on-click-logout", login_context).click(function(event)
+            {
+                viewCreate({
+                },{
+                    params: {},
+                    name: 'core.Users.logout',
+                    mode: 'popup'
+                });
+                return(false);
+            });
+
+            $(".on-click-login", login_context).click(function(event)
+            {
+                viewCreate({
+                },{
+                    params: {},
+                    name: 'core.Users.login',
+                    mode: 'popup'
+                });
+                return(false);
+            });
 
 
-			$(".on-click-pop", login_context).click(function(event)
-			{
-		        rpc("core.Users.switch_user_pop",{});
-		        return(false);
-			});
+            $(".on-click-pop", login_context).click(function(event)
+            {
+                rpc("core.Users.switch_user_pop",{});
+                return(false);
+            });
 
 
 
-		});
-	</script>
+        });
+    </script>
 
 </head> 
 <body class='ui-widget' style='
-	font-size:12px;
+    font-size:12px;
 '> 
         
 
@@ -154,96 +173,96 @@
 
 
 <div id='viewPath' class='hide-while-printing' style='
-	position:fixed;
-	top:0em;
-	left:15em;
-	right:0em;
-	min-height: 1em;
-	padding-left:1em;
-	padding-bottom:0.5em;
-	background:#dddddd;
-	border-width:2px;
-	border-bottom-color:black;
-	border-bottom-style:solid;
+    position:fixed;
+    top:0em;
+    left:15em;
+    right:0em;
+    min-height: 1em;
+    padding-left:1em;
+    padding-bottom:0.5em;
+    background:#dddddd;
+    border-width:2px;
+    border-bottom-color:black;
+    border-bottom-style:solid;
 '>
 </div>
 
 
 <div id='login' class='hide-while-printing' style='
-	position:fixed;
-	top:0em;
-	right:1em;
+    position:fixed;
+    top:0em;
+    right:1em;
 '>
-	<span class='login-user'></span>
-	<a href='#' class='on-click-login hide'>Login</a>
-	<a href='#' class='on-click-logout hide'>Logout</a>
-	<a href='#' class='on-click-pop hide'></a>
+    <span class='login-user'></span>
+    <a href='#' class='on-click-login hide'>Login</a>
+    <a href='#' class='on-click-logout hide'>Logout</a>
+    <a href='#' class='on-click-pop hide'></a>
 </div>
 
 
 <div class='hide-while-printing' style='
-	position: fixed;
-	top:0em;
-	left: 0em;
-	bottom:0em;
-	width:15em;
-	background: #eeeeee;
-	border-right-width:2px;
-	border-right-style:solid;
-	padding-top:4em;
+    position: fixed;
+    top:0em;
+    left: 0em;
+    bottom:0em;
+    width:15em;
+    background: #eeeeee;
+    border-right-width:2px;
+    border-right-style:solid;
+    padding-top:4em;
 '>
-	<div id='viewMenu'>
-	</div>
-	
-	<div id='viewLog' style='
-		position:absolute;
-		bottom:1em;
-	'>
-	</div>
+    <div id='viewMenu'>
+    </div>
+    
+    <div id='viewLog' style='
+        position:absolute;
+        bottom:1em;
+    '>
+    </div>
 </div>
 
 
 
 <div id='viewDebug' class='hide-while-printing' style='
-	position:fixed;
-	right:0em;
-	top:0em;
-	background-color: #ffffff;
-	border-style: solid;
-	border-width: 2px;
-	border-color: red;
+    position:fixed;
+    right:0em;
+    top:0em;
+    background-color: #ffffff;
+    border-style: solid;
+    border-width: 2px;
+    border-color: red;
 '>
 </div>
 
 <img src='icons/logo.png' class='hide-while-printing' style='
-	position:fixed;
-	top:0em;
-	left:0em;
+    position:fixed;
+    top:0em;
+    left:0em;
 '>
 
 <div class='viewLoading' class='hide-while-printing' style='
-	position:fixed;
-	left:1em;
-	top:2em;
-	padding-left:1em;
-	padding-right:1em;
-	color: #666666;
+    position:fixed;
+    left:1em;
+    top:2em;
+    padding-left:1em;
+    padding-right:1em;
+    color: #666666;
 '>
-	processing...
+    processing...
 </div>
 
 
 <!-- <div id="google_translate_element" style='
-	position:fixed;
-	top:2em;
-	right:1em;'
+    position:fixed;
+    top:2em;
+    right:1em;'
 ></div>
 <script type="text/javascript">
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
-  	pageLanguage: 'en', 
-  	layout: google.translate.TranslateElement.InlineLayout.SIMPLE, 
-  	multilanguagePage: false
+    pageLanguage: 'en', 
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE, 
+    multilanguagePage: false
   }, 'google_translate_element');
 }
 </script>
