@@ -424,6 +424,9 @@ function viewReady(params)
 {
     var viewDiv=$("#"+params.view.id);
     
+    if ('title' in params)
+        document.title=$(params.title).text();
+
     if (params.view.mode=='popup')
     {
         var dialogDiv=viewDiv.parent();
@@ -453,8 +456,6 @@ function viewReady(params)
         viewTitleDiv.append(" » ");
     }
 
-    if ('title' in params)
-        document.title=params.title;
 
 }
 
