@@ -10,13 +10,6 @@
             },
   	    "items":[
             {
-                "title":"Settings",
-                "view":
-                    { 
-                        "name":"ticket.Invoices.settings",
-                        "mode":"main",
-                        "params": { }
-                    }
             }
 		]
 	}

@@ -155,7 +155,7 @@ td
 	overflow: auto;
 	left: 16em;
 	right: 0em;
-	top: 2em;
+	top: 5.5em;
 	bottom: 0em; /* should be 0, otherwise inputs in floating bars generate scrolling somehow */
 	position: fixed;
 	padding-bottom: 2.5em;
@@ -185,14 +185,16 @@ td
 {
 	position: fixed;
 	left: 15em;
-	right: 2em;
-	bottom:0em;
-	background: #dddddd;
-	padding-top:0.5em;
+	right: 0em;
+	top:1em;
+	min-height: 2em;
+	background: #eeeeee;
+	padding-top:1.5em;
+	padding-bottom:0.5em;
 	padding-left:1em;
 	border-width:2px;
-	border-top-color:black;
-	border-top-style:solid;
+	border-bottom-color:black;
+	border-bottom-style:solid;
 	padding-right:1em;
 }
 

@@ -262,7 +262,6 @@ class TicketObjects(models.core.Protected.Protected):
             if doc['billing_contract'] not in relation['contracts']:
                 raise fields.FieldError("Relation doesnt have this contract", 'billing_contract')
 
-
         if '_id' in doc:
             old_doc=self.get(doc['_id'])
             if old_doc['billing_contract_invoice'] and not self.context.has_roles(["finance_admin"]):
@@ -275,6 +274,11 @@ class TicketObjects(models.core.Protected.Protected):
             if not 'thumbnail' in doc:
                 #all ticketobjects always should have a thumbnail
                 doc['thumbnail']=self.default_thumb_url.format(doc["type"])
+
+        #only finance admin can set contract_invoice to a not None value
+        if 'billing_contract_invoice' in doc and doc['billing_contract_invoice']!=None and not self.context.has_roles(["finance_admin"]):
+            raise fields.FieldError("Only a finance administrator can set this field", 'billing_contract_invoice')
+
 
         if not 'billing_contract_invoice' in doc:
             doc['billing_contract_invoice']=None

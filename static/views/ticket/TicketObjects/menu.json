@@ -1,15 +1,13 @@
 {
-    "ticket":{
-		"items":[
-            {
-                "title":"Docs and notes",
-                "view":
-                    { 
-                        "name":"ticket.TicketObjects.list",
-                        "mode":"main",
-                        "params": { }
-                    }
-            }
-		]
-	}
+    "search":{
+        "title":"Search docs and notes",
+        "pos" : 15,
+        "view":
+            { 
+                "name":"ticket.TicketObjects.list",
+                "mode":"main",
+                "params": { }
+            },
+        "items": []
+    }
 }

@@ -167,8 +167,9 @@ def rpc_post():
         del(result['data'])
         #try again, hopefully without throwing more exceptions
         return(json.dumps(result, cls=fields.JSONEncoder, indent=indent, separators=(',', ':'), ensure_ascii=False))
-    finally:
-        session['context'].mongodb_connection.close()
+    # finally:
+        #HACK: garbage collection should take care of this?
+        # session['context'].mongodb_connection.close()
 
 
 #simple rpc GET interface

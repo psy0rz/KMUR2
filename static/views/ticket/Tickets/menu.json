@@ -1,6 +1,6 @@
 {
-	"ticket":{
-		"title":"Tasks",
+    "ticket":{
+        "title":"Tasks",
         "pos" : 10,
         "view":
             { 
@@ -8,7 +8,31 @@
                 "mode":"main",
                 "params": { }
             },
-		"items":[
-		]
-	}
+        "items":[
+        ]
+    },
+
+    "system":{
+        "items":[
+            {
+                "title":"Invoice settings",
+                "view":
+                    { 
+                        "name":"ticket.Invoices.settings",
+                        "mode":"main",
+                        "params": { }
+                    }
+            },
+            {
+                "title":"User settings",
+                "view":
+                    { 
+                        "name":"ticket.Tickets.settings",
+                        "mode":"main",
+                        "params": { }
+                    }
+            }
+        ]
+    }
+
 }

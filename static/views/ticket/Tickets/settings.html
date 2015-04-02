@@ -1,0 +1,49 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.UserSettings',
+    'get_params'      : undefined,
+    'default_focus'   : 'title',
+    'title'           : 'User settings',
+});
+
+
+
+</script>
+
+<table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='email_forward' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='email_forward'>
+    </tr>
+    <tr>
+        <td class='field-meta-put' field-key='email_send' field-meta-key='desc'>
+        <td>
+            <table >
+                <thead class='field-meta-put ui-widget-header' field-key='email_send'>
+                    <tr>
+                        <td class='field-meta-put' field-meta-key='desc' field-key='email_send.email'>
+                        <td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class='colorRows field-meta-put field-list-source notranslate ui-widget-content' field-key='email_send'  >
+                        <td class='field-meta-put field-list-on-focus-add' field-key='email_send.email'>
+                        <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                    </tr>
+                </tbody>
+            </table>
+
+    </tr>
+</table>
+
+
+
+<div class='viewErrorClass floatingBar'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
+</div>
+
