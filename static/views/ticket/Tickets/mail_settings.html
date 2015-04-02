@@ -1,0 +1,110 @@
+
+<script>
+
+new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.MailSettings',
+    'get_params'      : undefined,
+    'default_focus'   : 'title',
+    'title'           : 'User settings',
+});
+
+
+
+</script>
+
+
+<fieldset  class='inline-block' >
+    <legend>Incoming mails</legend>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='email_forward' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='email_forward'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='trackable' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='trackable'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='mail_date' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='mail_date'>
+        </tr>
+    </table>
+    <p>
+<!--     <fieldset  class='inline-block' >
+        <legend class='field-meta-put' field-key='email_dont_forward' field-meta-key='desc'></legend>
+ -->  
+        Specify the from-adresses you dont want to forward (usually your own mail adresses):
+        <p>
+        <table >
+            <thead class='field-meta-put ui-widget-header' field-key='email_dont_forward'>
+                <tr>
+                    <td class='field-meta-put' field-meta-key='desc' field-key='email_dont_forward.email'>
+                    <td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class='colorRows field-meta-put field-list-source notranslate ui-widget-content' field-key='email_dont_forward'  >
+                    <td class='field-meta-put field-list-on-focus-add' field-key='email_dont_forward.email'>
+                    <td class='field-list-on-click-del ui-icon ui-icon-trash'>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+    <!-- </fieldset> -->
+
+</fieldset>
+
+<fieldset  class='inline-block' >
+    <legend>Auto create new tickets</legend>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='ticket_status' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='ticket_status'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='due_days' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='due_days'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='always_create' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='always_create'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='skip_duplicates' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='skip_duplicates'>
+        </tr>
+    </table>
+</fieldset>
+
+<fieldset  class='inline-block' >
+    <legend>Update existing tickets</legend>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='reset_completed' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='reset_completed'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='reset_status' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='reset_status'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='reset_due_days' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='reset_due_days'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='update_relations' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='update_relations'>
+        </tr>
+    </table>
+</fieldset>
+
+
+
+
+<div class='viewErrorClass floatingBar'>
+    <button class='control-on-click-save' >Save</button>
+    <button class='control-on-click-cancel' >Cancel</button>
+    <span class='viewErrorText'></span>
+</div>
+
