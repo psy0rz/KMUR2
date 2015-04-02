@@ -24,10 +24,10 @@
                     }
             },
             {
-                "title":"User settings",
+                "title":"Mail settings",
                 "view":
                     { 
-                        "name":"ticket.Tickets.settings",
+                        "name":"ticket.Tickets.mail_settings",
                         "mode":"main",
                         "params": { }
                     }

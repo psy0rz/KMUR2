@@ -21,36 +21,12 @@ try:
     parser.add_argument('--user', required=True, help='user to login. default: %(default)s')
     parser.add_argument('--password', help='password. default: %(default)s')
     parser.add_argument('--api_key', default=None, help='api_key, use instead of password to overrule all logins globally')
-    # parser.add_argument('--title', required=True, help='Title of the new task to upload the documents to')
-    # parser.add_argument('--import_id', help='unique import_id of this ticket (to resume uploading or add more files later) defaults to title')
-    parser.add_argument('--ticket_status', default="next_action", help='Status of the new task. default: %(default)s')
     parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
     parser.add_argument('--debug', action='store_true', help='debug mode')
-    parser.add_argument('--mail_date', action='store_true', help='Use send-date instead of current date (not recommended)')
-    # parser.add_argument('--mail_address', action='store_true', help='Use mail from- and to-headers, instead of envelope adresses (usually not recommended)')
     parser.add_argument('--sender',  required=True, help='Envelope sender')
     parser.add_argument('--receip',  required=True, help='Envelope receipient')
-    parser.add_argument('--dont_skip_duplicates', action='store_true', help='Dont skip duplicate mails by checking if message-id is already imported')
-    parser.add_argument('--due_days', default=1, help='Set due date to this many days in the future. default: %(default)s')
-
-    parser.add_argument('--dont_reset_completed',  action='store_true', help='Dont reset completed status of existing ticket (to uncomplete)')
-    parser.add_argument('--dont_reset_status',  action='store_true', help='Dont reset ticket status of existing ticket (to whatever is specified with --ticket_status')
-
-    # parser.add_argument('--dont_relate_sender', action='store_true', help='Dont try to find relations based on enveloppe sender')
-    # parser.add_argument('--relate_to', action='store_true', help='Dont try to find relations based on To, cc, and other headers.')
-    parser.add_argument('--always_create', action='store_true', help='Always create new tickets, even if there is no known relation. (not recommended because of spam)')
-    parser.add_argument('--dont_update_relations', action='store_true', help='Dont update relations for existing tickets')
-
-
-    # parser.add_argument('--forward', nargs='*', help='Forward email to this adress. (after adding trackable)')
     parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
-    parser.add_argument('--trackable', default='ticket id: ', help='Prefix for the trackable. The same prefix can be used for multiple tracer instances without conflicting. default: %(default)s')
-    # parser.add_argument('--reply_to', default=None, help='Add extra reply-to adresses. This way you can use reply-all')
 
-
-
-    # parser.add_argument('--prefix', help='Ticket id prefix')
-    # parser.add_argument('files',   nargs='+', help='Files to upload')
 
     args = parser.parse_args()
     
@@ -85,6 +61,9 @@ try:
     #first login using the specified user and pass
     user=rpc_client.request("core.Users.login", name=args.user, password=args.password, api_key=args.api_key)["data"]
 
+    #get ticket-mailer settings for this user 
+    settings=rpc_client.request("ticket.MailSettings.get")["data"]
+
     #parse mail from stdin:
     # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
     msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
@@ -105,6 +84,10 @@ try:
     #     sender=os.environ['SENDER']
     #     receip=os.environ['RECIPIENT']
 
+    #make sure all is lowercase 
+    args.sender=args.sender.lower()
+    args.receip=args.receip.lower()
+    user["email"]=user["email"].lower()
     debug("Enveloppe from: ",args.sender)
     debug("Enveloppe to: ",args.receip)
     debug("Primary mail address of user is ", user["email"])
@@ -119,7 +102,7 @@ try:
         msg.get_all('resent-cc', [])+ 
         [ args.receip ]
     ):
-        all_receip.add(addr[1])
+        all_receip.add(addr[1].lower())
 
     all_receip=list(all_receip)
     debug("All receiver adresses: ",all_receip)
@@ -145,7 +128,7 @@ try:
 
     # find embedded trackable and embed new ones if neccesary
     embedded_trackables=[]
-    embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(args.trackable))
+    embedded_re=re.compile("\[{}(........-....-....-....-............)\]".format(settings['trackable']))
 
     #first try to find all the embedded trackables
     for msg_part in msg.walk():
@@ -173,7 +156,7 @@ try:
         existing_embedded=True
         debug("Trackables embedded in body:", embedded_trackables)
 
-    embedded_text="[{}{}]".format(args.trackable, embedded_trackables[0])
+    embedded_text="[{}{}]".format(settings['trackable'], embedded_trackables[0])
 
 
     #now add the embedded trackable to all text and html parts that are missing it
@@ -205,20 +188,21 @@ try:
                 del msg_part["Content-Transfer-Encoding"]
                 msg_part.set_payload(text, msg_part.get_content_charset())
 
-
     trackables.update(embedded_trackables)
     trackables=list(trackables) # json encodable
     debug("Trackables:", trackables)
 
 
-    if args.sender==args.receip:
-        debug("Assuming LOOPED mail, sender matches receiver, ignoring")
-        sys.exit(0)
-    elif args.sender==user["email"]:
-        debug("Assuming OUTGOING mail, sender matches primary mail address:", user["email"])
+    ### determine and do actual forwarding
+    dont_forwards=set()
+    for email in settings["email_dont_forward"]:
+        dont_forwards.add(email['email'].lower())
+
+    if args.sender in dont_forwards:
+        debug("Assuming OUTGOING mail, sender is in dont_forward list")
         incoming=False
     else:
-        debug("Assuming INCOMING mail, with forward adress:", user["email"])
+        debug("Assuming INCOMING mail, will forward this mail")
         incoming=True
         reply_to=args.receip
 
@@ -246,10 +230,10 @@ try:
 
 
         import smtplib
-        debug("Forwarding to {} via smtp server {}".format(user["email"], args.smtp_server))
+        debug("Forwarding to {} via smtp server {}".format(settings["email_forward"], args.smtp_server))
         smtp_server = smtplib.SMTP(args.smtp_server)
         # smtp_server.set_debuglevel(1)
-        smtp_server.send_message(msg, from_addr=args.sender, to_addrs=user["email"])
+        smtp_server.send_message(msg, from_addr=args.sender, to_addrs=settings["email_forward"])
         smtp_server.quit()
 
 
@@ -265,14 +249,14 @@ except Exception as e:
 #now that we forwarded the mail, we have no choice to ignore further errors
 try:
     #which timestamp to give to new objects?
-    if args.mail_date:
+    if settings['mail_date']:
         timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
     else:
         timestamp=int(time.time())
 
 
     ### check if its already imported?
-    if not args.dont_skip_duplicates:
+    if settings['skip_duplicates']:
         ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
                 fields=[ "_id" ],
                 match={ "import_id": import_id  } 
@@ -339,13 +323,13 @@ try:
     if not tickets:
         if existing_embedded:
             debug("Creating new ticket because existing embedded trackable was found")
-        elif ( incoming and not args.always_create and not relation_ids ):
+        elif ( incoming and not settings['always_create'] and not relation_ids ):
             debug("DONE: Ignoring incoming message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
             sys.exit(0)
 
         due_date=None
-        if args.due_days:
-            due_date=timestamp+int(args.due_days)*(24*3600)
+        if settings['due_days']:
+            due_date=timestamp+int(settings['due_days'])*(24*3600)
 
         ticket=rpc_client.request("ticket.Tickets.put", 
             change_reason="Automaticly created by email importer",
@@ -353,7 +337,7 @@ try:
             import_id=import_id,
             ticket_priority="3",
             owner=user["user_id"],
-            ticket_status=args.ticket_status,
+            ticket_status=settings['ticket_status'],
             start_date=timestamp,
             deligated_users=[],
             allowed_groups=[],
@@ -375,15 +359,22 @@ try:
             doc["_id"]=ticket["_id"]
             doc["change_reason"]="Automaticly changed by email importer"
 
-            if not args.dont_reset_completed and ticket["ticket_completed"]:
+            if settings['reset_due_days']:
+                due_date=None
+                if settings['due_days']:
+                    due_date=timestamp+int(settings['due_days'])*(24*3600)
+                doc['due_date']=due_date
+
+
+            if settings['reset_completed'] and ticket["ticket_completed"]:
                 debug("Resetting ticket completed")
                 doc['ticket_completed']=False
 
-            if not args.dont_reset_status and ticket["ticket_status"]!=args.ticket_status:
-                debug("Resetting ticket status to: ", args.ticket_status)
-                doc['ticket_status']=args.ticket_status
+            if settings['reset_status'] and ticket["ticket_status"]!=settings['ticket_status']:
+                debug("Resetting ticket status to: ", settings['ticket_status'])
+                doc['ticket_status']=settings['ticket_status']
 
-            if not args.dont_update_relations:
+            if settings['update_relations']:
                 #add new relations, if any
                 doc["relations"]=set(ticket["relations"])
                 doc["relations"].update(relation_ids)
