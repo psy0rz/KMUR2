@@ -87,10 +87,10 @@ try:
     #make sure all is lowercase 
     args.sender=args.sender.lower()
     args.receip=args.receip.lower()
-    user["email"]=user["email"].lower()
+    settings["email_forward"]=settings["email_forward"].lower()
     debug("Enveloppe from: ",args.sender)
     debug("Enveloppe to: ",args.receip)
-    debug("Primary mail address of user is ", user["email"])
+    debug("Forward address of user is ", settings["email_forward"])
 
 
     #get all receiver email adresses (without name)
@@ -202,12 +202,15 @@ try:
         debug("Assuming OUTGOING mail, sender is in dont_forward list")
         incoming=False
     else:
-        debug("Assuming INCOMING mail, will forward this mail")
+        debug("Assuming INCOMING mail")
         incoming=True
-        reply_to=args.receip
+    
 
-        #reply-to specified?
-        if reply_to:
+        if existing_embedded and settings["email_forward"] in all_receip:
+            debug("Not forwarding: Mail already has embedded trackable and was already sent to forward adress.")
+        else:
+            #add tracer adress to cc and reply to for easier cc-ing to us.
+            reply_to=args.receip
             #make sure the original from-adress is included
             if not msg["reply-to"]:
                 debug("Adding reply-to: {}".format(msg["from"]))
