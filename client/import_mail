@@ -14,6 +14,8 @@ try:
     import tempfile
     import uuid
     import traceback
+    import memcache
+    import hashlib
 
     parser = argparse.ArgumentParser(description='Tracer - mail importer 1.0', epilog="Reads mail from stdin and creates a ticket with docs and email objects when neccesary")
 
@@ -67,9 +69,17 @@ try:
     #parse mail from stdin:
     # msg = email.message_from_binary_file(sys.stdin.buffer, policy=email.policy.EmailPolicy())
     msg = email.message_from_binary_file(sys.stdin.buffer,policy=email.policy.EmailPolicy())
-    debug("Parsed message:", msg["message-id"])
+    debug("Parsed message with message-id:", msg["message-id"])
     debug("Subject:", msg["subject"])
 
+    ### check if this mail already has been seen? 
+    if settings['skip_duplicates']:
+        message_key="import_mail_id_"+hashlib.sha256(msg["message-id"].encode()).hexdigest()
+        mc=memcache.Client(['127.0.0.1:11211'], debug=0)
+        if mc.get(message_key):
+            debug("DONE: Skipping, already seen this message id")
+            sys.exit(0)
+        mc.set(message_key,True)
 
 
     # #determine reciepient and sender
@@ -213,7 +223,6 @@ try:
             reply_to=args.receip
             #make sure the original from-adress is included
             if not msg["reply-to"]:
-                debug("Adding reply-to: {}".format(msg["from"]))
                 # msg.set_param(msg["from"], None, header='Reply-To')
                 msg["Reply-To"]=msg["from"]+", "+reply_to
             else:
@@ -256,19 +265,6 @@ try:
         timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
     else:
         timestamp=int(time.time())
-
-
-    ### check if its already imported?
-    if settings['skip_duplicates']:
-        ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
-                fields=[ "_id" ],
-                match={ "import_id": import_id  } 
-        )["data"]
-
-        if ticket_objects:
-            debug("DONE: Skipping, already imported", import_id)
-            sys.exit(0)
-
 
     ### try to find relations
     related_addresses=set()
