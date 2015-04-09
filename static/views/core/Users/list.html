@@ -22,8 +22,6 @@
 
 </script>
 
-<span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-<input type='text' class='control-on-change-search control-default-focus' control-search-keys='name fullname email'>
 
 <table >
 <tr class='ui-widget-header'>
@@ -53,13 +51,12 @@
     <td><span class='control-on-click-del ui-icon ui-icon-trash'></span>
 </tr>
 
-<tr>
-    <td colspan=6><a class='field-list-on-click-view' field-key='name' href='#'>Create new user</a>
-</tr>
 
 </table>
 
 
 <div class='floatingBar viewErrorClass'>
-    <button class='control-on-click-view' control-view='core.Users.edit'>Add</button>
+    <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+    <input type='text' class='control-on-change-search control-default-focus' control-search-keys='name fullname email'>
+    <button class='control-on-click-view' control-view='core.Users.edit'>Create new user</button>
 </div>

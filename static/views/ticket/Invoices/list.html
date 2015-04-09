@@ -61,8 +61,6 @@
     </ul>
     <div id="dummytab">
  
-    <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
-    <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes invoice_nr items.desc'>
 
     <table >
         <tr class='ui-widget-header'>
@@ -114,6 +112,8 @@
 </div>
 
 <div class='floatingBar viewErrorClass'>
+    <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+    <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes to_copy.company invoice_nr items.desc'>
     <button class='control-on-click-view' control-view='ticket.Invoices.edit' field-key='title' >Create new invoice</button>
     <button class='on-click-auto-invoice-all' >Auto invoice contracts</button>
     <span class='viewErrorText'></span>

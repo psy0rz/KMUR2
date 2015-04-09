@@ -22,8 +22,10 @@
     	<td class='field-put field-list-on-click-view' field-key='name' >
     	<td class='control-on-click-del ui-icon ui-icon-trash'>
     </tr>
-    <tr>
-        <td colspan=6><a class='field-list-on-click-view' field-key='name' href='#'>Create new group</a>
-    </tr>
 </table>
 
+<div class='floatingBar viewErrorClass'>
+    <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
+    <input type='text' class='control-on-change-search control-default-focus' control-search-keys='name fullname email'>
+    <button class='control-on-click-view' control-view='core.Groups.edit'>Create new group</button>
+</div>
