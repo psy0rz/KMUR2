@@ -23,6 +23,7 @@ class MailSettings(models.core.UserSettings.UserSettings):
                         desc='Dont forward email from'
                     ),
                     'ticket_status':        models.ticket.Tickets.Tickets.meta.meta['meta'].meta['meta']['ticket_status'],
+                    'copy_relation_permissions': fields.Bool(desc='Use same permissions as relation has (recommended)', default=True),
                     'mail_date':            fields.Bool(desc='Use send-date instead of current date (not recommended)', default=False),
                     'skip_duplicates':      fields.Bool(desc='Skip duplicate mails by checking if message-id is already imported', default=True),
                     'due_days':             fields.Number(desc='Set due date to this many days in the future', default=1),

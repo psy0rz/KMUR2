@@ -34,8 +34,9 @@ try:
     
     #debugging output
     def debug(*a, **kw):
-    	if args.debug:
-    		print(*a, **kw )
+        if args.debug:
+            print(*a, **kw )
+            sys.stdout.flush()
 
 
     #decodes email-header to one unicode string
@@ -79,7 +80,6 @@ try:
         if mc.get(message_key):
             debug("DONE: Skipping, already seen this message id")
             sys.exit(0)
-        mc.set(message_key,True)
 
 
     # #determine reciepient and sender
@@ -258,8 +258,13 @@ except Exception as e:
     sys.exit(75) 
 
 
-#now that we forwarded the mail, we have no choice to ignore further errors
+#now that we forwarded the mail, we have to ignore further errors (otherwise the mailer would retry or bounce)
 try:
+
+    #store message-id in duplicate-skipper table
+    if settings['skip_duplicates']:
+        mc.set(message_key,True)
+
     #which timestamp to give to new objects?
     if settings['mail_date']:
         timestamp=email.utils.parsedate_to_datetime(msg["date"]).timestamp()
@@ -276,7 +281,7 @@ try:
     relation_ids=[]
     if related_addresses:
         relations=rpc_client.request("ticket.Relations.get_all",
-            fields=[ "_id"],
+            fields=[ "_id", "allowed_users", "allowed_groups"],
             spec_and=[ { 
                 "emails.email": {
                     "$in": list(related_addresses)  
@@ -326,26 +331,36 @@ try:
             debug("DONE: Ignoring incoming message, mail-addresses cant be found in any relation, and no existing tickets or existing embedded trackables found.")
             sys.exit(0)
 
-        due_date=None
-        if settings['due_days']:
-            due_date=timestamp+int(settings['due_days'])*(24*3600)
+        ticket={
+            'change_reason':"Automaticly created by email importer",
+            'title':header_to_unicode(msg["subject"]),
+            'import_id':import_id,
+            'ticket_priority':"3",
+            'owner':user["user_id"],
+            'ticket_status':settings['ticket_status'],
+            'start_date':timestamp,
+            'deligated_users':set(),
+            'allowed_groups':set(),
+            'ticket_completed':False,
+            'relations':relation_ids,
+            'tickets':[],
+            'due_date':None,
+            'desc':"Created by mail from {} to {}".format(args.sender, args.receip),
+        }
 
-        ticket=rpc_client.request("ticket.Tickets.put", 
-            change_reason="Automaticly created by email importer",
-            title=header_to_unicode(msg["subject"]),
-            import_id=import_id,
-            ticket_priority="3",
-            owner=user["user_id"],
-            ticket_status=settings['ticket_status'],
-            start_date=timestamp,
-            deligated_users=[],
-            allowed_groups=[],
-            ticket_completed=False,
-            relations=relation_ids,
-            tickets=[],
-            due_date=due_date,
-            desc="Created by mail from {} to {}".format(args.sender, args.receip),
-        )["data"]
+        if settings['due_days']:
+            ticket['due_date']=timestamp+int(settings['due_days'])*(24*3600)
+
+        #copy permission from found relation(s)
+        if settings['copy_relation_permissions']:
+            for relation in relations:
+                ticket['deligated_users'].update(relation['allowed_users'])
+                ticket['allowed_groups'].update(relation['allowed_groups'])
+
+        ticket['deligated_users']=list(ticket['deligated_users'])
+        ticket['allowed_groups']=list(ticket['allowed_groups'])
+
+        ticket=rpc_client.request("ticket.Tickets.put", **ticket)["data"]
 
         ticket_ids=[ ticket["_id"] ]
         debug("Created new ticket:", ticket["_id"])
@@ -398,15 +413,20 @@ try:
 
         filename = msg_part.get_filename()
         if filename:
-            #skip small inline stuff, mostly logos
-            if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline' and len(payload)<10000:
-                debug("Ignoring small inline image")
+            #skip inline files, mostly logos
+            if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline': # and len(payload)<10000:
+                debug("Ignoring inline file {}".format(filename))
                 continue
 
             with tempfile.TemporaryFile() as tmp_file:
                 debug("Creating document ticket object for", filename)
                 tmp_file.write(payload)
                 tmp_file.seek(0)
+
+                if incoming:
+                    direction="incoming"
+                else:
+                    direction="outgoing"
 
                 ticket_object=rpc_client.request("ticket.TicketObjects.put", 
                     import_id=import_id,
@@ -415,6 +435,7 @@ try:
                     allowed_users=[ user["user_id"] ],
                     create_time=timestamp, 
                     tickets=ticket_ids,
+                    direction=direction,
                     trackables=trackables,
                     type="doc"
                 )["data"]

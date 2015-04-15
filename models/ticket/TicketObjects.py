@@ -50,6 +50,13 @@ class TicketObjects(models.core.Protected.Protected):
                     ('change', 'Task update'),
                     ('doc', 'Document')
                 ], default='note'),
+                'direction': fields.Select(desc='Direction', choices=[
+                    ('outgoing', 'Outgoing'),
+                    ('incoming', 'Incoming'),
+                    ('internal', 'Internal'),
+                    ],
+                    default='unknown'),
+
                 'from': fields.String(desc='From'),
                 'to': fields.String(desc='To'),
                 'billing_relation': models.mongodb.Relation(
