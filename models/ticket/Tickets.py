@@ -149,11 +149,11 @@ class Tickets(models.core.Protected.Protected):
 
             diff=meta['tickets'].to_human(self.context, get_removed(old_doc['tickets'], ret['tickets']))
             for user in diff:
-                change_text+="This task no longer depends on task '{title}'\n".format(**user)
+                change_text+="This task is no longer a subtask of '{title}'\n".format(**user)
 
             diff=meta['tickets'].to_human(self.context, get_removed(ret['tickets'],old_doc['tickets']))
             for user in diff:
-                change_text+="This taks now depends on '{title}'.\n".format(**user)
+                change_text+="This taks is now a subtask of '{title}'.\n".format(**user)
 
 
             if old_doc['owner']!=ret['owner']:
@@ -264,7 +264,7 @@ class Tickets(models.core.Protected.Protected):
 
 #since this is recursive, we cant define it inside the Tickets class
 Tickets.meta.meta['meta'].meta['meta']['tickets']=models.mongodb.Relation(
-    desc='Sub tasks',
+    desc='Parent tasks',
     model=Tickets,
     resolve=False,
     list=True,

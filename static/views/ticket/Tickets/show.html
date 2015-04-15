@@ -217,7 +217,7 @@ new ControlList({
 
 new ControlListRelated({
     'view'              : view,
-    'context'           : '.ticket-depends',
+    'context'           : '.ticket-subtasks',
     'class'             : 'ticket.Tickets',
     'endless_scrolling' : false,
     'related_key'       : 'tickets',
@@ -300,6 +300,20 @@ new ControlListRelated({
         </table>
     </fieldset>
 
+    <fieldset class='ticket-subtasks inline-block' control-view="ticket.Tickets.edit">
+        <legend>Sub tasks</legend>
+        <table >
+            <tr class='colorRows  field-list-source notranslate field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
+                <td class='field-list-on-click-view field-put ticket-check-style' field-key='ticket_completed' field-no-text>
+                <td class='field-list-on-click-view field-put' field-key='title' >
+                <td class='field-list-on-click-view field-put ticket-status-style' field-key='ticket_status' >
+                <td class='field-list-on-click-view ui-icon ui-icon-close' field-key='tickets' field-list-view="ticket.Tickets.edit">
+            </tr>
+        </table>
+        <a class='control-on-click-view ui-icon ui-icon-plus' field-key='title' href='#'></a>
+    </fieldset>
+
+
     <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
         <table class='field-meta-put field-key-root' field-key='tickets'>
@@ -315,18 +329,6 @@ new ControlListRelated({
 </span>
 
 
-<fieldset class='ticket-depends inline-block' control-view="ticket.Tickets.edit">
-    <legend>Parent tasks</legend>
-    <table >
-        <tr class='colorRows  field-list-source notranslate field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
-            <td class='field-list-on-click-view field-put ticket-check-style' field-key='ticket_completed' field-no-text>
-            <td class='field-list-on-click-view field-put' field-key='title' >
-            <td class='field-list-on-click-view field-put ticket-status-style' field-key='ticket_status' >
-            <td class='field-list-on-click-view ui-icon ui-icon-close' field-key='tickets' field-list-view="ticket.Tickets.edit">
-        </tr>
-    </table>
-    <a class='control-on-click-view ui-icon ui-icon-plus' field-key='title' href='#'></a>
-</fieldset>
 
 
 
