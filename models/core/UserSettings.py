@@ -42,6 +42,7 @@ class UserSettings(models.mongodb.Base):
 
         collection = self.default_collection
         doc = self.db[collection].find_one(bson.objectid.ObjectId(self.context.session['user_id']))
+        doc = self.get_meta(doc).meta['meta'].ensure_defaults(self.context, doc)
 
         if not doc:
             return({})

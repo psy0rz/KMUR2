@@ -38,6 +38,7 @@ class ModuleSettings(models.mongodb.Base):
 
         collection = self.default_collection
         doc = self.db[collection].find_one(0)
+        doc = self.get_meta(doc).meta['meta'].ensure_defaults(self.context, doc)
 
         if not doc:
             return({})

@@ -128,6 +128,11 @@ class Base(object):
         return(data)
 
 
+    def ensure_defaults(self, context, data):
+        '''ensure that unset keys get the default value (if a default is specified)'''
+        return(self.meta['default'])
+
+
 class Nothing(Base):
     '''Special type that allows nothing.'''
     def __init__(self, **kwargs):
@@ -217,6 +222,14 @@ class Dict(Base):
 
         return(ret)
 
+    def ensure_defaults(self, context, data):
+        ret=dict(data)
+        for key,sub_meta in self.meta['meta'].items():
+                if not key in ret:
+                    ret[key]=sub_meta.ensure_defaults(context, None)
+
+        return(ret)
+
 
 class List(Base):
     """Data that contains a list of other field-objects
@@ -287,6 +300,14 @@ class List(Base):
             ret.append(self.meta['meta'].to_human(context, value))
 
         return (ret)
+
+
+    def ensure_defaults(self, context, data):
+        ret=[]
+        for index, value in enumerate(data):
+            ret.append(self.meta['meta'].ensure_defaults(context, value))
+
+        return(ret)
 
 # seems to make things more complicated..                
 # class ListDict(object):
