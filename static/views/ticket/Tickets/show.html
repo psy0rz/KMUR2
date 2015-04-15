@@ -215,11 +215,28 @@ new ControlList({
 
 });
 
-new ControlListRelated({
+
+$('.ticket-list', context).on("field_list_post_put", function(e, list_element, data)
+{
+    if (data)
+    {
+        //gray out completed tasks
+        if (!data['ticket_completed'])
+        {
+            list_element.removeClass("ticket-gray-style");
+        }
+        else
+        {
+            list_element.addClass("ticket-gray-style");
+        }
+    }
+});
+
+sub_tickets=new ControlListRelated({
     'view'              : view,
-    'context'           : '.ticket-subtasks',
+    'context'           : '.sub-tickets',
     'class'             : 'ticket.Tickets',
-    'endless_scrolling' : false,
+    'endless_scrolling' : true,
     'related_key'       : 'tickets',
     'related_value'     : view.params._id,
     'create_view_params': {
@@ -227,6 +244,8 @@ new ControlListRelated({
     }
 
 });
+
+
 
 </script>
 
@@ -300,12 +319,20 @@ new ControlListRelated({
         </table>
     </fieldset>
 
-    <fieldset class='ticket-subtasks inline-block' control-view="ticket.Tickets.edit">
+    <fieldset class='sub-tickets inline-block' control-view="ticket.Tickets.edit" style='overflow: auto; max-height:20em; max-width:50em'>
         <legend>Sub tasks</legend>
         <table >
-            <tr class='colorRows  field-list-source notranslate field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
+            <tr class='ui-widget-header'>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_completed'>
+                <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
+                <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
+                <th>
+            </tr>
+            <tr class='colorRows ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
                 <td class='field-list-on-click-view field-put ticket-check-style' field-key='ticket_completed' field-no-text>
                 <td class='field-list-on-click-view field-put' field-key='title' >
+                <td class='field-list-on-click-view field-put ticket-due-date-style' field-key='due_date' >
                 <td class='field-list-on-click-view field-put ticket-status-style' field-key='ticket_status' >
                 <td class='field-list-on-click-view ui-icon ui-icon-close' field-key='tickets' field-list-view="ticket.Tickets.edit">
             </tr>
@@ -317,7 +344,7 @@ new ControlListRelated({
     <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
         <table class='field-meta-put field-key-root' field-key='tickets'>
-            <tr class='colorRows  field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
+            <tr class='colorRows ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
                 <td class='field-put field-list-on-click-view ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
                 <td class='field-put field-list-on-click-view' field-key='tickets.title'>
                 <td class='field-put field-list-on-click-view ticket-status-style' field-key='tickets.ticket_status'>

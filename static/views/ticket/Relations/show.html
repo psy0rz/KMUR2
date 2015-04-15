@@ -101,6 +101,24 @@ $('.field-list-source[field-key="contracts"]', context).on("field_list_post_put"
     span.text(data.title);
 });
 
+
+$('.field-list-source[field-key=""]', $(".tickets",context)).on("field_list_post_put", function(e, list_element, data)
+{
+    if (data)
+    {
+        //gray out completed tasks
+        if (!data['ticket_completed'])
+        {
+            list_element.removeClass("ticket-gray-style");
+        }
+        else
+        {
+            list_element.addClass("ticket-gray-style");
+        }
+    }
+});
+
+
 var contract_budgets=new ControlList({
     'view'              : view,
     'context'           : '.contract-budgets',
@@ -270,10 +288,10 @@ var tickets_objects=new ControlList({
 
 
                 <td class='field-put control-list-on-click-edit' field-key='title' >
-                <td class='field-put control-list-on-click-edit' field-key='start_date' nowrap>
-                <td class='field-put control-list-on-click-edit ticket-due-date-style' field-key='due_date' nowrap>
-                <td class='field-put control-list-on-click-edit ticket-priority-style' field-key='ticket_priority' nowrap>
-                <td class='field-put control-list-on-click-edit ticket-status-style' field-key='ticket_status' nowrap>
+                <td class='field-put control-list-on-click-edit ticket-start-date-style' field-key='start_date' >
+                <td class='field-put control-list-on-click-edit ticket-due-date-style' field-key='due_date' >
+                <td class='field-put control-list-on-click-edit ticket-priority-style' field-key='ticket_priority'>
+                <td class='field-put control-list-on-click-edit ticket-status-style' field-key='ticket_status'>
 
                 <td class='control-on-click-del ui-icon ui-icon-trash'>
             </tr>

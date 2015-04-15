@@ -203,12 +203,21 @@ a:hover
 	color:gray;
 }
 
+.ticket-status-style {
+	white-space: nowrap;
+}
 
+
+.ticket-start-date-style
+{
+	white-space: nowrap;
+}
 
 
 .ticket-due-date-style
 {
 	color:#000;
+	white-space: nowrap;
 }
 
 .ticket-due-date-style[field-timestamp-days="7"],
@@ -246,6 +255,11 @@ a:hover
 	color:#f00;
 	font-weight:bold;
 }
+
+.ticket-priority-style {
+	white-space: nowrap;
+}
+
 
 .ticket-priority-style .field-select-5
 {
