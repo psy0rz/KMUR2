@@ -234,6 +234,7 @@ $(".on-click-unpayed", context).click(function()
             <th class='field-meta-put' field-key='items.price' field-meta-key='desc' style='border-bottom-style: solid'>
             <th class='field-meta-put' field-key='items.tax' field-meta-key='desc' style='border-bottom-style: solid'>
             <th class='field-meta-put' field-key='items.calc_total' field-meta-key='desc' style='border-bottom-style: solid'>
+            <th class='field-meta-put' field-key='items.calc_tax' field-meta-key='desc' style='border-bottom-style: solid'>
             <th class='field-meta-put' field-key='items.calc_total_tax' field-meta-key='desc' style='border-bottom-style: solid'>
         </tr>
     </thead>
@@ -251,12 +252,18 @@ $(".on-click-unpayed", context).click(function()
                 <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='items.calc_total' ></span>
 
             <td style='width: 5em; text-align: right;'>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='items.calc_tax' ></span>
+
+            <td style='width: 5em; text-align: right;'>
                 <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='items.calc_total_tax' ></span>
         </tr>
         <tr>
             <td colspan=4 style='border:none'>
             <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
                 <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='calc_total'></span>
+
+            <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
+                <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='calc_tax'></span>
 
             <td style='text-align: right; font-weight: bold; border-top: 2px solid black'>
                 <span class='field-put' field-key='currency'></span>&nbsp;<span class='field-put' field-key='calc_total_tax'></span>

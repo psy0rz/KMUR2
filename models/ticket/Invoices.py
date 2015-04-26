@@ -121,16 +121,18 @@ class Invoices(models.core.Protected.Protected):
                         fields.Dict({
                                 'amount': fields.Number(desc='Amount',size=5, decimals=3),
                                 'desc': fields.String(desc='Description', size=80),
-                                'price': fields.Number(desc='Price', size=5,decimals=3),
+                                'price': fields.Number(desc='Per item', size=5,decimals=3),
                                 'tax': fields.Number(desc='Tax', default=21, size=5, decimals=3,min=0, max=100),
-                                'calc_total': fields.Number(desc='Total',decimals=3),
-                                'calc_total_tax': fields.Number(desc='with tax',decimals=3),
+                                'calc_total': fields.Number(desc='Total excl.' ,decimals=3),
+                                'calc_tax': fields.Number(desc='Total tax', decimals=2, readonly=readonly),
+                                'calc_total_tax': fields.Number(desc='Total incl.',decimals=3),
                             }),
                         desc="Invoice items",
                         readonly=readonly
                     ),
-                    'calc_total': fields.Number(desc='Total', decimals=2, readonly=readonly),
-                    'calc_total_tax': fields.Number(desc='with tax', decimals=2, readonly=readonly),
+                    'calc_total': fields.Number(desc='Total excl.', decimals=2, readonly=readonly),
+                    'calc_tax': fields.Number(desc='Total tax', decimals=2, readonly=readonly),
+                    'calc_total_tax': fields.Number(desc='Total incl.', decimals=2, readonly=readonly),
 
                     'notes': fields.String(desc='Notes'),
 
@@ -330,32 +332,39 @@ class Invoices(models.core.Protected.Protected):
         so we're only rounding UP when its >0.005, not >=0.005, but in practice this makes no difference.
 
         """
-#        time.sleep(2)
-#        self.get_meta(doc).meta['meta'].check(self.context, doc)
         doc['calc_total']=0
+        doc['calc_tax']=0
         doc['calc_total_tax']=0
         for item in doc['items']:
             try:
                 item['calc_total']=round(item['amount']*item['price'],2)
-                item['calc_total_tax']=round(item['calc_total']+(item['calc_total']*item['tax']/100),2)
+                item['calc_tax']=round(item['calc_total']*item['tax']/100)
+                item['calc_total_tax']=item['calc_total']+item['calc_tax']
                 doc['calc_total']+=item['calc_total']
+                doc['calc_tax']+=item['calc_tax']
                 doc['calc_total_tax']+=item['calc_total_tax']
             except:
                 item['calc_total']=None
+                item['calc_tax']=None
                 item['calc_total_tax']=None
 
 
         doc['calc_total']=round(doc['calc_total'],2)
+        doc['calc_tax']=round(doc['calc_tax'],2)
         doc['calc_total_tax']=round(doc['calc_total_tax'],2)
 
         return(doc)
 
     @RPC(roles="finance_read")
-    def get(self, _id):
-        # return(self.calc(**self._get(_id)))
-        #We dont do any processing: we always want to return the invoice in its original unaltered form, as this is required by tax-rules.
-        #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
-        return(self._get(_id))
+    def get(self, _id, unaltered=False):
+
+        if unaltered:
+            #Dont do any processing: we always want to return the invoice in its original unaltered form, as this is required by tax-rules.
+            #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
+            return(self._get(_id))
+        else:
+            #Usually we want to recalculate, in case of updates in the calculation. (we've added calc_tax later for example)
+            return(self.calc(**self._get(_id)))
 
 
     @RPC(roles="finance_admin")
@@ -467,23 +476,25 @@ class Invoices(models.core.Protected.Protected):
         meta=self.get_meta().meta['meta'].meta['meta']['items'].meta['meta'].meta['meta']
         table_data.append(
             [
-                meta['amount'].meta['desc'],
-                meta['desc'].meta['desc'],
-                meta['price'].meta['desc'],
-                meta['tax'].meta['desc'],
-                meta['calc_total'].meta['desc'],
-                meta['calc_total_tax'].meta['desc'],
+                "",
+                Paragraph(meta['desc'].meta['desc'], styles["Small"]),
+                Paragraph(meta['price'].meta['desc'], styles["Small"]),
+                Paragraph(meta['tax'].meta['desc'], styles["Small"]),
+                Paragraph(meta['calc_total'].meta['desc'], styles["Small"]),
+                Paragraph(meta['calc_tax'].meta['desc'], styles["Small"]),
+                Paragraph(meta['calc_total_tax'].meta['desc'], styles["Small"]),
             ])
 
         #items
         for item in invoice['items']:
             table_data.append([
                     item['amount'],
-                    Paragraph(item['desc'], styles["Normal"]),
-                    "{} {}".format(invoice['currency'], locale.currency(item['price'], symbol=False, grouping=True)),
+                    Paragraph(item['desc'], styles["Small"]),
+                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['price'], monetary=True, grouping=False)),
                     "{}%".format(item['tax']),
-                    "{} {}".format(invoice['currency'], locale.currency(item['calc_total'], symbol=False, grouping=True)),
-                    "{} {}".format(invoice['currency'], locale.currency(item['calc_total_tax'], symbol=False, grouping=True))
+                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_total'], monetary=True, grouping=False)),
+                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_tax'], monetary=True, grouping=False)),
+                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_total_tax'], monetary=True, grouping=False))
                 ])
 
         #totals
@@ -492,26 +503,30 @@ class Invoices(models.core.Protected.Protected):
             "",
             "",
             "Grand totals:",
-            "{} {}".format(invoice['currency'], locale.currency(invoice['calc_total'], symbol=False, grouping=True)),
-            "{} {}".format(invoice['currency'], locale.currency(invoice['calc_total_tax'], symbol=False, grouping=True)),
+            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_total'], monetary=True, grouping=False)),
+            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_tax'], monetary=True, grouping=False)),
+            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_total_tax'], monetary=True, grouping=False)),
             ])
 
         #generate table and set cell styles
-        table=Table(table_data, colWidths=[2*cm, 8*cm, 2*cm, 1*cm, 2*cm])
+        table=Table(table_data, colWidths=[1*cm, 9*cm, 2*cm, 1*cm, 2*cm, 2*cm, 2*cm])
         table.setStyle(TableStyle([
+                ('FONTSIZE', (0, 0), (-1, -1), 8), #fontsize of the numbers
                 ('GRID', (0,0), (-1,-2), 0.5, colors.gray), #global grid (last line no grid)
                 ('LINEBELOW', (0,0), (-1,0), 2, colors.black), #header line
-                ('ALIGN', (-4,0), (-1,-1), 'RIGHT'), #right align last 4 colums
+                ('ALIGN', (-5,0), (-1,-1), 'RIGHT'), #right align last 4 colums
                 ('ALIGN', (0,0), (0,-1), 'RIGHT'), #right align amount
                 ('VALIGN', (0,0), (-1,-1), 'TOP'), #align all rows to top
-                ('GRID', (-2,-1), (-1,-1), 0.5, colors.gray), #totals grid
-                ('LINEABOVE', (-2,-1), (-1,-1), 2, colors.black), #totals line
+                ('GRID', (-3,-1), (-1,-1), 0.5, colors.gray), #totals grid
+                ('LINEABOVE', (-3,-1), (-1,-1), 2, colors.black), #totals line
+                ('GRID', (-1,-1), (-1,-1), 2, colors.black), #grand total inc. box
 
             ]))
         pdf_elements.append(table)
 
 
         #notes
+        pdf_elements.append(Spacer(0, 1*cm))
         notes=Preformatted(invoice['notes'],style=styles['Italic'], splitChars=" ", maxLineLength=100)
         pdf_elements.append(notes)
 
@@ -534,6 +549,7 @@ class Invoices(models.core.Protected.Protected):
             ], canvas)
 
             canvas.restoreState()
+
 
 
         #generate pdf from elements
