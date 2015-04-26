@@ -135,6 +135,7 @@ class Invoices(models.core.Protected.Protected):
                     'calc_total_tax': fields.Number(desc='Total incl.', decimals=2, readonly=readonly),
 
                     'notes': fields.String(desc='Notes'),
+                    'global_notes': fields.String(desc='Global notes',readonly=True), #filled from invoiceSettings
 
                     'currency': fields.String(desc='Currency', default=settings['currency'], readonly=readonly)
 
@@ -265,10 +266,13 @@ class Invoices(models.core.Protected.Protected):
         if doc['sent']==False:
             raise FieldError("Invoice is not sent yet.")
 
-        doc['sent']=False
-        doc['payed']=False
+        update_doc={}
 
-        ret=self._put(doc)
+        update_doc['_id']=_id
+        update_doc['sent']=False
+        update_doc['payed']=False
+
+        ret=self._put(update_doc)
         self.event("changed",ret)
         self.warning("Revoked invoice {invoice_nr} sent to {company}. Dont forget to destroy all copies.".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
 
@@ -338,7 +342,7 @@ class Invoices(models.core.Protected.Protected):
         for item in doc['items']:
             try:
                 item['calc_total']=round(item['amount']*item['price'],2)
-                item['calc_tax']=round(item['calc_total']*item['tax']/100)
+                item['calc_tax']=round(item['calc_total']*item['tax']/100, 2)
                 item['calc_total_tax']=item['calc_total']+item['calc_tax']
                 doc['calc_total']+=item['calc_total']
                 doc['calc_tax']+=item['calc_tax']
@@ -349,23 +353,26 @@ class Invoices(models.core.Protected.Protected):
                 item['calc_total_tax']=None
 
 
-        doc['calc_total']=round(doc['calc_total'],2)
-        doc['calc_tax']=round(doc['calc_tax'],2)
-        doc['calc_total_tax']=round(doc['calc_total_tax'],2)
+        doc['calc_total']=doc['calc_total']
+        doc['calc_tax']=doc['calc_tax']
+        doc['calc_total_tax']=doc['calc_total_tax']
 
         return(doc)
 
     @RPC(roles="finance_read")
     def get(self, _id, unaltered=False):
 
-        if unaltered:
-            #Dont do any processing: we always want to return the invoice in its original unaltered form, as this is required by tax-rules.
-            #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
-            return(self._get(_id))
-        else:
-            #Usually we want to recalculate, in case of updates in the calculation. (we've added calc_tax later for example)
-            return(self.calc(**self._get(_id)))
+        doc=self._get(_id)
 
+        if not unaltered:
+            #Sometimes we dont want any re-processing: we want to return the invoice in its original unaltered form, as this is required by tax-rules.
+            #This way, even if we fix a bug in the calculation routines for example, the original invoice will still be returned.
+            doc=self.calc(**doc)
+
+        settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+        doc['global_notes']=settings['global_notes'].format(**doc)
+
+        return(doc)
 
     @RPC(roles="finance_admin")
     def delete(self, _id):
@@ -528,6 +535,8 @@ class Invoices(models.core.Protected.Protected):
         #notes
         pdf_elements.append(Spacer(0, 1*cm))
         notes=Preformatted(invoice['notes'],style=styles['Italic'], splitChars=" ", maxLineLength=100)
+        pdf_elements.append(notes)
+        notes=Preformatted(invoice['global_notes'],style=styles['Italic'], splitChars=" ", maxLineLength=100)
         pdf_elements.append(notes)
 
         #print adress info and extra stuff on first page

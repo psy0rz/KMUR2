@@ -22,6 +22,7 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
                         resolve=False,
                         check_exists=True,
                         list=False),
+                    'global_notes': fields.String(desc='Global invoice notes', default='Please transfer the specified amount within 14 days to the the bankaccount mentioned above. Add {invoice_nr} to the description field.'),
                     'invoice_status': fields.List(
                         fields.Dict({
                                 'title': fields.String(desc="Title",min=3),
