@@ -27,7 +27,7 @@ IBAN: {iban_nr}
 BIC: {bic_code}
 """
 
-retour_format=">> Retouradres: {address}, {zip_code}, {city}, ({country})"
+retour_format=">> Retouradres: {address}, {zip_code} {city} ({country})"
 
 to_format="""{company}
 {department}
@@ -36,8 +36,7 @@ to_format="""{company}
 {country}
 """
 
-date_format="""Invoice date: %d-%m-%Y"""
-invoice_format="""Invoice number: {invoice_nr}"""
+invoice_date_format=   """%d-%m-%Y"""
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module
@@ -343,7 +342,7 @@ class Invoices(models.core.Protected.Protected):
             try:
                 item['calc_total']=round(item['amount']*item['price'],2)
                 item['calc_tax']=round(item['calc_total']*item['tax']/100, 2)
-                item['calc_total_tax']=item['calc_total']+item['calc_tax']
+                item['calc_total_tax']=round(item['calc_total']+item['calc_tax'],2) #computer rounding errors
                 doc['calc_total']+=item['calc_total']
                 doc['calc_tax']+=item['calc_tax']
                 doc['calc_total_tax']+=item['calc_total_tax']
@@ -353,9 +352,9 @@ class Invoices(models.core.Protected.Protected):
                 item['calc_total_tax']=None
 
 
-        doc['calc_total']=doc['calc_total']
-        doc['calc_tax']=doc['calc_tax']
-        doc['calc_total_tax']=doc['calc_total_tax']
+        doc['calc_total']=round(doc['calc_total'],2)
+        doc['calc_tax']=round(doc['calc_tax'],2)
+        doc['calc_total_tax']=round(doc['calc_total_tax'],2)
 
         return(doc)
 
@@ -471,9 +470,13 @@ class Invoices(models.core.Protected.Protected):
         pdf_elements.append(Spacer(0, 5*cm))
 
         #invoice number and date
-        pdf_elements.append(Preformatted(invoice_format.format(**invoice), style=styles['Normal']))
-        pdf_elements.append(Preformatted(time.strftime(date_format, time.localtime(invoice['sent_date'])), style=styles['Normal']))
-                
+        pdf_elements.append(
+            Table([
+                    [ "Invoice number:", invoice["invoice_nr"] ],
+                    [ "Invoice date:",   time.strftime(invoice_date_format, time.localtime(invoice['sent_date'])) ]
+                ],hAlign='LEFT')
+        )
+               
         pdf_elements.append(Spacer(0, 3*cm))
 
         #convert invoice items to table
@@ -485,23 +488,28 @@ class Invoices(models.core.Protected.Protected):
             [
                 "",
                 Paragraph(meta['desc'].meta['desc'], styles["Small"]),
-                Paragraph(meta['price'].meta['desc'], styles["Small"]),
-                Paragraph(meta['tax'].meta['desc'], styles["Small"]),
-                Paragraph(meta['calc_total'].meta['desc'], styles["Small"]),
-                Paragraph(meta['calc_tax'].meta['desc'], styles["Small"]),
-                Paragraph(meta['calc_total_tax'].meta['desc'], styles["Small"]),
+                meta['price'].meta['desc'],
+                "",
+                meta['tax'].meta['desc'],
+                # "1","2","3","4","5","6"
+                meta['calc_total'].meta['desc'],
+                "",
+                meta['calc_tax'].meta['desc'],
+                "",
+                meta['calc_total_tax'].meta['desc'],
+                ""
             ])
 
         #items
         for item in invoice['items']:
             table_data.append([
-                    item['amount'],
+                    locale.format("%g", item['amount']),
                     Paragraph(item['desc'], styles["Small"]),
-                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['price'], monetary=True, grouping=False)),
+                    invoice['currency'], locale.format("%.2f", item['price'], monetary=True, grouping=False),
                     "{}%".format(item['tax']),
-                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_total'], monetary=True, grouping=False)),
-                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_tax'], monetary=True, grouping=False)),
-                    "{} {}".format(invoice['currency'], locale.format("%.2f", item['calc_total_tax'], monetary=True, grouping=False))
+                    invoice['currency'], locale.format("%.2f", item['calc_total'], monetary=True, grouping=False),
+                    invoice['currency'], locale.format("%.2f", item['calc_tax'], monetary=True, grouping=False),
+                    invoice['currency'], locale.format("%.2f", item['calc_total_tax'], monetary=True, grouping=False)
                 ])
 
         #totals
@@ -509,24 +517,31 @@ class Invoices(models.core.Protected.Protected):
             "",
             "",
             "",
-            "Grand totals:",
-            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_total'], monetary=True, grouping=False)),
-            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_tax'], monetary=True, grouping=False)),
-            "{} {}".format(invoice['currency'], locale.format("%.2f", invoice['calc_total_tax'], monetary=True, grouping=False)),
+            "",
+            "Total amounts:",
+            invoice['currency'], locale.format("%.2f", invoice['calc_total'], monetary=True, grouping=False),
+            invoice['currency'], locale.format("%.2f", invoice['calc_tax'], monetary=True, grouping=False),
+            invoice['currency'], locale.format("%.2f", invoice['calc_total_tax'], monetary=True, grouping=False),
             ])
 
         #generate table and set cell styles
-        table=Table(table_data, colWidths=[1*cm, 9*cm, 2*cm, 1*cm, 2*cm, 2*cm, 2*cm])
+        table=Table(table_data, colWidths=[1*cm, 9*cm, 0.5*cm, 1.5*cm, 1*cm, 0.5*cm, 1.5*cm, 0.5*cm, 1.5*cm, 0.5*cm, 1.5*cm])
         table.setStyle(TableStyle([
                 ('FONTSIZE', (0, 0), (-1, -1), 8), #fontsize of the numbers
-                ('GRID', (0,0), (-1,-2), 0.5, colors.gray), #global grid (last line no grid)
+                ('LINEBELOW', (0,0), (-1,-2), 0.5, colors.gray), #global horizontal lines (last line no grid)
+                ('LINEBEFORE', (-2,0), (-2,-1), 0.5, colors.gray), #total incl. vertical line
+                ('LINEBEFORE', (-4,0), (-4,-1), 0.5, colors.gray), #total tax. vertical line
+                ('LINEBEFORE', (-6,0), (-6,-1), 0.5, colors.gray), #total excl. vertical line
+                ('LINEBEFORE', (-7,0), (-7,-2), 0.5, colors.gray), #tax vertical line
+                ('LINEBEFORE', (-9,0), (-9,-2), 0.5, colors.gray), #tax vertical line
+
                 ('LINEBELOW', (0,0), (-1,0), 2, colors.black), #header line
-                ('ALIGN', (-5,0), (-1,-1), 'RIGHT'), #right align last 4 colums
-                ('ALIGN', (0,0), (0,-1), 'RIGHT'), #right align amount
+                ('ALIGN', (-10,1), (-1,-1), 'RIGHT'), #right align last 9 colums
+                ('ALIGN', (0,0), (0,-1), 'RIGHT'), #right align first colum
                 ('VALIGN', (0,0), (-1,-1), 'TOP'), #align all rows to top
-                ('GRID', (-3,-1), (-1,-1), 0.5, colors.gray), #totals grid
-                ('LINEABOVE', (-3,-1), (-1,-1), 2, colors.black), #totals line
-                ('GRID', (-1,-1), (-1,-1), 2, colors.black), #grand total inc. box
+                # ('GRID', (-3,-1), (-1,-1), 0.5, colors.gray), #totals grid
+                ('LINEABOVE', (-6,-1), (-1,-1), 2, colors.black), #totals line
+                ('BOX', (-2,-1), (-1,-1), 2, colors.black), #grand total inc. box
 
             ]))
         pdf_elements.append(table)
