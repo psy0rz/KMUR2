@@ -1,27 +1,33 @@
-To create the initial database and admin user:
-
-psy@psypad$ mongo tracer_test_nl
-MongoDB shell version: 2.4.9
-connecting to: tracer_test_nl
-> db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "roles" : [ "admin" ], "group_ids": []  } )
->
-
-mkdir files/tracer_test_nl/
-touch files/tracer_test_nl/index.html
-
-mkdir static/files/tracer_test_nl/
-touch static/files/tracer_test_nl/index.html
 
 
+= Installing =
 
-Now you can login with admin@test.nl and password "changeme".
-
-
-= Dependencies =
+== Dependencies ==
 
 - python wand
 - tesseract
-- python beaker
-- python bottle
-- python pymongo
-- python reportlab
+- pip3.4 install beaker
+- pip3.4 install bottle
+- pip3.4 install pymongo
+- pip3.4 install reportlab
+- pip3.4 install python3-memcached
+
+== config ==
+
+create a empty file 
+
+settings.py
+
+
+== running ==
+
+./run.py
+
+..or deploy in a wsgi webserver 
+
+= creating a new environment =
+
+
+./newdomain mycompany.com
+
+Now you can login with admin@mycompany.com and password "changeme".

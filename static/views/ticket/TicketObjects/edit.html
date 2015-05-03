@@ -55,7 +55,7 @@ var form=new ControlForm({
         //calculate worked minutes
         $(context).on('field_changed', '[field-key="start_time"], [field-key="end_time"]',function(e, key, meta, element, data)
         {
-            var form_data=this.field_get();
+            var form_data=form.field_get();
             if (form_data.end_time && form_data.start_time)
             {
                 var delta=form_data.end_time-form_data.start_time;
