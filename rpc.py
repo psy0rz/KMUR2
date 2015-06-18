@@ -17,8 +17,7 @@ os.chdir(os.path.dirname(__file__))
 import fields
 import models.common
 
-#joyent 
-os.environ["MAGICK_HOME"]="/opt/local"
+import settings
 
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 

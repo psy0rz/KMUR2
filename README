@@ -14,9 +14,12 @@
 
 == config ==
 
-create a empty file 
+create a empty file: settings.py
 
-settings.py
+on joyent/illumos you may have to add:
+
+import os
+os.environ["MAGICK_HOME"]="/opt/local"
 
 
 == running ==
