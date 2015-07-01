@@ -1240,12 +1240,13 @@ ControlList.prototype.attach_event_handlers=function()
     //generic regex_or filter to do quick searches in multiple fields 
     $(".control-on-change-search", context).off(".control-on-change-search").on('change.control-on-change-search keypress.control-on-change-search paste.control-on-change-search textInput.control-on-change-search input.control-on-change-search', function()
     {
-        this_control.context.scrollTop(0);
 
         var search_txt=$(this).val();
 
         if (this_control.last_search_txt==search_txt)
             return ;
+
+        this_control.context.scrollTop(0);
 
         this_control.last_search_txt=search_txt;
 

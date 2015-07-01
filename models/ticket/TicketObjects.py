@@ -40,7 +40,7 @@ class TicketObjects(models.core.Protected.Protected):
                     (1.75, '175%'),
                     (2, '200%'),
                 ], default=1),
-                'title': fields.String(min=3, desc='Title', size=100),
+                'title': fields.String(min=3, desc='Title', size=200),
                 'text': fields.String(desc='Text'),
                 'type': fields.Select(desc='Type', choices=[
                     ('phone', 'Phone call'),

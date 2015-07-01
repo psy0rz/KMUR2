@@ -1,0 +1,205 @@
+
+<script>
+
+
+var form=new ControlForm({
+    'view'            : view,
+    'class'           : 'ticket.TicketObjects',
+    'get_params'      : { '_id': view.params._id },
+    'title'           : 'View document {title}',
+    'on_change'       : 'get',
+    'put_params'      : {
+        '_id': view.params._id,
+        'type': view.params.type
+    },
+    'create_view_params': view.params,
+    'field_put': function(data, options)
+    {
+        $(".show-on", context).hide();
+
+        if (data)
+        {
+            $(".show-on-"+data['type'], context).show();
+
+            var delta=data.end_time-data.start_time;
+            $('.delta',context).text(delta/60);
+
+
+            //display images with normal image tag
+            $('.image-viewer', context).hide();
+            $('.object-viewer', context).hide();
+
+            //try to show documents correctly inline
+            if (data['type']=='doc')
+            {
+
+                $(".download-link", context).attr("href", data["file_url"]);
+
+                if (data['file_content_type'] && data['file_content_type'].indexOf("image")==0)
+                {
+                    $('.image-viewer', context).show().attr("src", data['file_url']);
+                }
+                else
+                {
+                    //needs to be recreated to prevent weird browser bugs
+                    $('.object-viewer',context).show().replaceWith($('.object-viewer',context).clone().attr('data',data["file_url"])); 
+                    $('.object-viewer',context).focus();
+                }
+            }
+
+            // $('embed',context).replaceWith($('embed',context).clone().attr('src',data["file_url"]));
+            // $('object',context).replaceWith($('object',context).clone().attr('data',data["file_url"]));
+
+            // $("iframe", context).attr("src", data["file_url"])
+        }       
+    }
+});
+
+</script>
+
+<h1 control-view='ticket.TicketObjects.edit' class='value field-put control-on-click-view' field-key='title'></h1>
+
+<a class='download-link' target='_new'>
+    <img class='field-put ticketobject-inline-thumb' src='#' field-key='thumbnail'>
+</a>
+
+<table control-view='ticket.TicketObjects.edit' class='inline-block'>
+    <tr>
+    <td>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='type' field-meta-key='desc'>
+            <td class='value field-put' field-key='type'>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
+            <td class='control-on-click-view value field-put' field-key='create_time' field-timestamp-allow-time>
+        </tr>
+        <tr class='show-on show-on-phone show-on-email'>
+            <td class='field-meta-put' field-key='from' field-meta-key='desc'>
+            <td class='control-on-click-view value field-put' field-key='from'>
+        </tr>
+        <tr class='show-on show-on-phone show-on-email'>
+            <td class='field-meta-put' field-key='to' field-meta-key='desc'>
+            <td class='control-on-click-view value field-put' field-key='to'>
+        </tr>
+        <tr class="show-on show-on-doc">
+            <td class='field-meta-put' field-key='file_content_type' field-meta-key='desc'>
+            <td class='field-put value' field-key='file_content_type'></td>
+        </tr>
+            <tr class='field-meta-put'  field-key='allowed_groups'>
+                <td class='ticket-sharing-permissions  field-meta-put  control-on-click-view' field-key='allowed_groups' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide control-on-click-view' field-key='allowed_groups' field-list-view="core.Groups.edit">
+                        <span class='ticket-sharing-group field-put ' field-key='allowed_groups.name'></span>
+                    </span>
+        </tr>
+        </tr>
+            <tr class='field-meta-put'  field-key='allowed_users'>
+                <td class='ticket-sharing-permissions  field-meta-put  control-on-click-view' field-key='allowed_users' field-meta-key='desc'>
+                <td>:
+                    <span class='field-list-source field-list-source-hide control-on-click-view' field-key='allowed_users' field-list-view="core.Users.edit">
+                        <span class='ticket-sharing-user field-put ' field-key='allowed_users.name'></span>
+                    </span>
+        </tr>
+        <tr>
+            <td class='field-meta-put control-on-click-view ticket-sharing-permissions' field-key='tickets' field-meta-key='desc'>
+            <td>
+            <table class='field-meta-put field-key-root' style='border-width: 1px; border-style:solid' field-key='tickets'>
+
+                <tr class='colorRows field-list-on-click-view  field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
+                    <td class='field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
+                    <td class='field-put' field-key='tickets.title'>
+                    <td class='field-put ticket-status-style' field-key='tickets.ticket_status' >
+                </tr>
+            </table>
+        </tr>
+    </table>
+</table>
+
+
+
+<fieldset class='inline-block show-on show-on-time ' >
+    <legend>Billing</legend>
+    <table class='inline-block'>
+        <tr>
+            <td class='field-meta-put' field-key='start_time' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='start_time' field-timestamp-allow-time>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='end_time' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='end_time' field-timestamp-allow-time>
+        </tr>
+        <tr>
+            <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
+            <td>
+                <span class='field-meta-put' field-key='minutes' ></span> 
+                ( <span class='delta'></span> )
+        </tr>
+
+        <tr>
+            <td class='field-meta-put' field-key='minutes_factor' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='minutes_factor'>
+        </tr>
+
+        <tr>
+            <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
+            <td class='field-meta-put ' field-key='billing_relation'>
+                <span class='list-span field-dict-raw field-list-source notranslate field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
+        </tr>
+
+        <tr>
+            <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='billing_contract'>
+                <span class='list-span field-list-source notranslate field-list-source-hide' field-key='billing_contract' field-list-view="ticket.Contracts.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_contract.title' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='title' result-format='{title}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
+        </tr>
+
+        <tr>
+            <td class='field-meta-put' field-key='billing_contract_invoice' field-meta-key='desc'>
+            <td class='field-meta-put' field-key='billing_contract_invoice'>
+                <span class='list-span field-list-source notranslate field-list-source-hide' field-key='billing_contract_invoice' field-list-view="ticket.ContractInvoices.edit">
+                    <span class='field-put field-list-on-click-view' field-key='billing_contract_invoice.desc' style='font-weight: bold'></span>
+                    <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
+                </span>
+                <input  class='field-relation-on-change-autocomplete' search-keys='desc' result-format='{desc}' size=10/>
+                <span style='display:inline-block' class='field-relation-on-click-add ui-icon ui-icon-triangle-1-s'></span>
+                <a class='field-list-on-click-view ui-icon ui-icon-plus inline-block' field-key='title' href='#'></a>
+        </tr>
+
+
+    </table>
+</fieldset>
+
+<p>
+<a class='download-link show-on show-on-doc' target='_new'>Download document...</a>
+
+<fieldset>
+    <!-- <embed style='position: relative; width:100%; height:100%;left:0px; right: 0px; top:0px; bottom:0px'></embed> -->
+    <img class='image-viewer' width=100%>
+    <object class='object-viewer'  height=1000 style='width:100%; '></object>
+
+    <p style='white-space: pre-wrap' class='field-put' field-key='text'>
+    </p>
+</fieldset>
+
+<!-- <object width=100%></object> -->
+<!-- <iframe width=100% height=auto ></iframe> -->
+
+
+<div class='floatingBar viewErrorClass' control-view='ticket.TicketObjects.edit'>
+    <button class='control-on-click-view' >Edit</button>
+    <button class='control-on-click-cancel' >Back</button>
+    <span class='viewErrorText'></span>
+</div>
