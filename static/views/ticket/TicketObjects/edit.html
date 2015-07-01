@@ -91,14 +91,17 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 </script>
 
 
-<a class='download-link' target='_new'>
-    <h1>
-        <img class='field-put ticketobject-inline-thumb' src='#' field-key='thumbnail'>
-        <span class='field-put' field-key='type'></span>
-    </h1>
-</a>
+<img class='field-put ticketobject-inline-thumb' src='#' field-key='thumbnail'>
 
 <table class='inline-block'>
+    <tr>
+        <td class='field-meta-put' field-key='title' field-meta-key='desc'>
+        <td class='field-meta-put' field-key='title'>
+    </tr>
+     <tr >
+        <td class='field-meta-put' field-key='type' field-meta-key='desc'>
+        <td><span class='value field-put' field-key='type'></span>
+    </tr>
     <tr>
         <td class='field-meta-put' field-key='create_time' field-meta-key='desc'>
         <td class='field-meta-put' field-key='create_time' field-timestamp-allow-time>
@@ -111,17 +114,13 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
         <td class='field-meta-put' field-key='to' field-meta-key='desc'>
         <td class='field-meta-put' field-key='to'>
     </tr>
-	<tr>
-		<td class='field-meta-put' field-key='title' field-meta-key='desc'>
-		<td class='field-meta-put' field-key='title'>
-	</tr>
-    <tr>
+   <tr>
         <td class='field-meta-put' field-key='text' field-meta-key='desc'>
         <td><textarea class='field-put field-get field-input' field-key='text' cols=80 rows=10></textarea>
     </tr>
     <tr class="show-on show-on-doc">
         <td class='field-meta-put' field-key='file_content_type' field-meta-key='desc'>
-        <td><span class='field-put' field-key='file_content_type'></span>
+        <td><span class='field-put value' field-key='file_content_type'></span>
 
     </tr>
 

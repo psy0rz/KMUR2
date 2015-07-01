@@ -90,7 +90,7 @@ class TicketObjects(models.core.Protected.Protected):
                     resolve=False,
                     list=True),
                 'tickets': models.mongodb.Relation(
-                    desc='Tasks this note belongs to',
+                    desc='Tasks this belongs to',
                     model=models.ticket.Tickets.Tickets,
                     check_exists=False,
                     resolve=False,

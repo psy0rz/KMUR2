@@ -164,17 +164,17 @@ var form=new ControlForm({
 
 
 
-$(".on-click-edit", context).click(function()
-{
-    viewCreate({ creator: context },
-    {
-        name: 'ticket.Tickets.edit',
-        mode: 'main',
-        params: {
-            _id: view.params._id,
-        }
-    });
-});
+// $(".on-click-edit", context).click(function()
+// {
+//     viewCreate({ creator: context },
+//     {
+//         name: 'ticket.Tickets.edit',
+//         mode: 'main',
+//         params: {
+//             _id: view.params._id,
+//         }
+//     });
+// });
 
 
 
@@ -189,11 +189,6 @@ $(".on-click-completed", context).click(function()
 });
 
 
-$(".on-click-back", context).click(function()
-{
-    viewClose(view);
-
-});
 
 
 
@@ -251,6 +246,16 @@ sub_tickets=new ControlListRelated({
 
 
 <span class='ticket' control-view="ticket.Tickets.edit">
+
+    <div class='floatingBar viewErrorClass'>
+        <button class='control-on-click-view' >Edit</button>
+        <button class='control-on-click-cancel' >Back</button>
+        <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
+        <button class='on-click-upload-doc'><span class='ticket-add-doc-button-style' >Upload document</span></button>
+        <input class='hidden-uploader' type='file' multiple>
+
+        <span class='viewErrorText'></span>
+    </div>
 
     <h1 class='notranslate'>
         <span class='field-put clickable on-click-completed ticket-check-style' field-no-text field-key='ticket_completed'></span>
@@ -329,13 +334,13 @@ sub_tickets=new ControlListRelated({
                 <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
                 <th>
             </tr>
-            <tr class='colorRows ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
-                <td class='field-list-on-click-view field-put ticket-check-style' field-key='ticket_completed' field-no-text>
-                <td class='field-list-on-click-view field-put' field-key='title' >
-                <td class='field-list-on-click-view field-put ticket-due-date-style' field-key='due_date' >
-                <td class='field-list-on-click-view field-put ticket-status-style' field-key='ticket_status' >
-                <td class='field-list-on-click-view ui-icon ui-icon-close' field-key='tickets' field-list-view="ticket.Tickets.edit">
-            </tr>
+            <tr class='colorRows ticket-list field-list-source notranslate field-list-on-click-view field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
+                <td class=' field-put ticket-check-style' field-key='ticket_completed' field-no-text>
+                <td class='field-put' field-key='title' >
+                <td class='field-put ticket-due-date-style' field-key='due_date' >
+                <td class='field-put ticket-status-style' field-key='ticket_status' >
+<!--                 <td class=' ui-icon ui-icon-close' field-key='tickets' field-list-view="ticket.Tickets.edit">
+ -->            </tr>
         </table>
         <a class='control-on-click-view ui-icon ui-icon-plus' field-key='title' href='#'></a>
     </fieldset>
@@ -344,14 +349,14 @@ sub_tickets=new ControlListRelated({
     <fieldset class='inline-block'>
         <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
         <table class='field-meta-put field-key-root' field-key='tickets'>
-            <tr class='colorRows ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
-                <td class='field-put field-list-on-click-view ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
-                <td class='field-put field-list-on-click-view' field-key='tickets.title'>
-                <td class='field-put field-list-on-click-view ticket-status-style' field-key='tickets.ticket_status'>
-                <td class='control-on-click-view  ui-icon ui-icon-close' field-key='tickets'>
-            </tr>
+            <tr class='colorRows ticket-list  field-list-on-click-view field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
+                <td class='field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
+                <td class='field-put' field-key='tickets.title'>
+                <td class='field-put ticket-status-style' field-key='tickets.ticket_status'>
+<!--                 <td class='control-on-click-view  ui-icon ui-icon-close' field-key='tickets'>
+ -->            </tr>
         </table>
-        <a class='control-on-click-view ui-icon ui-icon-plus' field-key='tickets' href='#'></a>
+        <a class='control-on-click-view' field-key='tickets' href='#'>Add/Remove</a>
     </fieldset>
 </span>
 
@@ -377,7 +382,7 @@ sub_tickets=new ControlListRelated({
                 <th>
             </tr>
 
-            <tr class='colorRows ticket-object field-list-source notranslate field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.edit">
+            <tr class='colorRows ticket-object field-list-source notranslate field-list-add-after field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.TicketObjects.show">
 
                 <td><img style='padding-bottom: 1em' class='field-list-on-click-view  field-put' src='#' field-key='thumbnail'>
                 <td nowrap class='field-meta-put field-list-on-click-view ' field-relation-delayed field-key='allowed_groups'>
@@ -422,12 +427,3 @@ sub_tickets=new ControlListRelated({
     </div>
 </fieldset>
 
-<div class='floatingBar viewErrorClass'>
-    <button class='on-click-back' >Back</button>
-    <button class='on-click-edit' >Edit</button>
-    <button class='on-click-new-ticket-note'><span class='ticket-add-note-button-style' >Add note</span></button>
-    <button class='on-click-upload-doc'><span class='ticket-add-doc-button-style' >Upload document</span></button>
-    <input class='hidden-uploader' type='file' multiple>
-
-    <span class='viewErrorText'></span>
-</div>
