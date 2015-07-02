@@ -119,31 +119,31 @@ var form=new ControlForm({
 
 
 
-<fieldset class='inline-block show-on show-on-time ' >
+<fieldset class='inline-block show-on show-on-time ' control-view='ticket.TicketObjects.edit'>
     <legend>Billing</legend>
     <table class='inline-block'>
         <tr>
             <td class='field-meta-put' field-key='start_time' field-meta-key='desc'>
-            <td class='field-put' field-key='start_time' field-timestamp-allow-time>
+            <td class='control-on-click-view field-put' field-key='start_time' field-timestamp-allow-time>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='end_time' field-meta-key='desc'>
-            <td class='field-put' field-key='end_time' field-timestamp-allow-time>
+            <td class='control-on-click-view field-put' field-key='end_time' field-timestamp-allow-time>
         </tr>
         <tr>
             <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
             <td>
-                <span class='field-put' field-key='minutes' ></span> 
+                <span class='control-on-click-view field-put' field-key='minutes' ></span> 
                 ( <span class='delta'></span> )
         </tr>
 
         <tr>
             <td class='field-meta-put' field-key='minutes_factor' field-meta-key='desc'>
-            <td class='field-put' field-key='minutes_factor'>
+            <td class='field-put control-on-click-view ' field-key='minutes_factor'>
         </tr>
 
         <tr>
-            <td class='field-meta-put' field-key='billing_relation' field-meta-key='desc'>
+            <td class='control-on-click-view field-meta-put' field-key='billing_relation' field-meta-key='desc'>
             <td class='field-meta-put ' field-key='billing_relation'>
                 <span class='list-span field-dict-raw field-list-source notranslate field-list-source-hide' field-key='billing_relation' field-list-view="ticket.Relations.show">
                     <span class='field-put field-list-on-click-view' field-key='billing_relation.title' style='font-weight: bold'></span>
@@ -151,7 +151,7 @@ var form=new ControlForm({
         </tr>
 
         <tr>
-            <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
+            <td class='control-on-click-view field-meta-put' field-key='billing_contract' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract'>
                 <span class='list-span field-list-source notranslate field-list-source-hide' field-key='billing_contract' field-list-view="ticket.Contracts.edit">
                     <span class='field-put field-list-on-click-view' field-key='billing_contract.title' style='font-weight: bold'></span>
@@ -159,7 +159,7 @@ var form=new ControlForm({
         </tr>
 
         <tr>
-            <td class='field-meta-put' field-key='billing_contract_invoice' field-meta-key='desc'>
+            <td class='control-on-click-view field-meta-put' field-key='billing_contract_invoice' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract_invoice'>
                 <span class='list-span field-list-source notranslate field-list-source-hide' field-key='billing_contract_invoice' field-list-view="ticket.ContractInvoices.show">
                     <span class='field-put field-list-on-click-view' field-key='billing_contract_invoice.desc' style='font-weight: bold'></span>
