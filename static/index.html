@@ -112,7 +112,8 @@
                 start_params=rison.decode(document.location.hash.substr(1));
             }
 
-            if (start_params.name)
+
+            function login()
             {
                 rpc("core.Users.login",{
                     'name': start_params.name,
@@ -120,7 +121,12 @@
                 }, function(result){
                     console.log(result);
                     viewShowError(result, login_context);
-                });
+                });                
+            }
+
+            if (start_params.name)
+            {
+                setTimeout(login, 100);
             }
             else
             {
