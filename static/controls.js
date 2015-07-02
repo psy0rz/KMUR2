@@ -542,7 +542,7 @@ ControlForm.prototype.attach_event_handlers=function()
         if (data._id == this_control.params.view.params._id && this_control.params.view.params._id!=undefined)
         {
             console.log("form: data on server got deleted",this_control);
-            window.history.back();
+            viewClose(this_control.params.view);
             
         }
 
@@ -620,7 +620,8 @@ ControlForm.prototype.put_result=function(result, request_params)
     {
 
         if (this.params.close_after_save)
-            window.history.back();
+            viewClose(this.params.view);
+            // window.history.back();
 
         //send a event to the creator of this view
         if (this.new_item)
@@ -675,7 +676,8 @@ ControlForm.prototype.delete_result=function(result, request_params)
         {
             //console.error("closing dah shit", this.params.view);
             
-            window.history.back();
+            // window.history.back();
+            viewClose(this.params.view);
         }
 
         //send a deleted-event to the creator of this view

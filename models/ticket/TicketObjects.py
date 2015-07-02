@@ -72,7 +72,7 @@ class TicketObjects(models.core.Protected.Protected):
                     resolve=False,
                     list=False),
                 'billing_contract_invoice': models.mongodb.Relation(
-                    desc='Billing order',
+                    desc='Contract order',
                     model=models.ticket.ContractInvoices.ContractInvoices,
                     check_exists=False,
                     resolve=False,

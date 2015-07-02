@@ -33,7 +33,7 @@ var form=new ControlForm({
             $(".on-click-send",context).show();
 
             if (data.invoice_nr=="")
-                $(".on-click-delete",context).show();
+                $(".control-on-click-del",context).show();
         }
 
 
@@ -118,16 +118,16 @@ $(".on-click-revoke", context).click(function()
         });
 });
 
-$(".on-click-delete", context).click(function()
-{
-    rpc("ticket.Invoices.delete", { _id:view.params._id }, function(result)
-        {
-            if (!viewShowError(result, context))
-            {
-                window.history.back();
-            }
-        });
-});
+// $(".on-click-delete", context).click(function()
+// {
+//     rpc("ticket.Invoices.delete", { _id:view.params._id }, function(result)
+//         {
+//             viewShowError(result, context);
+//             // {
+//             //     window.history.back();
+//             // }
+//         });
+// });
 
 $(".on-click-payed", context).click(function()
 {
@@ -285,7 +285,7 @@ $(".on-click-unpayed", context).click(function()
     <button class='hide on-click-pdf' >Download pdf</button>
     <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
-    <button class='hide on-click-delete' >Delete invoice</button>
+    <button class='hide control-on-click-del' >Delete invoice</button>
     <button class='hide on-click-copy' >Copy invoice</button>
     <button class='hide on-click-payed' >Mark as payed</button>
     <button class='hide on-click-unpayed' >Mark as un-payed</button>
