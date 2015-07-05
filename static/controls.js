@@ -721,7 +721,7 @@ params:
     favorite_key        the result-key to use as favorite identifier (defaults to _id)
 
     on_change           what to do when our class changes:
-                            put: only put the new data into the list. 
+                            put: only put the changed data into the list. 
                                  ignores sorting and filtering, but usually gives best feedback to user.
                                  ignores new items. 
                             putnew: same as put, but also adds new items. 
