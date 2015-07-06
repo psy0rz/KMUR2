@@ -437,7 +437,7 @@ class Invoices(models.core.Protected.Protected):
 
     """downloads pdf version of the invoice """
     @RPC(roles="finance_read")
-    def get_pdf(self,_id):
+    def get_pdf(self,_id, background=False):
 
         invoice=self.get(_id)
 
@@ -556,10 +556,13 @@ class Invoices(models.core.Protected.Protected):
 
         #print adress info and extra stuff on first page
         def first_page(canvas, pdf):
+            later_pages(canvas, pdf)
+
             canvas.saveState()
 
+
             #senders adress and company info
-            from_frame=Frame(15*cm, 19.5*cm, 12*cm, 8*cm, showBoundary=0)
+            from_frame=Frame(15*cm, 18.5*cm, 12*cm, 8*cm, showBoundary=0)
             from_frame.addFromList([
                 Preformatted(from_format.format(**invoice['from_copy']),style=styles['Small'])
             ], canvas)
@@ -574,12 +577,20 @@ class Invoices(models.core.Protected.Protected):
 
             canvas.restoreState()
 
+        def later_pages(canvas, pdf):
+            canvas.saveState()
+
+            if background:
+                image_file="files/"+self.context.session['db_name']+"/invoice_background.png"
+                canvas.drawImage(image_file, 0, 0, A4[0], A4[1], preserveAspectRatio=True)
+
+            canvas.restoreState()
 
 
         #generate pdf from elements
         buffer = BytesIO()
         pdf = SimpleDocTemplate(buffer, pagesize=A4)        
-        pdf.build(pdf_elements, onFirstPage=first_page)
+        pdf.build(pdf_elements, onFirstPage=first_page, onLaterPages=later_pages)
         buffer.seek(0)
 
         #create bottle-http response

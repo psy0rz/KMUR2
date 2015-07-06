@@ -20,7 +20,7 @@ var form=new ControlForm({
 
         if (data.sent)
         {
-            $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf", context).show();
+            $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf, .on-click-pdf-background", context).show();
 
             if (data.payed)
                 $(".on-click-unpayed",context).show();
@@ -99,6 +99,11 @@ var form=new ControlForm({
 $(".on-click-pdf", context).click(function()
 {
     document.location="/rpc/ticket/Invoices/get_pdf/"+view.params._id;
+});
+
+$(".on-click-pdf-background", context).click(function()
+{
+    document.location="/rpc/ticket/Invoices/get_pdf/"+view.params._id+"/1";
 });
 
 
@@ -283,6 +288,7 @@ $(".on-click-unpayed", context).click(function()
 <div class='viewErrorClass floatingBar'>
     <button class='hide on-click-send' >Send invoice</button>
     <button class='hide on-click-pdf' >Download pdf</button>
+    <button class='hide on-click-pdf-background' >Download pdf with background</button>
     <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
     <button class='hide control-on-click-del' >Delete invoice</button>
