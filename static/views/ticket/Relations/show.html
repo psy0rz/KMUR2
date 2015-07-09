@@ -34,6 +34,7 @@ var relation=new ControlForm({
             'class'             : 'ticket.Tickets',
             'endless_scrolling' : true,
             'related_key'       : 'relations',
+            'on_change'         : 'putnew',
             'related_value'     : view.params._id,
             'create_view_params': {
                 'relations': [ view.params._id ],
