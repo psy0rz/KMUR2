@@ -132,27 +132,55 @@ class TicketObjects(models.core.Protected.Protected):
     def get_file_url(self, ticket_object):
         return("/rpc/ticket/TicketObjects/download/"+ticket_object["_id"]+"/"+os.path.basename(ticket_object["title"]))
 
-    # def store_file(self, file_upload):
-    #     """stores file in data-store and returns hash"""
 
-    #     #hash the file
-    #     file_hash=hashlib.sha256()
-    #     file_upload.file.seek(0)
-    #     while 1:
-    #         buf=file_upload.file.read(65000)
-    #         if not buf:
-    #             break
-    #         file_hash.update(buf)
-    #     file_upload.file.seek(0)
-    #     hash=file_hash.hexdigest()
+    def process_file_application_pdf(self, doc):
+        """processor for application/pdf content-type"""
 
-    #     file_name=self.get_file_path(hash)
 
-    #     #TODO: check for hash collision
-    #     file_upload.save(file_name, overwrite=True)
-    #     file_upload.file.close()
+        import wand.image
+        import wand.color
+        image=wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=100)
+        #create jpg thumbnail
+        new_width=200
+        new_height=(image.height*new_width)//image.width
+        # image.alpha_channel = False
+        # image.background_color = wand.color.Color("white")
+        jpg_image=image.convert("jpg")
+        jpg_image.alpha_channel = False
+        jpg_image.resize(new_width, new_height)
+        image.close()
+        #use file-object to prevent wand from creating multiple files for multipage pdfs
+        with open(self.get_thumb_path(doc["file"]), 'wb') as fh:
+            jpg_image.save(file=fh)
+        doc["thumbnail"]=self.get_thumb_url(doc["file"])
 
-    #     return(hash)
+        # #call tesseract to do some OCR
+        # import subprocess
+        # import re
+        # try:
+        #     ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ]).decode('utf-8')
+        #     #get rid of double empty lines
+        #     doc["text"]=""
+        #     had_empty=True
+        #     for line in ocr_text.split("\n"):
+        #         #empty line? only add one, skip rest
+        #         if re.match("^\s*$", line):
+        #             if not had_empty:
+        #                 had_empty=True
+        #                 doc["text"]+="\n"
+        #         else:
+        #             had_empty=False
+        #             doc["text"]+=line+"\n"
+
+        #     # keywords=list(set(ocr_text.split()))
+        #     # keywords.sort()
+        #     # doc["text"]+="\nKeywords:"+" ".join(keywords)
+
+
+        # except Exception as e:
+        #     print("Error while calling tesseract:", str(e))
+
+
 
 
     def process_file_image(self, doc):
