@@ -311,6 +311,14 @@ class TicketObjects(models.core.Protected.Protected):
 
 
     @RPC(roles="ticket_write")
+    def reprocess(self, _id):
+        """reprocess file. this means recreating thumbnails and re-doing ocr for example. caller cant actually change anything"""
+        doc=self._get(_id)
+        self.process_file(doc)
+        self._put(doc)   
+        return(doc)             
+
+    @RPC(roles="ticket_write")
     def put(self, file=None, update_contract_invoice=True, **doc):
 
         #store file?
