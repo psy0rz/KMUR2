@@ -133,56 +133,118 @@ class TicketObjects(models.core.Protected.Protected):
         return("/rpc/ticket/TicketObjects/download/"+ticket_object["_id"]+"/"+os.path.basename(ticket_object["title"]))
 
 
+    def process_ocr(self, file):
+        """call tesseract to do some OCR"""
+        import subprocess
+        import re
+
+        ret=""
+        try:
+            print("Calling tesseract for file ", file)
+            ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
+            #get rid of double empty lines
+            had_empty=True
+            for line in ocr_text.split("\n"):
+                #empty line? only add one, skip rest
+                if re.match("^\s*$", line):
+                    if not had_empty:
+                        had_empty=True
+                        ret+="\n"
+                else:
+                    had_empty=False
+                    ret+=line+"\n"
+
+        except Exception as e:
+            print("Error while calling tesseract:", str(e))
+
+        return(ret)
+
+
     def process_file_application_pdf(self, doc):
         """processor for application/pdf content-type"""
 
         ############# create thumbnail of first page of pdf
         import wand.image
         import wand.color
-        image=wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=100)
+        import tempfile
+
+        #load pdf (can take a LOT of memory for huge pdf's )
+        pdf=wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=300)
+
+        #traverse pdf pages
+        thumb=False
+        for pdf_page_seq in pdf.sequence:
+            pdf_page=wand.image.Image(pdf_page_seq)
+
+            #convert page to jpg 
+            jpg_page=pdf_page.convert("jpg")
+            jpg_page.alpha_channel = False
+
+            #save to temp file and ocr it
+            with tempfile.NamedTemporaryFile() as tmp_file:
+                jpg_page.save(tmp_file)
+                doc["text"]+=self.process_ocr(tmp_file.name)+"\n\n"
+
+            #still need thumb (first page)?
+            if not thumb:
+                thumb=True
+                new_width=200
+                new_height=(jpg_page.height*new_width)//jpg_page.width
+                jpg_page.resize(new_width, new_height)
+                jpg_page.save(filename=self.get_thumb_path(doc["file"]))
+                doc["thumbnail"]=self.get_thumb_url(doc["file"])
+
+        pdf.close()
+
+
+        #REMOVED - tesseract is better and also processes pdfs with scanned images.
+
+        # #################### mine all pdf text
+        # from pdfminer.pdfparser import PDFParser
+        # from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
+        # from pdfminer.pdfdevice import PDFDevice, TagExtractor
+        # from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
+        # from pdfminer.cmapdb import CMapDB
+        # from pdfminer.layout import LAParams
+        # from io import StringIO
+        # # from pdfminer.image import ImageWriter
+
+        # codec = 'utf-8'
+        # laparams = LAParams()
+        # caching = False
+        # rotation = 0
+
+        # #parse PDF to text
+        # with open(self.get_file_path(doc["file"]), 'rb') as fp:
+        #     rsrcmgr = PDFResourceManager(caching=caching)
+        #     output = StringIO()
+        #     device = TextConverter(rsrcmgr, output,  laparams=laparams)
+        #     interpreter = PDFPageInterpreter(rsrcmgr, device)
+        #     process_pdf(rsrcmgr, device, fp, caching=caching, check_extractable=True)
+        #     device.close()
+
+        #     output.seek(0)
+        #     doc["text"]=output.read()
+
+
+
+
+    def process_file_image(self, doc):
+        """processor for image content-type"""
+        import wand.image
+        image=wand.image.Image(filename=self.get_file_path(doc["file"]))
+
         #create jpg thumbnail
         new_width=200
         new_height=(image.height*new_width)//image.width
-        # image.alpha_channel = False
-        # image.background_color = wand.color.Color("white")
+        image.resize(new_width, new_height)
         jpg_image=image.convert("jpg")
-        jpg_image.alpha_channel = False
-        jpg_image.resize(new_width, new_height)
         image.close()
-        #use file-object to prevent wand from creating multiple files for multipage pdfs
-        with open(self.get_thumb_path(doc["file"]), 'wb') as fh:
-            jpg_image.save(file=fh)
+        jpg_image.save(filename=self.get_thumb_path(doc["file"]))
         doc["thumbnail"]=self.get_thumb_url(doc["file"])
 
-
-        #################### mine all pdf text
-        from pdfminer.pdfparser import PDFParser
-        from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
-        from pdfminer.pdfdevice import PDFDevice, TagExtractor
-        from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
-        from pdfminer.cmapdb import CMapDB
-        from pdfminer.layout import LAParams
-        from io import StringIO
-        # from pdfminer.image import ImageWriter
-
-        codec = 'utf-8'
-        laparams = LAParams()
-        caching = False
-        rotation = 0
-
-        #parse PDF to text
-        with open(self.get_file_path(doc["file"]), 'rb') as fp:
-            rsrcmgr = PDFResourceManager(caching=caching)
-            output = StringIO()
-            device = TextConverter(rsrcmgr, output,  laparams=laparams)
-            interpreter = PDFPageInterpreter(rsrcmgr, device)
-            process_pdf(rsrcmgr, device, fp, caching=caching, check_extractable=True)
-            device.close()
-
-            output.seek(0)
-            doc["text"]=output.read()
-
-        # #call tesseract to do some OCR
+        #ocr to extract text
+        doc["text"]=self.process_ocr(self.get_file_path(doc["file"]))
         # import subprocess
         # import re
         # try:
@@ -207,49 +269,6 @@ class TicketObjects(models.core.Protected.Protected):
 
         # except Exception as e:
         #     print("Error while calling tesseract:", str(e))
-
-
-
-
-    def process_file_image(self, doc):
-        """processor for image content-type"""
-        import wand.image
-        image=wand.image.Image(filename=self.get_file_path(doc["file"]))
-
-        #create jpg thumbnail
-        new_width=200
-        new_height=(image.height*new_width)//image.width
-        image.resize(new_width, new_height)
-        jpg_image=image.convert("jpg")
-        image.close()
-        jpg_image.save(filename=self.get_thumb_path(doc["file"]))
-        doc["thumbnail"]=self.get_thumb_url(doc["file"])
-
-        #call tesseract to do some OCR
-        import subprocess
-        import re
-        try:
-            ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ]).decode('utf-8')
-            #get rid of double empty lines
-            doc["text"]=""
-            had_empty=True
-            for line in ocr_text.split("\n"):
-                #empty line? only add one, skip rest
-                if re.match("^\s*$", line):
-                    if not had_empty:
-                        had_empty=True
-                        doc["text"]+="\n"
-                else:
-                    had_empty=False
-                    doc["text"]+=line+"\n"
-
-            # keywords=list(set(ocr_text.split()))
-            # keywords.sort()
-            # doc["text"]+="\nKeywords:"+" ".join(keywords)
-
-
-        except Exception as e:
-            print("Error while calling tesseract:", str(e))
 
     def process_file(self, doc):
         """do some processing like generating thumbnails and doing OCR to create keywords, and getting metadata
