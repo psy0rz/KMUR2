@@ -136,7 +136,7 @@ class TicketObjects(models.core.Protected.Protected):
     def process_file_application_pdf(self, doc):
         """processor for application/pdf content-type"""
 
-
+        ############# create thumbnail of first page of pdf
         import wand.image
         import wand.color
         image=wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=100)
@@ -153,6 +153,34 @@ class TicketObjects(models.core.Protected.Protected):
         with open(self.get_thumb_path(doc["file"]), 'wb') as fh:
             jpg_image.save(file=fh)
         doc["thumbnail"]=self.get_thumb_url(doc["file"])
+
+
+        #################### mine all pdf text
+        from pdfminer.pdfparser import PDFParser
+        from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
+        from pdfminer.pdfdevice import PDFDevice, TagExtractor
+        from pdfminer.converter import XMLConverter, HTMLConverter, TextConverter
+        from pdfminer.cmapdb import CMapDB
+        from pdfminer.layout import LAParams
+        from io import StringIO
+        # from pdfminer.image import ImageWriter
+
+        codec = 'utf-8'
+        laparams = LAParams()
+        caching = False
+        rotation = 0
+
+        #parse PDF to text
+        with open(self.get_file_path(doc["file"]), 'rb') as fp:
+            rsrcmgr = PDFResourceManager(caching=caching)
+            output = StringIO()
+            device = TextConverter(rsrcmgr, output,  laparams=laparams)
+            interpreter = PDFPageInterpreter(rsrcmgr, device)
+            process_pdf(rsrcmgr, device, fp, caching=caching, check_extractable=True)
+            device.close()
+
+            output.seek(0)
+            doc["text"]=output.read()
 
         # #call tesseract to do some OCR
         # import subprocess
