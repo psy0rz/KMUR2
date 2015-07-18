@@ -13,6 +13,8 @@ import hashlib
 import os
 import bottle
 import bson.objectid
+from processify import processify
+
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
@@ -140,7 +142,6 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=""
         try:
-            print("Calling tesseract for file ", file)
             ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
             #get rid of double empty lines
             had_empty=True
@@ -159,7 +160,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(ret)
 
-
+    @processify
     def process_file_application_pdf(self, doc):
         """processor for application/pdf content-type"""
 
@@ -168,12 +169,15 @@ class TicketObjects(models.core.Protected.Protected):
         import wand.color
         import tempfile
 
+        print("Loading pdf {}".format(doc["title"]))
         #load pdf (can take a LOT of memory for huge pdf's )
         with wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=300) as pdf:
-
             #traverse pdf pages
             thumb=False
+            page=0
             for pdf_page_seq in pdf.sequence:
+                page=page+1
+                print("Processing page {} of {}".format(page, doc["title"]))
                 with wand.image.Image(pdf_page_seq) as pdf_page:
 
                     #convert page to jpg 
@@ -183,6 +187,7 @@ class TicketObjects(models.core.Protected.Protected):
                         #save to temp file and ocr it
                         with tempfile.NamedTemporaryFile() as tmp_file:
                             jpg_page.save(tmp_file)
+                            print("OCR page {} of {}".format(page, doc["title"]))
                             doc["text"]+=self.process_ocr(tmp_file.name)+"\n\n"
 
                         #still need thumb (first page)?
@@ -194,6 +199,7 @@ class TicketObjects(models.core.Protected.Protected):
                             jpg_page.save(filename=self.get_thumb_path(doc["file"]))
                             doc["thumbnail"]=self.get_thumb_url(doc["file"])
 
+        return(doc)
 
 
         #REMOVED - tesseract is better and also processes pdfs with scanned images.
@@ -227,7 +233,7 @@ class TicketObjects(models.core.Protected.Protected):
 
 
 
-
+    @processify
     def process_file_image(self, doc):
         """processor for image content-type"""
         import wand.image
@@ -244,30 +250,8 @@ class TicketObjects(models.core.Protected.Protected):
 
         #ocr to extract text
         doc["text"]=self.process_ocr(self.get_file_path(doc["file"]))
-        # import subprocess
-        # import re
-        # try:
-        #     ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", self.get_file_path(doc["file"]), "stdout", "-l", "nld+eng" ]).decode('utf-8')
-        #     #get rid of double empty lines
-        #     doc["text"]=""
-        #     had_empty=True
-        #     for line in ocr_text.split("\n"):
-        #         #empty line? only add one, skip rest
-        #         if re.match("^\s*$", line):
-        #             if not had_empty:
-        #                 had_empty=True
-        #                 doc["text"]+="\n"
-        #         else:
-        #             had_empty=False
-        #             doc["text"]+=line+"\n"
 
-        #     # keywords=list(set(ocr_text.split()))
-        #     # keywords.sort()
-        #     # doc["text"]+="\nKeywords:"+" ".join(keywords)
-
-
-        # except Exception as e:
-        #     print("Error while calling tesseract:", str(e))
+        return(doc)
 
     def process_file(self, doc):
         """do some processing like generating thumbnails and doing OCR to create keywords, and getting metadata
@@ -289,12 +273,13 @@ class TicketObjects(models.core.Protected.Protected):
 
         if hasattr(self, "process_file_"+maintype):
             method=getattr(self, "process_file_"+maintype)
-            method(doc)
+            doc=method(doc)
 
         if hasattr(self, "process_file_"+maintype+"_"+subtype):
             method=getattr(self, "process_file_"+maintype+"_"+subtype)
-            method(doc)
+            doc=method(doc)
 
+        return(doc)
 
     def hash_file(self,fh):
         #hash the filehandle
@@ -313,7 +298,7 @@ class TicketObjects(models.core.Protected.Protected):
     def reprocess(self, _id):
         """reprocess file. this means recreating thumbnails and re-doing ocr for example. caller cant actually change anything"""
         doc=self._get(_id)
-        self.process_file(doc)
+        doc=self.process_file(doc)
         self._put(doc)   
         return(doc)             
 
@@ -337,7 +322,7 @@ class TicketObjects(models.core.Protected.Protected):
             doc["title"]=file.raw_filename
 
             #now do some magic on the file:
-            self.process_file(doc)
+            doc=self.process_file(doc)
 
 
         #only accept billing info if both fields are specified (to prevent fraud by changing only one):         
