@@ -4,6 +4,7 @@ import argparse
 import json
 import rpc
 import sys
+import os.path
 
 parser = argparse.ArgumentParser(description='Reprocess all docs. (use to re-ocr stuff for example)')
 
@@ -12,8 +13,13 @@ parser.add_argument('--user', required=True, default=None, help='user to login.'
 parser.add_argument('--password', default=None, help='password.')
 parser.add_argument('--api_key', default=None, help='api_key, use instead of password to overrule all logins globally')
 parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
+parser.add_argument('file_content_type', default="", nargs="?", help='file content type, for exapmle: image or application/pdf')
 
 args = parser.parse_args()
+
+if not os.path.exists("reprocessed"):
+	os.mkdir("reprocessed")
+
 
 try:
 	#initialise the rpc client class
@@ -25,18 +31,29 @@ try:
 
 	ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
 		fields={
-			"_id": "1"
+			"_id": "1",
+			"title": "1"
 		},
 		match={
 			"type": "doc"
-		})["data"]
+		},
+		regex={
+			"file_content_type": args.file_content_type
+		}
+		)["data"]
 
 	for ticket_object in ticket_objects:
-		print ("Reprocessing: "+ticket_object["_id"])
-		try:
-			rpc_client.request("ticket.TicketObjects.reprocess", **ticket_object)
-		except Exception as e:
-			print("Error processing "+ticket_object["_id"]+":"+str(e))
+		if os.path.exists("reprocessed/"+ticket_object["_id"]):
+			print ("Skipped "+ticket_object["_id"]+": "+ticket_object["title"])
+		else:
+			print ("Reprocessing "+ticket_object["_id"]+": "+ticket_object["title"])
+			try:
+				rpc_client.request("ticket.TicketObjects.reprocess", _id=ticket_object["_id"])
+				with open("reprocessed/"+ticket_object["_id"],'w'):
+					pass
+
+			except Exception as e:
+				print("Error processing "+ticket_object["_id"]+":"+str(e))
 
 except Exception as e:
 	print("Error: "+str(e), file=sys.stderr)

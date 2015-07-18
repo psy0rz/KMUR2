@@ -169,32 +169,31 @@ class TicketObjects(models.core.Protected.Protected):
         import tempfile
 
         #load pdf (can take a LOT of memory for huge pdf's )
-        pdf=wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=300)
+        with wand.image.Image(filename=self.get_file_path(doc["file"]), resolution=300) as pdf:
 
-        #traverse pdf pages
-        thumb=False
-        for pdf_page_seq in pdf.sequence:
-            pdf_page=wand.image.Image(pdf_page_seq)
+            #traverse pdf pages
+            thumb=False
+            for pdf_page_seq in pdf.sequence:
+                with wand.image.Image(pdf_page_seq) as pdf_page:
 
-            #convert page to jpg 
-            jpg_page=pdf_page.convert("jpg")
-            jpg_page.alpha_channel = False
+                    #convert page to jpg 
+                    with pdf_page.convert("jpg") as jpg_page:
+                        jpg_page.alpha_channel = False
 
-            #save to temp file and ocr it
-            with tempfile.NamedTemporaryFile() as tmp_file:
-                jpg_page.save(tmp_file)
-                doc["text"]+=self.process_ocr(tmp_file.name)+"\n\n"
+                        #save to temp file and ocr it
+                        with tempfile.NamedTemporaryFile() as tmp_file:
+                            jpg_page.save(tmp_file)
+                            doc["text"]+=self.process_ocr(tmp_file.name)+"\n\n"
 
-            #still need thumb (first page)?
-            if not thumb:
-                thumb=True
-                new_width=200
-                new_height=(jpg_page.height*new_width)//jpg_page.width
-                jpg_page.resize(new_width, new_height)
-                jpg_page.save(filename=self.get_thumb_path(doc["file"]))
-                doc["thumbnail"]=self.get_thumb_url(doc["file"])
+                        #still need thumb (first page)?
+                        if not thumb:
+                            thumb=True
+                            new_width=200
+                            new_height=(jpg_page.height*new_width)//jpg_page.width
+                            jpg_page.resize(new_width, new_height)
+                            jpg_page.save(filename=self.get_thumb_path(doc["file"]))
+                            doc["thumbnail"]=self.get_thumb_url(doc["file"])
 
-        pdf.close()
 
 
         #REMOVED - tesseract is better and also processes pdfs with scanned images.
