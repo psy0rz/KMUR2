@@ -518,7 +518,8 @@ TicketObjects.meta.meta['meta'].meta['meta']['ticket_objects']=fields.List(
                 model=TicketObjects,
                 resolve=False,
                 list=False,
-                check_exists=False)
+                check_exists=True,
+                min=1)
         }),
         desc='Related documents'
     )
