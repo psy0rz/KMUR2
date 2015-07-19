@@ -141,22 +141,22 @@ class TicketObjects(models.core.Protected.Protected):
         import re
 
         ret=""
-        try:
-            ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
-            #get rid of double empty lines
-            had_empty=True
-            for line in ocr_text.split("\n"):
-                #empty line? only add one, skip rest
-                if re.match("^\s*$", line):
-                    if not had_empty:
-                        had_empty=True
-                        ret+="\n"
-                else:
-                    had_empty=False
-                    ret+=line+"\n"
+        # try:
+        ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
+        #get rid of double empty lines
+        had_empty=True
+        for line in ocr_text.split("\n"):
+            #empty line? only add one, skip rest
+            if re.match("^\s*$", line):
+                if not had_empty:
+                    had_empty=True
+                    ret+="\n"
+            else:
+                had_empty=False
+                ret+=line+"\n"
 
-        except Exception as e:
-            print("Error while calling tesseract:", str(e))
+        # except Exception as e:
+            # print("Error while calling tesseract:", str(e))
 
         return(ret)
 
