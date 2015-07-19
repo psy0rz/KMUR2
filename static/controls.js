@@ -1699,10 +1699,11 @@ ControlListRelated.prototype.attach_event_handlers=function()
         if (list_id===undefined)
             return;
 
-        var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
+        // var list_element=Field.List.from_element_get(this_control.list_source_element.attr("field-key"), this);
 //        var highlight_element=this;
 
-        this_control.unrelate(list_id, this, this_control.params.unrelate_confirm, function(result) {});
+        this_control.unrelate(list_id, this, this_control.params.unrelate_confirm, function(result) {
+        });
 
     });
 
@@ -1723,7 +1724,9 @@ ControlListRelated.prototype.attach_event_handlers=function()
         //item has been selected, create relation
         select: function (event, ui) {
             $(this).val("");
-            this_control.relate(ui.item.value[this_control.meta.list_key], this_control.params.relate_confirm, function() {});
+            this_control.relate(ui.item.value[this_control.meta.list_key], this_control.params.relate_confirm, function() {
+
+            });
             return(false);
         },
         //data source

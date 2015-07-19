@@ -582,6 +582,7 @@ Field.List.meta_put=function(key, meta, context, options)
             list_source.parent().off("click", ".field-list-on-click-add").on("click", ".field-list-on-click-add", function(){
                 Field.List.from_element_add(null, this);
                 context.trigger("field_added",[key , meta, context]);
+                Field.List.show_hide_on_empty(key, meta, list_source.parent());
             });
             
             //create an add-handler if the source-element of a list is focussed
@@ -597,6 +598,7 @@ Field.List.meta_put=function(key, meta, context, options)
                     $(".field-list-tmp-focus", added_item).focus().removeClass("field-list-tmp-focus");
                     //indicates that a field was added manually by the user
                     context.trigger("field_added",[key , meta, context]);
+                    Field.List.show_hide_on_empty(key, meta, added_item.parent());
                     return(false);
                 }
                 return(true);
@@ -607,12 +609,12 @@ Field.List.meta_put=function(key, meta, context, options)
                 var clicked_element=Field.List.from_element_get(null, this);
                 if (clicked_element.hasClass("field-list-item"))
                 {
-                        clicked_element.hide('fast',function()
-                        {
-                            clicked_element.remove();
-                            //indicates that a field was deleted manually by the user
-                            context.trigger("field_deleted",[key , meta, context]);
-                        });
+                    var parent=clicked_element.parent();
+                    clicked_element.remove();
+                    //indicates that a field was deleted manually by the user
+                    context.trigger("field_deleted",[key , meta, context]);
+                    Field.List.show_hide_on_empty(key, meta, parent);
+
                 }
             });
             
@@ -658,7 +660,9 @@ Field.List.meta_put=function(key, meta, context, options)
                 console.log("view opened by us has deleted the data");
                  $(this).hide(1000,function()
                  {
-                     $(this).remove();
+                    var parent=$(this).parent();
+                    $(this).remove();
+                    Field.List.show_hide_on_empty(key, meta, parent);
                  });
                 return(false);
             });
@@ -718,6 +722,29 @@ Field.List.meta_put=function(key, meta, context, options)
     }
 
 };
+
+// show and hide certain items, depending on the emptyness of the list
+//parent is the container that contains the listitems 
+Field.List.show_hide_on_empty=function(key, meta, parent)
+{
+
+    var show_on_empty=$('.field-list-show-on-empty[field-key="'+key+'"]', parent);
+    var hide_on_empty=$('.field-list-hide-on-empty[field-key="'+key+'"]', parent);
+    if (show_on_empty.length || hide_on_empty.length)
+    {
+        var existing_items=$('.field-list-item[field-key="'+key+'"]', parent);
+        if (existing_items.length)
+        {
+            show_on_empty.hide();
+            hide_on_empty.show();
+        }
+        else
+        {
+            show_on_empty.show();
+            hide_on_empty.hide();
+        }
+    }
+}
 
 /*
  options.list_update: update an existing list, instead off removing and recreating it. 
@@ -878,6 +905,9 @@ Field.List.put=function(key, meta, context, data, options)
             }
         }
     }
+
+    Field.List.show_hide_on_empty(key, meta, parent);
+
 }
 
 Field.List.get=function(key, meta, context)

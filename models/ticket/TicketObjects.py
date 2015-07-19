@@ -509,3 +509,16 @@ class TicketObjects(models.core.Protected.Protected):
 
 
 
+#since this is recursive, we cant define it inside the TicketObjects class
+TicketObjects.meta.meta['meta'].meta['meta']['ticket_objects']=fields.List(
+        fields.Dict({
+            'kind': fields.String(min=3, desc='Kind', size=15), # e.g.: Parent email, Attachment, Next document, Previous document
+            'ticket_object': models.mongodb.Relation(
+                desc='Document',
+                model=TicketObjects,
+                resolve=False,
+                list=False,
+                check_exists=False)
+        }),
+        desc='Related documents'
+    )

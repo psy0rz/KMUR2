@@ -124,6 +124,9 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 
     </tr>
 
+
+
+
     <tr>
         <td class='field-meta-put ticket-sharing-permissions' field-key='tickets' field-meta-key='desc'>
         <td>
@@ -241,6 +244,35 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 </fieldset>
 
 
+
+
+<fieldset class='inline-block' >
+    <legend class='field-meta-put' field-key='ticket_objects' field-meta-key='desc'></legend>
+    <table class='field-meta-put' style='border-width: 1px; border-style:solid' field-key='ticket_objects'>
+        <tr class='ui-widget-header '>
+            <th>
+            <th class='field-meta-put ' field-key='ticket_objects.kind' field-meta-key='desc' >
+            <th class='field-meta-put ' field-key='ticket_objects.ticket_object' field-meta-key='desc' >
+            <th>
+        </th>        
+
+        <tr class='colorRows field-list-sortable field-list-source notranslate ui-widget-content' field-key='ticket_objects' field-list-view="ticket.TicketObjects.show">
+            <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+            <td class='field-meta-put field-list-on-focus-add' field-key='ticket_objects.kind'>
+            <td class='field-meta-put field-key-root' field-key='ticket_objects.ticket_object' >
+                <span >
+                    <span field-list-view="ticket.TicketObjects.show" class='list-span-form field-list-source notranslate field-list-source-hide' field-key='ticket_objects.ticket_object' >
+                            <span class='field-put field-list-on-click-view' field-key='ticket_objects.ticket_object.title'></span>
+                            <span class='field-list-on-click-del  ui-icon ui-icon-close'></span>
+                    </span>
+                    <span class='list-span-form field-list-show-on-empty' field-key='ticket_objects.ticket_object'>
+                        <input class='field-relation-on-change-autocomplete  field-relation-on-click-add ' search-keys='title' result-format='{title}' sort-key='title' />
+                    </span>
+                </span>
+            <td class='field-list-on-click-del ui-icon ui-icon-close'>
+        </tr>
+    </table>
+</fieldset>
 
 
 <div class='floatingBar viewErrorClass'>
