@@ -483,7 +483,8 @@ try:
                         "ticket_object": ticket_object["_id"]
                     })
                     rpc_client.request("ticket.TicketObjects.put", **prev_attachment_object)
-                    prev_attachment_object=ticket_object
+
+                prev_attachment_object=ticket_object
 
                 #main mail gets a list of all attachments
                 main_mail_related_ticket_objects.append({
