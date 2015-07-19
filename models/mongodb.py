@@ -574,6 +574,10 @@ class Base(models.common.Base):
 
         #always sort in natural order as last, in the same direction as the last sort-item. 
         #this way we get more consistent results if the items are the same. (as happens with dates a lot)
+        if not isinstance(sort, list):
+            raise Exception("Sort should be a list with key,direction pairs.")
+
+
         if sort:
             last_direction=sort[len(sort)-1][1]
             sort.append(  ( "_id", last_direction ) )

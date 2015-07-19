@@ -61,7 +61,7 @@ try:
     #initialise the rpc client class
     rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
 
-    #first login using the specified user and pass
+    #first login using the specified user and pass (or global api_key)
     user=rpc_client.request("core.Users.login", name=args.user, password=args.password, api_key=args.api_key)["data"]
 
     #get ticket-mailer settings for this user 
@@ -304,6 +304,15 @@ try:
     )["data"]
     debug("Ticket objects with matching trackables:", ticket_objects)
 
+    #also try to find latest related mail object
+    prev_related_mail_objects=rpc_client.request("ticket.TicketObjects.get_all",
+            fields=[ "type" ],
+            match_in={ "trackables": trackables  },
+            match={ "type": "email" },
+            sort=[ ( "create_time", -1 ) ],
+            limit=1,
+    )["data"]
+
 
     ### determine the existing accesible ticket_ids:
     all_ticket_ids=set()
@@ -403,6 +412,23 @@ try:
                 rpc_client.request("ticket.Tickets.put", **doc)
         
 
+
+    prev_attachment_object=None
+    main_mail_object=None
+    main_mail_related_ticket_objects=[]
+
+    #update main mail with link to latest related mail
+    if prev_related_mail_objects:
+        main_mail_related_ticket_objects.append({
+            "kind": "Previous mail",
+            "ticket_object": prev_related_mail_objects[0]["_id"]
+        })
+
+    if incoming:
+        direction="incoming"
+    else:
+        direction="outgoing"
+
     ### create ticket objects from mail contents
     for msg_part in msg.walk():
 
@@ -423,10 +449,18 @@ try:
                 tmp_file.write(payload)
                 tmp_file.seek(0)
 
-                if incoming:
-                    direction="incoming"
-                else:
-                    direction="outgoing"
+                related_ticket_objects=[
+                    { 
+                        "kind": "Mail",
+                        "ticket_object": main_mail_object["_id"]
+                    }
+                ]
+
+                if prev_attachment_object:
+                    related_ticket_objects.append({
+                        "kind": "Prevous attachment",
+                        "ticket_object": prev_attachment_object["_id"]
+                    })
 
                 ticket_object=rpc_client.request("ticket.TicketObjects.put", 
                     import_id=import_id,
@@ -437,8 +471,26 @@ try:
                     tickets=ticket_ids,
                     direction=direction,
                     trackables=trackables,
+                    ticket_objects=related_ticket_objects,
                     type="doc"
                 )["data"]
+
+
+                #update previous attacment with next-link
+                if prev_attachment_object:
+                    prev_attachment_object["ticket_objects"].append({
+                        "kind": "Next attachment",
+                        "ticket_object": ticket_object["_id"]
+                    })
+                    rpc_client.request("ticket.TicketObjects.put", **prev_attachment_object)
+                    prev_attachment_object=ticket_object
+
+                #main mail gets a list of all attachments
+                main_mail_related_ticket_objects.append({
+                    "kind": "Attachment",
+                    "ticket_object": ticket_object["_id"]
+                })
+
 
         else:
             if msg_part.get_content_type()=="text/plain":
@@ -460,21 +512,31 @@ try:
                     "tickets":ticket_ids,
                     "trackables":trackables,
                     "type":"email",
+                    "direction":direction,
                     "from":args.sender,
                     "to":args.receip,
                     "title":header_to_unicode(msg["subject"]),
                     "text":text
                 })["data"]
 
+                if not main_mail_object:
+                    main_mail_object=ticket_object
 
             else: 
                 debug("Ignoring part with content-type:", msg_part.get_content_type())
-        
+    
+
+    #update main mail with all attachment links
+    if main_mail_related_ticket_objects:
+        main_mail_object["ticket_objects"]=main_mail_related_ticket_objects
+        rpc_client.request("ticket.TicketObjects.put", **main_mail_object)
+
+
     debug("DONE: Import completed")
 
 except Exception as e:
     debug("Exception: "+str(e))
-    debug("Exitting with code 0 since mail was succesfully forwarded")
+    debug("Exitting with code 0 since mail was succesfully forwarded (if neccesary)")
     if args.debug:
         traceback.print_exc(file=sys.stdout)
  
