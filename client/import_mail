@@ -352,6 +352,7 @@ try:
             'allowed_groups':set(),
             'ticket_completed':False,
             'relations':relation_ids,
+            'ticket_read': False,
             'tickets':[],
             'due_date':None,
             'desc':"Created by mail from {} to {}".format(args.sender, args.receip),
@@ -382,6 +383,8 @@ try:
             doc["_id"]=ticket["_id"]
             doc["change_reason"]="Automaticly changed by email importer"
 
+            doc["ticket_read"]=False
+
             if settings['reset_due_days']:
                 due_date=None
                 if settings['due_days']:
@@ -408,6 +411,7 @@ try:
                     debug("Update ticket relations")
 
             #did anything change at all?
+            #NOTE: always, due to ticket_read
             if len(doc)>2:
                 rpc_client.request("ticket.Tickets.put", **doc)
         
