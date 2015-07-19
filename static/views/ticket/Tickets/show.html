@@ -17,6 +17,17 @@ var form=new ControlForm({
     },
     'field_put': function(data)
     {
+        //mark ticket as read
+        if (! data.ticket_read)
+            rpc("ticket.Tickets.put",{
+                "_id": data._id,
+                "ticket_read": true
+            },
+            function(result)
+            {
+                viewShowError(result, context);
+            });
+
         //(re)-create time-adding-buttons
         //this seems overly complex, but thats because its very specific and cant be abstracted i think.
         function create_buttons()
@@ -224,6 +235,16 @@ $('.ticket-list', context).on("field_list_post_put", function(e, list_element, d
         {
             list_element.addClass("ticket-gray-style");
         }
+
+        //empasis unread tasks
+        if (data['ticket_read'])
+        {
+            list_element.removeClass("ticket-unread-highlight-style");
+        }
+        else
+        {
+            list_element.addClass("ticket-unread-highlight-style");
+        }
     }
 });
 
@@ -328,14 +349,16 @@ sub_tickets=new ControlListRelated({
         <legend>Sub tasks</legend>
         <table >
             <tr class='ui-widget-header'>
-                <th class='control-on-click-order control-order-asc' field-key='ticket_completed'>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_read' title='Unread'>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_completed' title='Completed'>
                 <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='ticket_status' field-meta-key='desc'>
                 <th>
             </tr>
             <tr class='colorRows ticket-list field-list-source notranslate field-list-on-click-view field-list-source-hide ui-widget-content' field-key='' field-list-view="ticket.Tickets.show">
-                <td class=' field-put ticket-check-style' field-key='ticket_completed' field-no-text>
+                <td class='field-put ticket-read-style' field-key='ticket_read' field-no-text>
+                <td class='field-put ticket-check-style' field-key='ticket_completed' field-no-text>
                 <td class='field-put' field-key='title' >
                 <td class='field-put ticket-due-date-style' field-key='due_date' >
                 <td class='field-put ticket-status-style' field-key='ticket_status' >
@@ -350,6 +373,7 @@ sub_tickets=new ControlListRelated({
         <legend class='field-meta-put' field-key='tickets' field-meta-key='desc'></legend>
         <table class='field-meta-put field-key-root' field-key='tickets'>
             <tr class='colorRows ticket-list  field-list-on-click-view field-list-source notranslate field-list-source-hide ui-widget-content' field-key='tickets' field-list-view="ticket.Tickets.show">
+                <td class='field-put ticket-read-style' field-key='tickets.ticket_read' field-no-text>
                 <td class='field-put ticket-check-style' field-key='tickets.ticket_completed' field-no-text>
                 <td class='field-put' field-key='tickets.title'>
                 <td class='field-put ticket-status-style' field-key='tickets.ticket_status'>

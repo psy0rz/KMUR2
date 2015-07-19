@@ -29,6 +29,16 @@
             {
                 list_element.addClass("ticket-gray-style");
             }
+
+            //empasis unread tasks
+            if (data['ticket_read'])
+            {
+                list_element.removeClass("ticket-unread-highlight-style");
+            }
+            else
+            {
+                list_element.addClass("ticket-unread-highlight-style");
+            }
         }
     });
 
@@ -92,9 +102,9 @@
 
         <table >
             <tr class='ui-widget-header'>
-                <th>
-            	<th class='control-on-click-order control-order-asc' field-key='ticket_completed'>
-                <th class='ticket-sharing-permissions'>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_read' title='Unread'>
+            	<th class='control-on-click-order control-order-asc' field-key='ticket_completed' title='Completed'>
+                <th class='ticket-sharing-permissions' title='Permissions'>
                 <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order' field-key='start_date' field-meta-key='desc'>
                 <th class='field-meta-put control-on-click-order control-order-asc' field-key='due_date' field-meta-key='desc'>
@@ -103,8 +113,10 @@
             	<th>
             </tr>
 
-            <tr class='colorRows  ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
-                <td class='field-list-on-click-view ticket-show-button-style' field-list-view="ticket.Tickets.show">&nbsp;
+            <tr class='colorRows  ticket-list field-list-source notranslate field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.show">
+<!--                 <td class='field-list-on-click-view ticket-show-button-style' field-list-view="ticket.Tickets.show">&nbsp;
+ -->                
+                <td class='field-put control-list-on-click-edit ticket-read-style' field-key='ticket_read' field-no-text>
 
                 <td class='field-put control-list-on-click-edit ticket-check-style' field-key='ticket_completed' field-no-text>
 
@@ -123,7 +135,7 @@
                     </span>
 
 
-            	<td class='field-put control-list-on-click-edit' field-key='title' >
+            	<td class='field-put field-list-on-click-view' field-key='title' >
                 <td class='field-put control-list-on-click-edit' field-key='start_date' >
                 <td class='field-put control-list-on-click-edit ticket-due-date-style' field-key='due_date' >
                 <td class='field-put control-list-on-click-edit ticket-priority-style' field-key='ticket_priority' >

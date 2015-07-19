@@ -19,6 +19,7 @@ class Tickets(models.core.Protected.Protected):
             'due_date': fields.Timestamp(desc='Due'),
             'import_id': fields.String(desc='Import ID'),
             'ticket_completed': fields.Bool(desc='Completed'),
+            'ticket_read': fields.Bool(desc='Read'),
             'ticket_status': fields.Select(desc='Status', choices=[
                 ('none', 'Unassigned'),
                 ('next_action', 'Next Action'),
@@ -95,7 +96,13 @@ class Tickets(models.core.Protected.Protected):
 
         if '_id' in doc:
             #support edits in place that only put small documents
-            log_txt="Changed task {title}".format(**old_doc)
+
+            #if the only change is completion, then log that (no ticket-change message though)
+            if len(doc.keys())==2 and "ticket_read" in doc:
+                    log_txt="Read task {title}".format(**old_doc)
+            else:
+                log_txt="Changed task {title}".format(**old_doc)
+
             change_title="{} changed task.".format(self.context.session['name'])
             change_text=""
 

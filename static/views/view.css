@@ -192,6 +192,11 @@ a:hover
 	background: inherit ;
 }
 
+.ticket-unread-highlight-style
+{
+	color: black ;
+	font-weight: bold ;
+}
 
 
 .ticket-status-style .field-select-next_action {
@@ -406,6 +411,20 @@ a:hover
 	
 }
 
+
+.ticket-read-style .field-bool-true
+{
+	/*background: url("../icons/read.png") left center no-repeat; */
+	padding-left:20px;
+	
+}
+
+.ticket-read-style .field-bool-false 
+{
+	background: url("../icons/unread.png") left center no-repeat; 
+	padding-left:20px;
+	
+}
 
 
 .show-button-style

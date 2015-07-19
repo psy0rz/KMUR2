@@ -116,6 +116,17 @@ $('.field-list-source[field-key=""]', $(".tickets",context)).on("field_list_post
         {
             list_element.addClass("ticket-gray-style");
         }
+
+
+        //empasis unread tasks
+        if (data['ticket_read'])
+        {
+            list_element.removeClass("ticket-unread-highlight-style");
+        }
+        else
+        {
+            list_element.addClass("ticket-unread-highlight-style");
+        }
     }
 });
 
@@ -256,7 +267,7 @@ var tickets_objects=new ControlList({
 
         <table >
             <tr class='ui-widget-header'>
-                <th>
+                <th class='control-on-click-order control-order-asc' field-key='ticket_read' title='Unread'>
                 <th class='control-on-click-order control-order-asc' field-key='ticket_completed'>
                 <th>
                 <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
@@ -267,8 +278,8 @@ var tickets_objects=new ControlList({
                 <th>
             </tr>
 
-            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.edit">
-                <td class='field-list-on-click-view ticket-show-button-style' field-list-view="ticket.Tickets.show">&nbsp;
+            <tr class='colorRows field-list-source notranslate field-list-source-hide ui-widget-content' field-list-class='ticket.Tickets' field-key='' field-list-view="ticket.Tickets.show">
+                <td class='field-put control-list-on-click-edit ticket-read-style' field-key='ticket_read' field-no-text>
 
                 <td class='field-put control-list-on-click-edit ticket-check-style' field-key='ticket_completed' field-no-text>
 
@@ -288,7 +299,7 @@ var tickets_objects=new ControlList({
 
 
 
-                <td class='field-put control-list-on-click-edit' field-key='title' >
+                <td class='field-put field-list-on-click-view' field-key='title' >
                 <td class='field-put control-list-on-click-edit ticket-start-date-style' field-key='start_date' >
                 <td class='field-put control-list-on-click-edit ticket-due-date-style' field-key='due_date' >
                 <td class='field-put control-list-on-click-edit ticket-priority-style' field-key='ticket_priority'>
