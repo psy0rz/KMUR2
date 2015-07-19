@@ -189,6 +189,7 @@ class TicketObjects(models.core.Protected.Protected):
                             jpg_page.save(tmp_file)
                             print("OCR page {} of {}".format(page, doc["title"]))
                             doc["text"]+=self.process_ocr(tmp_file.name)+"\n\n"
+                            print("OCR done")
 
                         #still need thumb (first page)?
                         if not thumb:
@@ -198,7 +199,15 @@ class TicketObjects(models.core.Protected.Protected):
                             jpg_page.resize(new_width, new_height)
                             jpg_page.save(filename=self.get_thumb_path(doc["file"]))
                             doc["thumbnail"]=self.get_thumb_url(doc["file"])
+                if page>=10:
+                    print("Stopping OCR after 10 pages")
+                    break
 
+                print("cleanup")
+                pdf_page_seq.destroy()
+                print("cleanup done")
+
+        print("process pdf done")
         return(doc)
 
 

@@ -42,16 +42,20 @@ try:
 		}
 		)["data"]
 
+	counter=0
 	for ticket_object in ticket_objects:
+		counter=counter+1
+		print("Processing ({}/{}) {}: {} ...".format(counter, len(ticket_objects), ticket_object["_id"], ticket_object["title"]), end="")
+		sys.stdout.flush()
+
 		if os.path.exists("reprocessed/"+ticket_object["_id"]):
-			print ("Skipped "+ticket_object["_id"]+": "+ticket_object["title"])
+			print ("SKIPPED")
 		else:
-			print ("Reprocessing "+ticket_object["_id"]+": "+ticket_object["title"])
 			try:
 				rpc_client.request("ticket.TicketObjects.reprocess", _id=ticket_object["_id"])
 				with open("reprocessed/"+ticket_object["_id"],'w'):
 					pass
-
+				print("DONE")
 			except Exception as e:
 				print("Error processing "+ticket_object["_id"]+":"+str(e))
 

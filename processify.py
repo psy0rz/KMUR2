@@ -28,7 +28,7 @@ def processify(func):
             error = None
  
         q.put((ret, error))
- 
+
     # register original function with different name
     # in sys.modules so it is pickable
     process_func.__name__ = func.__name__ + 'processify_func'
@@ -39,8 +39,8 @@ def processify(func):
         q = Queue()
         p = Process(target=process_func, args=[q] + list(args), kwargs=kwargs)
         p.start()
-        p.join()
         ret, error = q.get()
+        p.join()
  
         if error:
             ex_type, ex_value, tb_str = error
