@@ -84,6 +84,9 @@ class ContractInvoices(models.core.Protected.Protected):
     def recalc_minutes_balance(self, relation_id, contract_id):
         """recalculate budget of all contract invoices of specified relation,contract combo"""
 
+        contracts_model=models.ticket.Contracts.Contracts(self.context)
+        contract=contracts_model._unprotected_get(_id=contract_id)
+
         contract_invoices=self._unprotected_get_all(
                 match={
                 "relation": relation_id,
@@ -96,6 +99,11 @@ class ContractInvoices(models.core.Protected.Protected):
         minutes_balance=0
         for contract_invoice in contract_invoices:
             minutes_balance+=contract_invoice['minutes_bought']-contract_invoice['minutes_used']
+
+            #make sure the budget doesnt get too high
+            if "max_budget" in contract and contract["max_budget"] and minutes_balance>contract['max_budget']:
+                minutes_balance=contract["max_budget"]
+
             if ('minutes_balance' not in contract_invoice) or (contract_invoice["minutes_balance"]!=minutes_balance):
                 contract_invoice['minutes_balance']=minutes_balance
                 self._unprotected_put(

@@ -47,6 +47,7 @@ class Contracts(models.core.Protected.Protected):
                     'minutes': fields.Number(desc='Time', default=60),
                     'minutes_minimum': fields.Number(desc='Minimal minutes', default=0),
                     'minutes_rounding': fields.Number(desc='Minutes round up per', default=1, min=1),
+                    'max_budget': fields.Number(desc='Maximum budget', default=0),
                     'tax': fields.Number(desc='Tax', default=21),
                     'import_id': fields.String(desc='Import ID'),
 
