@@ -894,7 +894,7 @@ ControlList.prototype.get_result=function(result, request_params)
         {
             //we're done getting all the data we need. now its safe to delete any list items that where marked for deleting when we started
             // console.error("deleting old list items", this.context);
-            $('.field-list-delete', this.context).removeClass("field-list-delete field-list-item").hide(1000, function()
+            $('.field-list-delete', this.context).removeClass("field-list-delete field-list-item").hide(10, function()
             {
                 $(this).remove();
             });
@@ -1014,7 +1014,7 @@ ControlList.prototype.attach_event_handlers=function()
                 [ key ]
             );
 
-            element.hide(1000, function()
+            element.hide(10, function()
             {
                 element.remove();
             });

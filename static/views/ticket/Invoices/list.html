@@ -66,8 +66,8 @@
         <tr class='ui-widget-header'>
             <th>
             <th class='ticket-sharing-permissions'>
-            <th class='field-meta-put control-on-click-order control-order-asc' field-key='sent' field-meta-key='desc'>
-            <th class='field-meta-put control-on-click-order control-order-asc' field-key='payed' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order control-order-asc ' field-key='sent' field-meta-key='desc'>
+            <th class='field-meta-put control-on-click-order control-order-asc ' field-key='payed' field-meta-key='desc'>
             <th class='field-meta-put control-on-click-order control-order-desc' field-key='sent_date' field-meta-key='desc'>
             <th class='field-meta-put control-on-click-order' field-key='invoice_nr' field-meta-key='desc'>
             <th class='field-meta-put control-on-click-order' field-key='title' field-meta-key='desc'>
@@ -95,8 +95,8 @@
                     </span>
                 </span>
 
-            <td class='field-put field-list-on-click-view' field-key='sent' >
-            <td class='field-put field-list-on-click-view' field-key='payed' >
+            <td class='field-put field-list-on-click-view invoice-sent-style' field-key='sent' >
+            <td class='field-put field-list-on-click-view invoice-payed-style' field-key='payed' >
             <td class='field-put field-list-on-click-view' field-key='sent_date' nowrap >
             <td class='field-put field-list-on-click-view' field-key='invoice_nr'  nowrap>
             <td class='field-put field-list-on-click-view' field-key='title' >
@@ -115,6 +115,6 @@
     <span class="ui-icon ui-icon-search" style='display:inline-block'></span>
     <input type='text' class='control-on-change-search control-default-focus' control-search-keys='notes to_copy.company invoice_nr items.desc'>
     <button class='control-on-click-view' control-view='ticket.Invoices.edit' field-key='title' >Create new invoice</button>
-    <button class='on-click-auto-invoice-all' >Auto invoice contracts</button>
+    <button class='on-click-auto-invoice-all' >Auto invoice all contracts</button>
     <span class='viewErrorText'></span>
 </div>

@@ -486,3 +486,15 @@ a:hover
 	vertical-align: middle;
 }
 
+
+.invoice-sent-style .field-bool-false 
+{
+	color: blue;	
+	font-weight: bold;
+}
+
+.invoice-payed-style .field-bool-false 
+{
+	color: red;	
+	font-weight: bold;
+}

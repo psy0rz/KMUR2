@@ -37,6 +37,7 @@ to_format="""{company}
 """
 
 invoice_date_format=   """%d-%m-%Y"""
+hours_format= """%d-%m-%Y"""
 
 class Invoices(models.core.Protected.Protected):
     '''Invoicing module

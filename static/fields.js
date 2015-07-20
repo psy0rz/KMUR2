@@ -658,7 +658,7 @@ Field.List.meta_put=function(key, meta, context, options)
             $(list_source).off("control_form_deleted").on("control_form_deleted",function(event)
             {
                 console.log("view opened by us has deleted the data");
-                 $(this).hide(1000,function()
+                 $(this).hide(10,function()
                  {
                     var parent=$(this).parent();
                     $(this).remove();
@@ -894,7 +894,7 @@ Field.List.put=function(key, meta, context, data, options)
         {
             if (options.show_changes)
             {
-                $('.field-list-delete[field-key="'+key+'"]', parent).removeClass("field-list-item").hide(1000, function()
+                $('.field-list-delete[field-key="'+key+'"]', parent).removeClass("field-list-item").hide(10, function()
                         {
                             $(this).remove();
                         });
@@ -2203,7 +2203,7 @@ Field.Relation.meta_put_resolved=function(key, meta, context, options)
             [ data[list_key] ]
         );
 
-        element.hide(1000, function()
+        element.hide(10, function()
         {
             element.remove();
         });

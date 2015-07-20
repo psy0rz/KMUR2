@@ -8,6 +8,7 @@ import models.ticket.Contracts
 import models.ticket.Invoices
 import models.ticket.Relations
 import datetime
+import time
 
 import bson.objectid
 
@@ -275,12 +276,13 @@ class ContractInvoices(models.core.Protected.Protected):
 
         #get uninvoiced ticket_objects for this relation,contract combo
         ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
-            fields=["title", "minutes", "minutes_factor" ],
+            fields=["title", "minutes", "minutes_factor", "start_time" ],
             match={
                 "billing_relation": relation["_id"],
                 "billing_contract": contract_id,
                 "billing_contract_invoice": None,
-            })
+            },
+            sort=[ ( "start_time", 1 )])
 
         #now create contract invoice, so we have the _id
         contract_invoice=self.put(**contract_invoice)
@@ -304,7 +306,7 @@ class ContractInvoices(models.core.Protected.Protected):
             #append details to invoice
             if contract['invoice_details']=="time":
                 #invoice description for this time
-                invoice_desc="["+contract['title']+"] "+ticket_object['title']
+                invoice_desc="["+contract['title']+"] "+time.strftime(models.ticket.Invoices.hours_format, time.localtime(ticket_object['start_time']))+" "+ticket_object['title']
                 if ticket_object['minutes_factor']!=1:
                     invoice_desc=invoice_desc+" \n(calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
 
