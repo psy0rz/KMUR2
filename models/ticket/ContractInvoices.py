@@ -303,6 +303,7 @@ class ContractInvoices(models.core.Protected.Protected):
         elif contract['type']=='prepay':
             #prepayed: fixed price per month, not per hour
             price_per_hour=0
+
         total_hours=0
 
         #traverse all the un-invoiced ticket_objects
@@ -345,32 +346,35 @@ class ContractInvoices(models.core.Protected.Protected):
                 'tax': contract['tax']
             })
 
-        #create actual invoice
-        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
-             to_relation=relation['_id'],
-             currency=contract['currency'],
-             items=invoice_items,
-        )
 
-        #finally update contract_invoice 
-        contract_invoice['invoice']=invoice['_id']
-        contract_invoice=self.put(**contract_invoice)
+        #only create an actual invoice if we have items
+        if invoice_items:
+            #create actual invoice
+            invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
+                 to_relation=relation['_id'],
+                 currency=contract['currency'],
+                 items=invoice_items,
+            )
+
+            #finally update contract_invoice 
+            contract_invoice['invoice']=invoice['_id']
+            contract_invoice=self.put(**contract_invoice)
 
 
-        #now add some usefull notes to the invoice
-        contract_invoice=self.get(contract_invoice["_id"]) #reget it to get updated values for minutes_used and balance
-        try:
-            notes=contract['invoice_notes_format'].format(**contract_invoice)
-        except:
-            notes=contract['invoice_notes_format']
+            #now add some usefull notes to the invoice
+            contract_invoice=self.get(contract_invoice["_id"]) #reget it to get updated values for minutes_used and balance
+            try:
+                notes=contract['invoice_notes_format'].format(**contract_invoice)
+            except:
+                notes=contract['invoice_notes_format']
 
-        invoice={
-            "_id": invoice["_id"],
-            "notes": invoice["notes"]+notes,
-            'allowed_users': relation['allowed_users'],
-            'allowed_groups': relation['allowed_groups'],
-        }
-        invoice=call_rpc(self.context, 'ticket', 'Invoices', 'put', **invoice)
+            invoice={
+                "_id": invoice["_id"],
+                "notes": invoice["notes"]+notes,
+                'allowed_users': relation['allowed_users'],
+                'allowed_groups': relation['allowed_groups'],
+            }
+            invoice=call_rpc(self.context, 'ticket', 'Invoices', 'put', **invoice)
 
 
         return(contract_invoice)
