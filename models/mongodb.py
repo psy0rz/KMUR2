@@ -56,6 +56,8 @@ class FieldId(fields.Base):
             return(str(data))
 
 
+
+
 class Relation(fields.Base):
     '''A relation field that contains one or more id's that point objects in another model
 
@@ -68,7 +70,8 @@ class Relation(fields.Base):
     '''
 
 
-    def __init__(self, model, meta=None, list=True, min=None, max=None, resolve=True , check_exists=True, **kwargs):
+
+    def __init__(self, model, meta=None, list=True, min=None, max=None, resolve=True , check_exists=True, reference_collection=None, reference_search=None, **kwargs):
         """
             model: specifies the related model (as a python object)
             meta: Metadata of related data. If not specified then model.meta is used. you can specify this in case you want dynamic metadata vs static.
@@ -80,11 +83,16 @@ class Relation(fields.Base):
                 (the stuff in field.js will take care of extra rpc-calls to the foreign model)
                 this is a tradeoff the developer has to make, depending on the application.
             check_exists: checks if the specified item exist in the forgeign model.
+            reference_collection, reference_search: indicates the collection-name and search-key of the field that is referencing the related model. 
+            this prevents deletion of the related object.
 
         """
 
         super(Relation, self).__init__(**kwargs)
 
+        #store the reference in the specified model 
+        if reference_collection:
+            model.references[reference_collection][reference_key]=True
 
         if (min != None):
             if (min < 0):
@@ -277,7 +285,19 @@ class Relation(fields.Base):
     def to_human(self, context, data):
         return(self.to_external(context, data, resolve=True))
 
-class Base(models.common.Base):
+
+
+#metaclass that sets default_collection after class creation
+#we need this for Relation referenced_by to work correctly.
+
+class BaseMeta(type):
+    def __init__(cls, name, bases, dct):
+
+        cls.default_collection = cls.__module__
+
+        super(BaseMeta, cls).__init__(name, bases, dct)
+
+class Base(models.common.Base, metaclass=BaseMeta):
     """Base class for models that use mongodb.
 
     Automatically sets self.db to the correct data, by parameters that are stored in the context object.
@@ -289,6 +309,7 @@ class Base(models.common.Base):
     
 
     """
+
 
     def __init__(self, context=None):
         super(Base, self).__init__(context=context)
@@ -307,7 +328,6 @@ class Base(models.common.Base):
 
         self.db = self.context.mongodb_connection[self.context.session['db_name']]
 
-        self.default_collection = self.__class__.__module__
 
 
     def _put(self, doc, replace=False):
