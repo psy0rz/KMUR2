@@ -317,7 +317,7 @@ class Invoices(models.core.Protected.Protected):
             
         return(ret)
 
-    @RPC(roles="finance_admin")
+    @RPC(roles="user")
     def calc(self, **doc):
         """returns a calculated version of doc
 
