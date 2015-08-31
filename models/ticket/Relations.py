@@ -57,6 +57,9 @@ class Relations(models.core.Protected.Protected):
                 'city': fields.String(desc='City'),
                 'province': fields.String(desc='Province/state'),
                 'country': fields.String(desc='Country'),
+                'email_trackable_subject_regex': fields.String(desc='Trackable subject regex'),
+                # 'email_trackable_body_regex': fields.String(desc='Trackable body regex'), #perhaps later, more difficult to implement correctly
+
                 #a copy of this info is stored with every invoice
                 'invoice': fields.Dict({
                     'customer_nr': fields.String(desc='Customer nr'),

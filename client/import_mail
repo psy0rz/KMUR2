@@ -28,6 +28,7 @@ try:
     parser.add_argument('--sender',  required=True, help='Envelope sender')
     parser.add_argument('--receip',  required=True, help='Envelope receipient')
     parser.add_argument('--smtp_server', default='localhost', help='SMTP server to use. default: %(default)s')
+    parser.add_argument('--no_forward', action='store_true', help='dont forward mail (usefull for testing)')
 
 
     args = parser.parse_args()
@@ -199,8 +200,7 @@ try:
                 msg_part.set_payload(text, msg_part.get_content_charset())
 
     trackables.update(embedded_trackables)
-    trackables=list(trackables) # json encodable
-    debug("Trackables:", trackables)
+    debug("Plain trackables:", trackables)
 
 
     ### determine and do actual forwarding
@@ -241,12 +241,15 @@ try:
                 msg["cc"]=reply_to
 
 
-        import smtplib
-        debug("Forwarding to {} via smtp server {}".format(settings["email_forward"], args.smtp_server))
-        smtp_server = smtplib.SMTP(args.smtp_server)
-        # smtp_server.set_debuglevel(1)
-        smtp_server.send_message(msg, from_addr=args.sender, to_addrs=settings["email_forward"])
-        smtp_server.quit()
+        if args.no_forward:
+           debug("NOT forwarding to {} via smtp server {}".format(settings["email_forward"], args.smtp_server))
+        else:
+            import smtplib
+            debug("Forwarding to {} via smtp server {}".format(settings["email_forward"], args.smtp_server))
+            smtp_server = smtplib.SMTP(args.smtp_server)
+            # smtp_server.set_debuglevel(1)
+            smtp_server.send_message(msg, from_addr=args.sender, to_addrs=settings["email_forward"])
+            smtp_server.quit()
 
 
 
@@ -281,7 +284,7 @@ try:
     relation_ids=[]
     if related_addresses:
         relations=rpc_client.request("ticket.Relations.get_all",
-            fields=[ "_id", "allowed_users", "allowed_groups"],
+            fields=[ "_id", "allowed_users", "allowed_groups", "email_trackable_subject_regex", "email_trackable_body_regex"],
             spec_and=[ { 
                 "emails.email": {
                     "$in": list(related_addresses)  
@@ -296,13 +299,28 @@ try:
 
         debug("Relations with matching email adresses:", relation_ids)
 
+        #try to extract customer specific trackables from the mail
+        for relation in relations:
+            if "email_trackable_subject_regex" in relation:
+                try:
+                    #catch invalid regexes
+                    subject_trackables=re.findall(relation["email_trackable_subject_regex"], header_to_unicode(msg["subject"]))
+                except:
+                    debug("Invalid regex '{}' for customer {}".format(relation["email_trackable_subject_regex"], relation["_id"]))
+                    subject_trackables=[]
+                    pass
+                debug("Specific trackable regex '{}' for customer {} found: {}".format(relation["email_trackable_subject_regex"], relation["_id"], subject_trackables))
+                trackables.update(subject_trackables)
+
 
     ### try to find any mails with these trackables
+    trackables=list(trackables) # json encodable
+    debug("All trackables:", trackables)
     ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
             fields=[ "tickets" ],
             match_in={ "trackables": trackables  } 
     )["data"]
-    debug("Ticket objects with matching trackables:", ticket_objects)
+    debug("TicketObjects with matching trackables:", ticket_objects)
 
     #also try to find latest related mail object
     prev_related_mail_objects=rpc_client.request("ticket.TicketObjects.get_all",
@@ -320,10 +338,13 @@ try:
         all_ticket_ids.update(ticket_object["tickets"])
     all_ticket_ids=list(all_ticket_ids) #json encodable
 
-    #only link to existing tickets that we have access to
+    #only link to existing tickets that we have access to and that is related to one of the relations
     tickets=rpc_client.request("ticket.Tickets.get_all",
             fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
-            match_in={ "_id": all_ticket_ids } 
+            match_in={ 
+                "_id": all_ticket_ids,
+                "relations": relation_ids
+            }
     )["data"]
 
     ticket_ids=set()

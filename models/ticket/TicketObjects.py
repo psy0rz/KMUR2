@@ -102,7 +102,8 @@ class TicketObjects(models.core.Protected.Protected):
                 'thumbnail': fields.Image(desc='Thumbnail'),
                 'import_id': fields.String(desc='Import ID'),
                 'trackables': fields.List(
-                        fields.String(desc="Trackable")
+                        fields.String(desc="Trackable string"),
+                        desc="Trackables"
                     ),
             }),
             list_key='_id'

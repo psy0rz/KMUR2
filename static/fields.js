@@ -757,6 +757,8 @@ Field.List.show_hide_on_empty=function(key, meta, parent)
  options.list_continue: add new items to the end of the list, instead of being intelligent. used with list_update for endless scrolling
 
  NOTE: no_remove and no_add are usually used when the data is incomplete. e.g. the data is just the one item that changed.
+
+ TODO: make list work better with simple data (like strings) instead of dict-only. We can do this by allowing the field-list-source class on a higher dom object?
 */
 
 Field.List.put=function(key, meta, context, data, options)
