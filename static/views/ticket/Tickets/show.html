@@ -117,7 +117,7 @@ var form=new ControlForm({
         });
 
 
-        $(".floatingBar", context).on('click',".on-click-new-ticket-time", function()
+        $(".floatingBar", context).off().on('click',".on-click-new-ticket-time", function()
         {
             viewCreate({ creator: context },
             {
