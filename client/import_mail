@@ -338,14 +338,24 @@ try:
         all_ticket_ids.update(ticket_object["tickets"])
     all_ticket_ids=list(all_ticket_ids) #json encodable
 
-    #only link to existing tickets that we have access to and that is related to one of the relations
-    tickets=rpc_client.request("ticket.Tickets.get_all",
-            fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
-            match_in={ 
-                "_id": all_ticket_ids,
-                "relations": relation_ids
-            }
-    )["data"]
+    if relation_ids:
+        #only link to existing tickets that we have access to and that is related to one of the relations
+        tickets=rpc_client.request("ticket.Tickets.get_all",
+                fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
+                match_in={ 
+                    "_id": all_ticket_ids,
+                    "relations": relation_ids
+                }
+        )["data"]
+    else:
+        #no relation found, so just try to link it to any ticket
+        tickets=rpc_client.request("ticket.Tickets.get_all",
+                fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
+                match_in={ 
+                    "_id": all_ticket_ids,
+                }
+        )["data"]
+
 
     ticket_ids=set()
     for ticket in tickets:
