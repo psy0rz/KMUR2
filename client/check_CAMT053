@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import rpc
+import sys
+import xml.etree.ElementTree
+import datetime
+import time
+import re
+
+parser = argparse.ArgumentParser(description='CAMT053 invoice checker')
+
+parser.add_argument('--url', default='http://localhost:8080/rpc', help='url of rpc server to connect to. default: %(default)s')
+parser.add_argument('--user', default='admin', help='user to login. default: %(default)s')
+parser.add_argument('--password', default='admin', help='password. default: %(default)s')
+parser.add_argument('--insecure', action='store_true', help='dont verify SSL certificates. (use with self-signed certificates)')
+parser.add_argument('--apply', action='store_true', help='Update invoice payed status with found transactions (only do this after verifying output)')
+parser.add_argument('file',  nargs=1, help='CAMT053.xml')
+
+args = parser.parse_args()
+
+#initialise the rpc client class
+rpc_client=rpc.RpcClient(args.url, insecure=args.insecure)
+
+#first login using the specified user and pass
+user=rpc_client.request("core.Users.login", name=args.user, password=args.password)
+
+#read and parse XML
+tree=xml.etree.ElementTree.parse(args.file[0])
+root=tree.getroot()
+
+
+#get all open invoices
+invoices=rpc_client.request("ticket.Invoices.get_all", match={
+	'payed': False
+	})["data"]
+
+
+ns="{urn:iso:std:iso:20022:tech:xsd:camt.053.001.02}"
+#traverse all todo items
+for child in tree.iter(ns+"Ntry"):
+	# xml.etree.ElementTree.dump(child)
+
+	direction=child.findtext(ns+"CdtDbtInd")
+	if direction=="CRDT":
+
+		amount=float(child.findtext(ns+"Amt"))
+		datestr=child.findtext("./"+ns+"BookgDt/"+ns+"Dt")
+
+		detail_prefix="./"+ns+"NtryDtls/"+ns+"TxDtls/"
+
+		timestamp=time.mktime(datetime.datetime.strptime(datestr, "%Y-%m-%d").timetuple())
+		name=child.findtext(detail_prefix+ns+"RltdPties/"+ns+"Dbtr/"+ns+"Nm")
+		iban=child.findtext(detail_prefix+ns+"RltdPties/"+ns+"DbtrAcct/"+ns+"Id/"+ns+"IBAN")
+		desc=child.findtext(detail_prefix+ns+"RmtInf/"+ns+"Ustrd")
+
+		# print(direction, datestr, iban, amount, name, desc)
+
+		#find matching amount
+		for invoice in invoices:
+			#matching date and time?
+			if timestamp>=invoice['sent_date'] and invoice['calc_total_tax']==amount:
+				# print(" Value and date match: ", invoice['invoice_nr'])
+
+				#try creative search on description field:
+				regex=re.sub("[^0-9]",".",invoice['invoice_nr'])
+	
+				if re.match(regex, desc):
+					print("Transaction: ",direction, datestr, iban, amount, name, desc)
+					print(" Invoice match: ", invoice['to_copy']['company'] , invoice['invoice_nr'])
+
+					if args.apply:
+						print ("Updating payed status...")
+						rpc_client.request("ticket.Invoices.put", payed=True, payed_date=timestamp, _id=invoice['_id'])
+
+
+					print()
+					break
+
+print("DONE")
+
+
