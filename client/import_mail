@@ -316,7 +316,7 @@ try:
     filtered_trackables=set()
     for trackable in trackables:
         if trackable!="":
-            filtered_trackables.append(trackable)
+            filtered_trackables.add(trackable)
     trackables=filtered_trackables
 
     ### try to find any mails with these trackables
