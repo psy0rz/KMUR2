@@ -301,7 +301,7 @@ try:
 
         #try to extract customer specific trackables from the mail
         for relation in relations:
-            if "email_trackable_subject_regex" in relation:
+            if "email_trackable_subject_regex" in relation and relation["email_trackable_subject_regex"]:
                 try:
                     #catch invalid regexes
                     subject_trackables=re.findall(relation["email_trackable_subject_regex"], header_to_unicode(msg["subject"]))
@@ -312,10 +312,16 @@ try:
                 debug("Specific trackable regex '{}' for customer {} found: {}".format(relation["email_trackable_subject_regex"], relation["_id"], subject_trackables))
                 trackables.update(subject_trackables)
 
+    #filter invalid trackables:
+    filtered_trackables=set()
+    for trackable in trackables:
+        if trackable!="":
+            filtered_trackables.add(trackable)
+    trackables=filtered_trackables
 
     ### try to find any mails with these trackables
     trackables=list(trackables) # json encodable
-    debug("All trackables:", trackables)
+    debug("Filtered plain + customer trackables:", trackables)
     ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
             fields=[ "tickets" ],
             match_in={ "trackables": trackables  } 
