@@ -7,7 +7,7 @@ Dependencies
 ------------
 
 - python wand
-- tesseract
+- tesseract (at least version 3.03)
 - pip3.4 install beaker
 - pip3.4 install bottle
 - pip3.4 install pymongo
