@@ -3,7 +3,8 @@
 Installing
 ==========
 
-== Dependencies ==
+Dependencies
+------------
 
 - python wand
 - tesseract
@@ -13,7 +14,8 @@ Installing
 - pip3.4 install reportlab
 - pip3.4 install python3-memcached
 
-== config ==
+config
+------
 
 create a empty file: settings.py
 
@@ -23,13 +25,15 @@ import os
 os.environ["MAGICK_HOME"]="/opt/local"
 
 
-== running ==
+running
+-------
 
 ./run.py
 
 ..or deploy in a wsgi webserver 
 
-= creating a new environment =
+creating a new environment
+==========================
 
 
 ./newdomain mycompany.com
