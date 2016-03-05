@@ -35,7 +35,6 @@ running
 creating a new environment
 ==========================
 
-
-./newdomain mycompany.com
+ ./newdomain mycompany.com
 
 Now you can login with admin@mycompany.com and password "changeme".
