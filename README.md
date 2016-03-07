@@ -13,6 +13,7 @@ Dependencies
 - pip3.4 install pymongo
 - pip3.4 install reportlab
 - pip3.4 install python3-memcached
+- pip3.4 install requests
 
 On illumos/joyent you need to create this links to make the Python 3 wand.image module work correctly:
 
