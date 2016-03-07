@@ -44,9 +44,16 @@ def processify(func):
  
         if error:
             ex_type, ex_value, tb_str = error
-            # print(error)
-            message = '{} (in subprocess)\n{}'.format(str(ex_value), tb_str)
-            raise ex_type(message)
+            #print(error)
+            #message = '{} (in subprocess)\n{}'.format(str(ex_value), tb_str)
+            #print("message:")
+            #print(message)
+            #print("exttype:")
+            #print(ex_type)
+            #print("extvalue:")
+            ##print(ex_value)
+            #print("rasinggg..")
+            raise Exception(ex_value)
  
         return ret
     return wrapper
