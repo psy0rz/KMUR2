@@ -16,7 +16,7 @@ class ContractInvoices(models.core.Protected.Protected):
     '''Keeps a record of all hours that where already bought and invoiced.
 
     '''
-    
+
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
@@ -92,7 +92,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 "relation": relation_id,
                 "contract": contract_id,
                 },
-                fields=[ "minutes_used", "minutes_bought", "minutes_balance", "desc" ], 
+                fields=[ "minutes_used", "minutes_bought", "minutes_balance", "desc" ],
                 sort=[ ( 'date', 1 )]
             )
 
@@ -126,10 +126,10 @@ class ContractInvoices(models.core.Protected.Protected):
         minutes=ticket_object["minutes"]
 
         #make sure it has the minimum minutes
-        if  minutes<contract['minutes_minimum']:
+        if  minutes>0 and minutes<contract['minutes_minimum']:
             minutes=contract['minutes_minimum']
 
-        #apply factor 
+        #apply factor
         minutes=minutes*ticket_object['minutes_factor']
 
         #round up to whole minute-blocks
@@ -142,7 +142,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
     @RPC(roles="user")
     def recalc_minutes_used(self, _id):
-        """recalculate minutes for one contract_invoice, by adding the minutes of all ticket objects that point to contract_invoice with this _id 
+        """recalculate minutes for one contract_invoice, by adding the minutes of all ticket objects that point to contract_invoice with this _id
 
         rounds minutes according to round_minutes
 
@@ -199,14 +199,14 @@ class ContractInvoices(models.core.Protected.Protected):
 
         #all relations with contracts
         relations=call_rpc(self.context, 'ticket', 'Relations', 'get_all',
-            fields=[ "contracts", "invoice" ], 
-            spec_and=[ { 
-                "contracts": { 
-                    "$not": { 
+            fields=[ "contracts", "invoice" ],
+            spec_and=[ {
+                "contracts": {
+                    "$not": {
                         "$size": 0
                         }
                     }
-                } ]   
+                } ]
              )
 
         for relation in relations:
@@ -239,7 +239,7 @@ class ContractInvoices(models.core.Protected.Protected):
                         sort=[ ( 'date', -1 )]
                     )
 
-        
+
                 if len(latest_contract_invoices)==0:
                     self.auto_invoice(relation["_id"], contract_id, desc)
 
@@ -252,7 +252,7 @@ class ContractInvoices(models.core.Protected.Protected):
         relation=call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id)
 
         if contract["type"] not in [ "post", "prepay" ]:
-            raise fields.FieldError("This contract cant be auto invoiced")            
+            raise fields.FieldError("This contract cant be auto invoiced")
 
         if not desc:
             desc=datetime.datetime.now().strftime("%B %Y")
@@ -350,13 +350,13 @@ class ContractInvoices(models.core.Protected.Protected):
         #only create an actual invoice if we have items
         if invoice_items:
             #create actual invoice
-            invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items', 
+            invoice=call_rpc(self.context, 'ticket', 'Invoices', 'add_items',
                  to_relation=relation['_id'],
                  currency=contract['currency'],
                  items=invoice_items,
             )
 
-            #finally update contract_invoice 
+            #finally update contract_invoice
             contract_invoice['invoice']=invoice['_id']
             contract_invoice=self.put(**contract_invoice)
 
@@ -403,7 +403,7 @@ class ContractInvoices(models.core.Protected.Protected):
             }
         )
 
-        
+
         for ticket_object in ticket_objects:
             minutes=self.round_minutes(ticket_object, contract)
             hours=round(minutes/60,2)
@@ -420,7 +420,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 'tax': contract['tax']
             })
 
-        call_rpc(self.context, 'ticket', 'Invoices', 'put', 
+        call_rpc(self.context, 'ticket', 'Invoices', 'put',
             _id=invoice["_id"],
             items=invoice["items"]
         )
@@ -443,7 +443,7 @@ class ContractInvoices(models.core.Protected.Protected):
 
         relation=call_rpc(self.context, 'ticket', 'Relations', 'get', _id=relation_id)
 
-        #first determine all contracts that are used anywhere 
+        #first determine all contracts that are used anywhere
         used_contract_ids=set()
         used_contract_ids.update(relation["contracts"])
         used_contract_ids.update(call_rpc(self.context, 'ticket', 'TicketObjects', 'get_used_contracts', relation_id=relation_id))
@@ -559,4 +559,3 @@ class ContractInvoices(models.core.Protected.Protected):
     @RPC(roles="finance_read")
     def get_all(self, **params):
         return(self._get_all(**params))
-
