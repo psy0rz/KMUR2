@@ -33,7 +33,8 @@ root=tree.getroot()
 
 #get all open invoices
 invoices=rpc_client.request("ticket.Invoices.get_all", match={
-	'payed': False
+	'payed': False,
+	'sent': True,
 	})["data"]
 
 
@@ -65,8 +66,8 @@ for child in tree.iter(ns+"Ntry"):
 
 				#try creative search on description field:
 				regex=re.sub("[^0-9]",".",invoice['invoice_nr'])
-	
-				if re.search(regex, desc):
+				
+				if desc and re.search(regex, desc):
 					print("Transaction: ",direction, datestr, iban, amount, name, desc)
 					print(" Invoice match: ", invoice['to_copy']['company'] , invoice['invoice_nr'])
 
@@ -79,5 +80,3 @@ for child in tree.iter(ns+"Ntry"):
 					break
 
 print("DONE")
-
-
