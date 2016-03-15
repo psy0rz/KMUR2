@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- (C)edwin@datux.nl - released under GPL --> 
-<html> 
-    
-<head> 
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
-    <title>Datux ticket tracking and invoice</title> 
+<!-- (C)edwin@datux.nl - released under GPL -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Datux ticket tracking and invoice</title>
 
     <meta name="google-translate-customization" content="c9bc9efeea78095a-e8882e20e40e736d-g2a9efc2a712a9d5c-16"></meta>
 
@@ -36,7 +36,7 @@
 -->
 
     <script>
-        //this is the only global variable that the main-application has to deal with. 
+        //this is the only global variable that the main-application has to deal with.
         //usually when creating controls that need to know the user_id or group_ids of the logged in user
         var session={};
 
@@ -48,9 +48,9 @@
             viewLoad({
                 name: 'webui.Menu.main',
                 mode: 'existing',
-                id: 'viewMenu'              
+                id: 'viewMenu'
             });
-            
+
 //          $("#themeswitcher").themeswitcher();
             $("#viewLog").click(function(){
                 $(this).empty();
@@ -121,7 +121,7 @@
                 }, function(result){
                     console.log(result);
                     viewShowError(result, login_context);
-                });                
+                });
             }
 
             if (start_params.name)
@@ -168,11 +168,11 @@
         });
     </script>
 
-</head> 
+</head>
 <body class='ui-widget' style='
     font-size:12px;
-'> 
-        
+'>
+
 
 <div id='views' class='ui-widget'>
 </div>
@@ -219,10 +219,10 @@
 '>
     <div id='viewMenu'>
     </div>
-    
+
     <div id='viewLog' style='
         position:absolute;
-        bottom:1em;
+        bottom:2em;
     '>
     </div>
 </div>
@@ -248,14 +248,15 @@
 
 <div class='viewLoading' class='hide-while-printing' style='
     position:fixed;
-    left:1em;
-    top:2em;
-    padding-left:1em;
-    padding-right:1em;
-    color: #666666;
+    left:0em;
+    bottom:.5em;
+    padding:0;
+    margin:0;
+
 '>
-    processing...
+    <img src='icons/ui-anim_basic_16x16.gif'> Processing...
 </div>
+
 
 
 <!-- <div id="google_translate_element" style='
@@ -266,14 +267,13 @@
 <script type="text/javascript">
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({
-    pageLanguage: 'en', 
-    layout: google.translate.TranslateElement.InlineLayout.SIMPLE, 
+    pageLanguage: 'en',
+    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
     multilanguagePage: false
   }, 'google_translate_element');
 }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
  -->
-</body> 
-</html> 
- 
+</body>
+</html>
