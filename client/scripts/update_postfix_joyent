@@ -3,6 +3,6 @@
 ../export_postfix --url $1 --api_key $2 > /tmp/virtual.new
 if ! cmp /opt/local/etc/postfix/virtual /tmp/virtual.new >/dev/null; then
 	cp /tmp/virtual.new /opt/local/etc/postfix/virtual
-	postmap /opt/local/etc/postfix/virtual
+	postmap hash:/opt/local/etc/postfix/virtual
 fi
 

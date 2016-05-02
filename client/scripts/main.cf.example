@@ -1,0 +1,12 @@
+
+############## tracer postfix configuration example (main.cf)
+
+#disable wildcard matching!
+parent_domain_matches_subdomains=
+
+
+smtpd_relay_restrictions = permit_mynetworks, 
+       permit_sasl_authenticated,
+       reject_unauth_destination
+
+virtual_alias_maps = hash:/opt/local/etc/postfix/virtual

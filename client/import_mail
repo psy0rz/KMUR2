@@ -506,6 +506,7 @@ try:
                 ticket_object=rpc_client.request("ticket.TicketObjects.put", 
                     import_id=import_id,
                     filename=filename,
+                    file_content_type=msg_part.get_content_type(),
                     file=tmp_file,
                     allowed_users=[ user["user_id"] ],
                     create_time=timestamp, 

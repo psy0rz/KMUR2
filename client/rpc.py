@@ -15,9 +15,10 @@ class RpcClient:
 		command: dotted notation, for example: "core.Users.login"
 		filename: name of a file to upload. this changes request to a multipart/form.
 		file: file-object to upload. if not specified it will try open filename
+		file_content_type: Content type of the file to upload.
 		params: Dict with parameters. (should be convertable to JSON)
 	"""
-	def request(self, command, filename=None, file=None, help=False, **params):
+	def request(self, command, filename=None, file=None, file_content_type=None, help=False, **params):
 		(module,cls,method)=command.split(".")
 		rpc_data={
 			"help": help,
@@ -39,7 +40,7 @@ class RpcClient:
 			encoder = requests_toolbelt.MultipartEncoder(
 			    fields=
 			    { 'rpc': data,
-			    		 'file': ( filename, file)
+			    		 'file': ( filename, file, file_content_type)
 			    		 #'file': open(filename, 'rb')
 			    }
 			)
@@ -48,7 +49,6 @@ class RpcClient:
 				print ("\r{}: Uploaded {} bytes...".format(filename, monitor.bytes_read), file=sys.stderr, end='')
 
 			monitored_encoder = requests_toolbelt.MultipartEncoderMonitor(encoder, monitor_callback)
-
 			result=self.session.post(
 				self.url, 
 				data=monitored_encoder,
