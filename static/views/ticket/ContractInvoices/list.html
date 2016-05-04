@@ -27,7 +27,7 @@ var contract=new ControlForm({
             },
             'endless_scrolling' : true,
             'create_view_params': {
-                'relation_id': view.params.relation_id, 
+                'relation_id': view.params.relation_id,
                 'contract_id': view.params._id,
                 'allowed_users': result.data.allowed_users,
                 'allowed_groups': result.data.allowed_groups
@@ -51,7 +51,7 @@ var ticket_objects=new ControlList({
         }
     },
     'create_view_params': {
-        'relation_id': view.params.relation_id 
+        'relation_id': view.params.relation_id
     }
 });
 
@@ -65,6 +65,11 @@ $(".on-click-contract-invoices-auto-invoice", context).click(function()
         viewShowError(result, context);
     });
     return(false);
+});
+
+$(".on-click-contract-invoices-export", context).click(function()
+{
+    document.location="/rpc/ticket/ContractInvoices/export_csv/"+view.params.relation_id+"/"+view.params._id;
 });
 
 
@@ -146,6 +151,7 @@ $(".on-click-contract-invoices-auto-invoice", context).click(function()
 
     <div class='floatingBar viewErrorClass'>
         <button class='on-click-contract-invoices-auto-invoice' >Auto invoice this contract</button>
+        <button class='on-click-contract-invoices-export' >Export details as CSV</button>
 
         <span class='viewErrorText'></span>
     </div>

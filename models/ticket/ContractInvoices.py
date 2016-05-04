@@ -9,6 +9,7 @@ import models.ticket.Invoices
 import models.ticket.Relations
 import datetime
 import time
+import bottle
 
 import bson.objectid
 
@@ -559,3 +560,97 @@ class ContractInvoices(models.core.Protected.Protected):
     @RPC(roles="finance_read")
     def get_all(self, **params):
         return(self._get_all(**params))
+
+
+    def list_to_csv(self,items):
+        csv=""
+        for item in items:
+            stripped_cols=[]
+            for col in item:
+                if isinstance(col,str):
+                    csv=csv+'"' + str(col).replace(";","_") + '";'
+                else:
+                    csv=csv+str(col)+';'
+
+            csv=csv + "\n"
+
+        return(csv)
+
+    @RPC(roles="finance_read")
+    def export_csv(self, relation_id,contract_id):
+
+        relation=call_rpc(self.context, 'ticket', 'Relations', 'get', relation_id)
+        contract=call_rpc(self.context, 'ticket', 'Contracts', 'get', contract_id)
+
+
+        contract_invoices=self._get_all(
+            match={
+                'relation': relation_id,
+                'contract': contract_id
+            },
+            sort=[ ( "date", 1) ]
+        )
+
+        items=[]
+        items.append([
+            # "Order Date",
+            "Order name",
+            "Minutes used",
+            "Minutes bought",
+            "New budget balance",
+            "Job date",
+            "Job minutes",
+            "Job description" ])
+
+        #contract orders
+        for contract_invoice in contract_invoices:
+            items.append([
+                # time.strftime(models.ticket.Invoices.invoice_date_format, time.localtime(contract_invoice['date'])),
+                contract_invoice['desc'],
+                contract_invoice['minutes_used'],
+                contract_invoice['minutes_bought'],
+                contract_invoice['minutes_balance'],
+                "",
+                "",
+                "",
+            ])
+
+            #time booked under this contract order
+            ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+                match={
+                    "billing_contract_invoice": contract_invoice["_id"]
+                },
+                sort=[ ( "start_time", 1), ("create_time", 1) ]
+            )
+
+            for ticket_object in ticket_objects:
+
+                #invoice description for this time
+                invoice_desc=ticket_object['title'].rstrip()
+                if ticket_object['minutes_factor']!=1:
+                    invoice_desc=invoice_desc+" (calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+
+                if 'start_time' in ticket_object:
+                    work_time=ticket_object['start_time']
+                else:
+                    work_time=ticket_object['create_time']
+
+                items.append([
+                    # "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    time.strftime(models.ticket.Invoices.hours_format, time.localtime(work_time)),
+                    self.round_minutes(ticket_object, contract),
+                    invoice_desc,
+                ])
+
+        #create bottle-http response
+        #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
+        response=bottle.HTTPResponse(body=self.list_to_csv(items))
+        file_name=relation["invoice"]["company"]+" budget and timesheet "+contract['title']+".csv"
+        response.set_header('Content-Type', 'application/octet-stream')
+        response.set_header('Content-Disposition', "attachment;filename="+file_name  );
+
+        return(response)
