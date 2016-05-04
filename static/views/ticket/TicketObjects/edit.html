@@ -16,7 +16,7 @@ var form=new ControlForm({
         '_id': view.params._id,
         'type': view.params.type
     },
-    'default'         : { 
+    'default'         : {
         'allowed_users': view.params.allowed_users,
         'allowed_groups': view.params.allowed_groups,
         'tickets': [ view.params.ticket_id ],
@@ -35,7 +35,7 @@ var form=new ControlForm({
 
         if (data)
         {
-            this.put_params['type']=data['type'];        
+            this.put_params['type']=data['type'];
             $(".show-on-"+data['type'], context).show();
             $(".show-on-"+data['type']+" .field-get-disabled", context).removeClass("field-get-disabled").addClass("field-get");
 
@@ -64,7 +64,7 @@ var form=new ControlForm({
                 $('.field-input[field-key="minutes"]', context).val(delta/60);
             }
         });
-       
+
     }
 });
 
@@ -72,7 +72,6 @@ var form=new ControlForm({
 //this function is called just before doing a search in the billing_contract field.
 $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", function(params)
 {
-
     //get the currently selected billing_relation:
     var relation=$('.field-dict-raw[field-key="billing_relation"]', context).data("field-data");
 
@@ -87,6 +86,31 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
 
     return(true);
 })
+
+//this function is called just before doing a search in the billing_contract_invoice
+$('[field-key="billing_contract_invoice"]', context).data("field_relation_pre_get_all", function(params)
+{
+    //get the currently selected billing_relation:
+    var relation=$('.field-dict-raw[field-key="billing_relation"]', context).data("field-data");
+    var contract=$('.field-dict-raw[field-key="billing_contract"]', context).data("field-data");
+
+
+    if (!relation )
+        return(false);
+
+    if (!contract )
+        return(false);
+
+    //we only want to show the billing contract invoices for the selected relation and contract
+    params['match']={
+        'relation': relation['_id'],
+        'contract': contract['_id'],
+    };
+
+    return(true);
+})
+
+
 
 </script>
 
@@ -194,7 +218,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
         <tr>
             <td class='field-meta-put' field-key='minutes' field-meta-key='desc'>
             <td>
-                <span class='field-meta-put' field-key='minutes' ></span> 
+                <span class='field-meta-put' field-key='minutes' ></span>
                 ( <span class='delta'></span> )
         </tr>
 
@@ -218,7 +242,7 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
         <tr>
             <td class='field-meta-put' field-key='billing_contract' field-meta-key='desc'>
             <td class='field-meta-put' field-key='billing_contract'>
-                <span class='list-span field-list-source notranslate field-list-source-hide' field-key='billing_contract' field-list-view="ticket.Contracts.edit">
+                <span class='list-span field-dict-raw field-list-source notranslate field-list-source-hide' field-key='billing_contract' field-list-view="ticket.Contracts.edit">
                     <span class='field-put field-list-on-click-view' field-key='billing_contract.title' style='font-weight: bold'></span>
                     <span class='inline-block field-list-on-click-del ui-icon ui-icon-close'></span>
                 </span>
@@ -254,10 +278,10 @@ $('[field-key="billing_contract"]', context).data("field_relation_pre_get_all", 
             <th class='field-meta-put ' field-key='ticket_objects.kind' field-meta-key='desc' >
             <th class='field-meta-put ' field-key='ticket_objects.ticket_object' field-meta-key='desc' >
             <th>
-        </th>        
+        </th>
 
         <tr class='colorRows field-list-sortable field-list-source notranslate ui-widget-content' field-key='ticket_objects' field-list-view="ticket.TicketObjects.show">
-            <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+            <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'>
             <td class='field-meta-put field-list-on-focus-add' field-key='ticket_objects.kind'>
             <td class='field-meta-put field-key-root' field-key='ticket_objects.ticket_object' >
                 <span >
