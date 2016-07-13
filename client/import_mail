@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.4
- 
+
 
 try:
     import sys
@@ -32,7 +32,7 @@ try:
 
 
     args = parser.parse_args()
-    
+
     #debugging output
     def debug(*a, **kw):
         if args.debug:
@@ -65,7 +65,7 @@ try:
     #first login using the specified user and pass (or global api_key)
     user=rpc_client.request("core.Users.login", name=args.user, password=args.password, api_key=args.api_key)["data"]
 
-    #get ticket-mailer settings for this user 
+    #get ticket-mailer settings for this user
     settings=rpc_client.request("ticket.MailSettings.get")["data"]
 
     #parse mail from stdin:
@@ -74,7 +74,7 @@ try:
     debug("Parsed message with message-id:", msg["message-id"])
     debug("Subject:", msg["subject"])
 
-    ### check if this mail already has been seen? 
+    ### check if this mail already has been seen?
     if settings['skip_duplicates']:
         message_key="import_mail_id_"+hashlib.sha256(msg["message-id"].encode()).hexdigest()
         mc=memcache.Client(['127.0.0.1:11211'], debug=0)
@@ -95,7 +95,7 @@ try:
     #     sender=os.environ['SENDER']
     #     receip=os.environ['RECIPIENT']
 
-    #make sure all is lowercase 
+    #make sure all is lowercase
     args.sender=args.sender.lower()
     args.receip=args.receip.lower()
     settings["email_forward"]=settings["email_forward"].lower()
@@ -110,7 +110,7 @@ try:
         msg.get_all('to', [])+
         msg.get_all('cc', [])+
         msg.get_all('resent-to', [])+
-        msg.get_all('resent-cc', [])+ 
+        msg.get_all('resent-cc', [])+
         [ args.receip ]
     ):
         all_receip.add(addr[1].lower())
@@ -214,7 +214,7 @@ try:
     else:
         debug("Assuming INCOMING mail")
         incoming=True
-    
+
 
         if existing_embedded and settings["email_forward"] in all_receip:
             debug("Not forwarding: Mail already has embedded trackable and was already sent to forward adress.")
@@ -258,7 +258,7 @@ except Exception as e:
     print("Temporary error: "+str(e))
     if 'args' in locals() and args.debug:
         traceback.print_exc(file=sys.stdout)
-    sys.exit(75) 
+    sys.exit(75)
 
 
 #now that we forwarded the mail, we have to ignore further errors (otherwise the mailer would retry or bounce)
@@ -285,10 +285,10 @@ try:
     if related_addresses:
         relations=rpc_client.request("ticket.Relations.get_all",
             fields=[ "_id", "allowed_users", "allowed_groups", "email_trackable_subject_regex", "email_trackable_body_regex"],
-            spec_and=[ { 
+            spec_and=[ {
                 "emails.email": {
-                    "$in": list(related_addresses)  
-                } 
+                    "$in": list(related_addresses)
+                }
             } ]
         )["data"]
 
@@ -324,7 +324,7 @@ try:
     debug("Filtered plain + customer trackables:", trackables)
     ticket_objects=rpc_client.request("ticket.TicketObjects.get_all",
             fields=[ "tickets" ],
-            match_in={ "trackables": trackables  } 
+            match_in={ "trackables": trackables  }
     )["data"]
     debug("TicketObjects with matching trackables:", ticket_objects)
 
@@ -348,7 +348,7 @@ try:
         #only link to existing tickets that we have access to and that is related to one of the relations
         tickets=rpc_client.request("ticket.Tickets.get_all",
                 fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
-                match_in={ 
+                match_in={
                     "_id": all_ticket_ids,
                     "relations": relation_ids
                 }
@@ -357,7 +357,7 @@ try:
         #no relation found, so just try to link it to any ticket
         tickets=rpc_client.request("ticket.Tickets.get_all",
                 fields=[ "_id", "ticket_status", "ticket_completed", "relations" ],
-                match_in={ 
+                match_in={
                     "_id": all_ticket_ids,
                 }
         )["data"]
@@ -451,7 +451,7 @@ try:
             #NOTE: always, due to ticket_read
             if len(doc)>2:
                 rpc_client.request("ticket.Tickets.put", **doc)
-        
+
 
 
     prev_attachment_object=None
@@ -471,15 +471,72 @@ try:
         direction="outgoing"
 
     ### create ticket objects from mail contents
+
+    #first get the text/plain part so we have the main_mail_object (a mail usually has one text/plain part)
     for msg_part in msg.walk():
 
         if msg_part.get_content_maintype() == 'multipart':
             continue
 
-        payload=msg_part.get_payload(decode=True)
+        if msg_part.get_content_type()=="text/plain":
+            debug("Creating email ticket object")
+
+            payload=msg_part.get_payload(decode=True)
+
+            #do we need to decode the charset to unicode?
+            if isinstance(payload, bytes):
+                if msg_part.get_content_charset():
+                    text=payload.decode(msg_part.get_content_charset())
+                else:
+                    text=payload.decode()
+            else:
+                text=payload
+
+            ticket_object=rpc_client.request("ticket.TicketObjects.put", **{
+                "import_id":import_id,
+                "allowed_users":[ user["user_id"] ],
+                "create_time":timestamp,
+                "tickets":ticket_ids,
+                "trackables":trackables,
+                "type":"email",
+                "direction":direction,
+                "from":args.sender,
+                "to":args.receip,
+                "title":header_to_unicode(msg["subject"]),
+                "text":text
+            })["data"]
+
+            if not main_mail_object:
+                main_mail_object=ticket_object
+
+    # not text/plain part found (emtpy mail?)
+    if not main_mail_object:
+        debug("Creating emtpy email ticket object")
+        main_mail_object=rpc_client.request("ticket.TicketObjects.put", **{
+                        "import_id":import_id,
+                        "allowed_users":[ user["user_id"] ],
+                        "create_time":timestamp,
+                        "tickets":ticket_ids,
+                        "trackables":trackables,
+                        "type":"email",
+                        "direction":direction,
+                        "from":args.sender,
+                        "to":args.receip,
+                        "title":header_to_unicode(msg["subject"]),
+                        "text":""
+                    })["data"]
+
+    #now get the files
+    for msg_part in msg.walk():
+
+        if msg_part.get_content_maintype() == 'multipart':
+            continue
 
         filename = msg_part.get_filename()
         if filename:
+
+            payload=msg_part.get_payload(decode=True)
+
             #skip inline files, mostly logos
             if msg_part.get_params(header='content-disposition') and msg_part.get_params(header='content-disposition')[0][0]=='inline': # and len(payload)<10000:
                 debug("Ignoring inline file {}".format(filename))
@@ -491,7 +548,7 @@ try:
                 tmp_file.seek(0)
 
                 related_ticket_objects=[
-                    { 
+                    {
                         "kind": "Mail",
                         "ticket_object": main_mail_object["_id"]
                     }
@@ -503,13 +560,13 @@ try:
                         "ticket_object": prev_attachment_object["_id"]
                     })
 
-                ticket_object=rpc_client.request("ticket.TicketObjects.put", 
+                ticket_object=rpc_client.request("ticket.TicketObjects.put",
                     import_id=import_id,
                     filename=filename,
                     file_content_type=msg_part.get_content_type(),
                     file=tmp_file,
                     allowed_users=[ user["user_id"] ],
-                    create_time=timestamp, 
+                    create_time=timestamp,
                     tickets=ticket_ids,
                     direction=direction,
                     trackables=trackables,
@@ -535,39 +592,10 @@ try:
                 })
 
 
-        else:
-            if msg_part.get_content_type()=="text/plain":
-                debug("Creating email ticket object")
 
-                #do we need to decode the charset to unicode?
-                if isinstance(payload, bytes):
-                    if msg_part.get_content_charset():
-                        text=payload.decode(msg_part.get_content_charset())
-                    else:
-                        text=payload.decode()
-                else:
-                    text=payload
+            # else:
+            #     debug("Ignoring part with content-type:", msg_part.get_content_type())
 
-                ticket_object=rpc_client.request("ticket.TicketObjects.put", **{
-                    "import_id":import_id,
-                    "allowed_users":[ user["user_id"] ],
-                    "create_time":timestamp, 
-                    "tickets":ticket_ids,
-                    "trackables":trackables,
-                    "type":"email",
-                    "direction":direction,
-                    "from":args.sender,
-                    "to":args.receip,
-                    "title":header_to_unicode(msg["subject"]),
-                    "text":text
-                })["data"]
-
-                if not main_mail_object:
-                    main_mail_object=ticket_object
-
-            else: 
-                debug("Ignoring part with content-type:", msg_part.get_content_type())
-    
 
     #update main mail with all attachment links
     if main_mail_related_ticket_objects:
@@ -582,5 +610,5 @@ except Exception as e:
     debug("Exitting with code 0 since mail was succesfully forwarded (if neccesary)")
     if args.debug:
         traceback.print_exc(file=sys.stdout)
- 
+
     sys.exit(0)
