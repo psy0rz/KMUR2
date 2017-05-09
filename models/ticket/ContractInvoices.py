@@ -615,6 +615,7 @@ class ContractInvoices(models.core.Protected.Protected):
                 "",
             ])
 
+
             #time booked under this contract order
             ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
                 match={
@@ -645,6 +646,60 @@ class ContractInvoices(models.core.Protected.Protected):
                     self.round_minutes(ticket_object, contract),
                     invoice_desc,
                 ])
+
+
+        #this header will be updated below
+        uninvoiced_header=[
+            "(not invoiced yet)",
+            0,
+            0,
+            contract_invoice['minutes_balance'],
+            "",
+            "",
+            "",
+        ]
+        items.append(uninvoiced_header)
+
+
+
+        #time booked under this contract that is NOT yet invoiced
+        ticket_objects=call_rpc(self.context, 'ticket', 'TicketObjects', 'get_all',
+            match={
+                "billing_contract_invoice": None,
+                'billing_relation': relation_id,
+                'billing_contract': contract_id
+            },
+            sort=[ ( "start_time", 1), ("create_time", 1) ]
+        )
+
+        for ticket_object in ticket_objects:
+
+            #invoice description for this time
+            invoice_desc=ticket_object['title'].rstrip()
+            if ticket_object['minutes_factor']!=1:
+                invoice_desc=invoice_desc+" (calculated at {}% rate)".format(ticket_object['minutes_factor']*100)
+
+            if 'start_time' in ticket_object and ticket_object["start_time"]:
+                work_time=ticket_object['start_time']
+            else:
+                work_time=ticket_object['create_time']
+
+            minutes=self.round_minutes(ticket_object, contract)
+            items.append([
+                # "",
+                "",
+                "",
+                "",
+                "",
+                time.strftime(models.ticket.Invoices.hours_format, time.localtime(work_time)),
+                minutes,
+                invoice_desc,
+            ])
+
+            uninvoiced_header[1]=uninvoiced_header[1]+minutes #minutes used
+            uninvoiced_header[3]=uninvoiced_header[3]-minutes #munites balance
+
+
 
         #create bottle-http response
         #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
