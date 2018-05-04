@@ -43,7 +43,7 @@ class Invoices(models.core.Protected.Protected):
     '''Invoicing module
     '''
 
-    
+
     @RPC(roles=["finance_read"])
     def get_meta(self, *args, _id=None, **kwarg):
 
@@ -258,7 +258,7 @@ class Invoices(models.core.Protected.Protected):
 
             After revoking an invoice you can edit it. Use this to make corrections on invoice you havent actually send in real life yet.
 
-            Try to prevent this, the offical way to revert an invoice it to make a credit invoice. 
+            Try to prevent this, the offical way to revert an invoice it to make a credit invoice.
         """
 
         doc=self.get(_id)
@@ -314,7 +314,7 @@ class Invoices(models.core.Protected.Protected):
                 'notes': ''
             }
             ret=self.put(**new_doc)
-            
+
         return(ret)
 
     @RPC(roles="user")
@@ -453,7 +453,7 @@ class Invoices(models.core.Protected.Protected):
         from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Frame, Preformatted, Spacer
         from io import BytesIO
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.units import cm    
+        from reportlab.lib.units import cm
 
         styles=getSampleStyleSheet()
 
@@ -477,7 +477,7 @@ class Invoices(models.core.Protected.Protected):
                     [ "Invoice date:",   time.strftime(invoice_date_format, time.localtime(invoice['sent_date'])) ]
                 ],hAlign='LEFT')
         )
-               
+
         pdf_elements.append(Spacer(0, 3*cm))
 
         #convert invoice items to table
@@ -590,7 +590,7 @@ class Invoices(models.core.Protected.Protected):
 
         #generate pdf from elements
         buffer = BytesIO()
-        pdf = SimpleDocTemplate(buffer, pagesize=A4)        
+        pdf = SimpleDocTemplate(buffer, pagesize=A4)
         pdf.build(pdf_elements, onFirstPage=first_page, onLaterPages=later_pages)
         buffer.seek(0)
 
@@ -598,10 +598,7 @@ class Invoices(models.core.Protected.Protected):
         #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
         response=bottle.HTTPResponse(body=buffer)
         file_name=invoice["to_copy"]["company"]+" "+invoice["title"]+" "+invoice["invoice_nr"]+".pdf"
-        response.set_header('Content-Type', 'application/octet-stream')
+        response.set_header('Content-Type', 'application/pdf')
         response.set_header('Content-Disposition', "attachment;filename="+file_name  );
 
         return(response)
-
-
-
