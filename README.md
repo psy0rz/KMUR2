@@ -6,18 +6,17 @@ Installing
 Dependencies
 ------------
 
-- At least python 3.4
+- At least python 3.6
 - tesseract (at least version 3.03)
 - ImageMagick
-- pip install wand
-- pip install beaker
-- pip install bottle
-- pip install pymongo
-- pip install bson
-- pip install reportlab
-- pip install python3-memcached
-- pip install requests
-- pip install requests-toolbelt
+ pip install wand
+ pip install beaker
+ pip install bottle
+ pip install pymongo
+ pip install reportlab
+ pip install python3-memcached
+ pip install requests
+ pip install requests-toolbelt
 
 On illumos/joyent you need to create this links to make the Python 3 wand.image module work correctly:
 

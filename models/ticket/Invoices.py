@@ -594,7 +594,7 @@ class Invoices(models.core.Protected.Protected):
         buffer.seek(0)
 
         file_name=invoice["to_copy"]["company"]+" "+invoice["title"]+" "+invoice["invoice_nr"]+".pdf"
-        return(file_name, buffer)
+        return(file_name, buffer.read())
 
 
     @RPC(roles="finance_read")
@@ -636,9 +636,12 @@ class Invoices(models.core.Protected.Protected):
         msg['Subject'] = subject
         msg['From'] = sender
         msg['To'] = receiver
-        msg.set_content(body)
+
+        if body:
+            msg.set_content(body)
 
         # self.info("size{}".format(len(attachment)))
+        # print("attachment lenth={}".format(len(attachment)))
         msg.add_attachment(attachment, maintype=maintype, subtype=subtype, filename=attachment_name)
 
         # Send the email via our own SMTP server.
@@ -649,7 +652,7 @@ class Invoices(models.core.Protected.Protected):
 
 
     @RPC(roles="finance_read")
-    def email(self, _id, background=False):
+    def email(self, _id, background=True):
         """send invoice by email"""
 
         settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
@@ -657,7 +660,7 @@ class Invoices(models.core.Protected.Protected):
         invoice=self.get(_id)
 
 
-        ( file_name, buffer ) = self.generate_pdf(_id, True)
+        ( file_name, buffer ) = self.generate_pdf(_id, background)
 
         self.sendemail(
             sender,
@@ -665,5 +668,26 @@ class Invoices(models.core.Protected.Protected):
             settings['email_subject'].format(**invoice),
             settings['email_body'].format(**invoice),
             file_name,
-            buffer.read()
+            buffer
+            )
+
+
+    @RPC(roles="finance_read")
+    def print(self, _id, background=False):
+        """send invoice to printer mail"""
+
+        settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+        sender=call_rpc(self.context, 'ticket', 'Relations', 'get', settings['from_relation'])['invoice']['mail_to']
+        invoice=self.get(_id)
+
+
+        ( file_name, buffer ) = self.generate_pdf(_id, background)
+
+        self.sendemail(
+            sender,
+            settings['email_printer'],
+            settings['email_subject'].format(**invoice),
+            None,
+            file_name,
+            buffer
             )

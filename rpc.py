@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+#!/usr/bin/env python3
 
 
 import beaker.middleware
@@ -242,5 +242,3 @@ application = beaker.middleware.SessionMiddleware(
 if __name__ == '__main__':
     bottle.debug(True)
     bottle.run(reloader=True, app=application, host='0.0.0.0', port=8080)
-
- 
