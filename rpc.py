@@ -90,7 +90,7 @@ def rpc_post():
 
         #load module and resolve class
         rpc_models = __import__('models.' + request['module'] + '.' + request['class'])
-    
+
         rpc_module = getattr(rpc_models, request['module'])
         if dohelp:
             result['help']['module'] = rpc_module.__doc__
@@ -135,8 +135,8 @@ def rpc_post():
     except (fields.FieldError, Exception) as e:
         traceback.print_exc()
         if isinstance(e, fields.FieldError):
-            result['error'] = { 
-                'message': str(e), 
+            result['error'] = {
+                'message': str(e),
                 'fields': e.fields
             }
         else:
@@ -145,8 +145,8 @@ def rpc_post():
     finally:
         for fileupload in bottle.request.files.itervalues():
             fileupload.file.close()
-            
-    
+
+
     if 'context' in session:
         result.update(session['context'].get_results())
 
@@ -243,3 +243,4 @@ if __name__ == '__main__':
     bottle.debug(True)
     bottle.run(reloader=True, app=application, host='0.0.0.0', port=8080)
 
+ 

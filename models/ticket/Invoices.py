@@ -399,9 +399,9 @@ class Invoices(models.core.Protected.Protected):
         return(self._get_all(**params))
 
 
-    """get csv export of all sent invoices"""
     @RPC(roles="finance_admin")
     def get_all_csv(self, days):
+        """get csv export of all sent invoices"""
 
         import locale
         locale.setlocale(locale.LC_ALL, 'nl_NL.UTF-8')
@@ -436,9 +436,8 @@ class Invoices(models.core.Protected.Protected):
         return(response)
 
 
-    """downloads pdf version of the invoice """
-    @RPC(roles="finance_read")
-    def get_pdf(self,_id, background=False):
+    def generate_pdf(self,_id, background=False):
+        """generates pdf version of the invoice """
 
         invoice=self.get(_id)
 
@@ -594,11 +593,77 @@ class Invoices(models.core.Protected.Protected):
         pdf.build(pdf_elements, onFirstPage=first_page, onLaterPages=later_pages)
         buffer.seek(0)
 
+        file_name=invoice["to_copy"]["company"]+" "+invoice["title"]+" "+invoice["invoice_nr"]+".pdf"
+        return(file_name, buffer)
+
+
+    @RPC(roles="finance_read")
+    def get_pdf(self, _id, background=False):
+        ( file_name, buffer ) = self.generate_pdf(_id, background)
+
         #create bottle-http response
         #doesnt seem to work correctly with Reponse, so we use HTTPResponse. bottle-bug?
         response=bottle.HTTPResponse(body=buffer)
-        file_name=invoice["to_copy"]["company"]+" "+invoice["title"]+" "+invoice["invoice_nr"]+".pdf"
         response.set_header('Content-Type', 'application/pdf')
         response.set_header('Content-Disposition', "attachment;filename="+file_name  );
 
         return(response)
+
+
+
+    def sendemail(self, sender, receiver, subject, body, attachment_name, attachment, maintype='application', subtype='pdf'):
+        import smtplib
+        from email.message import EmailMessage
+
+        # encodedcontent = base64.b64encode(attachment)  # base64
+        #
+        #
+        # marker = "TRACERDSF123MARKER"
+        #
+        # # Define the main headers.
+        # part1 = "From: <%s>\r\nTo: <%s>\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=%s\r\n--%s\r\n" % (sender, receiver, subject, marker, marker)
+        #
+        # # Define the message action
+        # part2 = "Content-Type: text/plain\r\nContent-Transfer-Encoding:8bit\r\n\r\n%s\r\n--%s\r\n" % (body,marker)
+        #
+        # # Define the attachment section
+        # part3 = "Content-Type: multipart/mixed; name=\"%s\"\r\nContent-Transfer-Encoding:base64\r\nContent-Disposition: attachment; filename=%s\r\n\r\n%s\r\n--%s--\r\n" %(attachment_name, attachment_name, encodedcontent, marker)
+        # message = part1 + part2 + part3
+        #
+        # smtpObj = smtplib.SMTP('localhost')
+        # smtpObj.sendmail(sender, receiver, message)
+        msg = EmailMessage()
+        msg['Subject'] = subject
+        msg['From'] = sender
+        msg['To'] = receiver
+        msg.set_content(body)
+
+        # self.info("size{}".format(len(attachment)))
+        msg.add_attachment(attachment, maintype=maintype, subtype=subtype, filename=attachment_name)
+
+        # Send the email via our own SMTP server.
+        with smtplib.SMTP('localhost') as s:
+            s.send_message(msg)
+
+        self.info("Mailed subject '{}' to {}".format(subject, receiver))
+
+
+    @RPC(roles="finance_read")
+    def email(self, _id, background=False):
+        """send invoice by email"""
+
+        settings=models.ticket.InvoiceSettings.InvoiceSettings(self.context)
+        sender=call_rpc(self.context, 'ticket', 'Relations', 'get', settings['from_relation'])['invoice']['mail_to']
+        invoice=self.get(_id)
+
+
+        ( file_name, buffer ) = self.generate_pdf(_id, True)
+
+        self.sendemail(
+            sender,
+            invoice['to_copy']['mail_to'],
+            settings['email_subject'].format(**invoice),
+            settings['email_body'].format(**invoice),
+            file_name,
+            buffer.read()
+            )

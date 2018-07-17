@@ -11,6 +11,7 @@ Dependencies
 - pip3.4 install beaker
 - pip3.4 install bottle
 - pip3.4 install pymongo
+- pip3.4 install bson
 - pip3.4 install reportlab
 - pip3.4 install python3-memcached
 - pip3.4 install requests
@@ -26,7 +27,7 @@ config
 
 create a empty file: settings.py
 
-on joyent/illumos you may have to add to make wand.image work: 
+on joyent/illumos you may have to add to make wand.image work:
 
 import os
 os.environ["MAGICK_HOME"]="/opt/local"
@@ -37,7 +38,7 @@ running
 
 ./run.py
 
-..or deploy in a wsgi webserver 
+..or deploy in a wsgi webserver
 
 creating a new environment
 ==========================

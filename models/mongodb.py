@@ -63,10 +63,10 @@ class Relation(fields.Base):
 
     All ids will be checked to see if they exist in the other model
 
-    Its important that the forgein model has a get_all calls that works in the standard fasion. 
+    Its important that the forgein model has a get_all calls that works in the standard fasion.
     (this function will be used internally and by guis to resolve and search for related data)
 
-    NOTE: In the future there can be other database relation-implementations with the same name in a different module. The gui shouldnt note a difference theoretically. 
+    NOTE: In the future there can be other database relation-implementations with the same name in a different module. The gui shouldnt note a difference theoretically.
     '''
 
 
@@ -78,19 +78,19 @@ class Relation(fields.Base):
             list: false: Relation to a single foreign object (N:1 relation). Otherwise its a list of relations, hence a N:N relation
             min: Minimum number of relations (default 0)
             max: Maximum number of relations. (only used when list=true)
-            resolve: resolve ids to foreign data and back. (when calling _get and _put) 
-                set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself. 
+            resolve: resolve ids to foreign data and back. (when calling _get and _put)
+                set this to false if the amount of data is getting too much: in this case the gui should do the resolving itself.
                 (the stuff in field.js will take care of extra rpc-calls to the foreign model)
                 this is a tradeoff the developer has to make, depending on the application.
             check_exists: checks if the specified item exist in the forgeign model.
-            reference_collection, reference_search: indicates the collection-name and search-key of the field that is referencing the related model. 
+            reference_collection, reference_search: indicates the collection-name and search-key of the field that is referencing the related model.
             this prevents deletion of the related object.
 
         """
 
         super(Relation, self).__init__(**kwargs)
 
-        #store the reference in the specified model 
+        #store the reference in the specified model
         if reference_collection:
             model.references[reference_collection][reference_key]=True
 
@@ -143,7 +143,7 @@ class Relation(fields.Base):
             mongo_ids=[]
 
             if len(data)>0:
-                #try to handle resolved and unresolved data inteligently. 
+                #try to handle resolved and unresolved data inteligently.
                 #we always just want to endup with a list of mongo-id's
                 if isinstance(data[0], dict):
                     #data is a list of foreign documents
@@ -165,7 +165,7 @@ class Relation(fields.Base):
                             }
                         );
 
-                #TODO: specify which id in case resolve is true? 
+                #TODO: specify which id in case resolve is true?
                 if len(result)!=len(data):
                     raise fields.FieldError("an item in the list doesnt exist")
 
@@ -212,7 +212,7 @@ class Relation(fields.Base):
                     #data is a list of foreign documents (e.g. dicts)
                     list_key=self.meta['meta'].meta['list_key']
                     mongo_ids=[]
-        
+
                     for doc in data:
                         mongo_id=bson.objectid.ObjectId(doc[list_key])
                         mongo_ids.append(mongo_id)
@@ -274,13 +274,13 @@ class Relation(fields.Base):
             if data==None:
                 return(None)
 
-            
+
             foreign_object=self.model(context)
             try:
                 return(foreign_object.get(data))
             except:
                 #non existing or non allowed data will simply None
-                return(None) 
+                return(None)
 
     def to_human(self, context, data):
         return(self.to_external(context, data, resolve=True))
@@ -306,7 +306,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
 
     self.db is also stored in the context so that multiple models can use the same database instance,
     instead of using seperate connections to the database.
-    
+
 
     """
 
@@ -324,7 +324,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
 
         if force or not hasattr(self.context, 'mongodb_connection'):
             # self.context.mongodb_connection = pymongo.Connection(host=self.context.session['db_host'], safe=True)
-            self.context.mongodb_connection = pymongo.mongo_client.MongoClient(host=self.context.session['db_host'], safe=True)
+            self.context.mongodb_connection = pymongo.mongo_client.MongoClient(host=self.context.session['db_host'])
 
         self.db = self.context.mongodb_connection[self.context.session['db_name']]
 
@@ -351,7 +351,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         #check and convert data
         self.get_meta(doc).meta['meta'].check(self.context, doc)
         doc=self.get_meta(doc).meta['meta'].to_internal(self.context, doc)
-            
+
 
         try:
             #add new
@@ -434,7 +434,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         regex_or: dict with keys and values to case insensitive regex match, OR based
         regex: dict with keys and values to case insensitive regex match
         gte:    dict of keys that should be greater than or equal to value
-        lte:    dict of keys that should be less than or equal to value 
+        lte:    dict of keys that should be less than or equal to value
 
         spec_and, spec_or: lists with extra mongodb-style queries to add to the and/or lists. NOTE: these are not converted to internal format and therefore do not function with unconverted mongo id's
 
@@ -483,7 +483,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
             for (key,value) in gte.items():
                 spec_ands.append({
                         key: {
-                            '$gte': value 
+                            '$gte': value
                             }
                         })
 
@@ -491,7 +491,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
             for (key,value) in lte.items():
                 spec_ands.append({
                         key: {
-                           '$lte': value 
+                           '$lte': value
                             }
                         })
 
@@ -499,7 +499,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         #     for (key,value) in key_in.items():
         #         spec_ands.append({
         #                 key: {
-        #                    '$in': value 
+        #                    '$in': value
         #                     }
         #                 })
 
@@ -542,7 +542,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
                 #FIXME: to_internal conversion only works for toplevel keys, since we use dot-notation
                 if meta.meta['meta'].meta['meta'][key].meta['type']=='List':
                     #if the type is list, let the list do the conversion.
-                    #in this case the user probably wants to find documents that match NANY item from values and not NALL the items. 
+                    #in this case the user probably wants to find documents that match NANY item from values and not NALL the items.
                     converted_values=meta.meta['meta'].meta['meta'][key].to_internal(self.context, values)
                 else:
                     for value in values:
@@ -581,7 +581,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         #             })
 
 
-        #combine the ands and ors. 
+        #combine the ands and ors.
         #(note that the or-result is anded together with the other ands by mongodb)
         spec={}
 
@@ -592,7 +592,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
             spec['$or']=spec_ors
 
 
-        #always sort in natural order as last, in the same direction as the last sort-item. 
+        #always sort in natural order as last, in the same direction as the last sort-item.
         #this way we get more consistent results if the items are the same. (as happens with dates a lot)
         if not isinstance(sort, list):
             raise Exception("Sort should be a list with key,direction pairs.")
@@ -643,5 +643,4 @@ class Base(models.common.Base, metaclass=BaseMeta):
                 new=True
         )
 
-        return(int(ret['seq'])) 
-
+        return(int(ret['seq']))

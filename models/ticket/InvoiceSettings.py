@@ -23,6 +23,9 @@ class InvoiceSettings(models.core.ModuleSettings.ModuleSettings):
                         check_exists=True,
                         list=False),
                     'global_notes': fields.String(desc='Global invoice notes', default='Please transfer the specified amount within 14 days to the the bankaccount mentioned above. Add {invoice_nr} to the description field.'),
+                    'email_printer': fields.Email(desc='Printer email address', required=False),
+                    'email_subject': fields.String(desc='Email subject', default='Invoice {invoice_nr}'),
+                    'email_body': fields.String(desc='Email body', default='Invoice {invoice_nr} is attached to this email.'),
                     'invoice_status': fields.List(
                         fields.Dict({
                                 'title': fields.String(desc="Title",min=3),

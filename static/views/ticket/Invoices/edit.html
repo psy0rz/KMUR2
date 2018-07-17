@@ -11,7 +11,7 @@ var form=new ControlForm({
     'title_new'       : 'New invoice',
     // 'favorite_menu'   : 'invoices',
     // 'favorite_title'  : '{title} {invoice_nr}',
-    'default'         : { 
+    'default'         : {
         'allowed_users': view.params.allowed_users,
         'allowed_groups':view.params.allowed_groups,
         'to_relation': view.params.to_relation
@@ -31,7 +31,7 @@ function recalculate()
     calculating=true;
     changed=false;
 
-    rpc(    
+    rpc(
         "ticket.Invoices.calc",
         form.field_get(),
         function(result)
@@ -39,8 +39,8 @@ function recalculate()
             calculating=false;
             if (!viewShowError(result, context, form.meta))
             {
-                form.field_put(result.data, { 
-                    list_update: true, 
+                form.field_put(result.data, {
+                    list_update: true,
                     list_no_remove: true,
                     list_no_add: true,
                     show_changes:true,
@@ -61,7 +61,7 @@ var item_context=$('.field-list-source[field-key="items"]', context).parent();
 $(item_context).on('field_changed', '[field-key="items.amount"], [field-key="items.price"], [field-key="items.tax"]',function(e, key, meta, element, data)
 {
     recalculate();
-});        
+});
 
 $(item_context).on('field_added field_deleted', '*', function()
 {
@@ -81,7 +81,7 @@ $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, m
 
 
 <fieldset class='inline-block'>
-    <legend>Info</legend>        
+    <legend>Info</legend>
 
     <table class='inline-block'>
         <tr>
@@ -143,7 +143,7 @@ $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, m
 </fieldset>
 
 <fieldset class='inline-block control-hide-on-new'>
-    <legend>Status</legend>        
+    <legend>Status</legend>
     <table class='inline-block'>
         <tr>
             <td class='field-meta-put' field-key='sent' field-meta-key='desc'>
@@ -189,7 +189,7 @@ $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, m
         </thead>
         <tbody>
             <tr class='colorRows field-meta-put field-list-source notranslate field-list-sortable ui-widget-content' field-key='items'>
-                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'> 
+                <td class='field-list-on-drag-sort ui-icon ui-icon-arrowthick-2-n-s'>
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.amount'>
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.desc'>
                 <td class='field-meta-put field-list-on-focus-add' field-key='items.price'>
@@ -223,4 +223,3 @@ $(item_context).on('field_changed', '[field-key="items.tax"]',function(e, key, m
     <button class='control-on-click-cancel' >Cancel</button>
     <span class='viewErrorText'></span>
 </div>
-

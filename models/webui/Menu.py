@@ -49,7 +49,7 @@ class Menu(models.mongodb.Base):
                                   list_key='_id'
                               ),
       }))
-                          
+
     @RPC(roles="user")
     def put_favorite(self, menu, title, view, favorite_id=None):
         '''add/update a menu item to in the favorites of this user. '''
@@ -84,7 +84,7 @@ class Menu(models.mongodb.Base):
                                                           sort=[('time', 1)]
                                                           )
 
-        #limit the number of items 
+        #limit the number of items
         count = favorites.count()
         for favorite in favorites:
             if count < 10:
@@ -116,7 +116,7 @@ class Menu(models.mongodb.Base):
         '''
 
         return(self.db[self.default_collection].find(
-          spec={ 
+          filter={ 
             'user_id': self.context.session['user_id'],
           },
           sort=[ ( 'title',1 ) ]
@@ -158,4 +158,3 @@ class Menu(models.mongodb.Base):
         menu_list.sort(key=get_key)
 
         return(menu_list)
-                

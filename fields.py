@@ -304,8 +304,9 @@ class List(Base):
 
     def ensure_defaults(self, context, data):
         ret=[]
-        for index, value in enumerate(data):
-            ret.append(self.meta['meta'].ensure_defaults(context, value))
+        if data:
+            for index, value in enumerate(data):
+              ret.append(self.meta['meta'].ensure_defaults(context, value))
 
         return(ret)
 

@@ -20,7 +20,7 @@ var form=new ControlForm({
 
         if (data.sent)
         {
-            $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf, .on-click-pdf-background", context).show();
+            $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf, .on-click-pdf-background, .on-click-print, .on-click-email", context).show();
 
             if (data.payed)
                 $(".on-click-unpayed",context).show();
@@ -41,7 +41,7 @@ var form=new ControlForm({
 
         $(".on-click-credit", context).off().click(function()
         {
-            rpc("ticket.Invoices.add_items", { 
+            rpc("ticket.Invoices.add_items", {
                 to_relation: data.to_relation,
                 currency: data.currency,
                 items: [{
@@ -49,13 +49,13 @@ var form=new ControlForm({
                     tax: 0,
                     price: -data.calc_total_tax,
                     desc: "Credit invoice "+data.invoice_nr
-                }] 
+                }]
             }, function(result)
             {
                 if (!viewShowError(result, context))
                 {
                     //view the invoice we've just changed/created
-                    viewCreate({}, 
+                    viewCreate({},
                     {
                         name: "ticket.Invoices.show",
                         params: {
@@ -70,7 +70,7 @@ var form=new ControlForm({
 
         $(".on-click-copy", context).off().click(function()
         {
-            rpc("ticket.Invoices.add_items", { 
+            rpc("ticket.Invoices.add_items", {
                 to_relation: data.to_relation,
                 currency: data.currency,
                 items: data.items
@@ -79,7 +79,7 @@ var form=new ControlForm({
                 if (!viewShowError(result, context))
                 {
                     //view the invoice we've just changed/created
-                    viewCreate({}, 
+                    viewCreate({},
                     {
                         name: "ticket.Invoices.show",
                         params: {
@@ -115,6 +115,24 @@ $(".on-click-send", context).click(function()
         });
 });
 
+
+$(".on-click-print", context).click(function()
+{
+    rpc("ticket.Invoices.print", { _id:view.params._id }, function(result)
+        {
+            viewShowError(result, context);
+        });
+});
+
+$(".on-click-email", context).click(function()
+{
+    rpc("ticket.Invoices.email", { _id:view.params._id }, function(result)
+        {
+            viewShowError(result, context);
+        });
+});
+
+
 $(".on-click-revoke", context).click(function()
 {
     rpc("ticket.Invoices.revoke", { _id:view.params._id }, function(result)
@@ -136,11 +154,11 @@ $(".on-click-revoke", context).click(function()
 
 $(".on-click-payed", context).click(function()
 {
-    rpc("ticket.Invoices.put", { 
+    rpc("ticket.Invoices.put", {
             _id:view.params._id,
             payed: true,
-            payed_date: new Date().getTime()/1000 
-        }, 
+            payed_date: new Date().getTime()/1000
+        },
         function(result)
         {
             viewShowError(result, context);
@@ -150,10 +168,10 @@ $(".on-click-payed", context).click(function()
 
 $(".on-click-unpayed", context).click(function()
 {
-    rpc("ticket.Invoices.put", { 
+    rpc("ticket.Invoices.put", {
             _id:view.params._id,
             payed: false,
-        }, 
+        },
         function(result)
         {
             viewShowError(result, context);
@@ -169,7 +187,7 @@ $(".on-click-unpayed", context).click(function()
 <h1><span class='field-put control-on-click-view' field-key='title'></span> <span class='field-put control-on-click-view' field-key='invoice_nr'></span></h1>
 
 <fieldset class='inline-block control-on-click-view' field-key='to_relation' >
-    <legend>To:</legend>        
+    <legend>To:</legend>
     <div class='notranslate'>
         <div class='field-put' field-key='to_copy.company'></div>
         <div class='field-put' field-key='to_copy.department'></div>
@@ -183,7 +201,7 @@ $(".on-click-unpayed", context).click(function()
 </fieldset>
 
 <fieldset class='inline-block'>
-    <legend>Status</legend>        
+    <legend>Status</legend>
     <table class='inline-block'>
         <tr>
             <td class='field-meta-put' field-key='sent' field-meta-key='desc'>
@@ -209,7 +227,7 @@ $(".on-click-unpayed", context).click(function()
 </fieldset>
 
 <fieldset class='inline-block' >
-    <legend>From:</legend>        
+    <legend>From:</legend>
     <div class='notranslate'>
         <div class='field-put' field-key='from_copy.company'></div>
         <div class='field-put' field-key='from_copy.department'></div>
@@ -289,6 +307,8 @@ $(".on-click-unpayed", context).click(function()
     <button class='hide on-click-send' >Send invoice</button>
     <button class='hide on-click-pdf' >Download pdf</button>
     <button class='hide on-click-pdf-background' >Download pdf with background</button>
+    <button class='hide on-click-email' >Email</button>
+    <button class='hide on-click-print' >Print</button>
     <button class='hide on-click-revoke' >Revoke invoice</button>
     <button class='hide on-click-credit' >Credit invoice</button>
     <button class='hide control-on-click-del' >Delete invoice</button>
@@ -298,4 +318,3 @@ $(".on-click-unpayed", context).click(function()
     <button class='control-on-click-cancel' >Back</button>
     <span class='viewErrorText'></span>
 </div>
-
