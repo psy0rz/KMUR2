@@ -72,7 +72,7 @@ class Menu(models.mongodb.Base):
                                                                    'time': time.time(),
                                                                    }},
                                                 upsert=True,
-                                                safe=True
+
                                                 )
 
         #get all items for this menu and user
@@ -105,7 +105,7 @@ class Menu(models.mongodb.Base):
                                                       'menu': menu,
                                                       'favorite_id': favorite_id
                                                       },
-                                                safe=True
+                                                
                                                 )
 
     @RPC(roles="everyone")
@@ -116,7 +116,7 @@ class Menu(models.mongodb.Base):
         '''
 
         return(self.db[self.default_collection].find(
-          filter={ 
+          filter={
             'user_id': self.context.session['user_id'],
           },
           sort=[ ( 'title',1 ) ]

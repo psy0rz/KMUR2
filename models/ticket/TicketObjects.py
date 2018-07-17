@@ -18,7 +18,7 @@ from processify import processify
 
 class TicketObjects(models.core.Protected.Protected):
     '''ticket objects belonging to specific tickets'''
-    
+
     file_path="files/"
     thumb_path="static/files/" #publicly accesible thumbnails, local path
     thumb_url="/files/"        #public url path
@@ -143,7 +143,7 @@ class TicketObjects(models.core.Protected.Protected):
 
         ret=""
         # try:
-        ocr_text=subprocess.check_output(["/opt/local/bin/tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
+        ocr_text=subprocess.check_output(["tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
         #get rid of double empty lines
         had_empty=True
         for line in ocr_text.split("\n"):
@@ -181,7 +181,7 @@ class TicketObjects(models.core.Protected.Protected):
                 print("Processing page {} of {}".format(page, doc["title"]))
                 with wand.image.Image(pdf_page_seq) as pdf_page:
 
-                    #convert page to jpg 
+                    #convert page to jpg
                     with pdf_page.convert("jpg") as jpg_page:
                         jpg_page.alpha_channel = False
 
@@ -309,8 +309,8 @@ class TicketObjects(models.core.Protected.Protected):
         """reprocess file. this means recreating thumbnails and re-doing ocr for example. caller cant actually change anything"""
         doc=self._get(_id)
         doc=self.process_file(doc)
-        self._put(doc)   
-        return(doc)             
+        self._put(doc)
+        return(doc)
 
     @RPC(roles="ticket_write")
     def put(self, file=None, update_contract_invoice=True, **doc):
@@ -335,7 +335,7 @@ class TicketObjects(models.core.Protected.Protected):
             doc=self.process_file(doc)
 
 
-        #only accept billing info if both fields are specified (to prevent fraud by changing only one):         
+        #only accept billing info if both fields are specified (to prevent fraud by changing only one):
         if ('billing_contract' in doc)  or  ('billing_relation' in doc):
             if doc['billing_contract']==None or doc['billing_relation']==None:
                 raise fields.FieldError("Please specify complete billing information", 'billing_contract')
@@ -370,13 +370,13 @@ class TicketObjects(models.core.Protected.Protected):
         ret=self._put(doc)
 
 
-        #dont log simple simple updates (without type) and dont log ticket-changes 
+        #dont log simple simple updates (without type) and dont log ticket-changes
         if 'type' in ret and ret['type']!='change':
             self.event("changed", ret)
             self.info(log_txt)
         else:
             #this results in only one event, even if many ticket objects will be changd, usefull for efficient autoinvoicing
-            self.event("changed",{}) 
+            self.event("changed",{})
 
         if update_contract_invoice:
             #update old contract_invoice
@@ -486,7 +486,7 @@ class TicketObjects(models.core.Protected.Protected):
         #make sure we have access to the ticket
         ticket_model=models.ticket.Tickets.Tickets(self.context)
         ticket_model.get(ticket_id)
-        
+
         #call the 'unprotected' get_all but make sure it only returns objects that belong to this the ticket
         ticket_objects=super(models.core.Protected.Protected, self)._get_all(match_in={
              'tickets': [ ticket_id ]

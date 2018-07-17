@@ -323,7 +323,6 @@ class Base(models.common.Base, metaclass=BaseMeta):
         """
 
         if force or not hasattr(self.context, 'mongodb_connection'):
-            # self.context.mongodb_connection = pymongo.Connection(host=self.context.session['db_host'], safe=True)
             self.context.mongodb_connection = pymongo.mongo_client.MongoClient(host=self.context.session['db_host'])
 
         self.db = self.context.mongodb_connection[self.context.session['db_name']]
@@ -356,7 +355,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         try:
             #add new
             if not '_id' in doc:
-                self.db[collection].insert(doc, manipulate=True, safe=True, check_keys=True)
+                self.db[collection].insert(doc, manipulate=True, check_keys=True)
 
             #use existing document
             else:
@@ -364,9 +363,9 @@ class Base(models.common.Base, metaclass=BaseMeta):
                 _id = doc.pop('_id')
 
                 if replace:
-                    result = self.db[collection].update({'_id': _id}, doc, multi=False, safe=True)
+                    result = self.db[collection].update({'_id': _id}, doc, multi=False)
                 else:
-                    result = self.db[collection].update({'_id': _id}, {'$set': doc}, multi=False, safe=True)
+                    result = self.db[collection].update({'_id': _id}, {'$set': doc}, multi=False)
 
                 if result['n'] == 0:
                     raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
@@ -393,7 +392,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
         regex_filters = {}
 
         if _id:
-            doc = self.db[collection].find_one(bson.objectid.ObjectId(_id),fields=fields)
+            doc = self.db[collection].find_one(bson.objectid.ObjectId(_id),projection=fields)
 
             if not doc:
                 raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
@@ -405,7 +404,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
             for key in match:
                 regex_filters[key] = match[key]
 
-            doc = self.db[collection].find_one(regex_filters,fields=fields)
+            doc = self.db[collection].find_one(regex_filters,projection=fields)
 
 
             if not doc:
@@ -605,8 +604,8 @@ class Base(models.common.Base, metaclass=BaseMeta):
         else:
             sort.append(  ( "_id", -1 ) )
 
-        cursor=self.db[self.default_collection].find(spec=spec,
-                            fields=fields,
+        cursor=self.db[self.default_collection].find(filter=spec,
+                            projection=fields,
                             skip=skip,
                             limit=limit,
                             sort=sort)
@@ -626,7 +625,7 @@ class Base(models.common.Base, metaclass=BaseMeta):
 
         collection = self.default_collection
 
-        result = self.db[collection].remove(bson.objectid.ObjectId(_id), safe=True)
+        result = self.db[collection].remove(bson.objectid.ObjectId(_id))
         if result['n'] == 0:
             raise NotFoundError("Object with _id '{}' not found in collection '{}'".format(str(_id), collection))
 

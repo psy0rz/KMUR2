@@ -26,8 +26,8 @@ class ModuleSettings(models.mongodb.Base):
 
         collection = self.default_collection
         ret=self.db[collection].update(
-            {'_id':0}, 
-            {'$set' : doc }, 
+            {'_id':0},
+            {'$set' : doc },
             upsert=True)
         self.event("changed",doc)
         self.info("Changed module settings for {}".format(self.__class__.__module__))
@@ -48,17 +48,17 @@ class ModuleSettings(models.mongodb.Base):
 
     def __getitem__(self, key):
         collection = self.default_collection
-        doc = self.db[collection].find_one(0, fields={ key: True } )
+        doc = self.db[collection].find_one(0, projection={ key: True } )
 
         if doc and key in doc:
             return(doc[key])
 
-        #return default value, if any 
+        #return default value, if any
         return(self.get_meta(doc).meta['meta'].meta['meta'][key].meta['default'])
 
     def __contains__(self, key):
         collection = self.default_collection
-        doc = self.db[collection].find_one(0, fields={ key: True } )
+        doc = self.db[collection].find_one(0, projection={ key: True } )
         if key in doc:
             return(True)
 
@@ -73,10 +73,8 @@ class ModuleSettings(models.mongodb.Base):
     def __setitem__(self, key, value):
         collection = self.default_collection
         self.db[collection].update(
-            {'_id':0}, 
+            {'_id':0},
             {'$set' : {
                 key: value
-            } }, 
+            } },
             upsert=True)
-
-

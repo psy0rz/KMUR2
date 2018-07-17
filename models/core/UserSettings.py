@@ -31,7 +31,7 @@ class UserSettings(models.mongodb.Base):
         collection = self.default_collection
         ret=self.db[collection].update(
             {'_id': bson.objectid.ObjectId(self.context.session['user_id'])},
-            {'$set' : doc }, 
+            {'$set' : doc },
             upsert=True)
         self.event("changed",doc)
         self.info("Changed user settings for {}".format(self.__class__.__module__))
@@ -52,17 +52,17 @@ class UserSettings(models.mongodb.Base):
 
     def __getitem__(self, key):
         collection = self.default_collection
-        doc = self.db[collection].find_one(bson.objectid.ObjectId(self.context.session['user_id']), fields={ key: True } )
+        doc = self.db[collection].find_one(bson.objectid.ObjectId(self.context.session['user_id']), projection={ key: True } )
 
         if doc and key in doc:
             return(doc[key])
 
-        #return default value, if any 
+        #return default value, if any
         return(self.get_meta(doc).meta['meta'].meta['meta'][key].meta['default'])
 
     def __contains__(self, key):
         collection = self.default_collection
-        doc = self.db[collection].find_one(bson.objectid.ObjectId(self.context.session['user_id']), fields={ key: True } )
+        doc = self.db[collection].find_one(bson.objectid.ObjectId(self.context.session['user_id']), projection={ key: True } )
         if key in doc:
             return(True)
 
@@ -81,10 +81,8 @@ class UserSettings(models.mongodb.Base):
 
         collection = self.default_collection
         self.db[collection].update(
-            {'_id':bson.objectid.ObjectId(self.context.session['user_id'])}, 
+            {'_id':bson.objectid.ObjectId(self.context.session['user_id'])},
             {'$set' : {
                 key: value
-            } }, 
+            } },
             upsert=True)
-
-

@@ -10,7 +10,7 @@ import settings
 
 class Users(models.core.Protected.Protected):
     '''user management'''
-    
+
     meta = fields.List(
             fields.Dict({
                 '_id': models.mongodb.FieldId(),
@@ -103,7 +103,7 @@ class Users(models.core.Protected.Protected):
             params['fields']={}
 
         #note that mongodb cant mix inclusion and exclusion fields:
-        
+
         #inclusion mode:
         if len(params['fields'].values())>0 and list(params['fields'].values())[0]==True:
             if 'password' in params['fields']:
@@ -230,11 +230,11 @@ class Users(models.core.Protected.Protected):
         db_names=self.context.mongodb_connection.database_names()
         for db_name in db_names:
             if db_name.find(DB_PREFIX)==0:
-                #determine domain 
+                #determine domain
                 domain=db_name.lstrip(DB_PREFIX).replace("_", ".")
                 #get all users in this db
                 db=self.context.mongodb_connection[db_name]
-                users=db[self.default_collection].find(fields={ "name": True })
+                users=db[self.default_collection].find(projection={ "name": True })
                 for user in users:
                     result.append(user["name"]+"@"+domain)
 
@@ -260,6 +260,3 @@ class Users(models.core.Protected.Protected):
         self.context.reset_user()
 
         self.event("changed_session",self.context.session)
-
-
-        

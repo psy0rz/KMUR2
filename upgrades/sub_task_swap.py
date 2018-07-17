@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 
 
-mongodb_connection = pymongo.mongo_client.MongoClient(host='localhost', safe=True)
+mongodb_connection = pymongo.mongo_client.MongoClient(host='localhost')
 db = mongodb_connection[args.db]
 
 
@@ -40,7 +40,3 @@ for ticket in tickets:
 for ticket in new_tickets.values():
     new_tickets[ticket['_id']]['tickets']=list( new_tickets[ticket['_id']]['tickets']) #convert set to list
     db.models.ticket.Tickets.update({'_id': ticket['_id'] }, new_tickets[ticket['_id']])
-
-
-
-
