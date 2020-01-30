@@ -189,7 +189,7 @@ class Relation(fields.Base):
                 if ('min' in self.meta) and self.meta['min']>0:
                     raise fields.FieldError("should be related to exactly one item")
             else:
-                #check if item exists in forgein model:
+                #check if item exists in forgein model (and is accessible by current context):
                 foreign_object=self.model(context)
                 foreign_object.get(mongo_id)
 
@@ -288,7 +288,6 @@ class Relation(fields.Base):
 
 
 #metaclass that sets default_collection after class creation
-#we need this for Relation referenced_by to work correctly.
 
 class BaseMeta(type):
     def __init__(cls, name, bases, dct):
