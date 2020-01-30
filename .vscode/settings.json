@@ -1,0 +1,5 @@
+{
+    "sync-rsync.onLoadIndividual": true,
+    "sync-rsync.onSaveIndividual": true,
+    "sync-rsync.remote": "volg@volg:/home/volg/KMUR2"
+}

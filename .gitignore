@@ -5,3 +5,7 @@ kmur2.sublime-workspace
 kmur2.sublime-project
 static/files
 files
+getmongolounge
+settings.py
+client/bankshizzle
+.sync-config.cson

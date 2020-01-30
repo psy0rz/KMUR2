@@ -141,6 +141,7 @@ class TicketObjects(models.core.Protected.Protected):
         import subprocess
         import re
 
+        print("Calling tesseract for OCR")
         ret=""
         # try:
         ocr_text=subprocess.check_output(["tesseract", file, "stdout", "-l", "nld+eng" ]).decode('utf-8')
@@ -159,6 +160,7 @@ class TicketObjects(models.core.Protected.Protected):
         # except Exception as e:
             # print("Error while calling tesseract:", str(e))
 
+        print("OCR done")
         return(ret)
 
     @processify
@@ -263,6 +265,39 @@ class TicketObjects(models.core.Protected.Protected):
 
         return(doc)
 
+    def process_file_application_octet_stream(self ,doc):
+        """processor for octet-stream. Try to find out what it actually is and process further."""
+        import filetype
+        mime_type=filetype.guess(self.get_file_path(doc["file"])).mime
+
+        print("Guessed mime-type is: {}".format(mime_type))
+
+        #recurse with found mimetype, if its not the same:
+        if mime_type.lower()!='application/octet-stream':
+            return(self.call_file_processors(doc, mime_type))
+
+
+    def call_file_processors(self, doc, mime_type):
+        """call file processors for specified mime_type"""
+
+        (maintype, subtype)=mime_type.lower().split("/")
+        maintype=re.sub("[^a-z0-9]","_",maintype)
+        subtype=re.sub("[^a-z0-9]","_",subtype)
+        print("Looking up file processors for: {}_{}".format(maintype, subtype))
+
+        if hasattr(self, "process_file_"+maintype):
+            print("Calling {}".format("process_file_"+maintype))
+            method=getattr(self, "process_file_"+maintype)
+            doc=method(doc)
+
+        if hasattr(self, "process_file_"+maintype+"_"+subtype):
+            print("Calling {}".format("process_file_"+maintype+"_"+subtype))
+            method=getattr(self, "process_file_"+maintype+"_"+subtype)
+            doc=method(doc)
+
+        return(doc)
+
+
     def process_file(self, doc):
         """do some processing like generating thumbnails and doing OCR to create keywords, and getting metadata
 
@@ -270,26 +305,18 @@ class TicketObjects(models.core.Protected.Protected):
 
         later we should make this extendable for 3rd parties
         """
-
+        
         #common stuff
+        print("Processing file {}".format(self.get_file_path(doc["file"])))
         with open(self.get_file_path(doc["file"])) as file:
             doc["text"]="Filesize: {} bytes\n".format(file.seek(0, os.SEEK_END))
 
+        # start by asssuming file_content_type is correct.
+        ret=self.call_file_processors(doc, doc["file_content_type"])
 
-        #now call the appropriate handlers for this content-type
-        (maintype, subtype)=doc["file_content_type"].lower().split("/")
-        maintype=re.sub("[^a-z0-9]","_",maintype)
-        subtype=re.sub("[^a-z0-9]","_",subtype)
+        print("Processing done")
+        return(ret)
 
-        if hasattr(self, "process_file_"+maintype):
-            method=getattr(self, "process_file_"+maintype)
-            doc=method(doc)
-
-        if hasattr(self, "process_file_"+maintype+"_"+subtype):
-            method=getattr(self, "process_file_"+maintype+"_"+subtype)
-            doc=method(doc)
-
-        return(doc)
 
     def hash_file(self,fh):
         #hash the filehandle
@@ -310,6 +337,7 @@ class TicketObjects(models.core.Protected.Protected):
         doc=self._get(_id)
         doc=self.process_file(doc)
         self._put(doc)
+        self.event("changed", doc)
         return(doc)
 
     @RPC(roles="ticket_write")

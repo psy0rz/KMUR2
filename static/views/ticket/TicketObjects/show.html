@@ -30,6 +30,7 @@ var form=new ControlForm({
             //display images with normal image tag
             $('.image-viewer', context).hide();
             $('.object-viewer', context).hide();
+            $('.on-click-process', context).hide();
 
             //try to show documents correctly inline
             if (data['type']=='doc')
@@ -41,14 +42,34 @@ var form=new ControlForm({
                 {
                     $('.image-viewer', context).show().attr("src", data['file_url']);
                 }
+                else if (data['file_content_type'] && data['file_content_type']=="application/octet-stream")
+                {
+                    //dont show, since browser will just download it in that case
+                }
                 else
                 {
                     //needs to be recreated to prevent weird browser bugs
                     $('.object-viewer',context).show().replaceWith($('.object-viewer',context).clone().attr('data',data["file_url"])); 
                     $('.object-viewer',context).focus();
                 }
-            }
 
+                //reprocess handler
+                $('.on-click-process', context).show();
+                $(".on-click-process", context).off().click(function()
+                {
+                    rpc("ticket.TicketObjects.reprocess", {
+                        _id: data._id
+                    }, function(result)
+                    {
+                        if (!viewShowError(result, context))
+                        {
+                            //
+                        };
+                    });
+
+                });   
+
+            }
             // $('embed',context).replaceWith($('embed',context).clone().attr('src',data["file_url"]));
             // $('object',context).replaceWith($('object',context).clone().attr('data',data["file_url"]));
 
@@ -206,5 +227,6 @@ Email trackables found: <span><span class='field-put list-span-form field-list-s
 <div class='floatingBar viewErrorClass' control-view='ticket.TicketObjects.edit'>
     <button class='control-on-click-view' >Edit</button>
     <button class='control-on-click-cancel' >Back</button>
+    <button class='on-click-process' >Reprocess</button>
     <span class='viewErrorText'></span>
 </div>
