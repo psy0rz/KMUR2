@@ -17,6 +17,9 @@ Dependencies
  pip install python3-memcached
  pip install requests
  pip install requests-toolbelt
+- Filetype
+ pip install filetype
+
 
 On illumos/joyent you need to create this links to make the Python 3 wand.image module work correctly:
 
