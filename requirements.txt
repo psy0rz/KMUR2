@@ -1,0 +1,9 @@
+beaker
+bottle
+pymongo
+wand
+reportlab
+python3-memcached
+requests
+requests-toolbelt
+filetype

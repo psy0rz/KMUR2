@@ -13,6 +13,6 @@ mkdir static/files/$DB/
 touch static/files/$DB/index.html
 
 chmod -R 770 static/files/$DB files/$DB
-chgrp -R www-data static/files/$DB files/$DB 
+chgrp -R www static/files/$DB files/$DB 
 chgrp -R www static/files/$DB files/$DB 
 

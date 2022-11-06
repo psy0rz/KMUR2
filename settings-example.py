@@ -7,3 +7,4 @@
 #os.environ["MAGICK_HOME"]="/opt/local"
 #os.environ["PATH"]+=":/opt/local/bin"
 
+db_host="db"

@@ -1,6 +1,7 @@
 """Base classes and decorators for all models"""
 
 import re
+import settings
 
 DB_PREFIX="tracer_"
 
@@ -112,7 +113,7 @@ class Context(object):
 
 
         self.session['db_name'] = DB_PREFIX #changed when a user logged in, see Users.py
-        self.session['db_host'] = "localhost"
+        self.session['db_host'] = settings.db_host
 
         self.session['previous_session']=None
 

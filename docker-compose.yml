@@ -1,0 +1,26 @@
+services:
+  kmur: 
+   build: .
+   volumes:
+     - .:/app
+     - data:/data
+   ports:
+     - 20080:80
+  db:
+    image: mongo
+    volumes:
+      - db:/data
+
+
+volumes:
+  data:
+  db:
+
+
+
+
+
+
+
+
+
