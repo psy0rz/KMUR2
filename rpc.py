@@ -8,6 +8,7 @@ import traceback
 import json
 import sys
 import os.path
+import settings
 
 #add directory of this file to python searchpath:
 sys.path.append(os.path.dirname(__file__))
@@ -229,7 +230,7 @@ def send_default():
 
 session_opts = {
     'session.type': 'ext:memcached',
-    'session.url': '127.0.0.1:11211',
+    'session.url': settings.memcached_host,
     'session.cookie_expires': False,
 }
 

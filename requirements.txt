@@ -1,6 +1,6 @@
 beaker
 bottle
-pymongo
+pymongo<4
 wand
 reportlab
 python3-memcached

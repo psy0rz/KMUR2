@@ -77,7 +77,7 @@ try:
     ### check if this mail already has been seen?
     if settings['skip_duplicates']:
         message_key="import_mail_id_"+hashlib.sha256(msg["message-id"].encode()).hexdigest()
-        mc=memcache.Client(['127.0.0.1:11211'], debug=0)
+        mc=memcache.Client([settings.memcached_host], debug=0)
         if mc.get(message_key):
             debug("DONE: Skipping, already seen this message id")
             sys.exit(0)

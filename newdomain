@@ -3,7 +3,7 @@
 export LC_ALL=C
 DB=tracer_$1
  
-echo 'db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "roles" : [ "admin" ], "group_ids": []  } )' | mongo $DB
+echo 'db.models.core.Users.insert( { "active": "1", "name": "admin", "password": "changeme", "email":"mail@mail.lan", "roles" : [ "admin" ], "group_ids": []  } )' | mongo $DB
 
 
 mkdir files/$DB/

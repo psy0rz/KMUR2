@@ -172,7 +172,7 @@ class Users(models.core.Protected.Protected):
         db_postfix=re.sub("[^a-z0-9]","_",domain.lower())
         db_name=DB_PREFIX+db_postfix
 
-        if db_name not in self.context.mongodb_connection.database_names():
+        if db_name not in self.context.mongodb_connection.list_database_names():
             raise fields.FieldError("Domain not found", "name")
 
 
@@ -227,7 +227,7 @@ class Users(models.core.Protected.Protected):
             raise fields.FieldError("Incorrect key", "api_key")
 
         result=[]
-        db_names=self.context.mongodb_connection.database_names()
+        db_names=self.context.mongodb_connection.list_database_names()
         for db_name in db_names:
             if db_name.find(DB_PREFIX)==0:
                 #determine domain

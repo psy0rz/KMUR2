@@ -1,4 +1,7 @@
 services:
+
+  memcached:
+   image: memcached
   kmur: 
    build: .
    volumes:

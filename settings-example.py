@@ -8,3 +8,4 @@
 #os.environ["PATH"]+=":/opt/local/bin"
 
 db_host="db"
+memcached_host="memcached:11211"
