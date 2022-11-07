@@ -6,8 +6,8 @@ import models.core.Protected
 import models.core.Groups
 import re
 
-import settings
 
+import os
 class Users(models.core.Protected.Protected):
     '''user management'''
 
@@ -182,7 +182,7 @@ class Users(models.core.Protected.Protected):
 
         try:
             if api_key:
-                if api_key!=settings.api_key:
+                if api_key!=os.environ['API_KEY']:
                     raise fields.FieldError("Incorrect key", "api_key")
 
                 user = super(models.core.Protected.Protected,self)._get(match={
@@ -223,7 +223,7 @@ class Users(models.core.Protected.Protected):
     @RPC(roles="everyone")
     def get_all_global(self, api_key):
         '''get all users in all databases. only with api_key.'''
-        if api_key!=settings.api_key:
+        if api_key!=os.environ['API_KEY']:
             raise fields.FieldError("Incorrect key", "api_key")
 
         result=[]

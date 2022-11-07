@@ -2,17 +2,21 @@ services:
 
   memcached:
    image: memcached
+  db:
+    image: mongo
+    volumes:
+      - db:/data
   kmur: 
+   environment:
+    #- API_KEY=changeme
+    - DB_HOST=db
+    - MEMCACHED_HOST=memcached:11211
    build: .
    volumes:
      - .:/app
      - data:/app/files/
    ports:
      - 20080:80
-  db:
-    image: mongo
-    volumes:
-      - db:/data
 
 
 volumes:

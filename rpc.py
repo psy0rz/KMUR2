@@ -8,7 +8,7 @@ import traceback
 import json
 import sys
 import os.path
-import settings
+import os
 
 #add directory of this file to python searchpath:
 sys.path.append(os.path.dirname(__file__))
@@ -18,7 +18,6 @@ os.chdir(os.path.dirname(__file__))
 import fields
 import models.common
 
-import settings
 
 # curl -b /tmp/cookies -c /tmp/cookies --data-binary '{ "module":"core","class":"Users", "method":"test", "params":1 }' -H "Content-Type: application/json"  http://localhost:8080/rpc
 
@@ -230,7 +229,7 @@ def send_default():
 
 session_opts = {
     'session.type': 'ext:memcached',
-    'session.url': settings.memcached_host,
+    'session.url': os.environ['MEMCACHED_HOST'],
     'session.cookie_expires': False,
 }
 
