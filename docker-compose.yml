@@ -15,6 +15,7 @@ services:
    volumes:
      - .:/app
      - data:/app/files/
+     - thumbs:/app/static/files/
    ports:
      - 20080:80
 
@@ -22,6 +23,7 @@ services:
 volumes:
   data:
   db:
+  thumbs:
 
 
 
