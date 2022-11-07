@@ -6,7 +6,7 @@ services:
    build: .
    volumes:
      - .:/app
-     - data:/data
+     - data:/app/files/
    ports:
      - 20080:80
   db:
