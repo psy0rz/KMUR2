@@ -645,7 +645,7 @@ class Invoices(models.core.Protected.Protected):
         msg.add_attachment(attachment, maintype=maintype, subtype=subtype, filename=attachment_name)
 
         # Send the email via our own SMTP server.
-        with smtplib.SMTP('localhost') as s:
+        with smtplib.SMTP('smtp') as s:
             s.send_message(msg)
 
         self.info("Mailed subject '{}' to {}".format(subject, receiver))
