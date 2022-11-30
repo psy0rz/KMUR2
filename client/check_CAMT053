@@ -60,8 +60,12 @@ for child in tree.iter(ns+"Ntry"):
 
 		#find matching amount
 		for invoice in invoices:
+			# if invoice['invoice_nr']=='2022-0053':
+			# 	print(invoice)
+				
+
 			#matching date and time?
-			if timestamp>=invoice['sent_date'] and invoice['calc_total_tax']==amount:
+			if timestamp+(3600*24)>=invoice['sent_date'] and int(invoice['calc_total_tax'])==int(amount):
 				# print(" Value and date match: ", invoice['invoice_nr'])
 
 				#try creative search on description field:
