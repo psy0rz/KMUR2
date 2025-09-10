@@ -1,3 +1,4 @@
+import sys
 from pprint import pprint
 
 import requests
@@ -229,5 +230,10 @@ def do_api_action(token):
 if __name__ == "__main__":
     print("Exact Online OAuth2 Demo\n")
     token = ensure_token()
-    do_api_action(token)
+
+    if sys.argv[1:] and sys.argv[1] == 'refresh':
+        print("Refreshed token, exiting")
+        sys.exit(0)
+
+    # do_api_action(token)
     print("\nDone.")
