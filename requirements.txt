@@ -7,3 +7,4 @@ python3-memcached
 requests
 requests-toolbelt
 filetype
+requests-oauthlib

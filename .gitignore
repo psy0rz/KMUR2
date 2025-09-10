@@ -9,3 +9,5 @@ getmongolounge
 settings.py
 client/bankshizzle
 .sync-config.cson
+exact_secrets.py
+exact_tokens.json
