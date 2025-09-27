@@ -131,8 +131,8 @@ def get_accounts(token):
 def get_sales_invoices(token, max_results=200):
     # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/sync/SalesInvoice/SalesInvoices?$top=1"
     # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/crm/SalesInvoice"
-
-    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/SalesInvoice/SalesInvoices"
+    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesinvoice/SalesInvoices"
+    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries"
 
     results = exact_get(token, url_base)
     if results:
@@ -248,5 +248,6 @@ if __name__ == "__main__":
 
     # get_current_me(token)
     # do_api_action(token)
-    get_divisions(token)
+    # get_divisions(token)
+    get_sales_invoices(token)
     print("\nDone.")
