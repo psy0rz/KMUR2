@@ -1,4 +1,5 @@
 import sys
+from gc import get_debug
 from pprint import pprint
 
 import requests
@@ -73,6 +74,12 @@ def get_current_me(token):
         print(f"Error: {response.status_code}, {response.text}")
         return None
 
+def get_divisions(token):
+    url = f'https://start.exactonline.nl/api/v1/{DIVISION}/system/Divisions'
+    results = exact_get(token, url)
+    pprint(results)
+
+
 def exact_get(token, url, params=None):
     """
     Generic GET request for Exact Online API.
@@ -122,7 +129,11 @@ def get_accounts(token):
     return None
 
 def get_sales_invoices(token, max_results=200):
-    url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/sync/SalesInvoice/SalesInvoices?top=1"
+    # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/sync/SalesInvoice/SalesInvoices?$top=1"
+    # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/crm/SalesInvoice"
+
+    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/SalesInvoice/SalesInvoices"
+
     results = exact_get(token, url_base)
     if results:
         print(f"Fetched {len(results)} sales invoices:")
@@ -212,8 +223,8 @@ def ensure_token():
 
 # Example API action: create a new invoice with lines
 def do_api_action(token):
-    # get_sales_invoices(token)
-    get_accounts(token)
+    get_sales_invoices(token)
+    # get_accounts(token)
     # print("\nCreating a new item...")
     # item_data = {
     #     "Code": "DEMOITEM001",
@@ -235,5 +246,7 @@ if __name__ == "__main__":
         print("Refreshed token, exiting")
         sys.exit(0)
 
+    # get_current_me(token)
     # do_api_action(token)
+    get_divisions(token)
     print("\nDone.")
