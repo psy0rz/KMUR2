@@ -129,17 +129,16 @@ def get_accounts(token):
     return None
 
 def get_sales_invoices(token, max_results=200):
-    # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/sync/SalesInvoice/SalesInvoices?$top=1"
-    # url_base = f"https://start.exactonline.nl/api/v1/{DIVISION}/crm/SalesInvoice"
-    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesinvoice/SalesInvoices"
-    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries"
-
+    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries?$filter=InvoiceNumber eq 20240155"
+    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntryLines"
+    # url_base="https://start.exactonline.nl/api/v1/217519/salesentry/SalesEntryLines(guid'f36c8a00-b3f7-4dfb-a399-051b81c2e2a7')"
     results = exact_get(token, url_base)
-    if results:
-        print(f"Fetched {len(results)} sales invoices:")
-        for inv in results:
-            print(f"Invoice: {inv.get('InvoiceNumber')} | Customer: {inv.get('CustomerName')} | Date: {inv.get('InvoiceDate')} | Amount: {inv.get('AmountDC')}")
-        return results
+    pprint(results)
+    # if results:
+    #     print(f"Fetched {len(results)} sales invoices:")
+    #     for inv in results:
+    #         print(f"Invoice: {inv.get('InvoiceNumber')} | Customer: {inv.get('CustomerName')} | Date: {inv.get('InvoiceDate')} | Amount: {inv.get('AmountDC')}")
+    #     return results
     return None
 
 def get_items(token):
