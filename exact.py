@@ -18,16 +18,42 @@ def get_accounts():
 
 
 def get_sales_invoices():
-    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries?$filter=InvoiceNumber eq 20240155"
-    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries"
-    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntryLines"
-    # url_base="https://start.exactonline.nl/api/v1/217519/salesentry/SalesEntryLines(guid'f36c8a00-b3f7-4dfb-a399-051b81c2e2a7')"
     return   exact_get("salesentry/SalesEntries")
 
-def create_sales_invoice(data):
+def create_sales_invoice(account):
     #Journal:'70'
-    pass
+    data={
+        'Journal': '70',
+        'Customer': account['ID'],
+        'SalesEntryLines': []
+    }
 
+
+def get_gl_account_by_code(code):
+    url = f"financial/GLAccounts"
+    accounts = exact_get(url, params=f"$filter=Code eq '{code}'")
+    if len(accounts) == 0:
+        return None
+
+    if len(accounts) > 1:
+        raise Exception(f"Multiple GL accounts found with code {code}")
+
+    return accounts[0]
+
+def create_sales_line(gl_account):
+    data={
+        'AmountDC': 150,
+         'AmountFC': 150,
+        'Description': '2016-0167',
+        'GLAccount': gl_account, #code 8000
+        'VATAmountDC': 31.5,
+        'VATAmountFC': 31.5,
+        'VATBaseAmountDC': 150,
+        'VATBaseAmountFC': 150,
+        'VATCode': '4  ',
+        'VATCodeDescription': 'BTW hoog inclusief',
+        'VATPercentage': 0.21,
+    }
 
 def create_account(code, name, country):
     data = {
@@ -68,9 +94,15 @@ def get_account_by_code(code):
 # pprint(get_sales_invoices()[0]['EntryID'])
 
 
-account=get_account_by_code(214)
-if account is None:
-    account=create_account(214, 'Test', 'NL')
+pprint(exact_get("salesentry/SalesEntries(guid'3ee8cab7-5d50-4f92-8b67-001d3e9444a0')/SalesEntryLines"))
 
 
-print(account['ID'], account['Name'])
+### maak factuur procedure
+# account=get_account_by_code(214)
+# if account is None:
+#     account=create_account(214, 'Test', 'NL')
+#
+# gl_account=get_gl_account_by_code('8000')['ID']
+
+
+
