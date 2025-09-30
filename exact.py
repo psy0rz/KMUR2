@@ -188,6 +188,16 @@ def create_item(token, item_data):
         print("Response body:", response.text)
         return None
 
+def do_oauth_flow():
+    # No valid token, do full OAuth2 flow
+    exact = get_authorization_url()
+    print("\nStep 2: After authorizing, paste the full redirect URL here:")
+    authorization_response = input("Paste the full redirect URL: ")
+    print("\nStep 3: Fetching access token...")
+    token = fetch_access_token(exact, authorization_response)
+    save_tokens(token)
+
+
 def ensure_token():
     token = load_tokens()
     if token:
@@ -212,14 +222,8 @@ def ensure_token():
                     print("Failed to use refreshed token. Reauthorization required.")
             else:
                 print("Failed to refresh token. Reauthorization required.")
-    # No valid token, do full OAuth2 flow
-    exact = get_authorization_url()
-    print("\nStep 2: After authorizing, paste the full redirect URL here:")
-    authorization_response = input("Paste the full redirect URL: ")
-    print("\nStep 3: Fetching access token...")
-    token = fetch_access_token(exact, authorization_response)
-    save_tokens(token)
-    return token
+
+    return None
 
 # Example API action: create a new invoice with lines
 def do_api_action(token):
@@ -238,16 +242,3 @@ def do_api_action(token):
     # items = get_items(token)
     # print(items)
 
-if __name__ == "__main__":
-    print("Exact Online OAuth2 Demo\n")
-    token = ensure_token()
-
-    if sys.argv[1:] and sys.argv[1] == 'refresh':
-        print("Refreshed token, exiting")
-        sys.exit(0)
-
-    # get_current_me(token)
-    # do_api_action(token)
-    # get_divisions(token)
-    get_sales_invoices(token)
-    print("\nDone.")
