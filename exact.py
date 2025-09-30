@@ -1,6 +1,8 @@
 from pprint import pprint
 
-from exact_base import exact_get
+from exact_base import exact_get, exact_post, exact_delete
+from files.exact_secrets import DIVISION
+
 
 def get_current_me():
     return exact_get("current/Me", division=None)[0]
@@ -22,12 +24,45 @@ def get_sales_invoices():
     # url_base="https://start.exactonline.nl/api/v1/217519/salesentry/SalesEntryLines(guid'f36c8a00-b3f7-4dfb-a399-051b81c2e2a7')"
     return   exact_get("salesentry/SalesEntries")
 
+def create_sales_invoice(data):
+    #Journal:'70'
+    pass
+
+
+def create_account(code, name, country):
+    data = {
+        "Code": str(code).rjust(18),
+        'ConsolidationScenario': 4,
+        'Country': country,
+        'Division': DIVISION,
+        'Status': 'C',
+        'InvoiceAttachmentType': 1,
+        "Name": name,
+    }
+    return exact_post("crm/Accounts", data)
+
 def get_account_by_code(code):
-    code = code.rjust(18)
+    code = f"{code:>18}"
     url = f"crm/Accounts"
-    accounts=exact_get(url, params=f"$filter=Code eq '{code}'")
-    if (len(accounts) == 0):
-        raise Exception(f"Account with code {code} not found")
+    accounts = exact_get(url, params=f"$filter=Code eq '{code}'")
+    if len(accounts) == 0:
+        return None
+
+    if len(accounts) > 1:
+        raise Exception(f"Multiple accounts found with code {code}")
 
     return accounts[0]
 
+# pprint (create_account(214, 'Test' ,'NL'))
+# pprint(get_account_by_code(214)['Name'])
+#
+# a=exact_get('crm/Accounts', params="$filter=Name eq 'Test'")
+#
+# for ac in a:
+#     print(f"#{ac['Code']}# {ac['Name']} {ac['ID']}")
+#     exact_delete("crm/Accounts", ac['ID'])
+#
+# print(len(a))
+
+# pprint(get_sales_invoices()[0])
+# pprint(get_sales_invoices()[0]['EntryID'])

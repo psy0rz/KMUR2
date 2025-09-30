@@ -92,8 +92,65 @@ def exact_get( call, params=None, division=DIVISION):
     else:
         raise Exception(f"GET {url} failed: {response.status_code} - {response.text}")
 
+def exact_post(call, payload, division=DIVISION):
+    """
+    Generic POST request for Exact Online API.
+    Handles authorization, error reporting, and returns the actual data (dict),
+    automatically removing OData 'd' and 'results' wrappers if present.
+    """
+    global TOKEN
+    headers = {
+        'Authorization': f"Bearer {TOKEN['access_token']}",
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+    if division is not None:
+        url = f'{API_URL}/{division}/{call}'
+    else:
+        url = f'{API_URL}/{call}'
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    print(response.status_code)
+    if response.status_code in (200, 201):
+        data = response.json()
+        # pprint(data)
+        # Remove OData wrappers if present
+        if isinstance(data, dict) and 'd' in data:
+            d = data['d']
+            if isinstance(d, dict) and 'results' in d:
+                return d['results']
+            else:
+                return d
+        return data
+    else:
+        raise Exception(f"POST {url} failed: {response.status_code} - {response.text}")
 
+def exact_delete(call, id, division=DIVISION):
+    """
+    Generic DELETE request for Exact Online API.
+    Handles authorization and error reporting.
+    Returns True if successful, raises Exception otherwise.
+    """
 
+    if id=='':
+        raise Exception("ID for deletion cannot be empty")
+
+    if type(id) is not str:
+        raise Exception(f"ID for deletion must be a string: {id}")
+
+    global TOKEN
+    headers = {
+        'Authorization': f"Bearer {TOKEN['access_token']}",
+        'Accept': 'application/json'
+    }
+    if division is not None:
+        url = f"{API_URL}/{division}/{call}(guid'{id}')"
+    else:
+        url = f"{API_URL}/{call}(guid'{id}')"
+    response = requests.delete(url, headers=headers)
+    if response.status_code in (200, 204):
+        return True
+    else:
+        raise Exception(f"DELETE {url} failed: {response.status_code} - {response.text}")
 
 
 
