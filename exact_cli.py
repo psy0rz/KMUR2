@@ -1,4 +1,4 @@
-from exact import ensure_token, do_oauth_flow
+from exact_base import ensure_token, do_oauth_flow
 
 if ensure_token() is None:
     do_oauth_flow()
