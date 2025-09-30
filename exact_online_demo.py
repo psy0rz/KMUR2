@@ -7,12 +7,12 @@ from requests_oauthlib import OAuth2Session
 import json
 import os
 
-from exact_secrets import CLIENT_ID, CLIENT_SECRET, DIVISION
+from files.exact_secrets import CLIENT_ID, CLIENT_SECRET, DIVISION
 
 REDIRECT_URI = 'https://tracer.datux.nl/api/exact'
 AUTHORIZATION_BASE_URL = 'https://start.exactonline.nl/api/oauth2/auth'
 TOKEN_URL = 'https://start.exactonline.nl/api/oauth2/token'
-TOKEN_FILE = 'exact_tokens.json'
+TOKEN_FILE = 'files/exact_tokens.json'
 
 
 # Save tokens to file
@@ -129,7 +129,8 @@ def get_accounts(token):
     return None
 
 def get_sales_invoices(token, max_results=200):
-    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries?$filter=InvoiceNumber eq 20240155"
+    # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries?$filter=InvoiceNumber eq 20240155"
+    url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntries"
     # url_base=f"https://start.exactonline.nl/api/v1/{DIVISION}/salesentry/SalesEntryLines"
     # url_base="https://start.exactonline.nl/api/v1/217519/salesentry/SalesEntryLines(guid'f36c8a00-b3f7-4dfb-a399-051b81c2e2a7')"
     results = exact_get(token, url_base)
