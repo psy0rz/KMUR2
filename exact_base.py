@@ -90,7 +90,7 @@ def exact_get( call, params=None, division=DIVISION):
                 return d
         return data
     else:
-        raise Exception(f"GET {url} failed: {response.status_code}")
+        raise Exception(f"GET {url} failed: {response.status_code} - {response.text}")
 
 
 

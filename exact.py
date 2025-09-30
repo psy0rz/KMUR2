@@ -12,13 +12,7 @@ def get_divisions():
 
 
 def get_accounts():
-    results = exact_get('crm/Accounts')
-    if results:
-        print(len(results), "accounts found:")
-        for account in results:
-            print(f"Account: {account['Name']}")
-        return results
-    return None
+    return exact_get('crm/Accounts')
 
 
 def get_sales_invoices():
@@ -28,7 +22,12 @@ def get_sales_invoices():
     # url_base="https://start.exactonline.nl/api/v1/217519/salesentry/SalesEntryLines(guid'f36c8a00-b3f7-4dfb-a399-051b81c2e2a7')"
     return   exact_get("salesentry/SalesEntries")
 
+def get_account_by_code(code):
+    code = code.rjust(18)
+    url = f"crm/Accounts"
+    accounts=exact_get(url, params=f"$filter=Code eq '{code}'")
+    if (len(accounts) == 0):
+        raise Exception(f"Account with code {code} not found")
 
+    return accounts[0]
 
-# pprint(get_current_me())
-# pprint(get_sales_invoices())
