@@ -92,7 +92,7 @@ def exact_get( call, params=None, division=DIVISION):
     else:
         raise Exception(f"GET {url} failed: {response.status_code} - {response.text}")
 
-def exact_post(call, payload, division=DIVISION):
+def exact_post(call, payload, division=DIVISION, put=False):
     """
     Generic POST request for Exact Online API.
     Handles authorization, error reporting, and returns the actual data (dict),
@@ -104,12 +104,15 @@ def exact_post(call, payload, division=DIVISION):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
+    pprint(payload)
     if division is not None:
         url = f'{API_URL}/{division}/{call}'
     else:
         url = f'{API_URL}/{call}'
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
-    print(response.status_code)
+    if put:
+        response = requests.put(url, headers=headers, data=json.dumps(payload))
+    else:
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
     if response.status_code in (200, 201):
         data = response.json()
         # pprint(data)
