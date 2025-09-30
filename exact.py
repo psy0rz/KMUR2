@@ -66,3 +66,11 @@ def get_account_by_code(code):
 
 # pprint(get_sales_invoices()[0])
 # pprint(get_sales_invoices()[0]['EntryID'])
+
+
+account=get_account_by_code(214)
+if account is None:
+    account=create_account(214, 'Test', 'NL')
+
+
+print(account['ID'], account['Name'])
