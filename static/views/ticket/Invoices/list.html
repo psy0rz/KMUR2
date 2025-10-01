@@ -43,7 +43,7 @@
 
     $(".on-click-auto-invoice-all", context).click(function()
     {
-        rpc("ticket.ContractInvoices.auto_invoice_all",{},function()
+        rpc("ticket.ContractInvoices.auto_invoice_all",{},function(result)
         {
             viewShowError(result,context);
         });

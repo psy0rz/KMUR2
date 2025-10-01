@@ -498,3 +498,10 @@ a:hover
 	color: red;	
 	font-weight: bold;
 }
+
+
+.ui-dialog{
+
+    z-index:101;
+
+}

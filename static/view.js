@@ -559,7 +559,7 @@ function viewLoad(view)
             return;
         }
 
-        var div=$("<div>");
+        var div=$("<div style='z-index:1000'>");
         div.text(settings.text);
         div.append('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>');
         
