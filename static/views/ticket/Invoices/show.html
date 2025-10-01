@@ -112,7 +112,14 @@ $(".on-click-send", context).click(function()
     rpc("ticket.Invoices.send", { _id:view.params._id }, function(result)
         {
             viewShowError(result, context);
+            rpc("ticket.Invoices.add_exact", { _id:view.params._id }, function(result)
+                {
+                    viewShowError(result, context);
+                });
         });
+
+
+
 });
 
 
@@ -138,6 +145,10 @@ $(".on-click-revoke", context).click(function()
     rpc("ticket.Invoices.revoke", { _id:view.params._id }, function(result)
         {
             viewShowError(result, context);
+            rpc("ticket.Invoices.del_exact", { _id:view.params._id }, function(result)
+                {
+                    viewShowError(result, context);
+                });
         });
 });
 

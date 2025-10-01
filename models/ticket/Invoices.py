@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from models.common import *
 import fields
 import models.core.Protected
@@ -10,6 +12,7 @@ import time
 from fields import FieldError
 import bottle
 import time
+import exact
 
 from_format="""{company}
 {department}
@@ -249,6 +252,42 @@ class Invoices(models.core.Protected.Protected):
         doc=self._get(_id)
         self.event("changed",doc)
         self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+
+
+    @RPC(roles="finance_admin")
+    def add_exact(self, _id):
+        """add invoice to exact"""
+
+        doc=self.get(_id)
+
+        if 'sent' in doc and doc['sent']==False:
+            raise FieldError("Invoice is not sent yet")
+
+
+
+
+
+        pprint(doc)
+
+        exact.add_exact(doc)
+
+        self.info("Invoice {invoice_nr} added to exact".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+
+
+    @RPC(roles="finance_admin")
+    def del_exact(self, _id):
+        """delete invoice from exact"""
+
+        doc=self.get(_id)
+
+        if 'sent' in doc and doc['sent']==True:
+            raise FieldError("Invoice is still sent, revoke it first")
+
+
+
+        print(doc)
+        self.info("Invoice {invoice_nr} deleted from exact".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+
 
     @RPC(roles="finance_admin")
     def revoke(self, _id):

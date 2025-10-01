@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx:python3.6
+FROM tiangolo/uwsgi-nginx:python3.12
 
 RUN apt-get update && apt-get install -y imagemagick tesseract-ocr tesseract-ocr-nld locales-all faketime \
     && rm -rf /var/lib/apt/lists/*

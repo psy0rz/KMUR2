@@ -16,7 +16,7 @@ services:
    build: .
    volumes:
      - .:/app
-     - data:/app/files/
+#     - data:/app/files/
      - thumbs:/app/static/files/
    ports:
      - 20080:80
