@@ -153,7 +153,8 @@ td
 .viewMain
 {
 	overflow: auto;
-	left: 16em;
+	left: 0em;
+	padding-left: 16em;
 	right: 0em;
 	top: 0em;
 	padding-top:5.5em;
