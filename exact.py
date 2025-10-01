@@ -4,6 +4,7 @@ import datetime
 
 from exactonline.api import ExactApi
 from exactonline.exceptions import ObjectDoesNotExist
+from exactonline.http import binquote
 from exactonline.resource import GET, POST, PUT, DELETE
 from exactonline.storage.ini import IniStorage
 
@@ -16,18 +17,8 @@ def get_api():
 api = get_api()
 
 
-# pprint(api.rest(GET('v1/current/Me')))
-#
-# sys.exit(1)
-
-
-#kmur ding ophalen
-#pprint(api.invoices.filter(filter ='InvoiceNumber eq 20160167'))
-
 
 vat=0.21
-amount_with_vat=100
-total_vat=amount_with_vat*vat
 customer_guid=api.relations.get(relation_code='214')['ID']
 remote_journal='70'
 gl_id=api.ledgeraccounts.filter(filter="Code eq '8000'")[0]['ID']
@@ -49,42 +40,61 @@ vat_code='4  '
 
 
 
+# filter=binquote("'AmountFC' eq 'Test line 1'")
+# pprint(api.restv1(GET(f"salesentry/SalesEntryLines?$top=10")))
 
+# exit(1)
 
 invoice_date = datetime.datetime.now()
-local_invoice_number='3000-0001'
+local_invoice_number='2025-9999'
 invoice_nr_clean = int(re.sub(r'\D', '', str(local_invoice_number)))
 
+
+# for invoice in api.invoices.filter(filter=f"EntryNumber eq {invoice_nr_clean}"):
+#     pprint(invoice)
+#     api.invoices.delete(invoice['EntryID'])
+# #
+# #     pprint(api.rest())
+#
+#
+# pprint(api.restv1(GET("salesentry/SalesEntryLines(guid'14866ce5-2ab3-44e0-a686-c62f3df617f5')")))
+
+
+# exit (1)
+
 invoice_data = {
-    # 'AmountDC': str(amount_with_vat),  # DC = default currency
-    # 'AmountFC': str(amount_with_vat),  # FC = foreign currency
     'EntryDate': invoice_date.strftime('%Y-%m-%dT%H:%M:%SZ'),  # pretend we're in UTC
     'Customer': customer_guid,
-    'Description': u'Invoice description',
+    'Description': local_invoice_number,
     'Journal': remote_journal,  # 70 "Verkoopboek"
     'ReportingPeriod': invoice_date.month,
     'ReportingYear': invoice_date.year,
     'SalesEntryLines': [
         {
-            'AmountDC': str(amount_with_vat-total_vat),
-            'AmountFC': str(amount_with_vat-total_vat),
+            # 'AmountDC': str(amount_with_vat-total_vat),
+            'AmountFC': 121,
+            'Quantity': 1,
             'Description': 'Test line 1',
             'GLAccount': gl_id,
             'VATCode': vat_code
-
-
 
         }
 
 
     ],
-    # 'VATAmountDC': str(total_vat),
-    # 'VATAmountFC': str(total_vat),
     'YourRef': local_invoice_number,
     'InvoiceNumber': invoice_nr_clean,
+    'EntryNumber': invoice_nr_clean,
+    'PaymentCondition': '14'
 }
+
+# pprint(invoice_data)
 api.invoices.create(invoice_data)
 
+# for invoice in api.invoices.filter(filter=f"YourRef eq '{local_invoice_number}'"):
+#     pprint(invoice)
+#     api.invoices.delete(invoice['EntryID'])
+exit(1)
 
 
 # import exactonline.elements

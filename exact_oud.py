@@ -111,7 +111,7 @@ def get_account_by_code(code):
 
 
 
-pprint(get_current_me())
+# pprint(get_current_me())
 
 # try:
 #     pprint(create_sales_line(get_gl_account_by_code(8000), 123, 'test', 0.21))
