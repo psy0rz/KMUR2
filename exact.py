@@ -8,6 +8,9 @@ from exactonline.http import binquote
 from exactonline.resource import GET, POST, PUT, DELETE
 from exactonline.storage.ini import IniStorage
 
+from exact_oud import sales_line
+
+
 # Create a function to get the api with your own storage backend.
 def get_api():
     # NOTE: The IniStorage is really simple does not synchronize with
@@ -71,87 +74,101 @@ def get_relation_guid(doc):
     return relation['ID']
 
 
+def get_gl_vat():
+    """return glid's and vat codes per vat percentage"""
 
-def add_exact(doc):
-
-    customer_guid=get_relation_guid(doc['to_copy'])
-
-    return
-    remote_journal='70'
-    gl_id=api.ledgeraccounts.filter(filter="Code eq '8000'")[0]['ID']
-    vat_code='4  '
-
-    # pprint(api.vatcodes.all())
+    ret={}
 
     # 8000 - Omzet hoog
     # BTW-code 4
     # 0.21
+    gl_id=api.ledgeraccounts.filter(filter="Code eq '8000'")[0]['ID']
+    vat_code='4  '
+    ret[21]={'gl_id':gl_id, 'vat_code':vat_code}
 
     # 8200 - Omzet onbelast
     # BTW-code 20
     # 0.00
+    #XXX
 
     # 8400 - Omzet binnen EU
     # BTW-code 7
     # 0.00
+    gl_id=api.ledgeraccounts.filter(filter="Code eq '8400'")[0]['ID']
+    vat_code='7  '
+    ret[0]={'gl_id':gl_id, 'vat_code':vat_code}
+
+    return ret
 
 
+def make_sales_lines(doc):
+    vat_lookup=get_gl_vat()
+    sales_lines = []
 
-    # filter=binquote("'AmountFC' eq 'Test line 1'")
-    # pprint(api.restv1(GET(f"salesentry/SalesEntryLines?$top=10")))
+    # 'items': [{'amount': 12,
+    # 'calc_tax': 252.0,
+    # 'calc_total': 1200,
+    # 'calc_total_tax': 1452.0,
+    # 'desc': 'test',
+    # 'price': 100,
+    # 'tax': 21}]
 
-    # exit(1)
+    for item in doc['items']:
+        if item['tax'] not in vat_lookup:
+            raise Exception(f"VAT percentage {item['tax']} not found in Exact lookup table")
 
-    invoice_date = datetime.datetime.now()
-    local_invoice_number='2025-9999'
+        vat = vat_lookup[item['tax']]
+
+        sales_lines.append({
+            # 'AmountDC': str(amount_with_vat-total_vat),
+            'AmountFC': item['calc_total_tax'],
+            'Quantity': 1,
+            'Description': item['desc'],
+            'GLAccount': vat['gl_id'],
+            'VATCode': vat['vat_code']
+
+        })
+
+
+    return sales_lines
+
+def add_exact(doc):
+
+    customer_guid=get_relation_guid(doc['to_copy'])
+    remote_journal='70' # 70 "Verkoopboek"
+    invoice_date_unix = doc['sent_date']  # assuming this is a Unix timestamp (int or float)
+    invoice_date = datetime.datetime.utcfromtimestamp(invoice_date_unix)
+    edm_datetime = invoice_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+    local_invoice_number=doc['invoice_nr']
     invoice_nr_clean = int(re.sub(r'\D', '', str(local_invoice_number)))
 
+    sales_lines=make_sales_lines(doc)
 
-    for invoice in api.invoices.filter(filter=f"EntryNumber eq {invoice_nr_clean}"):
-        pprint(invoice)
-        api.invoices.delete(invoice['EntryID'])
-    # #
-    # #     pprint(api.rest())
-    #
-    #
-    # pprint(api.restv1(GET("salesentry/SalesEntryLines(guid'14866ce5-2ab3-44e0-a686-c62f3df617f5')")))
-
-
-    exit (1)
 
     invoice_data = {
-        'EntryDate': invoice_date.strftime('%Y-%m-%dT%H:%M:%SZ'),  # pretend we're in UTC
+        'EntryDate': edm_datetime,
         'Customer': customer_guid,
         'Description': local_invoice_number,
-        'Journal': remote_journal,  # 70 "Verkoopboek"
+        'Journal': remote_journal,
         'ReportingPeriod': invoice_date.month,
         'ReportingYear': invoice_date.year,
-        'SalesEntryLines': [
-            {
-                # 'AmountDC': str(amount_with_vat-total_vat),
-                'AmountFC': 121,
-                'Quantity': 1,
-                'Description': 'Test line 1',
-                'GLAccount': gl_id,
-                'VATCode': vat_code
-
-            }
-
-
-        ],
+        'SalesEntryLines': sales_lines,
         'YourRef': local_invoice_number,
         'InvoiceNumber': invoice_nr_clean,
         'EntryNumber': invoice_nr_clean,
         'PaymentCondition': '14'
     }
 
-    # pprint(invoice_data)
+
+    pprint(invoice_data)
     api.invoices.create(invoice_data)
 
     # for invoice in api.invoices.filter(filter=f"YourRef eq '{local_invoice_number}'"):
     #     pprint(invoice)
     #     api.invoices.delete(invoice['EntryID'])
-    exit(1)
+    return
 
 
     # import exactonline.elements
@@ -164,6 +181,16 @@ def add_exact(doc):
     #
     # invoice=exactonline.elements.ExactInvoice(api)
 
+def del_exact(doc):
+    # for invoice in api.invoices.filter(filter=f"EntryNumber eq {invoice_nr_clean}"):
+    #     pprint(invoice)
+    #     api.invoices.delete(invoice['EntryID'])
+    # #
+    # #     pprint(api.rest())
+    #
+    #
+    # pprint(api.restv1(GET("salesentry/SalesEntryLines(guid'14866ce5-2ab3-44e0-a686-c62f3df617f5')")))
+    pass
 
 
 
