@@ -1,137 +1,106 @@
-from pprint import pprint
 import re
+from pprint import pprint
+import datetime
 
-from exact_base import exact_get, exact_post, exact_delete
-from files.exact_secrets import DIVISION
+from exactonline.api import ExactApi
+from exactonline.exceptions import ObjectDoesNotExist
+from exactonline.resource import GET, POST, PUT, DELETE
+from exactonline.storage.ini import IniStorage
 
-
-def get_current_me():
-    return exact_get("current/Me", division=None)[0]
-
-
-def get_divisions():
-    return exact_get("system/Divisions")
-
-
-
-def get_accounts():
-    return exact_get('crm/Accounts')
-
-
-def get_sales_invoices():
-    return   exact_get("salesentry/SalesEntries")
-
-def sales_line(gl_account, amount_ex_vat, description, vat_percentage):
-    data={
-         'AmountFC': amount_ex_vat, #ex  btw
-        'Description': description,
-        'GLAccount': gl_account['ID'], #code 8000
-        # 'VATAmountDC': 31.5, #automatisch
-        # 'VATAmountFC': 31.5,
-        # 'VATBaseAmountDC': 150,
-        # 'VATBaseAmountFC': 150,
-        # 'VATCode': '4  ',
-        # 'VATCodeDescription': 'BTW hoog inclusief',
-        'VATPercentage': vat_percentage,
-    }
-    # pprint(data)
-    # return exact_post("salesentry/SalesEntryLines", data)
-    return data
+# Create a function to get the api with your own storage backend.
+def get_api():
+    # NOTE: The IniStorage is really simple does not synchronize with
+    # other instances. You should create your own storage. See below.
+    storage = IniStorage('files/exact.ini')
+    return ExactApi(storage=storage)
+api = get_api()
 
 
-def create_sales_invoice(account, invoice_nr_str , sales_lines):
-    # Strip non-numeric characters and convert to int
-    invoice_nr_clean = int(re.sub(r'\D', '', str(invoice_nr_str)))
-    data = {
-        'Journal': '70',
-        'Customer': account['ID'],
-        # 'EntryNumber': invoice_nr_clean,
-        'Description': invoice_nr_str,
-        # 'InvoiceNumber': invoice_nr_clean,
-        'SalesEntryLines': sales_lines
-
-    }
-
-
-    return exact_post("salesentry/SalesEntries", data)
-
-def get_gl_account_by_code(code):
-    url = f"financial/GLAccounts"
-    accounts = exact_get(url, params=f"$filter=Code eq '{code}'")
-    if len(accounts) == 0:
-        return None
-
-    if len(accounts) > 1:
-        raise Exception(f"Multiple GL accounts found with code {code}")
-
-    return accounts[0]
-
-
-def create_account(code, name, country):
-    data = {
-        "Code": str(code).rjust(18),
-        'ConsolidationScenario': 4,
-        'Country': country,
-        'Division': DIVISION,
-        'Status': 'C',
-        'InvoiceAttachmentType': 1,
-        "Name": name,
-    }
-    return exact_post("crm/Accounts", data)
-
-def get_account_by_code(code):
-    """klant"""
-    code = f"{code:>18}"
-    url = f"crm/Accounts"
-    accounts = exact_get(url, params=f"$filter=Code eq '{code}'")
-    if len(accounts) == 0:
-        return None
-
-    if len(accounts) > 1:
-        raise Exception(f"Multiple accounts found with code {code}")
-
-    return accounts[0]
-
-# pprint (create_account(214, 'Test' ,'NL'))
-# pprint(get_account_by_code(214)['Name'])
+# pprint(api.rest(GET('v1/current/Me')))
 #
-# a=exact_get('crm/Accounts', params="$filter=Name eq 'Test'")
+# sys.exit(1)
+
+
+#kmur ding ophalen
+#pprint(api.invoices.filter(filter ='InvoiceNumber eq 20160167'))
+
+
+vat=0.21
+amount_with_vat=100
+total_vat=amount_with_vat*vat
+customer_guid=api.relations.get(relation_code='214')['ID']
+remote_journal='70'
+gl_id=api.ledgeraccounts.filter(filter="Code eq '8000'")[0]['ID']
+vat_code='4  '
+
+# pprint(api.vatcodes.all())
+
+# 8000 - Omzet hoog
+# BTW-code 4
+# 0.21
+
+# 8200 - Omzet onbelast
+# BTW-code 20
+# 0.00
+
+# 8400 - Omzet binnen EU
+# BTW-code 7
+# 0.00
+
+
+
+
+
+invoice_date = datetime.datetime.now()
+local_invoice_number='3000-0001'
+invoice_nr_clean = int(re.sub(r'\D', '', str(local_invoice_number)))
+
+invoice_data = {
+    # 'AmountDC': str(amount_with_vat),  # DC = default currency
+    # 'AmountFC': str(amount_with_vat),  # FC = foreign currency
+    'EntryDate': invoice_date.strftime('%Y-%m-%dT%H:%M:%SZ'),  # pretend we're in UTC
+    'Customer': customer_guid,
+    'Description': u'Invoice description',
+    'Journal': remote_journal,  # 70 "Verkoopboek"
+    'ReportingPeriod': invoice_date.month,
+    'ReportingYear': invoice_date.year,
+    'SalesEntryLines': [
+        {
+            'AmountDC': str(amount_with_vat-total_vat),
+            'AmountFC': str(amount_with_vat-total_vat),
+            'Description': 'Test line 1',
+            'GLAccount': gl_id,
+            'VATCode': vat_code
+
+
+
+        }
+
+
+    ],
+    # 'VATAmountDC': str(total_vat),
+    # 'VATAmountFC': str(total_vat),
+    'YourRef': local_invoice_number,
+    'InvoiceNumber': invoice_nr_clean,
+}
+api.invoices.create(invoice_data)
+
+
+
+# import exactonline.elements
 #
-# for ac in a:
-#     print(f"#{ac['Code']}# {ac['Name']} {ac['ID']}")
-#     exact_delete("crm/Accounts", ac['ID'])
+# exactonline.elements.ExactCustomer
 #
-# print(len(a))
-
-# pprint(get_sales_invoices()[0])
-# pprint(get_sales_invoices()[0]['EntryID'])
-
-
-# pprint(exact_get("salesentry/SalesEntries(guid'3ee8cab7-5d50-4f92-8b67-001d3e9444a0')/SalesEntryLines"))
-
-
-
-
-# try:
-#     pprint(create_sales_line(get_gl_account_by_code(8000), 123, 'test', 0.21))
-# except Exception as e:
-#     print("Error:", e)
+# class MienInvoice(exactonline.elements.ExactInvoice):
 #
-### maak factuur procedure
-try:
-    account=get_account_by_code(214)
-    if account is None:
-        account=create_account(214, 'Test', 'NL')
+#     def get_customer(self):
+#
+# invoice=exactonline.elements.ExactInvoice(api)
 
-    gl_account=get_gl_account_by_code('8000')
 
-    invoice=create_sales_invoice(account, '2025-0100', [
-        # sales_line(gl_account, 100, 'test regel 1 met 21%', 0.21),
-        # sales_line(gl_account, 100, 'test regel 2 met 9%', 0.09),
-    ])
-except Exception as e:
-    print("Error:", e)
-    raise e
-    exit(1)
+
+
+
+
 
 

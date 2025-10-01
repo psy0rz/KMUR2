@@ -1,7 +1,8 @@
-from exact_base import ensure_token, do_oauth_flow
+import exact
 
-if ensure_token() is None:
-    do_oauth_flow()
-else:
-    print("Valid token found, no oauth flow needed.")
+url=exact.api.create_auth_request_url()
+print(f"Go to the following URL to authorize the application:\n{url}\n")
+
+code = input("Enter the authorization code: ")
+exact.api.request_token(code)
 
