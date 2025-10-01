@@ -5,7 +5,9 @@ services:
   db:
     image: mongo
     volumes:
-      - db:/data
+      - db:/data/db
+      - configdb:/data/configdb
+
   kmur: 
    environment:
     #- API_KEY=changeme
@@ -23,6 +25,7 @@ services:
 volumes:
   data:
   db:
+  configdb:
   thumbs:
 
 
