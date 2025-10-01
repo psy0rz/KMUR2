@@ -1,0 +1,3 @@
+#!/bin/bash
+docker restart kmur2-kmur-1
+docker logs -f kmur2-kmur-1
