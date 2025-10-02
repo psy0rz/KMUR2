@@ -44,15 +44,21 @@ var form=new ControlForm({
 
         $(".on-click-credit", context).off().click(function()
         {
+            let credit_items=[]
+            for (const item       of data.items)
+            {
+                credit_items.push({
+                    amount:item.amount,
+                    tax: item.tax,
+                    desc: item.desc+ " [CREDIT "+data.invoice_nr+"]",
+                    price: -item.price
+               })
+            }
+
             rpc("ticket.Invoices.add_items", {
                 to_relation: data.to_relation,
                 currency: data.currency,
-                items: [{
-                    amount: 1,
-                    tax: 0,
-                    price: -data.calc_total_tax,
-                    desc: "Credit invoice "+data.invoice_nr
-                }]
+                items: credit_items
             }, function(result)
             {
                 if (!viewShowError(result, context))
