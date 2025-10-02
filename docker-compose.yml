@@ -7,6 +7,7 @@ services:
     volumes:
       - db:/data/db
       - configdb:/data/configdb
+    restart: unless-stopped
 
   kmur: 
    environment:
@@ -20,6 +21,7 @@ services:
      - thumbs:/app/static/files/
    ports:
      - 20080:80
+   restart: unless-stopped
 
 
 volumes:

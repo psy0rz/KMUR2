@@ -31,6 +31,7 @@ def rpc_post():
 
     #result will be stored here:
     result = {}
+    rpc_class_instance=None
 
     try:
         #to see what kind of body the server receives, for debugging purposes:
@@ -139,8 +140,14 @@ def rpc_post():
                 'message': str(e),
                 'fields': e.fields
             }
+
         else:
             result['error'] = { 'message': e.__class__.__name__ + ": " + str(e) }
+
+
+        if rpc_class_instance  is not None:
+            rpc_class_instance.error(f"Exception: "+str(e))
+
 
     finally:
         for fileupload in bottle.request.files.itervalues():

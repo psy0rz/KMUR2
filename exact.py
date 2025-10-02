@@ -1,14 +1,10 @@
+import datetime
 import re
 from pprint import pprint
-import datetime
 
 from exactonline.api import ExactApi
 from exactonline.exceptions import ObjectDoesNotExist
-from exactonline.http import binquote
-from exactonline.resource import GET, POST, PUT, DELETE
 from exactonline.storage.ini import IniStorage
-
-from exact_oud import sales_line
 
 
 # Create a function to get the api with your own storage backend.
@@ -132,6 +128,7 @@ def make_sales_lines(doc):
 
     return sales_lines
 
+#called by KMUR when invoice is added
 def add_exact(doc):
 
     customer_guid=get_relation_guid(doc['to_copy'])
@@ -165,36 +162,15 @@ def add_exact(doc):
     pprint(invoice_data)
     api.invoices.create(invoice_data)
 
-    # for invoice in api.invoices.filter(filter=f"YourRef eq '{local_invoice_number}'"):
-    #     pprint(invoice)
-    #     api.invoices.delete(invoice['EntryID'])
-    return
 
 
-    # import exactonline.elements
-    #
-    # exactonline.elements.ExactCustomer
-    #
-    # class MienInvoice(exactonline.elements.ExactInvoice):
-    #
-    #     def get_customer(self):
-    #
-    # invoice=exactonline.elements.ExactInvoice(api)
 
+#called by KMUR when invoice is deleted
 def del_exact(doc):
-    # for invoice in api.invoices.filter(filter=f"EntryNumber eq {invoice_nr_clean}"):
-    #     pprint(invoice)
-    #     api.invoices.delete(invoice['EntryID'])
-    # #
-    # #     pprint(api.rest())
-    #
-    #
-    # pprint(api.restv1(GET("salesentry/SalesEntryLines(guid'14866ce5-2ab3-44e0-a686-c62f3df617f5')")))
-    pass
+
+    invoice=api.invoices.get(invoice_number=doc['invoice_nr'])
 
 
-
-
-
+    api.invoices.delete(invoice['EntryID'])
 
 
