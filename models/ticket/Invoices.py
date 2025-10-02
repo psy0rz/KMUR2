@@ -535,13 +535,13 @@ class Invoices(models.core.Protected.Protected):
         #items
         for item in invoice['items']:
             table_data.append([
-                    locale.format("%g", item['amount']),
+                    locale.format_string("%g", item['amount']),
                     Paragraph(item['desc'], styles["Small"]),
-                    invoice['currency'], locale.format("%.2f", item['price'], monetary=True, grouping=False),
+                    invoice['currency'], locale.format_string("%.2f", item['price'], monetary=True, grouping=False),
                     "{}%".format(item['tax']),
-                    invoice['currency'], locale.format("%.2f", item['calc_total'], monetary=True, grouping=False),
-                    invoice['currency'], locale.format("%.2f", item['calc_tax'], monetary=True, grouping=False),
-                    invoice['currency'], locale.format("%.2f", item['calc_total_tax'], monetary=True, grouping=False)
+                    invoice['currency'], locale.format_string("%.2f", item['calc_total'], monetary=True, grouping=False),
+                    invoice['currency'], locale.format_string("%.2f", item['calc_tax'], monetary=True, grouping=False),
+                    invoice['currency'], locale.format_string("%.2f", item['calc_total_tax'], monetary=True, grouping=False)
                 ])
 
         #totals
@@ -551,9 +551,9 @@ class Invoices(models.core.Protected.Protected):
             "",
             "",
             "Total amounts:",
-            invoice['currency'], locale.format("%.2f", invoice['calc_total'], monetary=True, grouping=False),
-            invoice['currency'], locale.format("%.2f", invoice['calc_tax'], monetary=True, grouping=False),
-            invoice['currency'], locale.format("%.2f", invoice['calc_total_tax'], monetary=True, grouping=False),
+            invoice['currency'], locale.format_string("%.2f", invoice['calc_total'], monetary=True, grouping=False),
+            invoice['currency'], locale.format_string("%.2f", invoice['calc_tax'], monetary=True, grouping=False),
+            invoice['currency'], locale.format_string("%.2f", invoice['calc_total_tax'], monetary=True, grouping=False),
             ])
 
         #generate table and set cell styles
