@@ -146,7 +146,7 @@ def rpc_post():
 
 
         if rpc_class_instance  is not None:
-            rpc_class_instance.error(f"Exception: "+str(e))
+            rpc_class_instance.error(e.__class__.__name__ + ":  "+str(e))
 
 
     finally:

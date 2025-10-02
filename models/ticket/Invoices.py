@@ -260,8 +260,8 @@ class Invoices(models.core.Protected.Protected):
 
         doc=self.get(_id)
 
-        if 'sent' in doc and doc['sent']==False:
-            raise FieldError("Invoice is not sent yet")
+        if doc['invoice_nr']=="":
+            raise FieldError("Invoice has no invoice_nr yet, please send it first.")
 
         exact.add_exact(doc)
 
@@ -274,8 +274,8 @@ class Invoices(models.core.Protected.Protected):
 
         doc=self.get(_id)
 
-        if 'sent' in doc and doc['sent']==False:
-            raise FieldError("Invoice is not sent yet")
+        if doc['invoice_nr']=="":
+            raise FieldError("Invoice has no invoice_nr yet, please send it first.")
 
         exact.del_exact(doc)
 

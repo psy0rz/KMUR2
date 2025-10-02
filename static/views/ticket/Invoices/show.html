@@ -18,6 +18,9 @@ var form=new ControlForm({
         //rehide everything
         $(".hide", context).hide();
 
+        if (data.invoice_nr!="")
+            $(".on-click-add-exact, .on-click-del-exact",context).show();
+
         if (data.sent)
         {
             $(".on-click-copy, .on-click-revoke, .on-click-credit, .on-click-pdf, .on-click-pdf-background, .on-click-print, .on-click-email", context).show();
@@ -126,6 +129,22 @@ $(".on-click-send", context).click(function()
 
 
 
+});
+
+$(".on-click-del-exact", context).click(function()
+{
+    rpc("ticket.Invoices.del_exact", { _id:view.params._id }, function(result)
+        {
+            viewShowError(result, context);
+        });
+});
+
+$(".on-click-add-exact", context).click(function()
+{
+    rpc("ticket.Invoices.add_exact", { _id:view.params._id }, function(result)
+        {
+            viewShowError(result, context);
+        });
 });
 
 
@@ -331,6 +350,9 @@ $(".on-click-unpayed", context).click(function()
     <button class='hide on-click-copy' >Copy</button>
     <button class='hide on-click-payed' >Mark as payed</button>
     <button class='hide on-click-unpayed' >Mark as un-payed</button>
+    <button class='hide on-click-del-exact' >Del from exact</button>
+    <button class='hide on-click-add-exact' >Add to exact</button>
+
     <button class='control-on-click-cancel' >Back</button>
     <span class='viewErrorText'></span>
 </div>
