@@ -24,6 +24,17 @@ services:
    restart: unless-stopped
 
 
+  #test mailserver
+  smtp:
+    image: axllent/mailpit
+
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+    environment:
+      - MP_SMTP_BIND_ADDR=0.0.0.0:25
+
+
 volumes:
   data:
   db:

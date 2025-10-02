@@ -115,6 +115,12 @@ $(".on-click-send", context).click(function()
             rpc("ticket.Invoices.add_exact", { _id:view.params._id }, function(result)
                 {
                     viewShowError(result, context);
+                    rpc("ticket.Invoices.email", { _id:view.params._id }, function(result)
+                        {
+                            viewShowError(result, context);
+                        });
+
+
                 });
         });
 

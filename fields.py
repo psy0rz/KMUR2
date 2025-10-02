@@ -564,7 +564,7 @@ class Email(String):
             return
 
         #NOTE: correct checking is hard, see http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
-        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", data)==None:
+        if re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", data)==None:
             raise FieldError("Invalid email address")
 
         return True
@@ -594,9 +594,9 @@ class Phone(String):
 class File(Base):
     """A file-object
 
-    This is kind of a special case: Files are uploaded out-of-band as multipart/form-data. 
+    This is kind of a special case: Files are uploaded out-of-band as multipart/form-data.
     The models should handle the bottle.FileUpload objects they receive via RPC calls.
-    After they can store the filename in the database as simple string. 
+    After they can store the filename in the database as simple string.
 
     Downloading of files can be handeled by the webserver or by using a GET request and letting the model return a bottle.HTTPResponse.
 
@@ -619,7 +619,7 @@ class File(Base):
 class Image(Base):
     """An Image
 
-    This is just the URL to the image. 
+    This is just the URL to the image.
 
     """
 
@@ -632,6 +632,7 @@ class Image(Base):
             raise FieldError("This should be a string")
 
         return True
+
 
 
 

@@ -251,7 +251,7 @@ class Invoices(models.core.Protected.Protected):
 
         doc=self._get(_id)
         self.event("changed",doc)
-        self.info("Invoice {invoice_nr} sent to {company}".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
+        self.info("Invoice {invoice_nr} to {company} is now finalized.".format(invoice_nr=doc['invoice_nr'], company=doc['to_copy']['company']))
 
 
     @RPC(roles="finance_admin")
