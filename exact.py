@@ -44,6 +44,7 @@ def get_relation_guid(doc):
     # relation=api.relations.get(relation_code='214')
     #api.relations.delete(relation['ID'])
 
+    api = get_api()
 
     try:
         relation = api.relations.get(relation_code=doc['customer_nr'])
@@ -72,6 +73,7 @@ def get_relation_guid(doc):
 
 def get_gl_vat():
     """return glid's and vat codes per vat percentage"""
+    api = get_api()
 
     ret={}
 
@@ -160,6 +162,7 @@ def add_exact(doc):
 
 
     pprint(invoice_data)
+    api = get_api()
     api.invoices.create(invoice_data)
 
 
@@ -169,6 +172,7 @@ def add_exact(doc):
 def del_exact(doc):
 
     invoice=api.invoices.get(invoice_number=doc['invoice_nr'])
+    api = get_api()
 
 
     api.invoices.delete(invoice['EntryID'])
