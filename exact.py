@@ -13,7 +13,6 @@ def get_api():
     # other instances. You should create your own storage. See below.
     storage = IniStorage('files/exact.ini')
     return ExactApi(storage=storage)
-api = get_api()
 
 
 
@@ -171,8 +170,8 @@ def add_exact(doc):
 #called by KMUR when invoice is deleted
 def del_exact(doc):
 
-    invoice=api.invoices.get(invoice_number=doc['invoice_nr'])
     api = get_api()
+    invoice=api.invoices.get(invoice_number=doc['invoice_nr'])
 
 
     api.invoices.delete(invoice['EntryID'])
